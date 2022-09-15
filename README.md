@@ -1,9 +1,10 @@
 
 # SparkFun Spark Framework
 
+Framework to simplify the development of embedded applications
 
-## In development
+### Status -  In development
 
 
-## Key Features
-
+### Key Features
+* Auto-device detection
