@@ -1,0 +1,13 @@
+{
+    "name": "SparkFun Spark Framework Arduino Library",
+    "version": "1.0",
+    "keywords": "Framework",
+    "description": "Library to quickly build complext embedded applications",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/sparkfun/SparkFun_Spark.git"
+    },
+    "frameworks": "arduino",
+    "platforms": "*"
+}
