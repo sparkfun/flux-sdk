@@ -163,7 +163,8 @@ public:
 	virtual bool getBool()=0;
 	virtual int getInt()=0;
 	virtual float getFloat()=0;
-	virtual std::string& getString()=0;			
+	virtual std::string& getString()=0;
+	const char * getCString(){ getString().c_str(); };
 
 protected:
 	// some method overloading to determine types
