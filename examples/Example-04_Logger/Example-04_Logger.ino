@@ -7,6 +7,7 @@
 #include <Spark.h>
 #include <Spark/spLogger.h>
 #include <Spark/spTimer.h>
+#include <Spark/spSerial.h>
 
 
 //------------------------------------------
