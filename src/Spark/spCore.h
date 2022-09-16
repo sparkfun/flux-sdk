@@ -507,11 +507,6 @@ public:
 	template<typename tCallback, typename tTarget>
 	void set_callback(tCallback callback, tTarget target){
 		_handler_func = std::bind(callback, target);
-
-		//auto f = _handler_func();
-		//_handler_func = [=](){
-		//	(target->*callback)();
-		//};
 				
 	}
 
