@@ -31,43 +31,6 @@ spLogger  logger(spSerial());
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(kDefaultLogInterval);    // Timer 
 
-// Setup and start the framework objects. 
-//---------------------------------------------------------------------
-// app_setup()
-//
-// function that assembles the framework objects to build the
-// opertional structure of this application.
-//
-// For this example:
-//  - The logger connects to the timer event.
-//  - Any detected devices are added to the logger
-//      
-
-bool app_setup(void){
-
-    // Start Spark - Init system: auto detects devices and restores settings from EEPROM
-    //               This should be done after all devices are added..for now...
-    spark.start();  
-
-    // Logging is done at an interval - using an interval timer. 
-    // Connect logger to the timer event
-    logger.listen(timer.on_interval);  
-
-    // What devices has the system detected?
-
-    for(auto device: spark.connectedDevices()){
-
-        Serial.print("Adding Device: "); Serial.println(device->name);
-        logger.add(device);
-    }
-
-    return true;
-}
-/////////////////////////////////////////////////////////////////////////
-// End Spark
-/////////////////////////////////////////////////////////////////////////
-
-
 //---------------------------------------------------------------------
 // Arduino Setup
 //
@@ -92,13 +55,24 @@ void setup() {
     // What devices has the system detected?
     // List them and add them to the logger
 
-    for(auto device: spark.connectedDevices()){
+    spDeviceList myDevices = spark.connectedDevices();
+    Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
+    for (auto device: myDevices )
+    {
 
-        Serial.print("Adding Device: "); Serial.println(device->name);
-        logger.add(device);
+        Serial.printf("Device: %s, Output Number: %d", (char*)device->name, device->nOutputParameters());
+        if ( device->nOutputParameters() > 0)
+        {
+            Serial.printf("  - Adding to logger\r\n");
+            logger.add(device);
+        }
+        else
+            Serial.printf(" - Not adding to logger \r\n");
     }
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
+
+    Serial.printf("\n\rLog Output:\n\r");
 }
 
 //---------------------------------------------------------------------
