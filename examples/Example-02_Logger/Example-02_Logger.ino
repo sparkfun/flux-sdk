@@ -3,27 +3,15 @@
  *   
  */
 
-
-#include <WiFiClientSecure.h>
-#include "WiFi.h"
-
 // Spark framework 
 #include <Spark.h>
 #include <Spark/spDevBME280.h>
 #include <Spark/spDevCCS811.h>
 
-// secrets for the system 
-#include "wifi_secrets.h"
 
 //------------------------------------------
 // Default log interval in milli secs
 #define kDefaultLogInterval 6000
-
-//------------------------------------------
-// System objects
-// 
-// Secure network connection (ssl)
-WiFiClientSecure secureNetwork = WiFiClientSecure();
 
 /////////////////////////////////////////////////////////////////////////
 // Spark Framework
@@ -79,29 +67,6 @@ bool app_setup(void){
 // End Spark
 /////////////////////////////////////////////////////////////////////////
 
-//---------------------------------------------------------------------
-// setupWiFi()
-// Connect to network setup secure connection
-
-void setupWiFi() {
-
-    if (!strlen(kWiFiSSID) ){
-        Serial.println("[Info] - WiFi Disabled - No Network Parameters Specified.");
-        return;
-    }
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(kWiFiSSID, kWiFiPassword);
-    
-    Serial.print("WiFi...");
-    
-    while(WiFi.status() != WL_CONNECTED){
-        delay(500);
-        Serial.print('.');
-    }
-    Serial.println(" Connected");
-    
-}
-
 
 //---------------------------------------------------------------------
 // Arduino Setup
@@ -116,16 +81,22 @@ void setup() {
     while (!Serial);
     Serial.println("\n---- Startup ----");
     
-    // Connect to WiFi
-    setupWiFi();
+    // Start Spark - Init system: auto detects devices and restores settings from EEPROM
+    //               This should be done after all devices are added..for now...
+    spark.start();  
 
-    // setup the framework for this system. 
-    if(!app_setup()){
-        Serial.println("Error setting up Spark");
-        while(1); // No reason to continue -> die
+    // Logging is done at an interval - using an interval timer. 
+    // Connect logger to the timer event
+    logger.listen(timer.on_interval);  
+
+    // What devices has the system detected?
+    // List them and add them to the logger
+
+    for(auto device: spark.connectedDevices()){
+
+        Serial.print("Adding Device: "); Serial.println(device->name);
+        logger.add(device);
     }
-
-    //devBME.initialize(Wire);
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 }
@@ -142,7 +113,6 @@ void loop() {
     // to the system during setup.
     if(spark.loop())        // will return true if an action did something
         digitalWrite(LED_BUILTIN, HIGH); 
-
 
     // Our loop delay 
     delay(1000);                       
