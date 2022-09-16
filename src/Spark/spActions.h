@@ -5,6 +5,3 @@
 #pragma once
 
 #include "spCore.h"
-// just list out the actions files
-#include "spTimer.h"
-#include "spLogger.h"
