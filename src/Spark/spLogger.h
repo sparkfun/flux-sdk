@@ -87,7 +87,10 @@ public:
 	void add(spDataCore* a1, Args&&... args){ va_add(a1, args...); }
 
 	template<typename... Args>
-	void add(spDataCore& a1, Args&&... args){ va_add(a1, args...); }	
+	void add(spDataCore& a1, Args&&... args){ va_add(a1, args...); }
+
+	template<typename... Args>
+	void add(spDeviceList& a1, Args&&... args){ va_add(a1, args...); }
 
 private:
 
@@ -131,5 +134,16 @@ private:
 
 	void _add(spDataCore& param){  _paramsToLog.push_back(&param);}	
 	void _add(spDataCore* param){ if(param != nullptr) _paramsToLog.push_back(param);}
+
+	// Internal method to add the contents of a device list
+	void _add(spDeviceList& deviceList)
+	{
+		// Only add devices that have output parameters ..
+		for (auto device: deviceList)
+		{
+			if ( device->nOutputParameters() > 0)
+				_add(device);
+		}
+	}
 
 };

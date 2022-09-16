@@ -57,7 +57,19 @@ void setup() {
     // List them and add them to the logger
 
     spDeviceList myDevices = spark.connectedDevices();
+
+    // The device list can be added directly to the logger object using an 
+    // add() method call. This will only add devices with output parameters. 
+    //
+    // Example:
+    //      logger.add(myDevices);   
+    //
+    // But for this example, let's loop over our devices and show how use the
+    // device parameters.
+
     Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
+
+    // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
 
