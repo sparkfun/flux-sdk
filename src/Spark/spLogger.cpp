@@ -51,7 +51,7 @@ void spLogger::logObservation(void){
 		theObs.beginSection(pObj->name);	
 
 		// loop over the output parameters of the device and log values
-		logParameters(pObj->getOutputParams(), theObs);
+		logParameters(pObj->getOutputParameters(), theObs);
 	}
 	
 	// Okay, now output the observation to our writers
