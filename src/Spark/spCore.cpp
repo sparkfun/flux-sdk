@@ -76,10 +76,13 @@ size_t spIProperty::save_size(void){
 static uint16_t id_hash(const char* str){
 
 	uint32_t hash = 5381;
-    int c;
+    int c = *str;
 
-    while (c = *str++)
+    while (c != 0)
+	{
+		c = *str++;
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+	}
 
     return  hash & 0xFFFF; // NOTE - we're just using 16 bits 
 
