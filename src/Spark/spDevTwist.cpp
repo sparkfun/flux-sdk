@@ -48,6 +48,7 @@ bool spDevTwist::onInitialize(TwoWire& wirePort){
 	   Serial.println("TWIST - begin failed");
 	
 	last_count=0;
+	was_clicked = TWIST::isPressed();
 	return rc;
 }
 
@@ -65,8 +66,10 @@ void spDevTwist::onPropertyUpdate(const char * propName){
 bool spDevTwist::loop(void){
 
 	// process events
-	if(TWIST::isClicked())
-		on_clicked.emit();
+	if(TWIST::isPressed() != was_clicked){
+		was_clicked = ! was_clicked;
+		on_clicked.emit(was_clicked);
+	}
 
 	int tmp= TWIST::getCount();
 	if(tmp != last_count){

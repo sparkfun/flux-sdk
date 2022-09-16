@@ -35,7 +35,7 @@ public:
 
 	// Events
 	// Our output event
-	spSignalVoid on_clicked;
+	spSignalBool on_clicked;
 	spSignalInt  on_twist;
 
 	// Type testing: 
@@ -47,6 +47,7 @@ public:
 
 private:
 	int last_count = 0;
+	bool was_clicked = false;
 
 };
 
