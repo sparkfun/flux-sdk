@@ -52,6 +52,11 @@ public:
 	}
 	
 	template<class T>
+	T* get(spType& type){
+		return (T*)_getByType(type);
+	}
+
+	template<class T>
 	bool isConnected(){
 
 		for(int i=0; i < Devices.size(); i++){
@@ -90,6 +95,8 @@ private:
 		}
 		return nullptr;
 	}
+
+	spBase * _getByType(spType &type){ return _getByType(&type);}
 };
 
 // create a typedef that hinds the reference 
