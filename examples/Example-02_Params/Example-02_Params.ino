@@ -65,7 +65,7 @@ void loop() {
     if (BMEIsConnected){
 
         // Loop over the output parameters of this device and print name and value
-        for (auto param : myBME.getOutputParams() )
+        for (auto param : myBME.getOutputParameters() )
         {
 
             Serial.print(" "); Serial.print(param->name); Serial.print(" = ");
