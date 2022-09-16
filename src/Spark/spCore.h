@@ -163,8 +163,8 @@ public:
 	virtual bool getBool()=0;
 	virtual int getInt()=0;
 	virtual float getFloat()=0;
-	virtual std::string& getString()=0;
-	const char * getCString(){ getString().c_str(); };
+	virtual std::string getString()=0;
+	const char * getCString(){ return getString().c_str(); };
 
 protected:
 	// some method overloading to determine types
@@ -177,20 +177,20 @@ protected:
 
 	std::string& to_string(std::string& data){ return data;}
 	
-	std::string& to_string(int data){ 
+	std::string to_string(int data){ 
 		char szBuffer[20];
 		snprintf(szBuffer, sizeof(szBuffer), "%d", data);
 		std::string stmp = szBuffer;
 		return stmp;
 	}
 
-	std::string& to_string(float data){ 
+	std::string to_string(float data){ 
 		char szBuffer[20];
 		snprintf(szBuffer, sizeof(szBuffer), "%f", data);
 		std::string stmp = szBuffer;
 		return stmp;
 	}
-	std::string& to_string(bool data){
+	std::string to_string(bool data){
 		std::string stmp;
 		stmp = data ? "true" : "false";		
 		return stmp;
@@ -295,7 +295,7 @@ public:
 	bool  getBool()  { return 0 != (int)_Data;}	
 	int   getInt() { return (int)_Data;}
 	float getFloat(){ return (float) _Data;}
-	std::string& getString(){  return to_string(_Data);}
+	std::string getString(){  return to_string(_Data);}
 
 	// Get value, stash in JSON Variant
 	void getValue(const JsonVariant & var){
@@ -370,7 +370,7 @@ public:
 	bool getBool() { return std::atoi(_Data.c_str()) != 0;}
 	int getInt(){ return std::atoi(_Data.c_str());}
 	float getFloat(){ return std::atof(_Data.c_str());}	
-	std::string& getString(){ return _Data;}
+	std::string getString(){ return _Data;}
 
 	// Get value, stash in JSON Variant
 	void getValue(const JsonVariant & jVar){   jVar.set(_Data); }
@@ -520,7 +520,7 @@ public:
 	bool  getBool()  { return 0 != (int) _handler_func();}	
 	int   getInt() { return (int)_handler_func();}
 	float getFloat(){ return (float) _handler_func();}			
-	std::string& getString(){ return to_string(_handler_func());}
+	std::string getString(){ return to_string(_handler_func());}
 	
 };
 
@@ -604,7 +604,7 @@ public:
 	bool  getBool()  { return 0 != (int) get();}	
 	int   getInt() { return (int)get();}
 	float getFloat(){ return (float) get();}
-	std::string& getString(){ return to_string(get());}
+	std::string getString(){ return to_string(get());}
 
 };
 
@@ -729,6 +729,8 @@ public:
 		this->spBase::save();
 		for(auto pChild: _children)
 			pChild->save();
+
+		return true;
 	}
 
 	bool restore(void){
@@ -736,6 +738,7 @@ public:
 		this->spBase::restore();
 		for(auto pChild : _children)
 			pChild->restore();	
+		return true;
 	}
 
 	bool serializeJSON(JsonDocument &jRoot){
@@ -768,6 +771,7 @@ private:
 			JsonObject jChild = jArray.createNestedObject();
 			pChild->serializeJSON(jChild);
 		}
+		return true;
 	}
 
 };
