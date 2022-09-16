@@ -6,6 +6,7 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/spDevTwist.h>
+#include <Spark/spDevButton.h>
 #include <Spark/spSerial.h>
 
 
@@ -48,14 +49,27 @@ void setup() {
         // dump twist messages to serial
         spSerial()->listen( pTwist->on_twist );
         spSerial()->listen( pTwist->on_clicked);
+
+        Serial.println("Twist Connected");
     }
     else 
+        Serial.println("No Twist Connected.");
+
+    spDevButton *pButton = spark.get<spDevButton>();
+
+    if(pButton){
+        // dump button messages to serial
+        spSerial()->listen( pButton->on_clicked);
+        Serial.println("Button Connected");
+    }
+    else 
+        Serial.println("No Button Connected.");
+  
+    if (!pButton && !pTwist )
     {
-        Serial.println("No Twist Connected. Ending");
+        Serial.println("No devices connected. Ending");
         while(1);
     }
-
-  
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
