@@ -19,6 +19,8 @@
 spDevBME280 myBME;
 spDevCCS811 myCCS;
 
+bool BMEIsConnected=false;
+bool CCSIsConnected=false;
 //---------------------------------------------------------------------
 // Arduino Setup
 //
@@ -31,27 +33,36 @@ void setup() {
     Serial.begin(115200);  
     while (!Serial);
     Serial.println("\n---- Startup ----");
-    Serial.println("HELLO HELLO");
     
     // Wire startup
     Wire.begin();
+
     // Setup Spark, but don't have the framework autoload devices
     spark.start(false);
 
     
-
-    // Initialize our devices
-
-    if (!myBME.initialize(Wire) )
+    // init devices
+    if (!myBME.initialize() )
     {
         Serial.println("[Error] - Startup of BME280 failed. Halting");
         while(1);
+    }else {
+        Serial.println("BME280 initialized");
+        BMEIsConnected=true;
     }
-    if (!myCCS.initialize(Wire) )
+
+
+
+    if (!myCCS.initialize() )
     {
         Serial.println("[Error] - Startup of CCS811 failed. Halting");
         while(1);
+
+    }else {
+        Serial.println("CCS811 initialized");    
+        CCSIsConnected = true;
     }
+
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 }
 
@@ -60,15 +71,26 @@ void setup() {
 void loop() {
 
     // Retrieve the data from the devices.
-
     digitalWrite(LED_BUILTIN, HIGH);   // turn on the log led    
-    Serial.print("Device: "); Serial.println(myBME.name);
-    //Serial.print("   Temp F   : "); Serial.println(myBME.temperature_f.getFloat(); 
-    //Serial.print("   Humidity : "); Serial.println(myBME.humidity());     
 
-    Serial.print("Device: "); Serial.println(myCCS.name);
-    // Serial.print("   CO2   : "); Serial.println(myCCS.co2()); 
-    // Serial.print("   TVOC  : "); Serial.println(myCCS.tvoc());  
+    Serial.print("Device: "); Serial.println(myBME.name);
+    if (BMEIsConnected)
+    {
+        Serial.print("   Temp F   : "); Serial.println(myBME.temperature_f()); 
+        Serial.print("   Humidity : "); Serial.println(myBME.humidity());     
+    } 
+    else 
+        Serial.println("Not Connected.");
+    
+
+    Serial.print("\nDevice: "); Serial.println(myCCS.name);
+
+    if (CCSIsConnected)
+    {
+        Serial.print("   CO2   : "); Serial.println(myCCS.co2()); 
+        Serial.print("   TVOC  : "); Serial.println(myCCS.tvoc());  
+    } else
+        Serial.println("Not Connected.");
 
     // Our loop delay 
     delay(1000);                       
