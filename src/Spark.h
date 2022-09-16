@@ -13,7 +13,6 @@
 
 #include "Spark/spCore.h"
 #include "Spark/spDevice.h"
-#include "Spark/spActions.h"
 
 #include "Spark/spSpark.h"
 
