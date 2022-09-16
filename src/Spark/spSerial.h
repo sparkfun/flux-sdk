@@ -5,12 +5,12 @@
 #pragma once
 
 #include <Arduino.h>
-#include "spObservation.h"
+#include "spOutput.h"
 
 //-----------------------------------------------------------
 // Simple serial output class. Making a singleton - this has no state. 
 //
-class spSerial_ : public spIWriter {
+class spSerial_ : public spWriter {
 
 public:
 	// Singleton things
@@ -20,22 +20,29 @@ public:
         return &instance;
     }
 
-	// Simple serial output 
-	bool write(spObservation& theObservation){
-
-		theObservation.serialize(Serial);
-		Serial.println(); // ^^ doesn't end output with a \n
-		return true;
-	}
 
 	// templated callback for the listener - so we can write out anything
 	template<typename T>
 	void write(T value){
 		Serial.println(value);
 	}
-	// strings are special
-	void write(std::string& value){Serial.println(value.c_str());}
 
+	void write(int value)
+	{
+		Serial.println(value);
+	}
+	void write(float value)
+	{
+		Serial.println(value);
+	}
+	void write(const char * value )
+	{
+		Serial.println(value);
+	}
+
+	void write(std::string& value){
+		write(value.c_str());
+	}
 	// Overload listen, so we can type the events, and use the templated
 	// write() method above.
 

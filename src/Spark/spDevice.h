@@ -22,7 +22,6 @@
 #include <vector>
 
 #include "spCore.h"
-#include "spObservation.h"
 #include "spDevI2C.h"
 
 /////////////////////////////////////////////////////////////////////////////

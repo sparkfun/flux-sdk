@@ -7,21 +7,21 @@
 #include "spLogger.h"
 
 
-void spLogger::logParameters(spDataCoreList& params, spObservation &theObs){
+void spLogger::logParameters(spDataCoreList& params, spOutputFormat *theFormatter){
 
 	for( auto op : params){	
 
 		switch(op->type()){
  		case TypeBool: case TypeInt:	
-			theObs.logValue(op->name, op->getInt());
+			theFormatter->logValue(op->name, op->getInt());
  			break;
 
  		case TypeFloat: case TypeDouble:
- 			theObs.logValue(op->name, op->getFloat());
+ 			theFormatter->logValue(op->name, op->getFloat());
  			break;
 
  		case TypeString:
- 			theObs.logValue(op->name, op->getString()); 				
+ 			theFormatter->logValue(op->name, op->getString()); 				
  			break;
  		default:
  			Serial.println("Unknown Parameter Value");
@@ -33,28 +33,38 @@ void spLogger::logParameters(spDataCoreList& params, spObservation &theObs){
 //----------------------------------------------------------------------------
 void spLogger::logObservation(void){
 
-	// loop over our attached devices and log current readings/value	
-	spObservation theObs;	
+	// for each output format, loop over our attached devices and log current readings/value	
 
-	// if we have general params to log, do those.
-	if(_paramsToLog.size() > 0 ){
 
-		theObs.beginSection("general"); //TODO: Better name?
+	for ( auto theFormatter: _Formatters)
+	{
 
-		logParameters(_paramsToLog, theObs);
+		theFormatter->beginObservation();
+
+
+		// if we have general params to log, do those.
+		if(_paramsToLog.size() > 0 )
+		{
+			theFormatter->beginSection("General"); //TODO: Better name?
+
+			logParameters(_paramsToLog, theFormatter);
+		}
+
+		// loop over objs to log - each object is in a named section.
+		// TODO: probalby make sure names have a legal syntax.
+		for( auto pObj : _objsToLog)
+		{
+			theFormatter->beginSection(pObj->name);	
+
+			// loop over the output parameters of the device and log values
+			logParameters(pObj->getOutputParameters(), theFormatter);
+		}
+
+		theFormatter->endObservation();
+
+		// Write out this observation and clear it out
+		theFormatter->writeObservation();
+		theFormatter->clearObservation();
+
 	}
-
-	// loop over objs to log - each object is in a named section.
-	// TODO: probalby make sure names have a legal syntax.
-	for( auto pObj : _objsToLog){
-
-		theObs.beginSection(pObj->name);	
-
-		// loop over the output parameters of the device and log values
-		logParameters(pObj->getOutputParameters(), theObs);
-	}
-	
-	// Okay, now output the observation to our writers
-	for( auto outputDev : _Writers)
-		outputDev->write(theObs);	
 }

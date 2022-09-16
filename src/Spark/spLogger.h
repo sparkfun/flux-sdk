@@ -17,7 +17,7 @@
 #include <initializer_list>
 
 #include "spSpark.h"
-#include "spObservation.h"
+#include "spOutput.h"
 
 
 // Define the QwiicLog class
@@ -35,10 +35,10 @@ public:
 	//
 	// This pattern is used on constructors and add() methods
 	template<typename... Args>
-	spLogger(spIWriter* a1, Args&&... args): spLogger(){ va_add(a1, args...); }
+	spLogger(spOutputFormat* a1, Args&&... args): spLogger(){ va_add(a1, args...); }
 
 	template<typename... Args>
-	spLogger(spIWriter& a1, Args&&... args): spLogger(){ va_add(a1, args...); }
+	spLogger(spOutputFormat& a1, Args&&... args): spLogger(){ va_add(a1, args...); }
 
 	template<typename... Args>
 	spLogger(spBase* a1, Args&... args): spLogger(){ va_add(a1, args...); }
@@ -72,10 +72,10 @@ public:
 	//
 	// Note Args&& for pass args by ref. Otherwise, copy constructor is used.
 	template<typename... Args>
-	void add(spIWriter* a1, Args&&... args){ va_add(a1, args...); }
+	void add(spOutputFormat* a1, Args&&... args){ va_add(a1, args...); }
 
 	template<typename... Args>
-	void add(spIWriter& a1, Args&&... args){ va_add(a1, args...); }
+	void add(spOutputFormat& a1, Args&&... args){ va_add(a1, args...); }
 	
 	template<typename... Args>
 	void add(spBase& a1, Args&&... args){ va_add(a1, args...); }	
@@ -95,13 +95,13 @@ public:
 private:
 
 	// Output devices
-	std::vector<spIWriter*> _Writers;
+	std::vector<spOutputFormat*> _Formatters;
 
 	// The things we're logging
 	spBaseList _objsToLog;
 	spDataCoreList _paramsToLog;
 
-	void logParameters(spDataCoreList& params, spObservation &theObs);
+	void logParameters(spDataCoreList& params, spOutputFormat *theFormatter);
 
 	// vargs management - how to add things recursively. 
 	//
@@ -126,8 +126,8 @@ private:
 
 	//----------------------------------------------------------------------------
 	// Internal Adds for final object placement add output writers to the logger.
-	void _add(spIWriter& writer){ _Writers.push_back(&writer);}
-	void _add(spIWriter *writer){ if(writer != nullptr) _Writers.push_back(writer);}
+	void _add(spOutputFormat& writer){ _Formatters.push_back(&writer);}
+	void _add(spOutputFormat *writer){ if(writer != nullptr) _Formatters.push_back(writer);}
 
 	void _add(spBase& base){ _objsToLog.push_back(&base);}
 	void _add(spBase* base){ if(base != nullptr)_objsToLog.push_back(base);}	

@@ -6,6 +6,7 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/spLogger.h>
+#include <Spark/spFmtJSON.h>
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
@@ -27,7 +28,9 @@
 
 // Note - these could be added later using the add() method on logger
 
-spLogger  logger(spSerial());
+spFormatJSON fmtJSON;
+
+spLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(kDefaultLogInterval);    // Timer 
@@ -52,6 +55,13 @@ void setup() {
     // Logging is done at an interval - using an interval timer. 
     // Connect logger to the timer event
     logger.listen(timer.on_interval);  
+
+    // We want to output JSON to the serial consol.
+    //  - Add Serial to the JSON formatter
+    fmtJSON.add(spSerial());
+
+    //  - Add the JSON format to the logger
+    logger.add(fmtJSON);
 
     // What devices has the system detected?
     // List them and add them to the logger
