@@ -69,7 +69,7 @@ public:
 	
 	
 	bool initialize(TwoWire &wirePort = Wire){
-		onInitialize(wirePort);
+		return onInitialize(wirePort);
 	}
 
 private: 
