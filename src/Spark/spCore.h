@@ -352,7 +352,8 @@ public:
 
 	//----------------------------------------
 	// property get
-	operator const char*() const {return _Data.c_str();}
+	operator const char*() const { return _Data.c_str();}
+	operator char*() const { return (char*)_Data.c_str();}	
 
 	//----------------------------------------
 	// property set
@@ -360,7 +361,7 @@ public:
 	{
 		_Data = value;
 		
-		// call the device objects property update method ..
+		// call the  objects property update method ..
 		onPropertyUpdate();
 
 		return *this;
@@ -541,7 +542,7 @@ typedef spParamOut<std::string&> spParamOutStr;
 	do { \
 		_param_.set_callback(&_function_, this); \
 		_param_.name = #_param_; \
-		this->addOutputParam(_param_); \
+		this->addOutputParameter(_param_); \
 	}while(false)
 
 
@@ -683,9 +684,11 @@ public:
 	virtual void onPropertyUpdate(const char *);
 
 
-	void addOutputParam(spDataCore &param){ _outParameters.push_back(&param);}
+	void addOutputParameter(spDataCore &param){ _outParameters.push_back(&param);}
 
-	spDataCoreList& getOutputParams(void) {return _outParameters;}
+	spDataCoreList& getOutputParameters(void) {return _outParameters;}
+
+	size_t nOutputParameters(void){ return _outParameters.size();}
 
 protected:
 
