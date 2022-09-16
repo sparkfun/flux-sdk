@@ -12,7 +12,7 @@
 #include "SparkFun_Qwiic_Twist_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define DEVICE_NAME  "TWIST";
+#define kTwistDeviceName  "TWIST";
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevTwist : public spDevice, public TWIST {
@@ -24,7 +24,7 @@ public:
 	// Static Interface - used by the system to determine if this device is 
 	// connected before the object is instantiated.
 	static  bool isConnected(spDevI2C& i2cDriver); 	
-	static const char * getDeviceName(){ return DEVICE_NAME; };	
+	static const char * getDeviceName(){ return kTwistDeviceName; };	
 
 	// Method called to initialize the class
 	bool onInitialize(TwoWire &);   

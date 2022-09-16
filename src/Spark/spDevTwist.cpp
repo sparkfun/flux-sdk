@@ -22,7 +22,7 @@ spType spDevTwist::Type;
 spDevTwist::spDevTwist(){
 
 	// Setup unique identifiers for this device and basic device object systems
-	spSetupDeviceIdent(DEVICE_NAME);
+	spSetupDeviceIdent(kTwistDeviceName);
 
 }
 
