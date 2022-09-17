@@ -9,10 +9,23 @@
 #include "spUtils.h"
 
 #include <Arduino.h>
+#include <string>
+
+//-------------------------------------------------------------------------------------
+// Use a stack based string allocator ... it basically replaces the allocator
+// used with std::string with one that uses a stack memory area, and if that
+// size is exceeded, uses a heap allocation scheme.
+//
+// See spUtil.h for more info.
+#define kCSVStackMemoryBufferSize 500
+
+template <class T, std::size_t buffSize=kCSVStackMemoryBufferSize>
+using stackString = std::basic_string<T, std::char_traits<T>, short_alloc<T, buffSize, alignof(T)>>;
+
+//-------------------------------------------------------------------------------------
 
 #define kMaxCVSHeaderTagSize 32
 
-template <std::size_t BUFFER_SIZE>
 class spFormatCSV : public spOutputFormat {
 
 public:
@@ -32,7 +45,7 @@ public:
 			if ( !append_to_header(tag) )
 				warning_message("CSV - internal header buffer size exceeded.");
 
-		if (!append_csv_value( value ? "true" : "false", _data_buffer, sizeof(_data_buffer)))
+		if (!append_csv_value( value ? "true" : "false", _data_buffer))
 				error_message("CSV - internal data buffer size exceeded.");
 	}
 
@@ -46,7 +59,7 @@ public:
 
 		char szBuffer[32]={'\0'};
 		snprintf(szBuffer, sizeof(szBuffer), "%d", value);
-		if (!append_csv_value( szBuffer, _data_buffer, sizeof(_data_buffer)))
+		if (!append_csv_value( szBuffer, _data_buffer))
 				error_message("CSV - internal data buffer size exceeded.");
 	}
 
@@ -61,7 +74,7 @@ public:
 		char szBuffer[32]={'\0'};
 		(void)sp_utils::dtostr(value, szBuffer, sizeof(szBuffer));
 
-		if (!append_csv_value( szBuffer, _data_buffer, sizeof(_data_buffer)))
+		if (!append_csv_value( szBuffer, _data_buffer))
 				error_message("CSV - internal data buffer size exceeded.");
 		
 	}
@@ -74,7 +87,7 @@ public:
 			if ( !append_to_header(tag) )
 				warning_message("CSV - internal header buffer size exceeded.");
 
-		if (!append_csv_value( value, _header_buffer, sizeof(_data_buffer)))
+		if (!append_csv_value( value, _header_buffer))
 				error_message("CSV - internal data buffer size exceeded.");
 	}
 
@@ -109,13 +122,11 @@ public:
 	{
 		
 		// Write out the header?
-		if ( _bFirstRun && strlen(_header_buffer) > 0 )
-		{
-			_bFirstRun = false;
-			outputObservation(_header_buffer);
-		}
+		if ( _bFirstRun && _header_buffer.length() > 0 )
+			outputObservation(_header_buffer.c_str());
 
-		outputObservation(_data_buffer);
+
+		outputObservation(_data_buffer.c_str());
 	}
 
 	//-----------------------------------------------------------------	
@@ -123,6 +134,8 @@ public:
 	{
 		clear_buffers();
 		_section_name = nullptr;
+		if (_bFirstRun)
+			_bFirstRun=false;
 	}
 
 	//-----------------------------------------------------------------
@@ -137,24 +150,41 @@ private:
 
 	//-----------------------------------------------------------------
 	void clear_buffers(){
-		memset(_header_buffer, '\0', sizeof(_header_buffer));
-		memset(_data_buffer, '\0', sizeof(_data_buffer));
+
+		// Note: clear() empties the string, but retains memory.
+		//       shrink_to_fit() - frees memory
+		//
+		// Since the header is normally printed very rarely,
+		// we shrink it.
+		//
+		// For the data_buffer, shrink it only after the first run.
+		// Assumption here is:
+		//	- The header is large, so will take up most of our static buffer
+		//		- causes the data buffer to be allocated on the heap
+		//	- The header is only printed/retained with the first run, leaving
+		//    more static memory available to the data_buffer on non-first runs
+		//  - Calling shrink on the data_buffer on the first run free's any
+		//    heap memory, with the idea that later runs use stack memory
+
+		_header_buffer.clear();
+		_header_buffer.shrink_to_fit();
+		_data_buffer.clear();
+
+		if (_bFirstRun)
+			_data_buffer.shrink_to_fit();
+
+
 	}
 
-	//-----------------------------------------------------------------
-	bool append_csv_value(const char *value, char *buffer, size_t buffer_size){
+	bool append_csv_value(const char *value, stackString<char>& buffer){
 
-		if (strlen(value)+ strlen(buffer) + 1 >= buffer_size)
-			return false;
+		if ( buffer.length() > 0 )
+			buffer += ',';
 
-		if(strlen(buffer) > 0)
-			strlcat(buffer, ",", buffer_size);
-
-		strlcat(buffer, value, buffer_size);
+		buffer += value;
 
 		return true;
 	}
-
 	//-----------------------------------------------------------------
 	bool append_to_header(const char *tag)
 	{
@@ -171,12 +201,28 @@ private:
 		}
 		strlcat(szBuffer, tag, sizeof(szBuffer));
 
-		return append_csv_value(szBuffer, _header_buffer, sizeof(_header_buffer));
+		return append_csv_value(szBuffer, _header_buffer);
+	}
+
+
+	//-----------------------------------------------------------------
+	// Call this method to force the header to print next iteration.
+	//
+	// Normally the header is printing only for the first run.
+
+	void output_header(void)
+	{
+		_bFirstRun = true;
 	}
 
 	//-----------------------------------------------------------------
-	char _header_buffer[BUFFER_SIZE];
-	char _data_buffer[BUFFER_SIZE];	
+
+	// For the stack based allocator  - First you create a area on the stack
+	stackString<char>::allocator_type::arena_type static_allocator;
+
+	// Create strings that use this stack areas
+	stackString<char> _header_buffer{static_allocator};
+	stackString<char> _data_buffer{static_allocator};
 
 	char * _section_name;
 
