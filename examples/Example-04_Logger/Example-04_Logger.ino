@@ -7,6 +7,7 @@
 #include <Spark.h>
 #include <Spark/spLogger.h>
 #include <Spark/spFmtJSON.h>
+#include <Spark/spFmtCSV.h>
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
@@ -28,8 +29,10 @@
 
 // Note - these could be added later using the add() method on logger
 
-// Create a JSON output formatter with a buffer size of 500b
+// Create a JSON and CSV output formatters. 
+// Note: setting internal buffer sizes using template to minimize alloc calls. 
 spFormatJSON<500> fmtJSON;
+spFormatCSV<400> fmtCSV;
 
 spLogger  logger;
 
@@ -57,12 +60,14 @@ void setup() {
     // Connect logger to the timer event
     logger.listen(timer.on_interval);  
 
-    // We want to output JSON to the serial consol.
-    //  - Add Serial to the JSON formatter
+    // We want to output JSON and CSV to the serial consol.
+    //  - Add Serial to our  formatters
     fmtJSON.add(spSerial());
+    fmtCSV.add(spSerial());    
 
-    //  - Add the JSON format to the logger
+    //  - Add the JSON and CVS format to the logger
     logger.add(fmtJSON);
+    logger.add(fmtCSV);    
 
     // What devices has the system detected?
     // List them and add them to the logger
