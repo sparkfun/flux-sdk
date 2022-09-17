@@ -101,7 +101,9 @@ private:
 	spBaseList _objsToLog;
 	spDataCoreList _paramsToLog;
 
-	void logParameters(spDataCoreList& params, spOutputFormat *theFormatter);
+	template <typename T>
+	void writeValue(const char *tag, T value);
+	void logSection(const char *section_name, spDataCoreList& params);
 
 	// vargs management - how to add things recursively. 
 	//
