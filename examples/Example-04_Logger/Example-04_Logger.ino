@@ -28,7 +28,8 @@
 
 // Note - these could be added later using the add() method on logger
 
-spFormatJSON fmtJSON;
+// Create a JSON output formatter with a buffer size of 500b
+spFormatJSON<500> fmtJSON;
 
 spLogger  logger;
 
