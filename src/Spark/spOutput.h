@@ -46,6 +46,7 @@ public:
 
 	virtual void beginObservation(const char * szTitle=nullptr)=0;
 	virtual void beginSection(const char * szName){};
+	virtual void endSection(void){};
 	virtual void endObservation(void)=0;
 
 	virtual void writeObservation(void)=0;
