@@ -21,6 +21,9 @@ using std::string;
 
 #define debug_message(_prompt_, _value_) {Serial.print(_prompt_);Serial.println(_value_);}
 
+// TODO clean up messaging
+#define error_message(_message_) {debug_message("[Error] - ",_message_);}
+#define warning_message(_message_) {debug_message("[Warning] - ",_message_);}
 //-------------------------------------------------------------------------
 // Storage interface 
 //-------------------------------------------------------------------------
