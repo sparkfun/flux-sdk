@@ -15,31 +15,40 @@ class spFormatJSON: public spOutputFormat {
 
 public:
 
+	//-----------------------------------------------------------------
 	spFormatJSON() : buffer_size{BUFFER_SIZE}
 	{};
 
+	//-----------------------------------------------------------------
 	// value methods
 	void logValue(const char* tag, bool value)
 	{
 		if (!_jSection.isNull())
 			(_jSection)[tag] = value;
 	}
+
+	//-----------------------------------------------------------------
 	void logValue(const char* tag, int value)
 	{
 		if (!_jSection.isNull())
 			(_jSection)[tag] = value;
 	}
+
+	//-----------------------------------------------------------------
 	void logValue(const char* tag, float value)
 	{
 		if (!_jSection.isNull())
 			(_jSection)[tag] = value;
 	}
+
+	//-----------------------------------------------------------------
 	void logValue(const char* tag, const char* value)
 	{
 		if (!_jSection.isNull())
 			(_jSection)[tag] = value;
 	}
 
+	//-----------------------------------------------------------------
 	// structure cycle 
 
 	virtual void beginObservation(const char * szTitle=nullptr)
@@ -86,7 +95,6 @@ public:
 	void reset(void)
 	{
 		_jDoc.clear();
-		
 	}
 
 	size_t buffer_size;
