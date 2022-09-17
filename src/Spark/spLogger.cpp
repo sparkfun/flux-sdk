@@ -58,6 +58,8 @@ void spLogger::logObservation(void){
 
 			// loop over the output parameters of the device and log values
 			logParameters(pObj->getOutputParameters(), theFormatter);
+
+			theFormatter->endSection();
 		}
 
 		theFormatter->endObservation();
