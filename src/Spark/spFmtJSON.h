@@ -9,15 +9,14 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-// TO DO - make this configurable ...
-#define JSON_DOCUMENT_SIZE  400
 
-
+template <std::size_t BUFFER_SIZE>
 class spFormatJSON: public spOutputFormat {
 
 public:
 
-	spFormatJSON(){};
+	spFormatJSON() : buffer_size{BUFFER_SIZE}
+	{};
 
 	// value methods
 	void logValue(const char* tag, bool value)
@@ -65,13 +64,13 @@ public:
 	//-----------------------------------------------------------------	
 	virtual void writeObservation()
 	{
-		char szBuffer[JSON_DOCUMENT_SIZE+1];
-		size_t n = serializeJson(_jDoc, szBuffer, JSON_DOCUMENT_SIZE);
+		char szBuffer[buffer_size+1];
+		size_t n = serializeJson(_jDoc, szBuffer, buffer_size);
 
 		// TODO: Add Error output
-		if ( n > JSON_DOCUMENT_SIZE + 1){
+		if ( n > buffer_size + 1){
 			Serial.println("[WARNING] - JSON document buffer output buffer trimmed");
-			szBuffer[JSON_DOCUMENT_SIZE] = '\0';
+			szBuffer[buffer_size] = '\0';
 		}
 
 		outputObservation(szBuffer);
@@ -90,9 +89,11 @@ public:
 		
 	}
 
+	size_t buffer_size;
+
 protected:
 	JsonObject _jSection;
 
-	StaticJsonDocument<JSON_DOCUMENT_SIZE> _jDoc;
+	StaticJsonDocument<BUFFER_SIZE> _jDoc;
 
 };
