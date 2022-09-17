@@ -130,7 +130,10 @@ bool spBase::save(void){
 
 	if( sz > 0){
 		spStorageBlock *BLK = spStorage().beginBlock(id, sz);
-		bool rc = spIProperty::save(BLK); // TODO: Check errors
+		bool rc = spIProperty::save(BLK); 
+		if ( !rc )
+			Serial.println("[Error] - storage:save operation failed");
+
 		spStorage().endBlock(BLK);
 	}
 	
@@ -144,11 +147,13 @@ bool spBase::restore(void){
 	uint16_t id = getID();  // object id.
 
 	spStorageBlock *BLK = spStorage().beginBlock(id, 0); // 0 size = use what's in the repo
-	Serial.println("a");
+
 	bool rc = spIProperty::restore(BLK);
-	Serial.println("b");		
+
+	if ( !rc )
+		Serial.println("[Error] - storage: restore failed.");
 	spStorage().endBlock(BLK);
-	Serial.println("c");		
+
 
 	return true;
 }

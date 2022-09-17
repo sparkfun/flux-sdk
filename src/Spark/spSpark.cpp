@@ -48,7 +48,6 @@ bool Spark_::loop(void){
 
 	// Pump our actions by calling there loop methods
 	bool rc = false;
-	bool tmp;
 
 	// Actions
 	spAction *pAction;

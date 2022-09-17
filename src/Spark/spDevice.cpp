@@ -34,7 +34,6 @@ int spDeviceFactory_::buildDevices(spDevI2C& i2cDriver){
 
 	// walk the list of registered drivers
 
-    spDeviceBuilder *deviceBuilder; 
     int nDevs=0;
 
 	for( auto deviceBuilder : _Builders){

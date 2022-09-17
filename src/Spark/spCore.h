@@ -256,7 +256,7 @@ public:
 
 	//----------------------------------------
 	// Type of property
-	DataTypes type(void){ T *c; return _getType(c);}; 
+	DataTypes type(void){ T c; return _getType(&c);}; 
 
 	//----------------------------------------
 	// size in bytes of this property
@@ -502,7 +502,7 @@ public:
 
 	//----------------------------------------
 	// Type of parameter
-	DataTypes type(void){ T *c; return _getType(c);}; 
+	DataTypes type(void){ T c; return _getType(&c);}; 
 	
 	// Template for our callback and target.
 	// It is expected that these functions have no params. 
