@@ -32,7 +32,7 @@
 // Create a JSON and CSV output formatters. 
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
 spFormatJSON<500> fmtJSON;
-spFormatCSV<400> fmtCSV;
+spFormatCSV fmtCSV;
 
 spLogger  logger;
 
