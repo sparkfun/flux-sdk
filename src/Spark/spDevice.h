@@ -78,7 +78,9 @@ class _spDevice : public spBase
         return false;
     }
 
-    virtual uint8_t getDefaultAddress(void)=0;
+    virtual uint8_t getDefaultAddress(void){
+    	return kSparkDeviceAddressNull;
+    };
 
     bool initialize(TwoWire &wirePort = Wire)
     {
@@ -124,20 +126,33 @@ using spDeviceList = spContainer<_spDevice>;
 // Macro used to simplfy device setup
 #define spSetupDeviceIdent(_name_) this->name = _name_;
 
-
-// This subclass via template allows the core device class to access the
-// static list of addresses to get the default address. 
+//------------------------------------------------------------------------
+// spDevice()
+// 
+// This subclass of _spDevice via template allows the core device class to 
+// access the static list of addresses to get the default address without 
+// requiring the subclass to implement a method to do this. 
+//
+// Devices should subclass from this object using the following pattern:
+//
+//   class <classname> : spDevice<classname>, ...
+//
 template <typename T>
 class spDevice : public _spDevice
 {
+	// get the default address for the device. If none exists,
+	// return Null Address...
 	virtual uint8_t getDefaultAddress(void)
     {
+    	// call the classes static method to get all addresses
+    	// supported by this device (or the core addrs)
     	const uint8_t *addresses = T::getDefaultAddresses();
     	if(!addresses)
     		return kSparkDeviceAddressNull;
     	return addresses[0];
     }
 };
+
 //----------------------------------------------------------------------------------
 // Factory/Builder pattern to dynamically register devices at runtime.
 //----------------------------------------------------------------------------------
@@ -274,6 +289,8 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilder
         return DeviceType::getDefaultAddresses();
     }
 };
+
+
 
 // Macro to define the global builder object.
 #define spRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
