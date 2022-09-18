@@ -14,7 +14,9 @@
 #define kCCS811AddressAlt1 0x5A
 
 spType spDevCCS811::Type;
-uint8_t spDevCCS811::defaultDeviceAddress[] = {kCCS811AddressDefault, kCCS811AddressAlt1, kSparkDeviceEnd};
+uint8_t spDevCCS811::defaultDeviceAddress[] = { kCCS811AddressDefault, 
+												kCCS811AddressAlt1, 
+												kSparkDeviceAddressNull};
 
 // KDB NOTE: This use of the default address needs to change in the call to the constructor
 //           Inconsistant with other libraries

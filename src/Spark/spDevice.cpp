@@ -7,7 +7,7 @@
 #include "spDevice.h"
 #include "spSpark.h"
 
-spDevice::spDevice() : _address{0}
+spDevice::spDevice() : _address{kSparkDeviceAddressNull}
 {
     // The new device is added to the system on creation
     spark.add(this);
@@ -56,7 +56,7 @@ int spDeviceFactory_::buildDevices(spDevI2C &i2cDriver)
         if (!deviceAddresses)
             break;
 
-        for (int i = 0; deviceAddresses[i] != kSparkDeviceEnd; i++)
+        for (int i = 0; deviceAddresses[i] != kSparkDeviceAddressNull; i++)
         {
             // Address already in use? If so, skip to next address
             if (addressInUse(deviceAddresses[i]))

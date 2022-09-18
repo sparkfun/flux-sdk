@@ -25,7 +25,7 @@
 
 // define a value that marks the end of a device address/id list
 
-#define kSparkDeviceEnd 0
+#define kSparkDeviceAddressNull 0
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -55,6 +55,7 @@ class spDevice : public spBase
 
   public:
     spDevice();
+    spDevice(uint8_t address) : _address{address} {};
     // Interface
 
     // Methods for Sub-class to override - for device activities.
@@ -79,6 +80,16 @@ class spDevice : public spBase
 
     bool initialize(TwoWire &wirePort = Wire)
     {
+
+/*
+    	if ( _address == kSparkDeviceAddressNull )
+    	{
+    		const uint8_t * addresses = getDefaultAddresses();
+    		if(!addresses)
+    			return false;
+    		_address = address[0]; // first spot should be default
+    	}
+    	*/
         return onInitialize(wirePort);
     }
 
