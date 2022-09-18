@@ -9,7 +9,9 @@
 
 #include "spDevCCS811.h"
 
+
 #define kCCS811ChipIdReg 0x20 // Chip ID
+
 #define kCCS811AddressDefault 0x5B
 #define kCCS811AddressAlt1 0x5A
 
@@ -18,8 +20,7 @@ uint8_t spDevCCS811::defaultDeviceAddress[] = { kCCS811AddressDefault,
 												kCCS811AddressAlt1, 
 												kSparkDeviceAddressNull};
 
-// KDB NOTE: This use of the default address needs to change in the call to the constructor
-//           Inconsistant with other libraries
+// KDB NOTE: Need to check in ccs arduino lib code updates
 
 spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
 {
@@ -78,7 +79,8 @@ bool spDevCCS811::isConnected(spDevI2C &i2cDriver, uint8_t address)
 //
 bool spDevCCS811::onInitialize(TwoWire &wirePort)
 {
-
+	// set the underlying drivers address to the one determined during
+	// device construction
     CCS811::setI2CAddress(address());
 
     return CCS811::begin(wirePort);

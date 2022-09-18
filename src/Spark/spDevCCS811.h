@@ -11,8 +11,7 @@
 #include "SparkFunCCS811.h"
 #include "spDevice.h"
 
-#define kCCS811ChipIdReg 0x20 // Chip ID
-#define kCCS811I2CAddr 0x5B
+
 
 #define DEVICE_NAME "ccs811";
 
