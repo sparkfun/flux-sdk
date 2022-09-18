@@ -20,8 +20,8 @@ spDevice::spDevice() : _address{0}
 //-------------------------------------------------------------------------------
 bool spDeviceFactory_::addressInUse(uint8_t address)
 {
-	// loop over connected/created devices - if the address is a match, return true
-    for (auto device : spark.connectedDevices() )
+    // loop over connected/created devices - if the address is a match, return true
+    for (auto device : spark.connectedDevices())
     {
         if (device->address() == address)
             return true;

@@ -1,43 +1,45 @@
 
-#pragma once 
+#pragma once
 
 #include <Arduino.h>
 
 #include "spSpark.h"
- 
-class spTimer: public spAction {
 
-	// for our timing 
-	unsigned long _lastLogTime=0;
+class spTimer : public spAction
+{
 
-public:
+    // for our timing
+    unsigned long _lastLogTime = 0;
 
-	spTimer(int start=500):_lastLogTime(0){
-	
-		spRegisterProperty(interval, start);	
+  public:
+    spTimer(int start = 500) : _lastLogTime(0)
+    {
 
-		spark.add(this);
+        spRegisterProperty(interval, start);
 
-		name="Timer";
-	};
+        spark.add(this);
 
-	// Our output event
-	spSignalVoid on_interval; 
+        name = "Timer";
+    };
 
-	// Property  - interval for the timer
-	spPropertyInt interval; 
+    // Our output event
+    spSignalVoid on_interval;
 
-	bool loop(void){
-		// Is it time to log - Delta since last log > Log Interval?? 
-		if(millis() - _lastLogTime < interval)
-			return false; // we didn't do anything
-	
-		// Reset our last logged time to now
-		_lastLogTime = millis();
+    // Property  - interval for the timer
+    spPropertyInt interval;
 
-		// trigger the event
-		on_interval.emit();
+    bool loop(void)
+    {
+        // Is it time to log - Delta since last log > Log Interval??
+        if (millis() - _lastLogTime < interval)
+            return false; // we didn't do anything
 
-		return true;
-	}
+        // Reset our last logged time to now
+        _lastLogTime = millis();
+
+        // trigger the event
+        on_interval.emit();
+
+        return true;
+    }
 };

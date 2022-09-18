@@ -1,6 +1,6 @@
 //
 // Define interfaces/base classes for output
-// 
+//
 
 #pragma once
 
@@ -9,99 +9,96 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
+template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
+{
 
-template <std::size_t BUFFER_SIZE>
-class spFormatJSON: public spOutputFormat {
+  public:
+    //-----------------------------------------------------------------
+    spFormatJSON() : buffer_size{BUFFER_SIZE} {};
 
-public:
+    //-----------------------------------------------------------------
+    // value methods
+    void logValue(const char *tag, bool value)
+    {
+        if (!_jSection.isNull())
+            (_jSection)[tag] = value;
+    }
 
-	//-----------------------------------------------------------------
-	spFormatJSON() : buffer_size{BUFFER_SIZE}
-	{};
+    //-----------------------------------------------------------------
+    void logValue(const char *tag, int value)
+    {
+        if (!_jSection.isNull())
+            (_jSection)[tag] = value;
+    }
 
-	//-----------------------------------------------------------------
-	// value methods
-	void logValue(const char* tag, bool value)
-	{
-		if (!_jSection.isNull())
-			(_jSection)[tag] = value;
-	}
+    //-----------------------------------------------------------------
+    void logValue(const char *tag, float value)
+    {
+        if (!_jSection.isNull())
+            (_jSection)[tag] = value;
+    }
 
-	//-----------------------------------------------------------------
-	void logValue(const char* tag, int value)
-	{
-		if (!_jSection.isNull())
-			(_jSection)[tag] = value;
-	}
+    //-----------------------------------------------------------------
+    void logValue(const char *tag, const char *value)
+    {
+        if (!_jSection.isNull())
+            (_jSection)[tag] = value;
+    }
 
-	//-----------------------------------------------------------------
-	void logValue(const char* tag, float value)
-	{
-		if (!_jSection.isNull())
-			(_jSection)[tag] = value;
-	}
+    //-----------------------------------------------------------------
+    // structure cycle
 
-	//-----------------------------------------------------------------
-	void logValue(const char* tag, const char* value)
-	{
-		if (!_jSection.isNull())
-			(_jSection)[tag] = value;
-	}
+    virtual void beginObservation(const char *szTitle = nullptr)
+    {
+        reset(); // just incase
+        if (szTitle)
+            _jDoc["title"] = szTitle;
+    }
 
-	//-----------------------------------------------------------------
-	// structure cycle 
+    //-----------------------------------------------------------------
+    void beginSection(const char *szName)
+    {
+        _jSection = _jDoc.createNestedObject(szName);
+    }
 
-	virtual void beginObservation(const char * szTitle=nullptr)
-	{
-		reset(); // just incase
-		if(szTitle)
-			_jDoc["title"] = szTitle;
-	}
+    //-----------------------------------------------------------------
+    void endObservation(void)
+    {
+        // no op
+    }
 
-	//-----------------------------------------------------------------
-	void beginSection(const char * szName)
-	{
-		_jSection = _jDoc.createNestedObject(szName); 
-	}
+    //-----------------------------------------------------------------
+    virtual void writeObservation()
+    {
+        char szBuffer[buffer_size + 1];
+        size_t n = serializeJson(_jDoc, szBuffer, buffer_size);
 
-	//-----------------------------------------------------------------
-	void endObservation(void)
-	{
-		// no op
-	}
+        // TODO: Add Error output
+        if (n > buffer_size + 1)
+        {
+            Serial.println("[WARNING] - JSON document buffer output buffer trimmed");
+            szBuffer[buffer_size] = '\0';
+        }
 
-	//-----------------------------------------------------------------	
-	virtual void writeObservation()
-	{
-		char szBuffer[buffer_size+1];
-		size_t n = serializeJson(_jDoc, szBuffer, buffer_size);
+        outputObservation(szBuffer);
+    }
 
-		// TODO: Add Error output
-		if ( n > buffer_size + 1){
-			Serial.println("[WARNING] - JSON document buffer output buffer trimmed");
-			szBuffer[buffer_size] = '\0';
-		}
+    //-----------------------------------------------------------------
+    void clearObservation(void)
+    {
+        reset();
+    }
 
-		outputObservation(szBuffer);
-	}
+    //-----------------------------------------------------------------
+    void reset(void)
+    {
+        _jDoc.clear();
+    }
 
-	//-----------------------------------------------------------------	
-	void clearObservation(void)
-	{
-		reset();
-	}
+    size_t buffer_size;
 
-	//-----------------------------------------------------------------
-	void reset(void)
-	{
-		_jDoc.clear();
-	}
+  protected:
+    JsonObject _jSection;
 
-	size_t buffer_size;
-
-protected:
-	JsonObject _jSection;
-
-	StaticJsonDocument<BUFFER_SIZE> _jDoc;
-
+    StaticJsonDocument<BUFFER_SIZE> _jDoc;
 };

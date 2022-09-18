@@ -25,9 +25,11 @@ using std::string;
     }
 
 // TODO clean up messaging
-#define error_message(_message_)    debug_message("[Error] - ", _message_);                                                                        \
+#define error_message(_message_) debug_message("[Error] - ", _message_);
 
-#define warning_message(_message_)  debug_message("[Warning] - ", _message_);                                                                        \                                                                                  \
+#define warning_message(_message_)                                                                                     \
+    debug_message("[Warning] - ", _message_);                                                                          \
+    \
 
 //-------------------------------------------------------------------------
 // Storage interface

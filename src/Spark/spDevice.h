@@ -193,7 +193,7 @@ class spDeviceFactory_
     void operator=(spDeviceFactory_ const &) = delete;
 
   private:
-  	bool addressInUse(uint8_t);
+    bool addressInUse(uint8_t);
     spDeviceFactory_(){}; // hide constructor - this is a singleton
 
     std::vector<spDeviceBuilder *> _Builders;
