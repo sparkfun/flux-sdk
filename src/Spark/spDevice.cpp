@@ -18,6 +18,17 @@ spDevice::spDevice() : _address{0}
 //----------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
+bool spDeviceFactory_::addressInUse(uint8_t address)
+{
+	// loop over connected/created devices - if the address is a match, return true
+    for (auto device : spark.connectedDevices() )
+    {
+        if (device->address() == address)
+            return true;
+    }
+    return false;
+}
+//-------------------------------------------------------------------------------
 // buildConnectedDevices()
 //
 // Walks through the list of registered drivers and determines if the device is
@@ -47,6 +58,10 @@ int spDeviceFactory_::buildDevices(spDevI2C &i2cDriver)
 
         for (int i = 0; deviceAddresses[i] != kSparkDeviceEnd; i++)
         {
+            // Address already in use? If so, skip to next address
+            if (addressInUse(deviceAddresses[i]))
+                continue; // next
+
             // See if the device is connected
             if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
             {
