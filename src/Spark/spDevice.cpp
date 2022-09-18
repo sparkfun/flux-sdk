@@ -7,7 +7,7 @@
 #include "spDevice.h"
 #include "spSpark.h"
 
-spDevice::spDevice() : _address{kSparkDeviceAddressNull}
+_spDevice::_spDevice() : _address{kSparkDeviceAddressNull}
 {
     // The new device is added to the system on creation
     spark.add(this);
@@ -65,7 +65,7 @@ int spDeviceFactory_::buildDevices(spDevI2C &i2cDriver)
             // See if the device is connected
             if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
             {
-                spDevice *pDevice = deviceBuilder->create();
+                _spDevice *pDevice = deviceBuilder->create();
                 if (!pDevice)
                 {
                     Serial.print("ERROR: Device create failed - ");

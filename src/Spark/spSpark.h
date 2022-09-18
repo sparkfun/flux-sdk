@@ -38,11 +38,11 @@ class Spark_ : public spContainer<spBase>
         Actions.add(theAction);
     }
 
-    void add(spDevice &theDevice)
+    void add(_spDevice &theDevice)
     {
         Devices.add(&theDevice);
     }
-    void add(spDevice *theDevice)
+    void add(_spDevice *theDevice)
     {
         Devices.add(theDevice);
     }

@@ -17,7 +17,7 @@
 #define DEVICE_NAME "ccs811";
 
 // Define our class
-class spDevCCS811 : public spDevice, public CCS811
+class spDevCCS811 : public spDevice<spDevCCS811>, public CCS811
 {
 
   public:

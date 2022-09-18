@@ -50,12 +50,12 @@
 
 class spDeviceFactory_;
 
-class spDevice : public spBase
+class _spDevice : public spBase
 {
 
   public:
-    spDevice();
-    spDevice(uint8_t address) : _address{address} {};
+    _spDevice();
+    _spDevice(uint8_t address) : _address{address} {};
     // Interface
 
     // Methods for Sub-class to override - for device activities.
@@ -78,18 +78,13 @@ class spDevice : public spBase
         return false;
     }
 
+    virtual uint8_t getDefaultAddress(void)=0;
+
     bool initialize(TwoWire &wirePort = Wire)
     {
-
-/*
     	if ( _address == kSparkDeviceAddressNull )
-    	{
-    		const uint8_t * addresses = getDefaultAddresses();
-    		if(!addresses)
-    			return false;
-    		_address = address[0]; // first spot should be default
-    	}
-    	*/
+    		_address = getDefaultAddress();
+
         return onInitialize(wirePort);
     }
 
@@ -117,18 +112,32 @@ class spDevice : public spBase
         if (!wirePort)
             return false;
 
-        return this->onInitialize(*wirePort); // call subclass virtual init routine.
+        return this->initialize(*wirePort); // call subclass virtual init routine.
     }
 
     uint8_t _address;
 };
 
-using spDeviceContainer = spContainer<spDevice>;
-using spDeviceList = spContainer<spDevice>;
+using spDeviceContainer = spContainer<_spDevice>;
+using spDeviceList = spContainer<_spDevice>;
 
 // Macro used to simplfy device setup
 #define spSetupDeviceIdent(_name_) this->name = _name_;
 
+
+// This subclass via template allows the core device class to access the
+// static list of addresses to get the default address. 
+template <typename T>
+class spDevice : public _spDevice
+{
+	virtual uint8_t getDefaultAddress(void)
+    {
+    	const uint8_t *addresses = T::getDefaultAddresses();
+    	if(!addresses)
+    		return kSparkDeviceAddressNull;
+    	return addresses[0];
+    }
+};
 //----------------------------------------------------------------------------------
 // Factory/Builder pattern to dynamically register devices at runtime.
 //----------------------------------------------------------------------------------
@@ -223,7 +232,7 @@ typedef spDeviceFactory_ &spDeviceFactory;
 class spDeviceBuilder
 {
   public:
-    virtual spDevice *create(void) = 0;                                 // create the underlying device obj.
+    virtual _spDevice *create(void) = 0;                                 // create the underlying device obj.
     virtual bool isConnected(spDevI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;

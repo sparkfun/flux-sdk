@@ -15,7 +15,7 @@
 #define kTwistDeviceName "twist";
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevTwist : public spDevice, public TWIST
+class spDevTwist : public spDevice<spDevTwist>, public TWIST
 {
 
   public:
