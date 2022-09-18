@@ -10,15 +10,18 @@
 #include "spDevCCS811.h"
 
 #define kCCS811ChipIdReg		0x20 //Chip ID
-#define kCCS811I2CAddr			0x5B
+#define kCCS811AddressDefault	0x5B
+#define kCCS811AddressAlt1		0x5A
 
 spType spDevCCS811::Type;
-
+uint8_t spDevCCS811::defaultDeviceAddress[]	=	{ kCCS811AddressDefault, 
+												  kCCS811AddressAlt1, 
+												  kSparkDeviceEnd };
 
 // KDB NOTE: This use of the default address needs to change in the call to the constructor
 //           Inconsistant with other libraries 
 
-spDevCCS811::spDevCCS811() : CCS811(kCCS811I2CAddr)
+spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
 {
 
 	
@@ -56,9 +59,9 @@ float spDevCCS811::getTVOC(){
 
 // Static method used to determine if this device is connected
 
-bool spDevCCS811::isConnected(spDevI2C& i2cDriver){
+bool spDevCCS811::isConnected(spDevI2C& i2cDriver, uint8_t address){
 
-	uint8_t chipID = i2cDriver.readRegister(kCCS811I2CAddr, kCCS811ChipIdReg); //Should return 0x60 or 0x58
+	uint8_t chipID = i2cDriver.readRegister(address, kCCS811ChipIdReg); //Should return 0x60 or 0x58
 
 	return (chipID == 0x81);
 
@@ -73,7 +76,7 @@ bool spDevCCS811::isConnected(spDevI2C& i2cDriver){
 //
 bool spDevCCS811::onInitialize(TwoWire& wirePort){
 
-	
+	CCS811::setI2CAddress( address() );	
 
 	return CCS811::begin(wirePort);
 }

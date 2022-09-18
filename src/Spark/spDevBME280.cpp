@@ -12,9 +12,14 @@
 #include "spDevBME280.h"
 
 #define BME280_CHIP_ID_REG		0xD0 //Chip ID
-#define BME280_I2C_ADDR			0x77
+
+#define kBMEAddressDefault		0x77
+#define kBMEAddressAlt1			0x76
+
+// Define our class static variables - allocs storage for them
 
 spType spDevBME280::Type;
+uint8_t spDevBME280::defaultDeviceAddress[]={kBMEAddressDefault, kBMEAddressAlt1, kSparkDeviceEnd};
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -46,9 +51,9 @@ spDevBME280::spDevBME280(){
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevBME280::isConnected(spDevI2C& i2cDriver){
+bool spDevBME280::isConnected(spDevI2C& i2cDriver, uint8_t address){
 
-	uint8_t chipID = i2cDriver.readRegister(BME280_I2C_ADDR, BME280_CHIP_ID_REG); //Should return 0x60 or 0x58
+	uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); //Should return 0x60 or 0x58
 
 	return (chipID == 0x58 || chipID == 0x60);
 
@@ -62,6 +67,8 @@ bool spDevBME280::isConnected(spDevI2C& i2cDriver){
 //
 bool spDevBME280::onInitialize(TwoWire& wirePort){
 
+	// set the device address 
+	BME280::setI2CAddress( address() );
 	return BME280::beginI2C(wirePort);
 
 }

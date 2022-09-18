@@ -13,6 +13,8 @@
 
 // For type system testing
 spType spDevButton::Type;
+uint8_t spDevButton::defaultDeviceAddress[]	=	{ SFE_QWIIC_BUTTON_DEFAULT_ADDRESS, 
+												  kSparkDeviceEnd };
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -29,9 +31,9 @@ spDevButton::spDevButton(){
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevButton::isConnected(spDevI2C& i2cDriver){
+bool spDevButton::isConnected(spDevI2C& i2cDriver, uint8_t address){
 
- 	return i2cDriver.ping(SFE_QWIIC_BUTTON_DEFAULT_ADDRESS);
+ 	return i2cDriver.ping(address);
 
 }
 //----------------------------------------------------------------------------------------------------------
@@ -43,7 +45,7 @@ bool spDevButton::isConnected(spDevI2C& i2cDriver){
 //
 bool spDevButton::onInitialize(TwoWire& wirePort){
 
-	bool rc = QwiicButton::begin(SFE_QWIIC_BUTTON_DEFAULT_ADDRESS, wirePort);	
+	bool rc = QwiicButton::begin(address(), wirePort);	
 
 	if(!rc)
 	   Serial.println("BUTTON - begin failed");

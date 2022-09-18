@@ -13,6 +13,8 @@
 
 // For type system testing
 spType spDevTwist::Type;
+uint8_t spDevTwist::defaultDeviceAddress[]	=	{ QWIIC_TWIST_ADDR, 
+												  kSparkDeviceEnd };
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -28,9 +30,9 @@ spDevTwist::spDevTwist(){
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevTwist::isConnected(spDevI2C& i2cDriver){
+bool spDevTwist::isConnected(spDevI2C& i2cDriver, uint8_t address){
 
- 	return i2cDriver.ping(QWIIC_TWIST_ADDR);
+ 	return i2cDriver.ping(address);
 
 }
 //----------------------------------------------------------------------------------------------------------
@@ -42,7 +44,7 @@ bool spDevTwist::isConnected(spDevI2C& i2cDriver){
 //
 bool spDevTwist::onInitialize(TwoWire& wirePort){
 
-	bool rc = TWIST::begin(wirePort);	
+	bool rc = TWIST::begin(wirePort, address());	
 
 	if(!rc)
 	   Serial.println("TWIST - begin failed");

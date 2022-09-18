@@ -4,13 +4,13 @@
  *
  */
 
-
 #include "spDevice.h"
 #include "spSpark.h"
 
-spDevice::spDevice(){
-	// The new device is added to the system on creation
-	spark.add(this);
+spDevice::spDevice() : _address{0}
+{
+    // The new device is added to the system on creation
+    spark.add(this);
 }
 
 //----------------------------------------------------------------
@@ -20,52 +20,60 @@ spDevice::spDevice(){
 //-------------------------------------------------------------------------------
 // buildConnectedDevices()
 //
-// Walks through the list of registered drivers and determines if the device is 
-// connected to the system. If it is, a driver is created and added to our driver list. 
+// Walks through the list of registered drivers and determines if the device is
+// connected to the system. If it is, a driver is created and added to our driver list.
 //
 // Once this is completed, the "registered builders" list is cleared. This frees up the list,
-// but the builder objects, which are globals (and small) remain. 
+// but the builder objects, which are globals (and small) remain.
 //
 // Return Value
 //    The count of devices connected and the driver was successfully created...
 //-------------------------------------------------------------------------------
 
-int spDeviceFactory_::buildDevices(spDevI2C& i2cDriver){
+int spDeviceFactory_::buildDevices(spDevI2C &i2cDriver)
+{
 
-	// walk the list of registered drivers
+    // walk the list of registered drivers
 
-    int nDevs=0;
+    int nDevs = 0;
+    const uint8_t *deviceAddresses;
 
-	for( auto deviceBuilder : _Builders){
+    for (auto deviceBuilder : _Builders)
+    {
 
-		// See if the device is connected
-		if( deviceBuilder->isConnected(i2cDriver)){
+        deviceAddresses = deviceBuilder->getDefaultAddresses();
+        if (!deviceAddresses)
+            break;
 
-			spDevice * pDevice = deviceBuilder->create();
-			if(!pDevice){
-				Serial.print("ERROR: Device create failed - "); 
-				Serial.println(deviceBuilder->getDeviceName());
-			}else{
-				nDevs++;
-				pDevice->name = deviceBuilder->getDeviceName();
-			}
-		}
-		//else{
-		//	Serial.print("[Factory] Debug -  device not connected: ");Serial.println(deviceBuilder->getDeviceName());
-		//}
-	}
+        for (int i = 0; deviceAddresses[i] != kSparkDeviceEnd; i++)
+        {
+            // See if the device is connected
+            if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
+            {
+                spDevice *pDevice = deviceBuilder->create();
+                if (!pDevice)
+                {
+                    Serial.print("ERROR: Device create failed - ");
+                    Serial.println(deviceBuilder->getDeviceName());
+                }
+                else
+                {
+                    nDevs++;
+                    pDevice->name = deviceBuilder->getDeviceName();
+                    pDevice->setAddress(deviceAddresses[i]);
+                }
+            }
+        }
+    }
 
-	// Okay, we are done - clearout the builders list.
-	_Builders.clear();
+    // Okay, we are done - clearout the builders list.
+    _Builders.clear();
 
-	return nDevs;
+    return nDevs;
 }
-void spDeviceFactory_::initDevices(spDeviceContainer& devList, spDevI2C& i2cDriver){
+void spDeviceFactory_::initDevices(spDeviceContainer &devList, spDevI2C &i2cDriver)
+{
 
-	for(int i=0; i < devList.size(); i++)
-		devList.at(i)->initialize(i2cDriver);
+    for (int i = 0; i < devList.size(); i++)
+        devList.at(i)->initialize(i2cDriver);
 }
-
-
-
-
