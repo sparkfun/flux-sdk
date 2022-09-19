@@ -149,6 +149,7 @@ class spDevice : public _spDevice
     	const uint8_t *addresses = T::getDefaultAddresses();
     	if(!addresses)
     		return kSparkDeviceAddressNull;
+
     	return addresses[0];
     }
 };
@@ -289,7 +290,6 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilder
         return DeviceType::getDefaultAddresses();
     }
 };
-
 
 
 // Macro to define the global builder object.
