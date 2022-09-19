@@ -143,6 +143,16 @@ class spFormatCSV : public spOutputFormat
         _section_name = nullptr;
     }
 
+	//-----------------------------------------------------------------
+    // Call this method to force the header to print next iteration.
+    //
+    // Normally the header is printing only for the first run.
+
+    void output_header(void)
+    {
+        _bFirstRun = true;
+    }
+
   private:
     //-----------------------------------------------------------------
     void clear_buffers()
@@ -200,15 +210,7 @@ class spFormatCSV : public spOutputFormat
         return append_csv_value(szBuffer, _header_buffer);
     }
 
-    //-----------------------------------------------------------------
-    // Call this method to force the header to print next iteration.
-    //
-    // Normally the header is printing only for the first run.
-
-    void output_header(void)
-    {
-        _bFirstRun = true;
-    }
+    
 
     //-----------------------------------------------------------------
 
