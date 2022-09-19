@@ -14,6 +14,12 @@
 // For type system testing
 spType spDevButton::Type;
 uint8_t spDevButton::defaultDeviceAddress[] = {SFE_QWIIC_BUTTON_DEFAULT_ADDRESS, kSparkDeviceAddressNull};
+
+//----------------------------------------------------------------------------------------------------------
+// Register this class with the system, enabling this driver during system
+// initialization and device discovery.
+
+spRegisterDevice(spDevButton);
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -79,8 +85,4 @@ bool spDevButton::loop(void)
 
     return false;
 }
-//----------------------------------------------------------------------------------------------------------
-// Register this class with the system, enabling this driver during system
-// initialization and device discovery.
 
-spRegisterDevice(spDevButton);

@@ -14,6 +14,12 @@
 // For type system testing
 spType spDevTwist::Type;
 uint8_t spDevTwist::defaultDeviceAddress[] = {QWIIC_TWIST_ADDR, kSparkDeviceAddressNull};
+
+//----------------------------------------------------------------------------------------------------------
+// Register this class with the system, enabling this driver during system
+// initialization and device discovery.
+
+spRegisterDevice(spDevTwist);
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -85,8 +91,4 @@ bool spDevTwist::loop(void)
 
     return false;
 }
-//----------------------------------------------------------------------------------------------------------
-// Register this class with the system, enabling this driver during system
-// initialization and device discovery.
 
-spRegisterDevice(spDevTwist);
