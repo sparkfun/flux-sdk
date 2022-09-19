@@ -20,12 +20,15 @@ uint8_t spDevCCS811::defaultDeviceAddress[] = { kCCS811AddressDefault,
 												kCCS811AddressAlt1, 
 												kSparkDeviceAddressNull};
 
+// Register this class with the system - this enables the *auto load* of this device
+spRegisterDevice(spDevCCS811);
+
 // KDB NOTE: Need to check in ccs arduino lib code updates
 
 spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
 {
 
-    spSetupDeviceIdent(DEVICE_NAME);
+    spSetupDeviceIdent(getDeviceName());
 
     // Setup output parameters - connect to the data method for the source
     spSetupOutParameter(co2, spDevCCS811::getCO2);
@@ -85,7 +88,3 @@ bool spDevCCS811::onInitialize(TwoWire &wirePort)
 
     return CCS811::begin(wirePort);
 }
-
-// Register this class with the system - this enables the *auto load* of this device
-
-spRegisterDevice(spDevCCS811);

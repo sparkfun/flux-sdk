@@ -1,8 +1,8 @@
 /*
  *
- * spDevBME280.cpp
+ * spDevCCS811.cpp
  *
- *  Spark Device object for the BME280 Qwiic device.
+ *  Spark Device object for the CCS811 Qwiic device.
  */
 
 #pragma once
@@ -13,7 +13,7 @@
 
 
 
-#define DEVICE_NAME "ccs811";
+#define kCCS811DeviceName "ccs811";
 
 // Define our class
 class spDevCCS811 : public spDevice<spDevCCS811>, public CCS811
@@ -26,7 +26,7 @@ class spDevCCS811 : public spDevice<spDevCCS811>, public CCS811
 
     static const char *getDeviceName()
     {
-        return DEVICE_NAME;
+        return kCCS811DeviceName;
     };
 
     static const uint8_t *getDefaultAddresses()
