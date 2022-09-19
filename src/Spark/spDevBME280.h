@@ -16,7 +16,7 @@
 #include <SparkFunBME280.h>
 
 // What is the name used to ID this device?
-#define DEVICE_NAME "bme280";
+#define kBME280DeviceName "bme280";
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevBME280 : public spDevice<spDevBME280>, public BME280
@@ -30,7 +30,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
-        return DEVICE_NAME;
+        return kBME280DeviceName;
     };
 
     static const uint8_t *getDefaultAddresses()

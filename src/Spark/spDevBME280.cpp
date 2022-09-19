@@ -20,6 +20,13 @@
 
 spType spDevBME280::Type;
 uint8_t spDevBME280::defaultDeviceAddress[] = {kBMEAddressDefault, kBMEAddressAlt1, kSparkDeviceAddressNull};
+
+//----------------------------------------------------------------------------------------------------------
+// Register this class with the system, enabling this driver during system
+// initialization and device discovery.
+
+spRegisterDevice(spDevBME280);
+
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -30,7 +37,7 @@ spDevBME280::spDevBME280()
 {
 
     // Setup unique identifiers for this device and basic device object systems
-    spSetupDeviceIdent(DEVICE_NAME);
+    spSetupDeviceIdent(getDeviceName());
 
     // Register the properties with the system - this makes the connections needed
     // to support managed properties/public properties
@@ -84,8 +91,3 @@ void spDevBME280::onPropertyUpdate(const char *propName)
     // save();
 }
 
-//----------------------------------------------------------------------------------------------------------
-// Register this class with the system, enabling this driver during system
-// initialization and device discovery.
-
-spRegisterDevice(spDevBME280);
