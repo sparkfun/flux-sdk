@@ -38,10 +38,6 @@ void setup() {
     // Wire startup
     Wire.begin();
 
-    // Setup Spark, but don't have the framework autoload devices
-    spark.start(false);
-
-    
     // init devices
     if (!myBME.initialize() )
     {
@@ -50,6 +46,9 @@ void setup() {
         Serial.println("BME280 initialized");
         BMEIsConnected=true;
     }
+
+    // Setup Spark - this triggers an autoload, which should skip over the BME280
+    spark.start();
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 }
