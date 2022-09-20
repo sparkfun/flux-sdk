@@ -11,16 +11,8 @@
 #include <Arduino.h>
 #include <string>
 
-//-------------------------------------------------------------------------------------
-// Use a stack based string allocator ... it basically replaces the allocator
-// used with std::string with one that uses a stack memory area, and if that
-// size is exceeded, uses a heap allocation scheme.
 //
-// See spUtil.h for more info.
-#define kCSVStackMemoryBufferSize 500
-
-template <class T, std::size_t buffSize = kCSVStackMemoryBufferSize>
-using stackString = std::basic_string<T, std::char_traits<T>, short_alloc<T, buffSize, alignof(T)>>;
+// A CSV output formatter
 
 //-------------------------------------------------------------------------------------
 
@@ -41,7 +33,7 @@ class spFormatCSV : public spOutputFormat
     void logValue(const char *tag, bool value)
     {
         // header?
-        if (_bFirstRun)
+        if (_bWriteHeader)
             if (!append_to_header(tag))
                 warning_message("CSV - internal header buffer size exceeded.");
 
@@ -53,7 +45,7 @@ class spFormatCSV : public spOutputFormat
     void logValue(const char *tag, int value)
     {
         // header?
-        if (_bFirstRun)
+        if (_bWriteHeader)
             if (!append_to_header(tag))
                 warning_message("CSV - internal header buffer size exceeded.");
 
@@ -67,7 +59,7 @@ class spFormatCSV : public spOutputFormat
     void logValue(const char *tag, float value)
     {
         // header?
-        if (_bFirstRun)
+        if (_bWriteHeader)
             if (!append_to_header(tag))
                 warning_message("CSV - internal header buffer size exceeded.");
 
@@ -82,7 +74,7 @@ class spFormatCSV : public spOutputFormat
     void logValue(const char *tag, const char *value)
     {
         // header?
-        if (_bFirstRun)
+        if (_bWriteHeader)
             if (!append_to_header(tag))
                 warning_message("CSV - internal header buffer size exceeded.");
 
@@ -120,7 +112,7 @@ class spFormatCSV : public spOutputFormat
     {
 
         // Write out the header?
-        if (_bFirstRun && _header_buffer.length() > 0)
+        if (_bWriteHeader && _header_buffer.length() > 0)
             outputObservation(_header_buffer.c_str());
 
         outputObservation(_data_buffer.c_str());
@@ -131,15 +123,15 @@ class spFormatCSV : public spOutputFormat
     {
         clear_buffers();
         _section_name = nullptr;
-        if (_bFirstRun)
-            _bFirstRun = false;
+        if (_bWriteHeader)
+            _bWriteHeader = false;
     }
 
     //-----------------------------------------------------------------
     void reset(void)
     {
         clear_buffers();
-        _bFirstRun = true;
+        _bWriteHeader = true;
         _section_name = nullptr;
     }
 
@@ -150,7 +142,7 @@ class spFormatCSV : public spOutputFormat
 
     void output_header(void)
     {
-        _bFirstRun = true;
+        _bWriteHeader = true;
     }
 
   private:
@@ -164,24 +156,16 @@ class spFormatCSV : public spOutputFormat
         // Since the header is normally printed very rarely,
         // we shrink it.
         //
-        // For the data_buffer, shrink it only after the first run.
-        // Assumption here is:
-        //	- The header is large, so will take up most of our static buffer
-        //		- causes the data buffer to be allocated on the heap
-        //	- The header is only printed/retained with the first run, leaving
-        //    more static memory available to the data_buffer on non-first runs
-        //  - Calling shrink on the data_buffer on the first run free's any
-        //    heap memory, with the idea that later runs use stack memory
+    	// For data buffer, it's since is consistant between calls,
+    	// so just clear it.
 
         _header_buffer.clear();
         _header_buffer.shrink_to_fit();
         _data_buffer.clear();
 
-        if (_bFirstRun)
-            _data_buffer.shrink_to_fit();
     }
 
-    bool append_csv_value(const char *value, stackString<char> &buffer)
+    bool append_csv_value(const char *value, std::string &buffer)
     {
 
         if (buffer.length() > 0)
@@ -214,14 +198,10 @@ class spFormatCSV : public spOutputFormat
 
     //-----------------------------------------------------------------
 
-    // For the stack based allocator  - First you create a area on the stack
-    stackString<char>::allocator_type::arena_type static_allocator;
-
-    // Create strings that use this stack areas
-    stackString<char> _header_buffer{static_allocator};
-    stackString<char> _data_buffer{static_allocator};
+    std::string _header_buffer;
+    std::string _data_buffer;
 
     char *_section_name;
 
-    bool _bFirstRun;
+    bool _bWriteHeader;
 };
