@@ -139,6 +139,7 @@ class spIProperty : public spIPersist
 
   public:
     // get/set property
+
     template <typename T> bool getProperty(const char *name, T &value);
     template <typename T> bool setProperty(const char *name, T &value);
 
@@ -292,7 +293,7 @@ class spPropertyBase : public spIPersist, public spDataCore
             _pTarget->onPropertyUpdate(this->name);
     }
 
-  private:
+  protected:
     spIProperty *_pTarget;
 };
 
@@ -307,6 +308,10 @@ template <class T> class spProperty : public spPropertyBase
   private:
     T _Data;
     spIProperty *_pTarget;
+
+	std::function<T()> _getter;
+	std::function<void(T)> _setter;	
+    
 
   public:
     //----------------------------------------
@@ -334,27 +339,45 @@ template <class T> class spProperty : public spPropertyBase
 
     void initialize(spIProperty *pTarget, const char *name, const T &value)
     {
+    	_getter = nullptr;
+    	_setter = nullptr;
+
         _Data = value;
         this->spPropertyBase::initialize(pTarget, name);
+    }
+	// Template for our callback and target.
+    // It is expected that these functions have no params.
+    template <typename tTarget, typename tCallback> void set_setter(tTarget target, tCallback callback)
+    {
+    	using namespace std::placeholders;
+        _setter = std::bind(callback, target, _1);
+    }
+    // It is expected that these functions have no params.
+    template <typename tTarget, typename tCallback> void set_getter(tTarget target, tCallback callback)
+    {
+        _getter = std::bind(callback, target);
     }
 
     //----------------------------------------
     // property get
     operator const T() const
     {
-        return _Data;
+        return this->get();
     }
 
     const T get(void) const
     {
-        return _Data;
+        return (_getter != nullptr ? _getter() : _Data);
     };
     //----------------------------------------
     // property set
     spProperty<T> &operator=(const T &value)
     {
 
-        _Data = value;
+    	if(_setter != nullptr)
+    		_setter(value);
+    	else
+	        _Data = value;
 
         // call the device objects property update method ..
         onPropertyUpdate();
@@ -365,19 +388,19 @@ template <class T> class spProperty : public spPropertyBase
     // cover our type values - can't template this b/c super methods are virtual
     bool getBool()
     {
-        return 0 != (int)_Data;
+        return 0 != (int)get();
     }
     int getInt()
     {
-        return (int)_Data;
+        return (int)get();
     }
     float getFloat()
     {
-        return (float)_Data;
+        return (float)get();
     }
     std::string getString()
     {
-        return to_string(_Data);
+        return to_string(get());
     }
 
     // Get value, stash in JSON Variant
@@ -398,6 +421,10 @@ template <class T> class spProperty : public spPropertyBase
         return stBlk->readBytes(sizeof(_Data), (char *)&_Data);
     }
 };
+
+#define spPropertySetSetter(_property_, _function_)  _property_.set_setter(this, &_function_)
+
+#define spPropertySetGetter(_property_, _function_)  _property_.set_getter(this, &_function_)
 
 // Define the typed properties based on the above template
 typedef spProperty<std::nullptr_t> spPropertyNone;

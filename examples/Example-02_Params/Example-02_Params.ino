@@ -50,6 +50,10 @@ void setup() {
         BMEIsConnected=true;
     }
 
+    myBME.celsius = false;
+    bool bb = myBME.celsius;
+
+    bb = !bb;
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 }

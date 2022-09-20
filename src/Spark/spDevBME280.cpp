@@ -46,7 +46,10 @@ spDevBME280::spDevBME280()
     // they are loaded after this method - as the system starts up.
 
     spRegisterProperty(celsius, false);
-
+	spPropertySetGetter(celsius, spDevBME280::get_celsius);
+	spPropertySetSetter(celsius, spDevBME280::set_celsius);	
+    // celsius.set_getter(this, &spDevBME280::get_celsius);
+    // celsius.set_setter(this, &spDevBME280::set_celsius);
     // Setup output parameters - connect to the data method for the source.
     // Note: These methods are from the super class - the original qwiic library.
     spSetupOutParameter(temperature_f, spDevBME280::readTempF);

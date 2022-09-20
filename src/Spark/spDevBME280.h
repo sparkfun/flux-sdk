@@ -50,6 +50,15 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // These same properties are registered with the system in the object constructor
     spPropertyBool celsius;
 
+    // TESTING
+    void set_celsius(bool value){
+        Serial.println("setting Celsius");
+    }
+    bool get_celsius(void){
+        Serial.println("getting Celsius");
+        return true;
+    }
+    // END
     // output args
     spParamOutFlt temperature_f;
     spParamOutFlt temperature_c;
