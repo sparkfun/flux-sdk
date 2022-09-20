@@ -965,6 +965,11 @@ template <typename T> class spContainer : public spBase
         return _children.rend();
     }
 
+    typename std::vector<T*>::iterator erase( typename std::vector<T*>::iterator it)
+    {
+    	return _children.erase(it);
+    }
+
   private:
     bool serializeChildrenJSON(JsonArray &jArray)
     {
