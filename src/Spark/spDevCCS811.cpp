@@ -10,7 +10,9 @@
 #include "spDevCCS811.h"
 
 
-#define kCCS811ChipIdReg 0x20 // Chip ID
+// For Device detection - chip ID things
+#define kCCS811ChipIdReg 0x20 
+#define kCCS811ChipIdValue 0x81
 
 #define kCCS811AddressDefault 0x5B
 #define kCCS811AddressAlt1 0x5A
@@ -68,9 +70,9 @@ float spDevCCS811::getTVOC()
 bool spDevCCS811::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
 
-    uint8_t chipID = i2cDriver.readRegister(address, kCCS811ChipIdReg); // Should return 0x60 or 0x58
+    uint8_t chipID = i2cDriver.readRegister(address, kCCS811ChipIdReg); 
 
-    return (chipID == 0x81);
+    return (chipID == kCCS811ChipIdValue);
 }
 
 //----------------------------------------------------------------------------------------------------------
