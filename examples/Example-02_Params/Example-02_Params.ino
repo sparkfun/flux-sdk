@@ -38,6 +38,9 @@ void setup() {
     // Wire startup
     Wire.begin();
 
+    // Setup Spark - this triggers an autoload, which should skip over the BME280
+    spark.start();
+
     // init devices
     if (!myBME.initialize() )
     {
@@ -47,8 +50,6 @@ void setup() {
         BMEIsConnected=true;
     }
 
-    // Setup Spark - this triggers an autoload, which should skip over the BME280
-    spark.start();
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 }
