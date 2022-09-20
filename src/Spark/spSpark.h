@@ -11,15 +11,15 @@ bool spark_start(bool bAutoLoad = true);
 bool spark_loop();
 
 // Define the main framework class  - note it's a singleton
-class Spark_ : public spContainer<spBase>
+class spSpark : public spContainer<spBase>
 {
 
   public:
     // spark is a singleton
-    static Spark_ &getInstance(void)
+    static spSpark &get(void)
     {
 
-        static Spark_ instance;
+        static spSpark instance;
         return instance;
     }
 
@@ -42,14 +42,11 @@ class Spark_ : public spContainer<spBase>
     {
         Devices.add(&theDevice);
     }
-    void add(_spDevice *theDevice)
-    {
-        Devices.add(theDevice);
-    }
+    void add(_spDevice *theDevice);
 
     // This is a singleton class - so delete copy & assignment constructors
-    Spark_(Spark_ const &) = delete;
-    void operator=(Spark_ const &) = delete;
+    spSpark(spSpark const &) = delete;
+    void operator=(spSpark const &) = delete;
 
     // leaving containers public - not sure if this is helpful
     spDeviceContainer Devices;
@@ -90,7 +87,7 @@ class Spark_ : public spContainer<spBase>
   private:
     spDevI2C _i2cDriver;
 
-    Spark_()
+    spSpark()
     {
 
         // setup some default heirarchy things ...
@@ -119,9 +116,6 @@ class Spark_ : public spContainer<spBase>
     }
 };
 
-// create a typedef that hinds the reference
-typedef Spark_ &Spark;
+// have a "global" variable that allows access to the spark environment from anywhere...
 
-#define Spark() Spark_::getInstance()
-
-extern Spark spark;
+extern spSpark& spark;
