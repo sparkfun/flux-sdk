@@ -7,18 +7,30 @@
 #include "spDevice.h"
 #include "spSpark.h"
 
-_spDevice::_spDevice() : _address{kSparkDeviceAddressNull}
+_spDevice::_spDevice()
 {
-    // The new device is added to the system on creation
-    spark.add(this);
+
+	_address = kSparkDeviceAddressNull;
+	_autoload = false;
+
 }
 
+bool _spDevice::initialize(TwoWire &wirePort)
+{
+    if (_address == kSparkDeviceAddressNull)
+        _address = getDefaultAddress();
+
+	// Add this device to the system
+    spark.add(this);
+
+    return onInitialize(wirePort);
+}
 //----------------------------------------------------------------
 // Device Factory
 //----------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
-bool spDeviceFactory_::addressInUse(uint8_t address)
+bool spDeviceFactory::addressInUse(uint8_t address)
 {
     // loop over connected/created devices - if the address is a match, return true
     for (auto device : spark.connectedDevices())
@@ -28,6 +40,8 @@ bool spDeviceFactory_::addressInUse(uint8_t address)
     }
     return false;
 }
+
+
 //-------------------------------------------------------------------------------
 // buildConnectedDevices()
 //
@@ -41,7 +55,7 @@ bool spDeviceFactory_::addressInUse(uint8_t address)
 //    The count of devices connected and the driver was successfully created...
 //-------------------------------------------------------------------------------
 
-int spDeviceFactory_::buildDevices(spDevI2C &i2cDriver)
+int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
 {
 
     // walk the list of registered drivers
@@ -76,6 +90,8 @@ int spDeviceFactory_::buildDevices(spDevI2C &i2cDriver)
                     nDevs++;
                     pDevice->name = deviceBuilder->getDeviceName();
                     pDevice->setAddress(deviceAddresses[i]);
+                    pDevice->setAutoload();
+                    pDevice->initialize(i2cDriver);
                 }
             }
         }
@@ -86,9 +102,40 @@ int spDeviceFactory_::buildDevices(spDevI2C &i2cDriver)
 
     return nDevs;
 }
-void spDeviceFactory_::initDevices(spDeviceContainer &devList, spDevI2C &i2cDriver)
-{
 
-    for (int i = 0; i < devList.size(); i++)
-        devList.at(i)->initialize(i2cDriver);
+//----------------------------------------------------------------------------------
+// pruneAutoload()
+//
+// Called when a non-autoload device is created. 
+//
+// If a new device is created by the user outside of this factory, but that 
+// device was "autoloaded", we prune the autoload device.
+//
+// A device match = Device::type is the same and the address is the same.
+
+void spDeviceFactory::purneAutoload(_spDevice &theDevice, spDeviceContainer &devList)
+{
+	if ( theDevice.autoload() || devList.size() == 0 )
+		return; // makes no sense.
+
+	auto itDevice = devList.begin(); // get the iterator for the list
+
+	while ( itDevice != devList.end())
+	{
+		// only check autoloads
+		if (  (*itDevice)->autoload() )
+		{
+			if ( theDevice.getType() == (*itDevice)->getType() && 
+				 theDevice.address() == (*itDevice)->address() )
+			{
+				// remove the device - returns updated iterator
+				_spDevice * pTmp = *itDevice;
+				itDevice = devList.erase(itDevice);
+				delete pTmp;
+				break;
+			}
+			else
+				itDevice++;
+		}
+	}
 }

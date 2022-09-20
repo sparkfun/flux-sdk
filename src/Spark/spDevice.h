@@ -55,7 +55,8 @@ class _spDevice : public spBase
 
   public:
     _spDevice();
-    _spDevice(uint8_t address) : _address{address} {};
+
+    virtual ~_spDevice(){}
     // Interface
 
     // Methods for Sub-class to override - for device activities.
@@ -82,13 +83,7 @@ class _spDevice : public spBase
     	return kSparkDeviceAddressNull;
     };
 
-    bool initialize(TwoWire &wirePort = Wire)
-    {
-    	if ( _address == kSparkDeviceAddressNull )
-    		_address = getDefaultAddress();
-
-        return onInitialize(wirePort);
-    }
+    bool initialize(TwoWire &wirePort = Wire);
 
     void setAddress(uint8_t address)
     {
@@ -100,11 +95,16 @@ class _spDevice : public spBase
         return _address;
     }
 
+    bool autoload()
+    {
+    	return _autoload;
+    }
+
   private:
     // want to prevent sub-classes calling methods here, but want an
     // entry point call for the system ....
 
-    friend class spDeviceFactory_;
+    friend class spDeviceFactory;
 
     bool initialize(spDevI2C &i2cDriver)
     {
@@ -116,8 +116,14 @@ class _spDevice : public spBase
 
         return this->initialize(*wirePort); // call subclass virtual init routine.
     }
-
+    void setAutoload()
+    {
+    	_autoload = true;
+    }
+    
     uint8_t _address;
+    bool 	_autoload; 
+
 };
 
 using spDeviceContainer = spContainer<_spDevice>;
@@ -196,15 +202,15 @@ class spDevice : public _spDevice
 class spDeviceBuilder;
 
 // Our factory class
-class spDeviceFactory_
+class spDeviceFactory
 {
 
   public:
     // This is a singleton
-    static spDeviceFactory_ &getInstance(void)
+    static spDeviceFactory &get(void)
     {
 
-        static spDeviceFactory_ instance;
+        static spDeviceFactory instance;
         return instance;
     }
     // The callback Builders use to register themselves.
@@ -222,23 +228,19 @@ class spDeviceFactory_
     // Called to build a list of device objects for the devices connected to the system.
     int buildDevices(spDevI2C &);
 
-    void initDevices(spDeviceContainer &, spDevI2C &);
+	void purneAutoload(_spDevice &, spDeviceContainer &);
 
     // Delete copy and assignment constructors - b/c this is singleton.
-    spDeviceFactory_(spDeviceFactory_ const &) = delete;
-    void operator=(spDeviceFactory_ const &) = delete;
+    spDeviceFactory(spDeviceFactory const &) = delete;
+    void operator=(spDeviceFactory const &) = delete;
 
   private:
     bool addressInUse(uint8_t);
-    spDeviceFactory_(){}; // hide constructor - this is a singleton
+    spDeviceFactory(){}; // hide constructor - this is a singleton
 
     std::vector<spDeviceBuilder *> _Builders;
 };
 
-typedef spDeviceFactory_ &spDeviceFactory;
-// Create an accessor for the Device Factory class - make it a singleton
-
-#define spDeviceFactory() spDeviceFactory_::getInstance()
 
 //----------------------------------------------------------------------------------
 // Define our builder class.
@@ -267,7 +269,7 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilder
   public:
     DeviceBuilder()
     {
-        spDeviceFactory().registerDevice(this);
+        spDeviceFactory::get().registerDevice(this);
     }
 
     DeviceType *create()
