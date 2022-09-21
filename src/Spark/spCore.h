@@ -639,6 +639,7 @@ class spObjectContainer : public spObject, public std::vector<spObject*>
 
 };
 
+// END rework of props/object
 //##############################################################################################################################
 
 
