@@ -29,8 +29,8 @@ using std::string;
 #define error_message(_message_) debug_message("[Error] - ", _message_);
 
 #define warning_message(_message_)                                                                                     \
-    debug_message("[Warning] - ", _message_);                                                                          \
-    \
+    debug_message("[Warning] - ", _message_);  
+
 
 //-------------------------------------------------------------------------
 // Storage interface
@@ -177,7 +177,7 @@ class spDataCore
 {
 
   public:
-    const char *name;
+    const char *name;  // TODO - IS THIS NEEDED - KDB
 
     // type method - how a property's type is determined at runtime.
     virtual DataTypes type(void)
@@ -299,6 +299,10 @@ class spPropertyBase : public spIPersist, public spDataCore
 };
 
 //##############################################################################################################################
+// Sept 22 Refactor work
+//##############################################################################################################################
+//
+// PROPERTIES 
 
 class spDescriptor
 {
@@ -353,12 +357,32 @@ public:
 		return _properties;
 	};
 
+	// save/restore for properties in this container. Note, since we
+	// expect this to be a "mix-in" class, we use a different interface
+	// for the save/restore routines
+
+    bool saveProperties(spStorageBlock *stBlk)
+    {
+    	bool rc = true;
+    	for ( auto property : _properties)
+    		rc = rc && property->save(stBlk);
+    	return rc;
+    };
+    bool restoreProperties(spStorageBlock *stBlk)
+    {
+    	bool rc = true;
+    	for ( auto property : _properties)
+    		rc = rc && property->restore(stBlk);
+    	return rc;
+    };    
+
 private:
 	spProperty2List  _properties;
 };
 
+// Template for a property object that implements typed operations for the property value
 template<class T>
-class _spProperty2TypedBase : public spProperty2
+class _spProperty2Base : public spProperty2
 {
 
 public:
@@ -372,11 +396,11 @@ public:
 
     //----------------------------------------
     // size in bytes of this property
-    size_t size()
+    virtual size_t size()
     {
         return sizeof(T);
     };
-    size_t save_size()
+    virtual size_t save_size()
     {
         return size();
     }; // sometimes save size is different than size
@@ -442,12 +466,100 @@ public:
         return stBlk->readBytes(save_size(), (char *)&c);
         set(c);
     };
+
+    typedef T value_type; // might be handy in future
 };
 
+// Strings are special ...
+class _spProperty2BaseString : public _spProperty2Base<std::string>
+{
 
+public:
+    
+    //----------------------------------------
+    // size in bytes of this property
+    size_t size()
+    {
+    	std::string c = get();
+        return c.size();
+    };
+    size_t save_size()
+    {
+        return this->size() + sizeof(uint8_t);
+    }; 
+
+    // Virutal functions to get and set the value - these are filled in
+    // by the sub-class
+
+    virtual std::string get(void)=0;
+    virtual void set(std::string &value)=0;
+
+    // set for a c string...
+    void set(const char *value){
+
+    	std::string c = value;
+    	set(c);
+    }
+
+	bool getBool()
+    {
+        return std::atoi(get().c_str()) != 0;
+    }
+    int getInt()
+    {
+        return std::atoi(get().c_str());
+    }
+    float getFloat()
+    {
+        return std::atof(get().c_str());
+    }
+    std::string getString()
+    {
+        return get();
+    }
+
+    //----------------------------------------
+    // serialization methods
+    bool save(spStorageBlock *stBlk)
+    {
+        // strings ... len, data
+        std::string c = get();
+        uint8_t len = c.size(); // yes, this limits str len of a property to 256.
+        stBlk->writeBytes(sizeof(uint8_t), (char *)&len);
+        return stBlk->writeBytes(len, (char *)c.c_str());
+    }
+
+    //----------------------------------------
+    bool restore(spStorageBlock *stBlk)
+    {
+
+        uint8_t len=0;
+        stBlk->readBytes(sizeof(uint8_t), (char *)&len);
+        char szBuffer[len+1];
+        bool rc = stBlk->readBytes(len, (char *)szBuffer);
+        if( rc )
+        {
+        	szBuffer[len] = '\0';
+        	set(szBuffer);
+        }
+        return rc;
+    };
+
+    typedef std::string value_type;  // might be handy in future/templates
+};
+
+//----------------------------------------------------------------------------------------------------
+// Now to define different methods on how the value of a property is get/set and stored 
+// These methods are:
+//    - Read/Write property that calls user provided getter/setter methods
+//    - Property object that provides storage for the property value
+//
+//----------------------------------------------------------------------------------------------------
+// RW Property templated class:
+//
 // A read/write property base class that takes a getter and a setter method and the target object
 template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)> 
-class _spPropertyTypedRW : public _spProperty2TypedBase<T>
+class _spPropertyTypedRW 
 {
     Object *my_object;
 
@@ -458,6 +570,9 @@ class _spPropertyTypedRW : public _spProperty2TypedBase<T>
     _spPropertyTypedRW(Object *me) : my_object(me)
     {
     	// my_object must be derived from _spProperty2Container
+    	static_assert(std::is_base_of<_spProperty2Container, Object>::value, 
+				"_spPropertyTypedRW: type parameter of this class must derive from spPropertyContainer");
+
     	my_object->addProperty(this);
     }
 
@@ -466,38 +581,52 @@ class _spPropertyTypedRW : public _spProperty2TypedBase<T>
     {
         return (my_object->*_getter)();
     }
-    T set(T const &value)
+    void set(T const &value)
     {
         (my_object->*_setter)(value);
     }
-    typedef T value_type;
-    // might be useful for template
-    // deductions
 };
 
-// Create type values of this Read/Write property
+// Create typed read/writer property objects - type and RW objects as super classes
+
+// bool
 template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
-using spPropertyRWBool = _spPropertyTypedRW<bool, Object, _getter, _setter>;
+class spPropertyRWBool : public _spPropertyTypedRW<bool, Object, _getter, _setter>, public _spProperty2Base<bool>{};
 
-template<class Object, int (Object::*_getter)(), void (Object::*_setter)(int const &)>
-using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
+// int
+template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
+class spPropertyRWInt : public _spPropertyTypedRW<int, Object, _getter, _setter>, public _spProperty2Base<int>{};
 
-template<class Object, float (Object::*_getter)(), void (Object::*_setter)(float const &)>
-using spPropertyRWFloat = _spPropertyTypedRW<float, Object, _getter, _setter>;
+// float
+template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
+class spPropertyRWFloat : public _spPropertyTypedRW<float, Object, _getter, _setter>, public _spProperty2Base<float>{};
 
-template<class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string const &)>
-using spPropertyRWString = _spPropertyTypedRW<std::string, Object, _getter, _setter>;
+// string
+template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
+class spPropertyRWString : public _spPropertyTypedRW<std::string, Object, _getter, _setter>, public _spProperty2BaseString{};
 
 
+//----------------------------------------------------------------------------------------------------
 // Template class for a property object that contains storage for the property. 
-template <class T>
-class _spPropertyTyped : public _spProperty2TypedBase<T> 
+template <class Object, class T>
+class _spPropertyTyped
 {
-
 public:
 
   	// access with function call syntax
   	_spPropertyTyped() { }
+
+  	// to register the property
+  	_spPropertyTyped(Object *me)
+    {
+    	// Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+		// Compile-time check
+		static_assert(std::is_base_of<_spProperty2Container, Object>::value, 
+				"_spPropertyTyped: type parameter of this class must derive from spPropertyContainer");
+
+    	// my_object must be derived from _spProperty2Container
+    	me->addProperty(this);
+    }
 
   	// access with get()/set() syntax
   	T get() const {
@@ -507,19 +636,23 @@ public:
     	data = value;
   	}
 
-  	typedef T value_type;
-            // might be useful for template
-            // deductions
-
 private:
 	T data;
 };
 
 // Define typed properties
-using spPropertyBool2 = _spPropertyTyped<bool>;
-using spPropertyInt2 = _spPropertyTyped<int>;
-using spPropertyFloat2 = _spPropertyTyped<float>;
-using spPropertyString2 = _spPropertyTyped<std::string>;
+template <class Object>
+class spPropertyBool2 : public _spPropertyTyped<Object, bool>, public _spProperty2Base<bool>{};
+
+template <class Object>
+class spPropertyInt2 : public _spPropertyTyped<Object, int>, public _spProperty2Base<int>{};
+
+template <class Object>
+class spPropertyFloat2 : public _spPropertyTyped<Object, float>, public _spProperty2Base<float>{};
+
+template <class Object>
+class spPropertyString2 : public _spPropertyTyped<Object, std::string>, public _spProperty2BaseString{};
+
 
 
 //---------------------------------------------------------
@@ -586,21 +719,27 @@ inline bool operator==(const spType *lhs, const spType &rhs)
 //    - name and descriptor
 //    - typed. 
      
-class spObject : public spIPersist, _spProperty2Container, public spDescriptor
+class spObject : public spIPersist, public _spProperty2Container, public spDescriptor
 {
 
   public:
   	spObject(){}
 
-    virtual bool save(void)
+    virtual bool save(spStorageBlock *stBlk)
     {
-    	// TODO implement -
+
+    	if ( !saveProperties(stBlk) )
+    		return false;
+    	// TODO implement - finish
+
     	return true;
     };
     
-    virtual bool restore(void)
+    virtual bool restore(spStorageBlock *stBlk)
     {
-    	// TODO implement -
+    	if ( !restoreProperties(stBlk) )
+    		return false;
+    	// TODO implement - finish
     	return true;    	
     };
 
@@ -620,28 +759,28 @@ class spObjectContainer : public T, public std::vector<T*>
   public:
   	spObjectContainer()
   	{
-		// Make sure the container type has sp object as it's subclass.
+		// Make sure the container type has sp object as it's baseclass or it's a spObject
 		// Compile-time check
-		static_assert(std::is_base_of<spObject, T>::value, "type parameter of this class must derive from spObject");
+		static_assert(std::is_base_of<spObject, T>::value, "spObjectContainer: type parameter of this class must derive from spObject");
 
   	}
     // State things -- entry for save/restore
-    bool save(void)
+    bool save(spStorageBlock *stBlk)
     {
         // save ourselfs
-        this->T::save();
+        this->T::save(stBlk);
         for(auto it = this->std::vector<T*>::begin(); it != this->std::vector<T*>::end(); it++)
-        	(*it)->save();
+        	(*it)->save(stBlk);
 
         return true;
     };
 
-    bool restore(void)
+    bool restore(spStorageBlock *stBlk)
     {
         // restore ourselfs
-        this->T::restore();
+        this->T::restore(stBlk);
         for(auto it = this->std::vector<T*>::begin(); it != std::vector<T*>::end(); it++)
-        	(*it)->restore();
+        	(*it)->restore(stBlk);
 
         return true;
     };
