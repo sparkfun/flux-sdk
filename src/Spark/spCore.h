@@ -297,6 +297,336 @@ class spPropertyBase : public spIPersist, public spDataCore
     spIProperty *_pTarget;
 };
 
+//##############################################################################################################################
+// Base/Core Property Class
+//
+// From an abstract sense, a basic property - nothing more
+
+class spProperty2 : public spIPersist, public spDataCore
+{
+
+public:
+    virtual size_t size(void)
+    {
+        return 0;
+    };
+    virtual size_t save_size(void)
+    {
+        return 0;  // number of bytes used to persist value
+    };
+
+    // continue to cascade down persistance interface (maybe do this later??)
+    virtual bool save(spStorageBlock *stBlk) = 0;
+    virtual bool restore(spStorageBlock *stBlk) = 0;
+
+};
+using spProperty2List = std::vector<spProperty2 *>;
+
+//------------------------------------------------------------------------------
+// Define interface/class to manage a list of property
+
+class _spProperty2Container{
+
+public:
+	void addProperty(spProperty2 *newProperty)
+	{
+		_properties.push_back(newProperty);
+	};
+	void addProperty(spProperty2& newProperty)
+	{
+		addProperty(&newProperty);
+	};
+
+	spProperty2List& getProperties(void)
+	{
+		return _properties;
+	};
+
+private:
+	spProperty2List  _properties;
+};
+
+template<class T>
+class _spProperty2TypedBase : public spProperty2
+{
+
+public:
+    //----------------------------------------
+    // Type of property
+    DataTypes type(void)
+    {
+        T c;
+        return _getType(&c);
+    };
+
+    //----------------------------------------
+    // size in bytes of this property
+    size_t size()
+    {
+        return sizeof(T);
+    };
+    size_t save_size()
+    {
+        return size();
+    }; // sometimes save size is different than size
+
+    // Virutal functions to get and set the value - these are filled in
+    // by the sub-class
+
+    virtual T get(void)=0;
+    virtual void set(T &value)=0;
+
+	// function call syntax
+    T operator()() const
+    {
+        return get();
+    };
+    void operator()(T const &value)
+    {
+        return set(value);
+    };
+
+    // access with '=' sign
+    operator T() const
+    {
+        return get();
+    };
+
+    void operator=(T const &value)
+    {
+        return set(value);
+    };
+ 
+    // cover our type values - can't template this b/c super methods are virtual
+    bool getBool()
+    {
+        return 0 != (int)get();
+    };
+    int getInt()
+    {
+        return (int)get();
+    };
+    float getFloat()
+    {
+        return (float)get();
+    };
+    std::string getString()
+    {
+        return to_string(get());
+    };
+
+    //----------------------------------------
+    // serialization methods
+    bool save(spStorageBlock *stBlk)
+    {
+
+    	T c = get();
+        return stBlk->writeBytes(save_size(), (char *)&c);
+    };
+
+    //----------------------------------------
+    bool restore(spStorageBlock *stBlk)
+    {
+    	T c;
+        return stBlk->readBytes(save_size(), (char *)&c);
+        set(c);
+    };
+};
+// cAn a template subclass a tempalte??
+template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)> 
+class _spPropertyTypedRW : public _spProperty2TypedBase<T>
+{
+    Object *my_object;
+
+  public:
+    _spPropertyTypedRW() : my_object(0)
+    {
+    }
+    _spPropertyTypedRW(Object *me) : my_object(me)
+    {
+    	// my_object must be derived from _spProperty2Container
+    	my_object->addProperty(this);
+    }
+
+    // get/set syntax
+    T get() const
+    {
+        return (my_object->*_getter)();
+    }
+    T set(T const &value)
+    {
+        (my_object->*_setter)(value);
+    }
+    typedef T value_type;
+    // might be useful for template
+    // deductions
+};
+
+template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
+using spPropertyRWBool = _spPropertyTypedRW<bool, Object, _getter, _setter>;
+
+template<class Object, int (Object::*_getter)(), void (Object::*_setter)(int const &)>
+using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
+
+template<class Object, float (Object::*_getter)(), void (Object::*_setter)(float const &)>
+using spPropertyRWFloat = _spPropertyTypedRW<float, Object, _getter, _setter>;
+
+template<class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string const &)>
+using spPropertyRWString = _spPropertyTypedRW<std::string, Object, _getter, _setter>;
+
+
+template <class T>
+class _spPropertyTyped : public _spProperty2TypedBase<T> 
+{
+
+public:
+
+  	// access with function call syntax
+  	_spPropertyTyped() { }
+
+  	// access with get()/set() syntax
+  	T get() const {
+    	return data;
+  	}
+  	void set(T const & value) {
+    	data = value;
+  	}
+
+  	typedef T value_type;
+            // might be useful for template
+            // deductions
+
+private:
+	T data;
+};
+
+using spPropertyBool2 = _spPropertyTyped<bool>;
+using spPropertyInt2 = _spPropertyTyped<int>;
+using spPropertyFloat2 = _spPropertyTyped<float>;
+using spPropertyString2 = _spPropertyTyped<std::string>;
+
+
+//---------------------------------------------------------
+// Class/device typing. use an empty class to define a type. Each typed
+// object adds a spType object as a class instance varable - one per class definition.
+// Since there is only one instance per  object definition, the address to that sptype
+// instance forms a "type" ID for the class that contains it.
+//
+// So, to find something of a specific type, see if the address of the spType object
+// matches that of the target Class.
+//
+// Simple Example:
+//
+//  Define a class with a static spType variable, called Type
+//       class cow {
+//	          static spType Type;
+//            ...
+//        };
+//
+// And in the class implementation ,init this static variable (this creates the actual insance)
+//        spType cow::Type;
+//
+// Later:
+//
+//     pThing = nextItem();
+//
+//     // Is this a cow?
+//
+//     if ( pTying->Type == cow::Type) Serial.print("THIS IS A COW");
+//
+// Define the class and a few operators for quick compairison.
+
+struct spType
+{
+    spType(){};
+    // copy and assign constructors - delete them to prevent extra copys being
+    // made. We only want a singletype objects to be part of the class definiton.
+    // Basically: One spType object pre defined type.
+    spType(spType const &) = delete;
+    void operator=(spType const &) = delete;
+};
+
+inline bool operator==(const spType &lhs, const spType &rhs)
+{
+    return &lhs == &rhs;
+}
+inline bool operator==(const spType &lhs, const spType *rhs)
+{
+    return &lhs == rhs;
+}
+inline bool operator==(const spType *lhs, const spType &rhs)
+{
+    return lhs == &rhs;
+}
+
+
+
+//---------------------------------------------------------
+// Core Object Definition for framework objects
+//
+// Object can:
+//    - serialize
+//    - have properties 
+//    - name and descriptor
+//    - typed. 
+     
+class spObject : public spIPersist, _spProperty2Container   // TBD add descriptor to this
+{
+
+  public:
+  	spObject(){}
+
+    virtual bool save(void)
+    {
+    	// TODO implement -
+    	return true;
+    };
+    
+    virtual bool restore(void)
+    {
+    	// TODO implement -
+    	return true;    	
+    };
+
+    // TODO:
+    //   - Add type?
+    //   - Add instance ID counter
+};
+//---------------------------------------------------------
+// Container class - containts objects. Mimics some aspects of a vector interface.
+//
+
+class spObjectContainer : public spObject, public std::vector<spObject*>
+{
+
+
+  public:
+    // State things -- entry for save/restore
+    bool save(void)
+    {
+        // save ourselfs
+        this->spObject::save();
+        for(auto it = begin(); it != end(); it++)
+        	(*it)->save();
+
+        return true;
+    };
+
+    bool restore(void)
+    {
+        // restore ourselfs
+        this->spObject::restore();
+        for(auto it = begin(); it != end(); it++)
+        	(*it)->restore();
+
+        return true;
+    };
+
+};
+
+//##############################################################################################################################
+
+
 // The property object template used to define a type of the object.
 //
 // Template arg: T - underlying data type of the object - (int, float, string),
@@ -858,58 +1188,6 @@ typedef spParamIn<std::string> spParamInStr;
 // Define a simple class hierarchy interface definitions. Used to walk the hierarchy.
 //////////////////////////////////////////////////////////////////////////////
 //
-//---------------------------------------------------------
-// Class/device typing. use an empty class to define a type. Each typed
-// object adds a spType object as a class instance varable - one per class definition.
-// Since there is only one instance per  object definition, the address to that sptype
-// instance forms a "type" ID for the class that contains it.
-//
-// So, to find something of a specific type, see if the address of the spType object
-// matches that of the target Class.
-//
-// Simple Example:
-//
-//  Define a class with a static spType variable, called Type
-//       class cow {
-//	          static spType Type;
-//            ...
-//        };
-//
-// And in the class implementation ,init this static variable (this creates the actual insance)
-//        spType cow::Type;
-//
-// Later:
-//
-//     pThing = nextItem();
-//
-//     // Is this a cow?
-//
-//     if ( pTying->Type == cow::Type) Serial.print("THIS IS A COW");
-//
-// Dfine the class and a few operators for quick compairison.
-
-struct spType
-{
-    spType(){};
-    // copy and assign constructors - delete them to prevent extra copys being
-    // made. We only want a singletype objects to be part of the class definiton.
-    // Basically: One spType object pre defined type.
-    spType(spType const &) = delete;
-    void operator=(spType const &) = delete;
-};
-
-inline bool operator==(const spType &lhs, const spType &rhs)
-{
-    return &lhs == &rhs;
-}
-inline bool operator==(const spType &lhs, const spType *rhs)
-{
-    return &lhs == rhs;
-}
-inline bool operator==(const spType *lhs, const spType &rhs)
-{
-    return lhs == &rhs;
-}
 
 //---------------------------------------------------------
 // base class
