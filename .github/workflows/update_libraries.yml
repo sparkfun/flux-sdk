@@ -25,6 +25,7 @@ jobs:
           rm -f spDrivers.h
           touch spDrivers.h
           find drivers -name "spDev*.h" | sed 's/^/#include "/;s/$/"/' > spDrivers.h
+          find drivers -name "spDev*.sh" -exec chmod +x {} \;
           find drivers -name "spDev*.sh" -exec {} \;
 
       - name: Add and Commit
