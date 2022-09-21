@@ -11,7 +11,7 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "../../spDevice.h"
 #include "SparkFun_MCP9600.h"
 
 // What is the name used to ID this device?

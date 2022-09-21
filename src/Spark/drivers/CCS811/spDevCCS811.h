@@ -9,7 +9,7 @@
 
 #include "Arduino.h"
 #include "SparkFunCCS811.h"
-#include "spDevice.h"
+#include "../../spDevice.h"
 
 
 

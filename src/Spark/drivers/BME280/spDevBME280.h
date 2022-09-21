@@ -12,7 +12,7 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "../../spDevice.h"
 #include "SparkFunBME280.h"
 
 // What is the name used to ID this device?

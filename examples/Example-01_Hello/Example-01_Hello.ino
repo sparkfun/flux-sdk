@@ -7,8 +7,6 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spDevBME280.h>
-#include <Spark/spDevCCS811.h>
 
 /////////////////////////////////////////////////////////////////////////
 //

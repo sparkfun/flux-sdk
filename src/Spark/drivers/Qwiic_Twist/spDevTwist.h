@@ -12,7 +12,7 @@
 #include "Arduino.h"
 
 #include "SparkFun_Qwiic_Twist_Arduino_Library.h"
-#include "spDevice.h"
+#include "../../spDevice.h"
 
 // What is the name used to ID this device?
 #define kTwistDeviceName "twist";

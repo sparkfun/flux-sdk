@@ -5,7 +5,6 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spDevTwist.h>
 #include <Spark/spDevButton.h>
 #include <Spark/spSerial.h>
 
