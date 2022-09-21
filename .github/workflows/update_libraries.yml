@@ -19,13 +19,13 @@ jobs:
       - name: Branch name
         run: echo update-libraries running on branch ${GITHUB_REF##*/}
 
-      - name: Update the libraries - recursive
+      - name: Update the libraries
         run: |
           cd ./src/Spark/
           rm -f spDrivers.h
           touch spDrivers.h
           echo "#pragma once" > spDrivers.h
-          find drivers -name "spDev*.h" | sed 's/^/#include "/;s/$/"/' > spDrivers.h
+          find drivers -name "spDev*.h" | sed 's/^/#include "/;s/$/"/' >> spDrivers.h
           find drivers -name "spDev*.sh" -exec chmod +x {} \;
           find drivers -name "spDev*.sh" -exec {} \;
 
