@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -611,17 +612,25 @@ class spObject : public spIPersist, _spProperty2Container, public spDescriptor
 // Container class - containts objects. Mimics some aspects of a vector interface.
 //
 
-class spObjectContainer : public spObject, public std::vector<spObject*>
+template<typename T>
+class spObjectContainer : public T, public std::vector<T*>
 {
 
 
   public:
+  	spObjectContainer()
+  	{
+		// Make sure the container type has sp object as it's subclass.
+		// Compile-time check
+		static_assert(std::is_base_of<spObject, T>::value, "type parameter of this class must derive from spObject");
+
+  	}
     // State things -- entry for save/restore
     bool save(void)
     {
         // save ourselfs
-        this->spObject::save();
-        for(auto it = begin(); it != end(); it++)
+        this->T::save();
+        for(auto it = this->std::vector<T*>::begin(); it != this->std::vector<T*>::end(); it++)
         	(*it)->save();
 
         return true;
@@ -630,8 +639,8 @@ class spObjectContainer : public spObject, public std::vector<spObject*>
     bool restore(void)
     {
         // restore ourselfs
-        this->spObject::restore();
-        for(auto it = begin(); it != end(); it++)
+        this->T::restore();
+        for(auto it = this->std::vector<T*>::begin(); it != std::vector<T*>::end(); it++)
         	(*it)->restore();
 
         return true;
