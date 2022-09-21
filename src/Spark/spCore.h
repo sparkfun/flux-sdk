@@ -298,11 +298,21 @@ class spPropertyBase : public spIPersist, public spDataCore
 };
 
 //##############################################################################################################################
+
+class spDescriptor
+{
+public:
+	spDescriptor() : name{""}, description{""}{}
+
+	std::string   name;
+	std::string   description;
+
+};
 // Base/Core Property Class
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty2 : public spIPersist, public spDataCore
+class spProperty2 : public spIPersist, public spDataCore, public spDescriptor
 {
 
 public:
@@ -432,7 +442,9 @@ public:
         set(c);
     };
 };
-// cAn a template subclass a tempalte??
+
+
+// A read/write property base class that takes a getter and a setter method and the target object
 template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)> 
 class _spPropertyTypedRW : public _spProperty2TypedBase<T>
 {
@@ -462,6 +474,7 @@ class _spPropertyTypedRW : public _spProperty2TypedBase<T>
     // deductions
 };
 
+// Create type values of this Read/Write property
 template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
 using spPropertyRWBool = _spPropertyTypedRW<bool, Object, _getter, _setter>;
 
@@ -475,6 +488,7 @@ template<class Object, std::string (Object::*_getter)(), void (Object::*_setter)
 using spPropertyRWString = _spPropertyTypedRW<std::string, Object, _getter, _setter>;
 
 
+// Template class for a property object that contains storage for the property. 
 template <class T>
 class _spPropertyTyped : public _spProperty2TypedBase<T> 
 {
@@ -500,6 +514,7 @@ private:
 	T data;
 };
 
+// Define typed properties
 using spPropertyBool2 = _spPropertyTyped<bool>;
 using spPropertyInt2 = _spPropertyTyped<int>;
 using spPropertyFloat2 = _spPropertyTyped<float>;
@@ -570,7 +585,7 @@ inline bool operator==(const spType *lhs, const spType &rhs)
 //    - name and descriptor
 //    - typed. 
      
-class spObject : public spIPersist, _spProperty2Container   // TBD add descriptor to this
+class spObject : public spIPersist, _spProperty2Container, public spDescriptor
 {
 
   public:
