@@ -1,8 +1,8 @@
 /*
  *
- * QwiicDevBME280.cpp
+ * spDevMCP9600.cpp
  *
- *  Device object for the BME280 Qwiic device.
+ *  Spark Device object for the MCP9600 Thermocouple Amp
  *
  *
  *

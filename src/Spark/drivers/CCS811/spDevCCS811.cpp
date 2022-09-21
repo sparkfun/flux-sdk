@@ -1,8 +1,8 @@
 /*
  *
- * spDevBME280.cpp
+ * spDevCCS811.cpp
  *
- *  Spark Device object for the BME280 Qwiic device.
+ *  Spark Device object for the CCS811 Qwiic device.
  */
 
 #include "Arduino.h"

@@ -1,9 +1,8 @@
 /*
  *
- * QwiicDevBME280.cpp
+ * spDevMCP9600.h
  *
- *  Device object for the BME280 Qwiic device.
- *
+ *  Spark Device object for the MCP9600 Thermocouple Amp
  *
  *
  */
@@ -13,24 +12,24 @@
 #include "Arduino.h"
 
 #include "spDevice.h"
-#include <SparkFunBME280.h>
+#include "SparkFun_MCP9600.h"
 
 // What is the name used to ID this device?
-#define kBME280DeviceName "bme280";
+#define kMCP9600DeviceName "mcp9600";
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBME280 : public spDevice<spDevBME280>, public BME280
+class spDevMCP9600 : public spDevice<spDevMCP9600>, public MCP9600
 {
 
   public:
-    spDevBME280();
+    spDevMCP9600();
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
-        return kBME280DeviceName;
+        return kMCP9600DeviceName;
     };
 
     static const uint8_t *getDefaultAddresses()
@@ -46,33 +45,39 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // Called when a managed property is updated
     void onPropertyUpdate(const char *);
 
-    // TESTING
-    bool setCelsius(const bool& value){
-        Serial.println("setting Celsius");
-        return value;
-    };
-    bool getCelsius(void){
-        Serial.println("getting Celsius");
-        return true;
-    };
     // Define our public/managed properites for this class.
     // These same properties are registered with the system in the object constructor
-    RWProperty<bool, spDevBME280, &spDevBME280::getCelsius, &spDevBME280::setCelsius> celsius;
-    //spPropertyBool celsius;
+    spPropertyBool ambient_resolution;
+    spPropertyInt  thermocouple_resolution;
+    spPropertyInt  thermocouple_type;
+    spPropertyInt  filter_coefficent;    
 
-
-    // END
     // output args
-    spParamOutFlt temperature_f;
-    spParamOutFlt temperature_c;
-    spParamOutFlt humidity;
-    spParamOutFlt pressure;
+    spParamOutFlt thermocouple_temp;
+    spParamOutFlt ambient_temp;
+    spParamOutFlt temp_delta;
+    spParamOutInt raw_adc;
 
-    // Type testing:
+
+
     // A static instance var - that is an object (can check instance pointer)
     static spType Type;
     spType *getType(void)
     {
         return &Type;
+    }
+private:
+    // For the output param call - no args
+    float _getThermocoupleTemp(void)
+    {
+        return MCP9600::getThermocoupleTemp();
+    }
+    float _getAmbientTemp(void)
+    {
+        return MCP9600::getAmbientTemp();
+    }
+    float _getTempDelta(void)
+    {
+        return MCP9600::getTempDelta();
     }
 };

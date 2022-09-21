@@ -1,8 +1,8 @@
 /*
  *
- * QwiicDevBME280.cpp
+ * spDevBME280.cpp
  *
- *  Device object for the BME280 Qwiic device.
+ *  Spark Device object for the BME280 Qwiic device.
  *
  *
  *

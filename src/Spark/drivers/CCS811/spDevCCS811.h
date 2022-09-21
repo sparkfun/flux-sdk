@@ -1,6 +1,6 @@
 /*
  *
- * spDevCCS811.cpp
+ * spDevCCS811.h
  *
  *  Spark Device object for the CCS811 Qwiic device.
  */

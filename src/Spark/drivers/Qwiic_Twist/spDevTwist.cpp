@@ -1,8 +1,8 @@
 /*
  *
- * QwiicDevBME280.cpp
+ * spDevTwist.cpp
  *
- *  Device object for the BME280 Qwiic device.
+ *  Spark Device object for the SparkFun Qwiic Twist
  *
  *
  *
