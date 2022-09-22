@@ -307,7 +307,9 @@ class spPropertyBase : public spIPersist, public spDataCore
 
 
 //##############################################################################################################################
+//##############################################################################################################################
 // Sept 22 Refactor work
+//##############################################################################################################################
 //##############################################################################################################################
 //
 // Note: '2' used during dev to prevent symbol collisions
@@ -321,11 +323,11 @@ class spPropertyBase : public spIPersist, public spDataCore
 class spDescriptor
 {
   public:
-    spDescriptor() : name{""}, description{""}
+    spDescriptor() : name2{""}, description{""}
     {
     }
 
-    std::string name;
+    std::string name2;
     std::string description;
 };
 
@@ -616,7 +618,7 @@ class _spProperty2BaseString : public spProperty2
 //
 //
 template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)>
-class _spPropertyTypedRW : _spProperty2Base<T>
+class _spPropertyTypedRW : public _spProperty2Base<T>
 {
     Object *my_object;  // Pointer to the containing object
 
@@ -650,6 +652,23 @@ class _spPropertyTypedRW : _spProperty2Base<T>
 
         if (my_object)
             my_object->addProperty(this);
+        
+    }
+    void operator()(Object *obj, const char* name)
+    {
+
+        (*this)(obj);
+        if (name)
+            spDescriptor::name2 = name;
+    }
+
+
+    void operator()(Object *obj, const char* name, const char* desc)
+    {
+        if (desc)
+            spDescriptor::description = desc;   
+
+        (*this)(obj, name);        
     }
 
     //---------------------------------------------------------------------------------
@@ -731,7 +750,7 @@ using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 // A read/write property string class that takes a getter and a setter method and the target object
 //
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string const &)>
-class spPropertyRWString : _spProperty2BaseString
+class spPropertyRWString : public _spProperty2BaseString
 {
     Object *my_object;
 
@@ -763,8 +782,25 @@ class spPropertyRWString : _spProperty2BaseString
         assert(my_object);
         if (my_object)
             my_object->addProperty(this);
+
     }
 
+    void operator()(Object *obj,  const char* name)
+    {
+
+        (*this)(obj);
+        if (name)
+            spDescriptor::name2 = name;
+    }
+
+
+    void operator()(Object *obj, const char* name, const char* desc)
+    {
+        if (desc)
+            spDescriptor::description = desc;   
+
+        (*this)(obj, name);        
+    }
     //---------------------------------------------------------------------------------
     // String - needed to overload the equality operator
     bool operator==(const std::string &rhs)
@@ -828,7 +864,8 @@ class spPropertyRWString : _spProperty2BaseString
 //
 // Template class for a property object that contains storage for the property.
 //
-template <class Object, class T> class _spPropertyTyped : public _spProperty2Base<T>
+template <class Object, class T> 
+class _spPropertyTyped : public _spProperty2Base<T>
 {
 
   public:
@@ -851,6 +888,23 @@ template <class Object, class T> class _spPropertyTyped : public _spProperty2Bas
         assert(me);
         if (me)
             me->addProperty(this);
+
+    }
+    void operator()(Object *obj, const char* name)
+    {
+
+        (*this)(obj);
+        if (name)
+            spDescriptor::name2 = name;
+    }
+
+
+    void operator()(Object *obj, const char* name, const char* desc)
+    {
+        if (desc)
+            spDescriptor::description = desc;   
+
+        (*this)(obj, name);        
     }
     //---------------------------------------------------------------------------------    
     // access with get()/set() syntax
@@ -902,11 +956,8 @@ template <class Object, class T> class _spPropertyTyped : public _spProperty2Bas
 
 // Define typed properties
 template <class Object> using spPropertyBool2 = _spPropertyTyped<Object, bool>;
-
 template <class Object> using spPropertyInt2 = _spPropertyTyped<Object, int>;
-
 template <class Object> using spPropertyFloat2 = _spPropertyTyped<Object, float>;
-
 template <class Object> using spPropertyDouble2 = _spPropertyTyped<Object, double>;
 
 //----------------------------------------------------------------------------------------------------
@@ -942,7 +993,22 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
         if (me)
             me->addProperty(this);
     }
+    void operator()(Object *obj, const char* name)
+    {
 
+        (*this)(obj);
+        if (name)
+            spDescriptor::name2 = name;
+    }
+
+
+    void operator()(Object *obj, const char* name, const char* desc)
+    {
+        if (desc)
+            spDescriptor::description = desc;   
+
+        (*this)(obj, name);        
+    }
     //---------------------------------------------------------------------------------        
     // access with get()/set() syntax
     std::string get() const
@@ -997,6 +1063,10 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
     std::string data;    // storage for the property
 };
 
+
+// Handy macros to "register properties"
+
+#define spRegisterProperty2(_name_, ...) _name_(this, #_name_, ##__VA_ARGS__);
 //---------------------------------------------------------
 // Class/device typing. use an empty class to define a type. Each typed
 // object adds a spType object as a class instance varable - one per class definition.
