@@ -25,15 +25,15 @@ public:
 
     test_properties(){
 
-        spRegisterProperty2(prop_bool);
-        spRegisterProperty2(prop_int, "MyInteger", "Testing integer property");
-        spRegisterProperty2(prop_float, "FloatValue");
-        spRegisterProperty2(prop_str, "stringProp", "Testing a StringProperty");        
+        spRegister(prop_bool);
+        spRegister(prop_int, "MyInteger", "Testing integer property");
+        spRegister(prop_float, "FloatValue");
+        spRegister(prop_str, "stringProp", "Testing a StringProperty");        
 
-        spRegisterProperty2(rw_prop_bool);
-        spRegisterProperty2(rw_prop_int, "rw_int", "Testing Read/Write integer property");
-        spRegisterProperty2(rw_prop_str);
-        spRegisterProperty2(rw_prop_float);
+        spRegister(rw_prop_bool);
+        spRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property");
+        spRegister(rw_prop_str);
+        spRegister(rw_prop_float);
     }
     
 
