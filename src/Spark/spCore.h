@@ -220,6 +220,10 @@ class spDataCore
     {
         return TypeDouble;
     };
+    inline DataTypes _getType(std::string *t)
+    {
+        return TypeString;
+    };
 
     std::string &to_string(std::string &data)
     {
@@ -450,7 +454,7 @@ public:
 };
 
 // Strings are special ...
-class _spProperty2BaseString : public _spProperty2Base<std::string>
+class _spProperty2BaseString : public spProperty2
 {
 
 public:
@@ -606,11 +610,68 @@ using spPropertyRWInt =  _spPropertyTypedRW<int, Object, _getter, _setter>;
 template<class Object, float (Object::*_getter)(), void (Object::*_setter)(float const &)>
 using spPropertyRWFloat =  _spPropertyTypedRW<float, Object, _getter, _setter>;
 
-// string
-//template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
-//class spPropertyRWString : public _spPropertyTypedRW<std::string, Object, _getter, _setter>, public _spProperty2BaseString{};
+// string are special 
 
+// A read/write property base class that takes a getter and a setter method and the target object
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string const &)> 
+class spPropertyRWString : _spProperty2BaseString
+{
+    Object *my_object;
 
+  public:
+    spPropertyRWString() : my_object(0)
+    {
+    }
+
+    spPropertyRWString(Object *me) : my_object(me)
+    {}
+    // to register the property
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spProperty2Container
+        static_assert(std::is_base_of<_spProperty2Container, Object>::value, 
+                "_spPropertyTypedRWString: type parameter of this class must derive from spPropertyContainer");
+
+        my_object = obj;
+        my_object->addProperty(this);
+    }
+
+    bool operator==(const std::string& rhs)
+    {
+        return get() == rhs;
+    }
+
+    // get/set syntax
+    std::string get() const
+    {
+        return (my_object->*_getter)();
+    }
+    void set(std::string const &value)
+    {
+        (my_object->*_setter)(value);
+    }
+
+    std::string operator()() const
+    {
+        return get();
+    };
+    void operator()(std::string const &value)
+    {
+         set(value);
+    };
+
+    // access with '=' sign
+    operator std::string() const
+    {
+        return get();
+    };
+
+    spPropertyRWString<Object, _getter, _setter>& operator=(std::string const &value)
+    {
+        set(value);
+        return *this;
+    };
+};
 //----------------------------------------------------------------------------------------------------
 // Template class for a property object that contains storage for the property. 
 template <class Object, class T>
@@ -678,9 +739,64 @@ using spPropertyInt2 = _spPropertyTyped<Object, int>;
 template <class Object>
 using spPropertyFloat2 = _spPropertyTyped<Object, float>;
 
-//template <class Object>
-//class spPropertyString2 : public _spPropertyTyped<Object, std::string>, public _spProperty2BaseString{};
+// Strings are special
+template <class Object>
+class spPropertyString2 :  public _spProperty2BaseString
+{
 
+public:
+
+    // to register the property
+    void operator()(Object *me)
+    {
+        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Compile-time check
+        static_assert(std::is_base_of<_spProperty2Container, Object>::value, 
+                "_spPropertyString: type parameter of this class must derive from spPropertyContainer");
+
+        // my_object must be derived from _spProperty2Container
+        me->addProperty(this);
+    }
+    // access with get()/set() syntax
+    std::string get() const {
+        return data;
+    }
+    void set(std::string const & value) {
+        data = value;
+    }
+
+    bool operator==(const std::string& rhs)
+    {
+        return get() == rhs;
+    }
+    //----------------------------------------
+    // size in bytes of this property
+    
+    // function call syntax
+    std::string operator()() const
+    {
+        return get();
+    };
+    void operator()(std::string const &value)
+    {
+         set(value);
+    };
+
+    // access with '=' sign
+    operator std::string() const
+    {
+        return get();
+    };
+
+    spPropertyString2<Object>& operator=(std::string const &value)
+    {
+        set(value);
+        return *this;
+    };
+    
+private:
+    std::string data;
+};
 
 
 //---------------------------------------------------------
