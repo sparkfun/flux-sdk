@@ -1084,7 +1084,21 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
 
 // Handy macros to "register properties"
 
-#define spRegisterProperty2(_name_, ...) _name_(this, #_name_, ##__VA_ARGS__);
+// If the user doesn't supply a unique name or desc - use the object name/prop var name for the name
+
+// Use some macro magic to determine which actual call to make based on the number of passed in 
+// parameters..
+#define _spGetRegPropertyMacro(_1, _2, _3, _NAME_, ...) _NAME_ 
+#define spRegisterProperty2(...) _spGetRegPropertyMacro(__VA_ARGS__, spRegisterPropertyDesc, spRegisterPropertyName, spRegisterPropertyObj)(__VA_ARGS__)
+
+#define spRegisterPropertyObj(_obj_name_ ) _obj_name_(this, #_obj_name_)
+
+// User provided Name
+#define spRegisterPropertyName(_obj_name_, _name_ ) _obj_name_(this, _name_)
+
+// User provided Name and description
+#define spRegisterPropertyDesc(_obj_name_, _name_, _desc_ ) _obj_name_(this, _name_, _desc_)
+
 //---------------------------------------------------------
 // Class/device typing. use an empty class to define a type. Each typed
 // object adds a spType object as a class instance varable - one per class definition.
