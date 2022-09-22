@@ -310,6 +310,8 @@ class spPropertyBase : public spIPersist, public spDataCore
 // Sept 22 Refactor work
 //##############################################################################################################################
 //
+// Note: '2' used during dev to prevent symbol collisions
+//
 //----------------------------------------------------------------------------------------
 // spDescriptor
 //
@@ -357,6 +359,7 @@ class spProperty2 : public spIPersist, public spDataCore, public spDescriptor
     virtual bool restore(spStorageBlock *stBlk) = 0;
 };
 
+// simple def - list of spProperty objects (it's a vector)
 using spProperty2List = std::vector<spProperty2 *>;
 
 //----------------------------------------------------------------------------------------
@@ -716,6 +719,10 @@ using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float const &)>
 using spPropertyRWFloat = _spPropertyTypedRW<float, Object, _getter, _setter>;
 
+// double
+template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double const &)>
+using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
+
 //---------------------------------------------------------------------------------
 // spPropertyRWString
 //
@@ -899,6 +906,8 @@ template <class Object> using spPropertyBool2 = _spPropertyTyped<Object, bool>;
 template <class Object> using spPropertyInt2 = _spPropertyTyped<Object, int>;
 
 template <class Object> using spPropertyFloat2 = _spPropertyTyped<Object, float>;
+
+template <class Object> using spPropertyDouble2 = _spPropertyTyped<Object, double>;
 
 //----------------------------------------------------------------------------------------------------
 // spPropertyString
