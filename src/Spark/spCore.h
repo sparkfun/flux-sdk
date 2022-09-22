@@ -561,16 +561,27 @@ class _spPropertyTypedRW : _spProperty2Base<T>
 				"_spPropertyTypedRW: type parameter of this class must derive from spPropertyContainer");
 
         my_object = obj;
-    	my_object->addProperty(this);
+        assert(my_object);
+
+        if (my_object)
+        	my_object->addProperty(this);
     }
 
     // get/set syntax
     T get() const
     {
+        assert(my_object);
+        if ( !my_object )  // would normally throw an exception, but not very Arduino like! 
+            return (T)0;
+
         return (my_object->*_getter)();
     }
     void set(T const &value)
     {
+        assert(my_object);
+        if ( !my_object )
+            return;// would normally throw an exception, but not very Arduino like! 
+        
         (my_object->*_setter)(value);
     }
 
@@ -633,7 +644,9 @@ class spPropertyRWString : _spProperty2BaseString
                 "_spPropertyTypedRWString: type parameter of this class must derive from spPropertyContainer");
 
         my_object = obj;
-        my_object->addProperty(this);
+        assert(my_object);
+        if (my_object)
+            my_object->addProperty(this);
     }
 
     bool operator==(const std::string& rhs)
@@ -644,10 +657,18 @@ class spPropertyRWString : _spProperty2BaseString
     // get/set syntax
     std::string get() const
     {
+        assert(my_object);
+        if ( !my_object )
+            return "";
+
         return (my_object->*_getter)();
     }
     void set(std::string const &value)
     {
+        assert(my_object);
+        if ( !my_object )
+            return;
+
         (my_object->*_setter)(value);
     }
 
@@ -689,7 +710,9 @@ public:
 				"_spPropertyTyped: type parameter of this class must derive from spPropertyContainer");
 
     	// my_object must be derived from _spProperty2Container
-    	me->addProperty(this);
+        assert(me);
+        if(me)
+        	me->addProperty(this);
     }
   	// access with get()/set() syntax
   	T get() const {
@@ -755,7 +778,9 @@ public:
                 "_spPropertyString: type parameter of this class must derive from spPropertyContainer");
 
         // my_object must be derived from _spProperty2Container
-        me->addProperty(this);
+        assert(me);
+        if( me )
+            me->addProperty(this);
     }
     // access with get()/set() syntax
     std::string get() const {
