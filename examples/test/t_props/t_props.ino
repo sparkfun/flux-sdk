@@ -18,6 +18,7 @@ class test_properties : public spObject
 
     bool   _b_data=false;
     int    _i_data=0;
+    float  _f_data=0.;    
     std::string _s_data="";
 
 public:
@@ -32,6 +33,7 @@ public:
         rw_prop_bool(this);
         rw_prop_int(this);
         rw_prop_str(this);
+        rw_prop_float(this);
     }
     
 
@@ -58,6 +60,16 @@ public:
 
     };
 
+    // float setter/getter
+    float get_float(void){
+
+        return _f_data;
+    }
+    void set_float(const float &data){
+
+        _f_data=data;
+    };
+
     // int setter/getter
     std::string get_str(void){
 
@@ -77,7 +89,7 @@ public:
     // Define RW (getter/setter) Properties
     spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
     spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;    
-
+    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float;        
     spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;    
 };
 
@@ -121,7 +133,7 @@ void run_tests()
     myTest.prop_bool.set(b_test);
     Serial.print("   Test 4: "); Serial.println( (myTest.prop_bool.get() == b_test ? "PASS" : "FAIL"));
 
-
+    //---------------------------------------------------------------------------------------------------
     Serial.println("Int Tests:");
     int i_test = 3;
 
@@ -148,6 +160,34 @@ void run_tests()
     myTest.prop_int.set(i_test);
     Serial.print("   Test 4: "); Serial.println( (myTest.prop_int.get() == i_test ? "PASS" : "FAIL"));
 
+//---------------------------------------------------------------------------------------------------
+    Serial.println("Float RW Tests:");
+    float f_test = 3;
+
+    myTest.prop_float = f_test;
+    Serial.print("   Test 1: "); Serial.println( (myTest.prop_float == f_test ? "PASS" : "FAIL"));
+
+    f_test++;
+    myTest.prop_float = f_test;
+    Serial.print("   Test 2: "); Serial.println( (myTest.prop_float == f_test ? "PASS" : "FAIL"));    
+
+    f_test++;
+    myTest.prop_float(f_test);
+    Serial.print("   Test 3: "); Serial.println( (myTest.prop_float() == f_test ? "PASS" : "FAIL"));
+
+    f_test++;
+    myTest.prop_float(f_test);
+    Serial.print("   Test 4: "); Serial.println( (myTest.prop_float() == f_test ? "PASS" : "FAIL"));  
+
+    f_test++;
+    myTest.prop_float.set(f_test);
+    Serial.print("   Test 3: "); Serial.println( (myTest.prop_float.get() == f_test ? "PASS" : "FAIL"));
+
+    f_test++;
+    myTest.prop_float.set(f_test);
+    Serial.print("   Test 4: "); Serial.println( (myTest.prop_float.get() == f_test ? "PASS" : "FAIL"));
+
+    //---------------------------------------------------------------------------------------------------
     Serial.println("String Tests:");
     std::string s_test = "one";
 
@@ -207,6 +247,7 @@ void run_rw_tests()
     Serial.print("   Test 4: "); Serial.println( (myTest.rw_prop_bool.get() == b_test ? "PASS" : "FAIL"));
 
 
+    //---------------------------------------------------------------------------------------------------
     Serial.println("Int RW Tests:");
     int i_test = 3;
 
@@ -233,7 +274,35 @@ void run_rw_tests()
     myTest.rw_prop_int.set(i_test);
     Serial.print("   Test 4: "); Serial.println( (myTest.rw_prop_int.get() == i_test ? "PASS" : "FAIL"));
 
+    //---------------------------------------------------------------------------------------------------
+    Serial.println("Float Tests:");
+    float f_test = 3;
 
+    myTest.rw_prop_float = f_test;
+    Serial.print("   Test 1: "); Serial.println( (myTest.rw_prop_float == f_test ? "PASS" : "FAIL"));
+
+    f_test++;
+    myTest.rw_prop_float = f_test;
+    Serial.print("   Test 2: "); Serial.println( (myTest.rw_prop_float == f_test ? "PASS" : "FAIL"));    
+
+    f_test++;
+    myTest.rw_prop_float(f_test);
+    Serial.print("   Test 3: "); Serial.println( (myTest.rw_prop_float() == f_test ? "PASS" : "FAIL"));
+
+    f_test++;
+    myTest.rw_prop_float(f_test);
+    Serial.print("   Test 4: "); Serial.println( (myTest.rw_prop_float() == f_test ? "PASS" : "FAIL"));  
+
+    f_test++;
+    myTest.rw_prop_float.set(f_test);
+    Serial.print("   Test 3: "); Serial.println( (myTest.rw_prop_float.get() == f_test ? "PASS" : "FAIL"));
+
+    f_test++;
+    myTest.rw_prop_float.set(f_test);
+    Serial.print("   Test 4: "); Serial.println( (myTest.rw_prop_float.get() == f_test ? "PASS" : "FAIL"));
+
+
+    //---------------------------------------------------------------------------------------------------
     Serial.println("String RW Tests:");
     std::string s_test = "one";
 
