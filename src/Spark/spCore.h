@@ -656,18 +656,22 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
     }
     void operator()(Object *obj, const char* name)
     {
-
-        (*this)(obj);
+        // set the name of the property on init
         if (name)
             spDescriptor::name2 = name;
+
+        // cascade to other version of method
+        (*this)(obj);
     }
 
 
     void operator()(Object *obj, const char* name, const char* desc)
     {
+        // Description of the object
         if (desc)
             spDescriptor::description = desc;   
 
+        // cascade to other version of method
         (*this)(obj, name);        
     }
 
@@ -774,7 +778,8 @@ class spPropertyRWString : public _spProperty2BaseString
     // Also thie containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spProperty2Container
+        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Compile-time check
         static_assert(std::is_base_of<_spProperty2Container, Object>::value,
                       "_spPropertyTypedRWString: type parameter of this class must derive from spPropertyContainer");
 
@@ -787,18 +792,23 @@ class spPropertyRWString : public _spProperty2BaseString
 
     void operator()(Object *obj,  const char* name)
     {
-
-        (*this)(obj);
+        // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name2 = name;  
+
+        // cascade to other version of method
+        (*this)(obj);
+    
     }
 
 
     void operator()(Object *obj, const char* name, const char* desc)
     {
+        // Description of the object
         if (desc)
             spDescriptor::description = desc;   
 
+        // cascade to other version of method
         (*this)(obj, name);        
     }
     //---------------------------------------------------------------------------------
@@ -893,17 +903,22 @@ class _spPropertyTyped : public _spProperty2Base<T>
     void operator()(Object *obj, const char* name)
     {
 
-        (*this)(obj);
+        // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name2 = name;  
+
+        // cascade to other version of method        
+        (*this)(obj);
     }
 
 
     void operator()(Object *obj, const char* name, const char* desc)
     {
+        // Description of the object
         if (desc)
             spDescriptor::description = desc;   
 
+        // cascade to other version of method
         (*this)(obj, name);        
     }
     //---------------------------------------------------------------------------------    
@@ -988,25 +1003,28 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
         static_assert(std::is_base_of<_spProperty2Container, Object>::value,
                       "_spPropertyString: type parameter of this class must derive from spPropertyContainer");
 
-        // my_object must be derived from _spProperty2Container
         assert(me);
         if (me)
             me->addProperty(this);
     }
+    // set the name of the property on init
     void operator()(Object *obj, const char* name)
     {
-
-        (*this)(obj);
         if (name)
             spDescriptor::name2 = name;
+
+        // cascade to other version of method
+        (*this)(obj);
     }
 
-
+    // allow the passing in of a name and description
     void operator()(Object *obj, const char* name, const char* desc)
     {
+        // Description of the object
         if (desc)
             spDescriptor::description = desc;   
 
+        // cascade to other version of method
         (*this)(obj, name);        
     }
     //---------------------------------------------------------------------------------        
