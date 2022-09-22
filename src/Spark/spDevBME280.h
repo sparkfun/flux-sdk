@@ -46,19 +46,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // Called when a managed property is updated
     void onPropertyUpdate(const char *);
 
-    // TESTING
-    bool setCelsius(const bool& value){
-        Serial.println("setting Celsius");
-        return value;
-    };
-    bool getCelsius(void){
-        Serial.println("getting Celsius");
-        return true;
-    };
-    // Define our public/managed properites for this class.
-    // These same properties are registered with the system in the object constructor
-    RWProperty<bool, spDevBME280, &spDevBME280::getCelsius, &spDevBME280::setCelsius> celsius;
-    //spPropertyBool celsius;
+    spPropertyBool celsius;
 
 
     // END
