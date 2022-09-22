@@ -408,29 +408,8 @@ public:
     // Virutal functions to get and set the value - these are filled in
     // by the sub-class
 
-    virtual T get(void)=0;
-    virtual void set(T &value)=0;
-
-	// function call syntax
-    T operator()() const
-    {
-        return get();
-    };
-    void operator()(T const &value)
-    {
-        return set(value);
-    };
-
-    // access with '=' sign
-    operator T() const
-    {
-        return get();
-    };
-
-    void operator=(T const &value)
-    {
-        return set(value);
-    };
+    virtual T get(void) const =0;
+    virtual void set(T const &value)=0;
  
     // cover our type values - can't template this b/c super methods are virtual
     bool getBool()
@@ -491,8 +470,8 @@ public:
     // Virutal functions to get and set the value - these are filled in
     // by the sub-class
 
-    virtual std::string get(void)=0;
-    virtual void set(std::string &value)=0;
+    virtual std::string get(void) const =0;
+    virtual void set(const std::string &value)=0;
 
     // set for a c string...
     void set(const char *value){
@@ -559,7 +538,7 @@ public:
 //
 // A read/write property base class that takes a getter and a setter method and the target object
 template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)> 
-class _spPropertyTypedRW 
+class _spPropertyTypedRW : _spProperty2Base<T> 
 {
     Object *my_object;
 
@@ -567,12 +546,17 @@ class _spPropertyTypedRW
     _spPropertyTypedRW() : my_object(0)
     {
     }
+
     _spPropertyTypedRW(Object *me) : my_object(me)
+    {}
+    // to register the property
+    void operator()(Object *obj)
     {
     	// my_object must be derived from _spProperty2Container
     	static_assert(std::is_base_of<_spProperty2Container, Object>::value, 
 				"_spPropertyTypedRW: type parameter of this class must derive from spPropertyContainer");
 
+        my_object = obj;
     	my_object->addProperty(this);
     }
 
@@ -585,39 +569,58 @@ class _spPropertyTypedRW
     {
         (my_object->*_setter)(value);
     }
+
+    T operator()() const
+    {
+        return get();
+    };
+    void operator()(T const &value)
+    {
+         set(value);
+    };
+
+    // access with '=' sign
+    operator T() const
+    {
+        return get();
+    };
+
+    _spPropertyTypedRW<T, Object, _getter, _setter>& operator=(T const &value)
+    {
+        set(value);
+        return *this;
+    };
 };
 
 // Create typed read/writer property objects - type and RW objects as super classes
 
 // bool
 template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
-class spPropertyRWBool : public _spPropertyTypedRW<bool, Object, _getter, _setter>, public _spProperty2Base<bool>{};
+using spPropertyRWBool =  _spPropertyTypedRW<bool, Object, _getter, _setter>;
 
 // int
-template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
-class spPropertyRWInt : public _spPropertyTypedRW<int, Object, _getter, _setter>, public _spProperty2Base<int>{};
+template<class Object, int (Object::*_getter)(), void (Object::*_setter)(int const &)>
+using spPropertyRWInt =  _spPropertyTypedRW<int, Object, _getter, _setter>;
 
 // float
-template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
-class spPropertyRWFloat : public _spPropertyTypedRW<float, Object, _getter, _setter>, public _spProperty2Base<float>{};
+template<class Object, float (Object::*_getter)(), void (Object::*_setter)(float const &)>
+using spPropertyRWFloat =  _spPropertyTypedRW<float, Object, _getter, _setter>;
 
 // string
-template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
-class spPropertyRWString : public _spPropertyTypedRW<std::string, Object, _getter, _setter>, public _spProperty2BaseString{};
+//template<class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
+//class spPropertyRWString : public _spPropertyTypedRW<std::string, Object, _getter, _setter>, public _spProperty2BaseString{};
 
 
 //----------------------------------------------------------------------------------------------------
 // Template class for a property object that contains storage for the property. 
 template <class Object, class T>
-class _spPropertyTyped
+class _spPropertyTyped :  public _spProperty2Base<T>
 {
+
 public:
 
-  	// access with function call syntax
-  	_spPropertyTyped() { }
-
   	// to register the property
-  	_spPropertyTyped(Object *me)
+  	void operator()(Object *me)
     {
     	// Make sure the container type has spPropContainer as it's baseclass or it's a spObject
 		// Compile-time check
@@ -627,7 +630,6 @@ public:
     	// my_object must be derived from _spProperty2Container
     	me->addProperty(this);
     }
-
   	// access with get()/set() syntax
   	T get() const {
     	return data;
@@ -636,22 +638,48 @@ public:
     	data = value;
   	}
 
+    
+    //----------------------------------------
+    // size in bytes of this property
+    
+    // function call syntax
+    T operator()() const
+    {
+        return get();
+    };
+    void operator()(T const &value)
+    {
+         set(value);
+    };
+
+    // access with '=' sign
+    operator T() const
+    {
+        return get();
+    };
+
+    _spPropertyTyped<Object, T>& operator=(T const &value)
+    {
+        set(value);
+        return *this;
+    };
+    
 private:
 	T data;
 };
 
 // Define typed properties
 template <class Object>
-class spPropertyBool2 : public _spPropertyTyped<Object, bool>, public _spProperty2Base<bool>{};
+using spPropertyBool2 = _spPropertyTyped<Object, bool>;
 
 template <class Object>
-class spPropertyInt2 : public _spPropertyTyped<Object, int>, public _spProperty2Base<int>{};
+using spPropertyInt2 = _spPropertyTyped<Object, int>;
 
 template <class Object>
-class spPropertyFloat2 : public _spPropertyTyped<Object, float>, public _spProperty2Base<float>{};
+using spPropertyFloat2 = _spPropertyTyped<Object, float>;
 
-template <class Object>
-class spPropertyString2 : public _spPropertyTyped<Object, std::string>, public _spProperty2BaseString{};
+//template <class Object>
+//class spPropertyString2 : public _spPropertyTyped<Object, std::string>, public _spProperty2BaseString{};
 
 
 
@@ -1043,65 +1071,6 @@ class spPropertyString : public spPropertyBase
 //////////////////////////////////////////////////////////////////////////////
 // End of property definitions
 //////////////////////////////////////////////////////////////////////////////
-// a read-write property which invokes
-// user-defined functions
-template <class T, class Object, T (Object::*real_getter)(), T (Object::*real_setter)(T const &)> 
-class RWProperty
-{
-    Object *my_object;
-
-  public:
-    RWProperty() : my_object(0)
-    {
-    }
-    RWProperty(Object *me) : my_object(me)
-    {
-    }
-
-    // this function must be called by the
-    // containing class, normally in a
-    // constructor, to initialize the
-    // ROProperty so it knows where its
-    // real implementation code can be
-    // found
-    void operator()(Object *obj)
-    {
-        my_object = obj;
-    }
-
-    // function call syntax
-    T operator()() const
-    {
-        return (my_object->*real_getter)();
-    }
-    T operator()(T const &value)
-    {
-        return (my_object->*real_setter)(value);
-    }
-
-    // get/set syntax
-    T get() const
-    {
-        return (my_object->*real_getter)();
-    }
-    T set(T const &value)
-    {
-        return (my_object->*real_setter)(value);
-    }
-    // access with '=' sign
-    operator T() const
-    {
-        return (my_object->*real_getter)();
-    }
-    T operator=(T const &value)
-    {
-        return (my_object->*real_setter)(value);
-    }
-
-    typedef T value_type;
-    // might be useful for template
-    // deductions
-};
 
 //////////////////////////////////////////////////////////////////////////////
 // Parameter Definitions
