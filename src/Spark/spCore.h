@@ -126,6 +126,79 @@ enum DataTypes
     TypeString
 };
 
+//#################################################################################
+// Refactor
+typedef enum{
+    spTypeNone,
+    spTypeBool,
+    spTypeInt,
+    spTypeUInt,
+    spTypeFloat,
+    spTypeDouble,
+    spTypeString
+}spDataType_t;
+
+class spDataTyper 
+{
+    // some method overloading to determine types
+    static spDataType_t type(std::nullptr_t *t)
+    {
+        return spTypeNone;
+    };
+    static spDataType_t type(bool *t)
+    {
+        return spTypeBool;
+    };
+    static spDataType_t type(int *t)
+    {
+        return spTypeInt;
+    };
+    static spDataType_t type(uint *t)
+    {
+        return spTypeUInt;
+    };
+    static spDataType_t type(float *t)
+    {
+        return spTypeFloat;
+    };
+    static spDataType_t type(double *t)
+    {
+        return spTypeDouble;
+    };
+    static spDataType_t type(std::string *t)
+    {
+        return spTypeString;
+    };
+
+    // non pointer
+    static spDataType_t type(bool& t)
+    {
+        return type(&t);
+    };
+    static spDataType_t type(int& t)
+    {
+        return type(&t);        
+    };
+    static spDataType_t type(uint& t)
+    {
+        return type(&t);        
+    };
+    static spDataType_t type(float& t)
+    {
+        return type(&t);        
+    };
+    static spDataType_t type(double& t)
+    {
+        return type(&t);        
+    };
+    static spDataType_t type(std::string& t)
+    {
+        return type(&t);        
+    };
+
+};
+
+//#################################################################################
 // these are used in the object property intrface.
 class spPropertyBase;
 using spPropertyList = std::vector<spPropertyBase *>;
@@ -436,10 +509,10 @@ template <class T> class _spProperty2Base : public spProperty2
 
     //---------------------------------------------------------------------------------                            
     // Type of property
-    DataTypes type(void)
+    spDataType_t type2(void)
     {
         T c;
-        return _getType(&c);
+        return spDataTyper::type(c);
     };
 
     //---------------------------------------------------------------------------------                        
@@ -520,6 +593,10 @@ class _spProperty2BaseString : public spProperty2
 {
 
   public:
+
+    spDataType_t type2(){
+        return spTypeString;
+    };
 
     //---------------------------------------------------------------------------------            
     // size in bytes of this property
@@ -1082,23 +1159,6 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
 };
 
 
-// Handy macros to "register properties"
-
-// If the user doesn't supply a unique name or desc - use the object name/prop var name for the name
-
-// Use some macro magic to determine which actual call to make based on the number of passed in 
-// parameters..
-#define _spGetRegPropertyMacro(_1, _2, _3, _NAME_, ...) _NAME_ 
-#define spRegisterProperty2(...) _spGetRegPropertyMacro(__VA_ARGS__, spRegisterPropertyDesc, spRegisterPropertyName, spRegisterPropertyObj)(__VA_ARGS__)
-
-#define spRegisterPropertyObj(_obj_name_ ) _obj_name_(this, #_obj_name_)
-
-// User provided Name
-#define spRegisterPropertyName(_obj_name_, _name_ ) _obj_name_(this, _name_)
-
-// User provided Name and description
-#define spRegisterPropertyDesc(_obj_name_, _name_, _desc_ ) _obj_name_(this, _name_, _desc_)
-
 //---------------------------------------------------------
 // Class/device typing. use an empty class to define a type. Each typed
 // object adds a spType object as a class instance varable - one per class definition.
@@ -1240,6 +1300,345 @@ template <typename T> class spObjectContainer : public T, public std::vector<T *
         return true;
     };
 };
+
+//##############################################################################################################################
+//##############################################################################################################################
+//----------------------------------------------------------------------------------------
+// spParameter
+//
+// Base/Core Parameter Class
+//
+// From an abstract sense, a basic parameter   - nothing more
+
+class spParameter : public spDescriptor
+{
+    bool _isEnabled;
+
+  public:
+    spParameter() : _isEnabled{true}{};
+
+    bool enabled(void)
+    {
+        return _isEnabled;
+    }
+
+    void setEnabled(bool enabled)
+    {
+        _isEnabled = enabled;
+    };
+};
+
+// simple def - list of parameters
+using spParameterList = std::vector<spParameter*>;
+
+// We want to bin parameters as input and output for storing different
+// arguments lists per object type via overloading. So define some simple classes
+
+class _spParameterIn : public spParameter {};
+class _spParameterOut : public spParameter {};
+//----------------------------------------------------------------------------------------
+// spParameterContainer
+//
+// Define interface/class to manage a list of input and output parameters
+//
+//
+// The intent is to add this into other classes that want to expose parameters. 
+//
+class _spParameterContainer
+{
+
+  public:
+
+    //---------------------------------------------------------------------------------                                    
+    void addParameter(_spParameterIn *newParam)
+    {
+        _input_parameters.push_back(newParam);
+    };
+
+    //---------------------------------------------------------------------------------                                    
+    void addParameter(_spParameterIn& newParam)
+    {
+        addParameter(&newParam);
+    };
+
+
+    //---------------------------------------------------------------------------------                                    
+    void addParameter(_spParameterOut *newParam)
+    {
+        _output_parameters.push_back(newParam);
+    };
+
+    //---------------------------------------------------------------------------------                                    
+    void addParameter(_spParameterOut& newParam)
+    {
+        addParameter(&newParam);
+    };
+
+    //---------------------------------------------------------------------------------                                
+    spParameterList &getOutputParameters(void)
+    {
+        return _output_parameters;
+    };
+
+    //---------------------------------------------------------------------------------                                
+    spParameterList &getInputParameters(void)
+    {
+        return _input_parameters;
+    };
+    
+  private:
+    spParameterList _input_parameters;
+    spParameterList _output_parameters;
+};
+
+//----------------------------------------------------------------------------------------------------
+// spParameterOut
+//
+// Output Parameter Template
+//
+//
+template <class T, class Object, T (Object::*_getter)()>
+class spParameterOut : public _spParameterOut
+{
+    Object *my_object;  // Pointer to the containing object
+
+  public:
+    spParameterOut() : my_object(0)
+    {
+    }
+
+    spParameterOut(Object *me) : my_object(me)
+    {
+    }
+
+    //---------------------------------------------------------------------------------                            
+    // Type of property
+    spDataType_t type2(void)
+    {
+        T c;
+        return spDataTyper::type(c);
+    };
+    //---------------------------------------------------------------------------------
+    // to register the parameter - set the containing object instance 
+    // Normally done in the containing objects constructor. 
+    // i.e.
+    //     parameter_objectthis);
+    //
+    // This allows the parameter to add itself to the containing objects list of 
+    // parameter. 
+    //
+    // Also thie containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterOut: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+        
+    }
+    void operator()(Object *obj, const char* name)
+    {
+        // set the name of the property on init
+        if (name)
+            spDescriptor::name2 = name;
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+
+    void operator()(Object *obj, const char* name, const char* desc)
+    {
+        // Description of the object
+        if (desc)
+            spDescriptor::description = desc;   
+
+        // cascade to other version of method
+        (*this)(obj, name);        
+    }
+
+    //---------------------------------------------------------------------------------
+    // get/set syntax
+    T get() const
+    {
+        assert(my_object);
+        if (!my_object) // would normally throw an exception, but not very Arduino like!
+            return (T)0;
+
+        return (my_object->*_getter)();
+    }
+
+    //---------------------------------------------------------------------------------
+    // get -> parameter() 
+    T operator()() const
+    {
+        return get();
+    };
+
+    
+};
+
+// Define by type
+template <class Object, bool (Object::*_getter)()>
+using spParameterOutBool = spParameterOut<bool, Object, _getter>;
+
+template <class Object, int (Object::*_getter)()>
+using spParameterOutInt = spParameterOut<int, Object, _getter>;
+
+template <class Object, uint (Object::*_getter)()>
+using spParameterOutUint = spParameterOut<uint, Object, _getter>;
+
+template <class Object, float (Object::*_getter)()>
+using spParameterOutFloat = spParameterOut<float, Object, _getter>;
+
+template <class Object, std::string (Object::*_getter)()>
+using spParameterOutString = spParameterOut<std::string, Object, _getter>;
+
+
+
+template <class T, class Object, void (Object::*_setter)(T const &)>
+class spParameterIn : public _spParameterIn
+{
+    Object *my_object;  // Pointer to the containing object
+
+  public:
+    spParameterIn() : my_object(0)
+    {
+    }
+
+    spParameterIn(Object *me) : my_object(me)
+    {
+    }
+
+    //---------------------------------------------------------------------------------
+    // to register the property - set the containing object instance 
+    // Normally done in the containing objects constructor. 
+    // i.e.
+    //     property_obj(this);
+    //
+    // This allows the property to add itself to the containing objects list of 
+    // properties. 
+    //
+    // Also thie containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterIn: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+        
+    }
+    void operator()(Object *obj, const char* name)
+    {
+        // set the name of the property on init
+        if (name)
+            spDescriptor::name2 = name;
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+
+    void operator()(Object *obj, const char* name, const char* desc)
+    {
+        // Description of the object
+        if (desc)
+            spDescriptor::description = desc;   
+
+        // cascade to other version of method
+        (*this)(obj, name);        
+    }
+
+    //---------------------------------------------------------------------------------    
+    void set(T const &value)
+    {
+        assert(my_object);
+        if (!my_object)
+            return; // would normally throw an exception, but not very Arduino like!
+
+        (my_object->*_setter)(value);
+    }
+    
+    //---------------------------------------------------------------------------------    
+    // set -> parameter(value) 
+    void operator()(T const &value)
+    {
+        set(value);
+    };
+
+};
+
+// Define by type
+
+// bool
+template <class Object, void (Object::*_setter)(bool const &)>
+using spParameterInBool = spParameterIn<bool, Object, _setter>;
+
+template <class Object, void (Object::*_setter)(int const &)>
+using spParameterInInt = spParameterIn<int, Object, _setter>;
+
+template <class Object, void (Object::*_setter)(uint const &)>
+using spParameterInUint = spParameterIn<uint, Object, _setter>;
+
+template <class Object, void (Object::*_setter)(float const &)>
+using spParameterInFloat = spParameterIn<float, Object, _setter>;
+
+template <class Object, void (Object::*_setter)(double const &)>
+using spParameterInDouble = spParameterIn<double, Object, _setter>;
+
+template <class Object, void (Object::*_setter)(bool const &)>
+using spParameterInString = spParameterIn<bool, Object, _setter>;
+
+
+
+// Handy macros to "register attributes (props/params)"
+
+// If the user doesn't supply a unique name or desc - use the object name/prop var name for the name
+
+// Use some macro magic to determine which actual call to make based on the number of passed in 
+// parameters..
+#define _spGetRegAttributeMacro(_1, _2, _3, _NAME_, ...) _NAME_ 
+#define spRegister(...) _spGetRegAttributeMacro(__VA_ARGS__, spRegisterDesc, spRegisterName, spRegisterObj)(__VA_ARGS__)
+
+#define spRegisterObj(_obj_name_ ) _obj_name_(this, #_obj_name_)
+
+// User provided Name
+#define spRegisterName(_obj_name_, _name_ ) _obj_name_(this, _name_)
+
+// User provided Name and description
+#define spRegisterDesc(_obj_name_, _name_, _desc_ ) _obj_name_(this, _name_, _desc_)
+
+
+// Define a object type that suppoarts parameter lists (input and output)
+class spOperation : public spObject, public _spParameterContainer{};
+
+// and a conainer for this things 
+
+
+template <typename T> 
+class spOperationContainer : public T, public spObjectContainer<T>
+{
+public:
+    spOperationContainer()
+    {
+        // Make sure the container type has sp object as it's baseclass or it's a spObject
+        // Compile-time check
+        static_assert(std::is_base_of<spOperation, T>::value,
+                      "spOperationContainer: type parameter of this class must derive from spOperation");
+    }
+
+};
+
 
 //##############################################################################################################################
 //##############################################################################################################################
