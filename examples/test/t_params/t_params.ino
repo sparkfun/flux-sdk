@@ -13,7 +13,7 @@
 
 // Define a class that uses the parameters of the system
 
-class test_prarams : public spOperation
+class test_params : public spOperation
 {
 
     bool   _b_data=false;
@@ -23,7 +23,7 @@ class test_prarams : public spOperation
 
 public:
 
-    test_prarams(){
+    test_params(){
 
         spRegister(out_bool);
         spRegister(out_int, "MyInteger", "Testing Int output parameter");
@@ -39,61 +39,67 @@ public:
 
 
     // boolean setter/getter
-    bool get_bool(void){
-
-        return _b_data;
-    }
-    void set_bool(const bool &b){
-
-        _b_data=b;
-
-    };
+    bool get_bool(void);
+    void set_bool(const bool &b);
 
     // int setter/getter
-    int get_int(void){
-
-        return _i_data;
-    }
-    void set_int(const int &data){
-
-        _i_data=data;
-
-    };
+    int get_int(void);
+    void set_int(const int &);
 
     // float setter/getter
-    float get_float(void){
+    float get_float(void);
+    void set_float(const float &);
 
-        return _f_data;
-    }
-    void set_float(const float &data){
+    // string setter/getter
+    std::string get_str(void);
+    void set_str(const std::string &);
 
-        _f_data=data;
-    };
-
-    // int setter/getter
-    std::string get_str(void){
-
-        return _s_data;
-    }
-    void set_str(const std::string &data){
-
-        _s_data=data;
-
-    };
 
     // Output Parameters
-    spParameterOutBool<test_prarams, &test_prarams::get_bool>   out_bool;
-    spParameterOutInt<test_prarams, &test_prarams::get_int>     out_int;
-    spParameterOutFloat<test_prarams, &test_prarams::get_float> out_float;
-    spParameterOutString<test_prarams, &test_prarams::get_str>  out_string;
+    spParameterOutBool<test_params, &test_params::get_bool>   out_bool;
+    spParameterOutInt<test_params, &test_params::get_int>     out_int;
+    spParameterOutFloat<test_params, &test_params::get_float> out_float;
+    spParameterOutString<test_params, &test_params::get_str>  out_string;
 
-    spParameterInBool<test_prarams, &test_prarams::set_bool>   in_bool;
-    spParameterInInt<test_prarams, &test_prarams::set_int>     in_int;
-    spParameterInFloat<test_prarams, &test_prarams::set_float> in_float;
-    spParameterInString<test_prarams, &test_prarams::set_str>  in_string;     
+    spParameterInBool<test_params, &test_params::set_bool>   in_bool;
+    spParameterInInt<test_params, &test_params::set_int>     in_int;
+    spParameterInFloat<test_params, &test_params::set_float> in_float;
+    spParameterInString<test_params, &test_params::set_str>  in_string;     
 };
 
+// Method implementation
 
+// boolean setter/getter
+bool test_params::get_bool(void){
+    return _b_data;
+}
+void test_params::set_bool(const bool &b){
+        _b_data=b;
+};
+
+// int setter/getter
+int test_params::get_int(void){
+    return _i_data;
+}
+void test_params::set_int(const int &data){
+    _i_data=data;
+};
+
+// float setter/getter
+float test_params::get_float(void){
+    return _f_data;
+}
+void test_params::set_float(const float &data){
+    _f_data=data;
+};
+
+// str setter/getter
+std::string test_params::get_str(void){
+        return _s_data;
+}
+void test_params::set_str(const std::string &data){
+        _s_data=data;    
+}
 /////////////////////////////////////////////////////////////////////////
 //
 // Simple demo - connect to devices directly.
@@ -102,7 +108,7 @@ public:
 // 
 // For this demo, connect to a BME280 and a CCS811 (the env combo board)
 
-test_prarams myTest; 
+test_params myTest; 
 
 void run_tests()
 {
@@ -123,6 +129,7 @@ void run_tests()
     Serial.print("   Test 2: "); Serial.println( (myTest.out_bool.get() == b_test ? "PASS" : "FAIL"));    
 
     //---------------------------------------------------------------------------------------------------
+    Serial.println();
     Serial.println("Int Tests:");
     Serial.print("Input NAME: "); Serial.print(myTest.in_int.name.c_str()); 
         Serial.print("  DESC: "); Serial.println(myTest.in_int.description.c_str());
@@ -137,7 +144,9 @@ void run_tests()
     i_test+=5;
     myTest.in_int.set(i_test);
     Serial.print("   Test 2: "); Serial.println( (myTest.out_int.get() == i_test ? "PASS" : "FAIL"));    
+
     //---------------------------------------------------------------------------------------------------
+    Serial.println();    
     Serial.println("Float Tests:");
     Serial.print("Input NAME: "); Serial.print(myTest.in_float.name.c_str()); 
         Serial.print("  DESC: "); Serial.println(myTest.in_float.description.c_str());
@@ -153,6 +162,7 @@ void run_tests()
     Serial.print("   Test 2: "); Serial.println( (myTest.out_float.get() == f_test ? "PASS" : "FAIL"));   
 
     //---------------------------------------------------------------------------------------------------
+    Serial.println();    
     Serial.println("String Tests:");
     Serial.print("Input NAME: "); Serial.print(myTest.in_string.name.c_str()); 
         Serial.print("  DESC: "); Serial.println(myTest.in_string.description.c_str());
@@ -167,6 +177,8 @@ void run_tests()
     myTest.in_string.set(s_test);
     Serial.print("   Test 2: "); Serial.println( (myTest.out_string.get() == s_test ? "PASS" : "FAIL"));  
 
+    Serial.println();    
+    Serial.println("DONE");        
 }      
 //---------------------------------------------------------------------
 // Arduino Setup
@@ -193,7 +205,6 @@ void loop() {
     // Retrieve the data from the devices.
     digitalWrite(LED_BUILTIN, HIGH);   // turn on the log led    
     
-    Serial.println();
     // Our loop delay 
     delay(1000);                       
     digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
