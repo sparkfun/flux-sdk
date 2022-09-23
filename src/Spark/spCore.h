@@ -128,7 +128,8 @@ enum DataTypes
 
 //#################################################################################
 // Refactor
-typedef enum{
+typedef enum
+{
     spTypeNone,
     spTypeBool,
     spTypeInt,
@@ -136,9 +137,9 @@ typedef enum{
     spTypeFloat,
     spTypeDouble,
     spTypeString
-}spDataType_t;
+} spDataType_t;
 
-class spDataTyper 
+class spDataTyper
 {
     // some method overloading to determine types
     static spDataType_t type(std::nullptr_t *t)
@@ -171,31 +172,30 @@ class spDataTyper
     };
 
     // non pointer
-    static spDataType_t type(bool& t)
+    static spDataType_t type(bool &t)
     {
         return type(&t);
     };
-    static spDataType_t type(int& t)
+    static spDataType_t type(int &t)
     {
-        return type(&t);        
+        return type(&t);
     };
-    static spDataType_t type(uint& t)
+    static spDataType_t type(uint &t)
     {
-        return type(&t);        
+        return type(&t);
     };
-    static spDataType_t type(float& t)
+    static spDataType_t type(float &t)
     {
-        return type(&t);        
+        return type(&t);
     };
-    static spDataType_t type(double& t)
+    static spDataType_t type(double &t)
     {
-        return type(&t);        
+        return type(&t);
     };
-    static spDataType_t type(std::string& t)
+    static spDataType_t type(std::string &t)
     {
-        return type(&t);        
+        return type(&t);
     };
-
 };
 
 //#################################################################################
@@ -373,12 +373,6 @@ class spPropertyBase : public spIPersist, public spDataCore
     spIProperty *_pTarget;
 };
 
-
-
-
-
-
-
 //##############################################################################################################################
 //##############################################################################################################################
 // Sept 22 Refactor work
@@ -390,7 +384,7 @@ class spPropertyBase : public spIPersist, public spDataCore
 //----------------------------------------------------------------------------------------
 // spDescriptor
 //
-// Simple class that can be mixed-in to add a common name and description string 
+// Simple class that can be mixed-in to add a common name and description string
 // to user "exposed" objects in the framework..
 
 class spDescriptor
@@ -405,30 +399,169 @@ class spDescriptor
 };
 
 //----------------------------------------------------------------------------------------
+// spDataOut
+//
+// Interface to get outputs from an object.
+class spDataOut
+{
+
+  public:
+    virtual operator bool() const = 0;
+    virtual operator int() const = 0;
+    virtual operator uint() const = 0;
+    virtual operator float() const = 0;
+    virtual operator double() const = 0;
+    virtual operator std::string() const = 0;
+    virtual operator char *() const = 0;
+
+    std::string &to_string(std::string &data) const
+    {
+        return data;
+    }
+
+    const std::string &to_string(std::string const &data) const
+    {
+        return data;
+    }
+
+    std::string to_string(int const data) const
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%d", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
+    std::string to_string(uint const data) const
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%u", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
+    std::string to_string(float const data) const
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%f", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
+    std::string to_string(double const data) const
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%f", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
+    std::string to_string(bool const data) const
+    {
+        std::string stmp;
+        stmp = data ? "true" : "false";
+        return stmp;
+    }
+};
+
+template <typename T> class _spDataOut : public spDataOut
+{
+
+  public:
+    virtual T get(void) const = 0;
+    operator bool() const override
+    {
+        return (bool)get();
+    }
+    operator int() const override
+    {
+        return (int)get();
+    }
+    operator uint() const override
+    {
+        return (uint)get();
+    }
+    operator float() const override
+    {
+        return (float)get();
+    }
+    operator double() const override
+    {
+        return (double)get();
+    }
+    operator std::string() const override
+    {
+        T c = get();
+        return to_string(c);
+    }
+    operator char *() const override
+    {
+        return (char *)to_string(get()).c_str();
+    };
+};
+
+class _spDataOutString : public spDataOut
+{
+
+  public:
+    virtual std::string get(void) const = 0;
+
+    operator bool() const override
+    {
+        return get() == "true";
+    }
+    operator int() const override
+    {
+        return std::stoi(get());
+    };
+    operator uint() const override
+    {
+        return std::stoul(get());
+    };
+    operator float() const override
+    {
+        return std::stof(get());
+    }
+    operator double() const override
+    {
+        return std::stod(get());
+    }
+    operator std::string() const override
+    {
+        return get();
+    }
+    operator char *() const override
+    {
+        return (char *)get().c_str();
+    };
+};
+
+template <typename T> class _spDataIn
+{
+
+  public:
+    virtual void set(T const &value) = 0;
+};
+//----------------------------------------------------------------------------------------
 // spProperty
 //
 // Base/Core Property Class
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty2 : public spIPersist, public spDataCore, public spDescriptor
+class spProperty2 : public spIPersist, public spDescriptor
 {
 
   public:
-
-    //---------------------------------------------------------------------------------                                    
+    //---------------------------------------------------------------------------------
     virtual size_t size(void)
     {
         return 0;
     };
 
-    //---------------------------------------------------------------------------------                                    
+    //---------------------------------------------------------------------------------
     virtual size_t save_size(void)
     {
         return 0; // number of bytes used to persist value
     };
 
-    //---------------------------------------------------------------------------------                                
+    //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
     virtual bool save(spStorageBlock *stBlk) = 0;
     virtual bool restore(spStorageBlock *stBlk) = 0;
@@ -442,32 +575,31 @@ using spProperty2List = std::vector<spProperty2 *>;
 //
 // Define interface/class to manage a list of property
 //
-// The intent is to add this into other classes that want to expose properties. 
+// The intent is to add this into other classes that want to expose properties.
 //
 class _spProperty2Container
 {
 
   public:
-
-    //---------------------------------------------------------------------------------                                    
+    //---------------------------------------------------------------------------------
     void addProperty(spProperty2 *newProperty)
     {
         _properties.push_back(newProperty);
     };
 
-    //---------------------------------------------------------------------------------                                    
+    //---------------------------------------------------------------------------------
     void addProperty(spProperty2 &newProperty)
     {
         addProperty(&newProperty);
     };
 
-    //---------------------------------------------------------------------------------                                
+    //---------------------------------------------------------------------------------
     spProperty2List &getProperties(void)
     {
         return _properties;
     };
 
-    //---------------------------------------------------------------------------------                            
+    //---------------------------------------------------------------------------------
     // save/restore for properties in this container. Note, since we
     // expect this to be a "mix-in" class, we use a different interface
     // for the save/restore routines
@@ -480,7 +612,7 @@ class _spProperty2Container
         return rc;
     };
 
-    //---------------------------------------------------------------------------------                                
+    //---------------------------------------------------------------------------------
     bool restoreProperties(spStorageBlock *stBlk)
     {
         bool rc = true;
@@ -502,12 +634,11 @@ class _spProperty2Container
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T> class _spProperty2Base : public spProperty2
+template <class T> class _spProperty2Base : public spProperty2, public _spDataIn<T>, public _spDataOut<T>
 {
 
   public:
-
-    //---------------------------------------------------------------------------------                            
+    //---------------------------------------------------------------------------------
     // Type of property
     spDataType_t type2(void)
     {
@@ -515,52 +646,27 @@ template <class T> class _spProperty2Base : public spProperty2
         return spDataTyper::type(c);
     };
 
-    //---------------------------------------------------------------------------------                        
+    //---------------------------------------------------------------------------------
     // size in bytes of this property
     virtual size_t size()
     {
         return sizeof(T);
     };
 
-    //---------------------------------------------------------------------------------                        
+    //---------------------------------------------------------------------------------
     virtual size_t save_size()
     {
         return size();
     }; // sometimes save size is different than size
 
-    //---------------------------------------------------------------------------------                    
+    //---------------------------------------------------------------------------------
     // Virutal functions to get and set the value - these are filled in
     // by the sub-class
 
     virtual T get(void) const = 0;
     virtual void set(T const &value) = 0;
 
-    //---------------------------------------------------------------------------------                    
-    // cover our type values - can't template this b/c super methods are virtual
-    bool getBool()
-    {
-        return 0 != (int)get();
-    };
-
-    //---------------------------------------------------------------------------------                        
-    int getInt()
-    {
-        return (int)get();
-    };
-
-    //---------------------------------------------------------------------------------                        
-    float getFloat()
-    {
-        return (float)get();
-    };
-
-    //---------------------------------------------------------------------------------                        
-    std::string getString()
-    {
-        return to_string(get());
-    };
-
-    //---------------------------------------------------------------------------------                    
+    //---------------------------------------------------------------------------------
     // serialization methods
     bool save(spStorageBlock *stBlk)
     {
@@ -568,8 +674,7 @@ template <class T> class _spProperty2Base : public spProperty2
         return stBlk->writeBytes(save_size(), (char *)&c);
     };
 
-
-    //---------------------------------------------------------------------------------                
+    //---------------------------------------------------------------------------------
     bool restore(spStorageBlock *stBlk)
     {
         T c;
@@ -586,19 +691,19 @@ template <class T> class _spProperty2Base : public spProperty2
 // Strings are special ...
 //
 // There is some code duplication here - not happy about this - but strings
-// are differnet, so they require a unique implementation. I'm sure there's some 
-// magic that could reduce the code duplication - but this isn't happening today ... 
+// are differnet, so they require a unique implementation. I'm sure there's some
+// magic that could reduce the code duplication - but this isn't happening today ...
 //
-class _spProperty2BaseString : public spProperty2
+class _spProperty2BaseString : public spProperty2, _spDataIn<std::string>, _spDataOutString
 {
 
   public:
-
-    spDataType_t type2(){
+    spDataType_t type2()
+    {
         return spTypeString;
     };
 
-    //---------------------------------------------------------------------------------            
+    //---------------------------------------------------------------------------------
     // size in bytes of this property
     size_t size()
     {
@@ -606,20 +711,20 @@ class _spProperty2BaseString : public spProperty2
         return c.size();
     };
 
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     size_t save_size()
     {
         return this->size() + sizeof(uint8_t);
     };
 
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     // Virutal functions to get and set the value - these are filled in
     // by the sub-class
 
     virtual std::string get(void) const = 0;
     virtual void set(const std::string &value) = 0;
 
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     // set for a c string...
     void set(const char *value)
     {
@@ -627,31 +732,7 @@ class _spProperty2BaseString : public spProperty2
         set(c);
     }
 
-    //---------------------------------------------------------------------------------        
-    bool getBool()
-    {
-        return std::atoi(get().c_str()) != 0;
-    }
-
-    //---------------------------------------------------------------------------------            
-    int getInt()
-    {
-        return std::atoi(get().c_str());
-    }
-
-    //---------------------------------------------------------------------------------            
-    float getFloat()
-    {
-        return std::atof(get().c_str());
-    }
-
-    //---------------------------------------------------------------------------------            
-    std::string getString()
-    {
-        return get();
-    }
-
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     // serialization methods
     bool save(spStorageBlock *stBlk)
     {
@@ -662,7 +743,7 @@ class _spProperty2BaseString : public spProperty2
         return stBlk->writeBytes(len, (char *)c.c_str());
     }
 
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     bool restore(spStorageBlock *stBlk)
     {
 
@@ -697,7 +778,7 @@ class _spProperty2BaseString : public spProperty2
 template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)>
 class _spPropertyTypedRW : public _spProperty2Base<T>
 {
-    Object *my_object;  // Pointer to the containing object
+    Object *my_object; // Pointer to the containing object
 
   public:
     _spPropertyTypedRW() : my_object(0)
@@ -709,13 +790,13 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
     }
 
     //---------------------------------------------------------------------------------
-    // to register the property - set the containing object instance 
-    // Normally done in the containing objects constructor. 
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
     // i.e.
     //     property_obj(this);
     //
-    // This allows the property to add itself to the containing objects list of 
-    // properties. 
+    // This allows the property to add itself to the containing objects list of
+    // properties.
     //
     // Also thie containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
@@ -729,9 +810,8 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
 
         if (my_object)
             my_object->addProperty(this);
-        
     }
-    void operator()(Object *obj, const char* name)
+    void operator()(Object *obj, const char *name)
     {
         // set the name of the property on init
         if (name)
@@ -741,15 +821,14 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
         (*this)(obj);
     }
 
-
-    void operator()(Object *obj, const char* name, const char* desc)
+    void operator()(Object *obj, const char *name, const char *desc)
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;   
+            spDescriptor::description = desc;
 
         // cascade to other version of method
-        (*this)(obj, name);        
+        (*this)(obj, name);
     }
 
     //---------------------------------------------------------------------------------
@@ -762,7 +841,7 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
 
         return (my_object->*_getter)();
     }
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     void set(T const &value)
     {
         assert(my_object);
@@ -773,14 +852,20 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
     }
 
     //---------------------------------------------------------------------------------
-    // get -> property() 
+    //  need to overload the equality operator
+    bool operator==(const T &rhs)
+    {
+        return get() == rhs;
+    }
+    //---------------------------------------------------------------------------------
+    // get -> property()
     T operator()() const
     {
         return get();
     };
-    
-    //---------------------------------------------------------------------------------    
-    // set -> property(value) 
+
+    //---------------------------------------------------------------------------------
+    // set -> property(value)
     void operator()(T const &value)
     {
         set(value);
@@ -844,13 +929,13 @@ class spPropertyRWString : public _spProperty2BaseString
     {
     }
     //---------------------------------------------------------------------------------
-    // to register the property - set the containing object instance 
-    // Normally done in the containing objects constructor. 
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
     // i.e.
     //     property_obj(this);
     //
-    // This allows the property to add itself to the containing objects list of 
-    // properties. 
+    // This allows the property to add itself to the containing objects list of
+    // properties.
     //
     // Also thie containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
@@ -864,29 +949,26 @@ class spPropertyRWString : public _spProperty2BaseString
         assert(my_object);
         if (my_object)
             my_object->addProperty(this);
-
     }
 
-    void operator()(Object *obj,  const char* name)
+    void operator()(Object *obj, const char *name)
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;  
+            spDescriptor::name2 = name;
 
         // cascade to other version of method
         (*this)(obj);
-    
     }
 
-
-    void operator()(Object *obj, const char* name, const char* desc)
+    void operator()(Object *obj, const char *name, const char *desc)
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;   
+            spDescriptor::description = desc;
 
         // cascade to other version of method
-        (*this)(obj, name);        
+        (*this)(obj, name);
     }
     //---------------------------------------------------------------------------------
     // String - needed to overload the equality operator
@@ -906,7 +988,7 @@ class spPropertyRWString : public _spProperty2BaseString
         return (my_object->*_getter)();
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     void set(std::string const &value)
     {
         assert(my_object);
@@ -917,14 +999,14 @@ class spPropertyRWString : public _spProperty2BaseString
     }
 
     //---------------------------------------------------------------------------------
-    // get -> property() 
+    // get -> property()
     std::string operator()() const
     {
         return get();
     };
 
     //---------------------------------------------------------------------------------
-    // set -> property(value) 
+    // set -> property(value)
     void operator()(std::string const &value)
     {
         set(value);
@@ -939,7 +1021,7 @@ class spPropertyRWString : public _spProperty2BaseString
     };
 
     //---------------------------------------------------------------------------------
-     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
+    // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
     spPropertyRWString<Object, _getter, _setter> &operator=(std::string const &value)
     {
         set(value);
@@ -951,19 +1033,17 @@ class spPropertyRWString : public _spProperty2BaseString
 //
 // Template class for a property object that contains storage for the property.
 //
-template <class Object, class T> 
-class _spPropertyTyped : public _spProperty2Base<T>
+template <class Object, class T> class _spPropertyTyped : public _spProperty2Base<T>
 {
 
   public:
-
-    // to register the property - set the containing object instance 
-    // Normally done in the containing objects constructor. 
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
     // i.e.
     //     property_obj(this);
     //
-    // This allows the property to add itself to the containing objects list of 
-    // properties. 
+    // This allows the property to add itself to the containing objects list of
+    // properties.
     void operator()(Object *me)
     {
         // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
@@ -975,58 +1055,62 @@ class _spPropertyTyped : public _spProperty2Base<T>
         assert(me);
         if (me)
             me->addProperty(this);
-
     }
-    void operator()(Object *obj, const char* name)
+    void operator()(Object *obj, const char *name)
     {
 
         // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;  
+            spDescriptor::name2 = name;
 
-        // cascade to other version of method        
+        // cascade to other version of method
         (*this)(obj);
     }
 
-
-    void operator()(Object *obj, const char* name, const char* desc)
+    void operator()(Object *obj, const char *name, const char *desc)
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;   
+            spDescriptor::description = desc;
 
         // cascade to other version of method
-        (*this)(obj, name);        
+        (*this)(obj, name);
     }
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // access with get()/set() syntax
     T get() const
     {
         return data;
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     void set(T const &value)
     {
         data = value;
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
+    //  need to overload the equality operator
+    bool operator==(const T &rhs)
+    {
+        return get() == rhs;
+    }
+    //---------------------------------------------------------------------------------
     // function call syntax
-    // get -> property() 
+    // get -> property()
     T operator()() const
     {
         return get();
     };
 
-    //---------------------------------------------------------------------------------    
-    // set -> property(value) 
+    //---------------------------------------------------------------------------------
+    // set -> property(value)
     void operator()(T const &value)
     {
         set(value);
     };
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // access with '=' sign
     // get -> value = property
     operator T() const
@@ -1043,7 +1127,7 @@ class _spPropertyTyped : public _spProperty2Base<T>
     };
 
   private:
-    T data;   // actual storage for the property
+    T data; // actual storage for the property
 };
 
 // Define typed properties
@@ -1063,15 +1147,14 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
 {
 
   public:
-    
-    //---------------------------------------------------------------------------------        
-    // to register the property - set the containing object instance 
-    // Normally done in the containing objects constructor. 
+    //---------------------------------------------------------------------------------
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
     // i.e.
     //     property_obj(this);
     //
-    // This allows the property to add itself to the containing objects list of 
-    // properties. 
+    // This allows the property to add itself to the containing objects list of
+    // properties.
 
     void operator()(Object *me)
     {
@@ -1085,7 +1168,7 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
             me->addProperty(this);
     }
     // set the name of the property on init
-    void operator()(Object *obj, const char* name)
+    void operator()(Object *obj, const char *name)
     {
         if (name)
             spDescriptor::name2 = name;
@@ -1095,58 +1178,58 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
     }
 
     // allow the passing in of a name and description
-    void operator()(Object *obj, const char* name, const char* desc)
+    void operator()(Object *obj, const char *name, const char *desc)
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;   
+            spDescriptor::description = desc;
 
         // cascade to other version of method
-        (*this)(obj, name);        
+        (*this)(obj, name);
     }
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     // access with get()/set() syntax
     std::string get() const
     {
         return data;
     }
 
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     void set(std::string const &value)
     {
         data = value;
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // String - needed to overload the equality operator
     bool operator==(const std::string &rhs)
     {
         return get() == rhs;
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // function call syntax
-    // get -> property() 
+    // get -> property()
     std::string operator()() const
     {
         return get();
     };
 
-    //---------------------------------------------------------------------------------    
-    // set -> property(value) 
+    //---------------------------------------------------------------------------------
+    // set -> property(value)
     void operator()(std::string const &value)
     {
         set(value);
     };
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // access with '=' sign
     operator std::string() const
     {
         return get();
     };
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
     spPropertyString2<Object> &operator=(std::string const &value)
     {
@@ -1155,9 +1238,8 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
     };
 
   private:
-    std::string data;    // storage for the property
+    std::string data; // storage for the property
 };
-
 
 //---------------------------------------------------------
 // Class/device typing. use an empty class to define a type. Each typed
@@ -1231,7 +1313,7 @@ class spObject : public spIPersist, public _spProperty2Container, public spDescr
     {
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     virtual bool save(spStorageBlock *stBlk)
     {
 
@@ -1242,7 +1324,7 @@ class spObject : public spIPersist, public _spProperty2Container, public spDescr
         return true;
     };
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     virtual bool restore(spStorageBlock *stBlk)
     {
         if (!restoreProperties(stBlk))
@@ -1277,7 +1359,7 @@ template <typename T> class spObjectContainer : public T, public std::vector<T *
                       "spObjectContainer: type parameter of this class must derive from spObject");
     }
 
-    //---------------------------------------------------------------------------------        
+    //---------------------------------------------------------------------------------
     // State things -- entry for save/restore
     bool save(spStorageBlock *stBlk)
     {
@@ -1289,7 +1371,7 @@ template <typename T> class spObjectContainer : public T, public std::vector<T *
         return true;
     };
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     bool restore(spStorageBlock *stBlk)
     {
         // restore ourselfs
@@ -1315,7 +1397,7 @@ class spParameter : public spDescriptor
     bool _isEnabled;
 
   public:
-    spParameter() : _isEnabled{true}{};
+    spParameter() : _isEnabled{true} {};
 
     bool enabled(void)
     {
@@ -1329,63 +1411,77 @@ class spParameter : public spDescriptor
 };
 
 // simple def - list of parameters
-using spParameterList = std::vector<spParameter*>;
+using spParameterList = std::vector<spParameter *>;
 
 // We want to bin parameters as input and output for storing different
 // arguments lists per object type via overloading. So define some simple classes
 
-class _spParameterIn : public spParameter {};
-class _spParameterOut : public spParameter {};
+class _spParameterIn : public spParameter
+{
+};
+class _spParameterOut : public spParameter
+{
+};
 //----------------------------------------------------------------------------------------
 // spParameterContainer
 //
 // Define interface/class to manage a list of input and output parameters
 //
 //
-// The intent is to add this into other classes that want to expose parameters. 
+// The intent is to add this into other classes that want to expose parameters.
 //
 class _spParameterContainer
 {
 
   public:
-
-    //---------------------------------------------------------------------------------                                    
+    //---------------------------------------------------------------------------------
     void addParameter(_spParameterIn *newParam)
     {
         _input_parameters.push_back(newParam);
     };
 
-    //---------------------------------------------------------------------------------                                    
-    void addParameter(_spParameterIn& newParam)
+    //---------------------------------------------------------------------------------
+    void addParameter(_spParameterIn &newParam)
     {
         addParameter(&newParam);
     };
 
+    //---------------------------------------------------------------------------------
+    size_t nInputParameters()
+    {
+        return _input_parameters.size();
+    }
 
-    //---------------------------------------------------------------------------------                                    
+    //---------------------------------------------------------------------------------
     void addParameter(_spParameterOut *newParam)
     {
         _output_parameters.push_back(newParam);
     };
 
-    //---------------------------------------------------------------------------------                                    
-    void addParameter(_spParameterOut& newParam)
+    //---------------------------------------------------------------------------------
+    void addParameter(_spParameterOut &newParam)
     {
         addParameter(&newParam);
     };
 
-    //---------------------------------------------------------------------------------                                
+    //---------------------------------------------------------------------------------
+    size_t nOutputParameters()
+    {
+        return _input_parameters.size();
+    }
+
+    //---------------------------------------------------------------------------------
     spParameterList &getOutputParameters(void)
     {
         return _output_parameters;
     };
 
-    //---------------------------------------------------------------------------------                                
+    //---------------------------------------------------------------------------------
     spParameterList &getInputParameters(void)
     {
         return _input_parameters;
     };
-    
+
   private:
     spParameterList _input_parameters;
     spParameterList _output_parameters;
@@ -1398,9 +1494,9 @@ class _spParameterContainer
 //
 //
 template <class T, class Object, T (Object::*_getter)()>
-class spParameterOut : public _spParameterOut
+class spParameterOut : public _spParameterOut, public _spDataOut<T>
 {
-    Object *my_object;  // Pointer to the containing object
+    Object *my_object; // Pointer to the containing object
 
   public:
     spParameterOut() : my_object(0)
@@ -1411,7 +1507,7 @@ class spParameterOut : public _spParameterOut
     {
     }
 
-    //---------------------------------------------------------------------------------                            
+    //---------------------------------------------------------------------------------
     // Type of property
     spDataType_t type2(void)
     {
@@ -1419,13 +1515,13 @@ class spParameterOut : public _spParameterOut
         return spDataTyper::type(c);
     };
     //---------------------------------------------------------------------------------
-    // to register the parameter - set the containing object instance 
-    // Normally done in the containing objects constructor. 
+    // to register the parameter - set the containing object instance
+    // Normally done in the containing objects constructor.
     // i.e.
     //     parameter_objectthis);
     //
-    // This allows the parameter to add itself to the containing objects list of 
-    // parameter. 
+    // This allows the parameter to add itself to the containing objects list of
+    // parameter.
     //
     // Also thie containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
@@ -1439,9 +1535,8 @@ class spParameterOut : public _spParameterOut
 
         if (my_object)
             my_object->addParameter(this);
-        
     }
-    void operator()(Object *obj, const char* name)
+    void operator()(Object *obj, const char *name)
     {
         // set the name of the property on init
         if (name)
@@ -1451,15 +1546,14 @@ class spParameterOut : public _spParameterOut
         (*this)(obj);
     }
 
-
-    void operator()(Object *obj, const char* name, const char* desc)
+    void operator()(Object *obj, const char *name, const char *desc)
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;   
+            spDescriptor::description = desc;
 
         // cascade to other version of method
-        (*this)(obj, name);        
+        (*this)(obj, name);
     }
 
     //---------------------------------------------------------------------------------
@@ -1474,37 +1568,29 @@ class spParameterOut : public _spParameterOut
     }
 
     //---------------------------------------------------------------------------------
-    // get -> parameter() 
+    // get -> parameter()
     T operator()() const
     {
         return get();
     };
-
-    
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)()>
-using spParameterOutBool = spParameterOut<bool, Object, _getter>;
+template <class Object, bool (Object::*_getter)()> using spParameterOutBool = spParameterOut<bool, Object, _getter>;
 
-template <class Object, int (Object::*_getter)()>
-using spParameterOutInt = spParameterOut<int, Object, _getter>;
+template <class Object, int (Object::*_getter)()> using spParameterOutInt = spParameterOut<int, Object, _getter>;
 
-template <class Object, uint (Object::*_getter)()>
-using spParameterOutUint = spParameterOut<uint, Object, _getter>;
+template <class Object, uint (Object::*_getter)()> using spParameterOutUint = spParameterOut<uint, Object, _getter>;
 
-template <class Object, float (Object::*_getter)()>
-using spParameterOutFloat = spParameterOut<float, Object, _getter>;
+template <class Object, float (Object::*_getter)()> using spParameterOutFloat = spParameterOut<float, Object, _getter>;
 
 template <class Object, std::string (Object::*_getter)()>
 using spParameterOutString = spParameterOut<std::string, Object, _getter>;
 
-
-
 template <class T, class Object, void (Object::*_setter)(T const &)>
-class spParameterIn : public _spParameterIn
+class spParameterIn : public _spParameterIn, _spDataIn<T>
 {
-    Object *my_object;  // Pointer to the containing object
+    Object *my_object; // Pointer to the containing object
 
   public:
     spParameterIn() : my_object(0)
@@ -1516,13 +1602,13 @@ class spParameterIn : public _spParameterIn
     }
 
     //---------------------------------------------------------------------------------
-    // to register the property - set the containing object instance 
-    // Normally done in the containing objects constructor. 
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
     // i.e.
     //     property_obj(this);
     //
-    // This allows the property to add itself to the containing objects list of 
-    // properties. 
+    // This allows the property to add itself to the containing objects list of
+    // properties.
     //
     // Also thie containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
@@ -1536,9 +1622,8 @@ class spParameterIn : public _spParameterIn
 
         if (my_object)
             my_object->addParameter(this);
-        
     }
-    void operator()(Object *obj, const char* name)
+    void operator()(Object *obj, const char *name)
     {
         // set the name of the property on init
         if (name)
@@ -1548,18 +1633,17 @@ class spParameterIn : public _spParameterIn
         (*this)(obj);
     }
 
-
-    void operator()(Object *obj, const char* name, const char* desc)
+    void operator()(Object *obj, const char *name, const char *desc)
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;   
+            spDescriptor::description = desc;
 
         // cascade to other version of method
-        (*this)(obj, name);        
+        (*this)(obj, name);
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     void set(T const &value)
     {
         assert(my_object);
@@ -1568,14 +1652,13 @@ class spParameterIn : public _spParameterIn
 
         (my_object->*_setter)(value);
     }
-    
-    //---------------------------------------------------------------------------------    
-    // set -> parameter(value) 
+
+    //---------------------------------------------------------------------------------
+    // set -> parameter(value)
     void operator()(T const &value)
     {
         set(value);
     };
-
 };
 
 // Define by type
@@ -1599,36 +1682,33 @@ using spParameterInDouble = spParameterIn<double, Object, _setter>;
 template <class Object, void (Object::*_setter)(bool const &)>
 using spParameterInString = spParameterIn<bool, Object, _setter>;
 
-
-
 // Handy macros to "register attributes (props/params)"
 
 // If the user doesn't supply a unique name or desc - use the object name/prop var name for the name
 
-// Use some macro magic to determine which actual call to make based on the number of passed in 
+// Use some macro magic to determine which actual call to make based on the number of passed in
 // parameters..
-#define _spGetRegAttributeMacro(_1, _2, _3, _NAME_, ...) _NAME_ 
+#define _spGetRegAttributeMacro(_1, _2, _3, _NAME_, ...) _NAME_
 #define spRegister(...) _spGetRegAttributeMacro(__VA_ARGS__, spRegisterDesc, spRegisterName, spRegisterObj)(__VA_ARGS__)
 
-#define spRegisterObj(_obj_name_ ) _obj_name_(this, #_obj_name_)
+#define spRegisterObj(_obj_name_) _obj_name_(this, #_obj_name_)
 
 // User provided Name
-#define spRegisterName(_obj_name_, _name_ ) _obj_name_(this, _name_)
+#define spRegisterName(_obj_name_, _name_) _obj_name_(this, _name_)
 
 // User provided Name and description
-#define spRegisterDesc(_obj_name_, _name_, _desc_ ) _obj_name_(this, _name_, _desc_)
-
+#define spRegisterDesc(_obj_name_, _name_, _desc_) _obj_name_(this, _name_, _desc_)
 
 // Define a object type that suppoarts parameter lists (input and output)
-class spOperation : public spObject, public _spParameterContainer{};
-
-// and a conainer for this things 
-
-
-template <typename T> 
-class spOperationContainer : public T, public spObjectContainer<T>
+class spOperation : public spObject, public _spParameterContainer
 {
-public:
+};
+
+// and a conainer for this thing
+
+template <typename T> class spOperationContainer : public T, public spObjectContainer<T>
+{
+  public:
     spOperationContainer()
     {
         // Make sure the container type has sp object as it's baseclass or it's a spObject
@@ -1636,23 +1716,13 @@ public:
         static_assert(std::is_base_of<spOperation, T>::value,
                       "spOperationContainer: type parameter of this class must derive from spOperation");
     }
-
 };
-
 
 //##############################################################################################################################
 //##############################################################################################################################
 // END rework of props/object
 //##############################################################################################################################
 //##############################################################################################################################
-
-
-
-
-
-
-
-
 
 // The property object template used to define a type of the object.
 //
