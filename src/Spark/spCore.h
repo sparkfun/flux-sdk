@@ -390,11 +390,11 @@ class spPropertyBase : public spIPersist, public spDataCore
 class spDescriptor
 {
   public:
-    spDescriptor() : name2{""}, description{""}
+    spDescriptor() : name{""}, description{""}
     {
     }
 
-    std::string name2;
+    std::string name;
     std::string description;
 };
 
@@ -815,7 +815,7 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name = name;
 
         // cascade to other version of method
         (*this)(obj);
@@ -955,7 +955,7 @@ class spPropertyRWString : public _spProperty2BaseString
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name = name;
 
         // cascade to other version of method
         (*this)(obj);
@@ -1061,7 +1061,7 @@ template <class Object, class T> class _spPropertyTyped : public _spProperty2Bas
 
         // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name = name;
 
         // cascade to other version of method
         (*this)(obj);
@@ -1171,7 +1171,7 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
     void operator()(Object *obj, const char *name)
     {
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name = name;
 
         // cascade to other version of method
         (*this)(obj);
@@ -1540,7 +1540,7 @@ class spParameterOut : public _spParameterOut, public _spDataOut<T>
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name = name;
 
         // cascade to other version of method
         (*this)(obj);
@@ -1584,8 +1584,98 @@ template <class Object, uint (Object::*_getter)()> using spParameterOutUint = sp
 
 template <class Object, float (Object::*_getter)()> using spParameterOutFloat = spParameterOut<float, Object, _getter>;
 
+
+//----------------------------------------------------------------------------------------------------
+// spParameterOutString
+//
+// Strings are special
+// Output Parameter Template
+//
+//
 template <class Object, std::string (Object::*_getter)()>
-using spParameterOutString = spParameterOut<std::string, Object, _getter>;
+class spParameterOutString : public _spParameterOut, public _spDataOutString
+{
+    Object *my_object; // Pointer to the containing object
+
+  public:
+    spParameterOutString() : my_object(0)
+    {
+    }
+
+    spParameterOutString(Object *me) : my_object(me)
+    {
+    }
+
+    //---------------------------------------------------------------------------------
+    // Type of property
+    spDataType_t type2(void)
+    {
+        std::string c;
+        return spDataTyper::type(c);
+    };
+    //---------------------------------------------------------------------------------
+    // to register the parameter - set the containing object instance
+    // Normally done in the containing objects constructor.
+    // i.e.
+    //     parameter_objectthis);
+    //
+    // This allows the parameter to add itself to the containing objects list of
+    // parameter.
+    //
+    // Also thie containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterOutString: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+    }
+    void operator()(Object *obj, const char *name)
+    {
+        // set the name of the property on init
+        if (name)
+            spDescriptor::name = name;
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+    void operator()(Object *obj, const char *name, const char *desc)
+    {
+        // Description of the object
+        if (desc)
+            spDescriptor::description = desc;
+
+        // cascade to other version of method
+        (*this)(obj, name);
+    }
+
+    //---------------------------------------------------------------------------------
+    // get/set syntax
+    std::string get() const
+    {
+        assert(my_object);
+        if (!my_object) // would normally throw an exception, but not very Arduino like!
+            return std::string("");
+
+        return (my_object->*_getter)();
+    }
+
+    //---------------------------------------------------------------------------------
+    // get -> parameter()
+    std::string operator()() const
+    {
+        return get();
+    };
+};
+
+
+
 
 template <class T, class Object, void (Object::*_setter)(T const &)>
 class spParameterIn : public _spParameterIn, _spDataIn<T>
@@ -1627,7 +1717,7 @@ class spParameterIn : public _spParameterIn, _spDataIn<T>
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name2 = name;
+            spDescriptor::name = name;
 
         // cascade to other version of method
         (*this)(obj);
@@ -1679,8 +1769,8 @@ using spParameterInFloat = spParameterIn<float, Object, _setter>;
 template <class Object, void (Object::*_setter)(double const &)>
 using spParameterInDouble = spParameterIn<double, Object, _setter>;
 
-template <class Object, void (Object::*_setter)(bool const &)>
-using spParameterInString = spParameterIn<bool, Object, _setter>;
+template <class Object, void (Object::*_setter)(std::string const &)>
+using spParameterInString = spParameterIn<std::string, Object, _setter>;
 
 // Handy macros to "register attributes (props/params)"
 
