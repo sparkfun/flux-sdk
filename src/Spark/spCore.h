@@ -1073,7 +1073,7 @@ class spObject : public spPersist, public _spProperty2Container, public spDescri
 };
 
 //----------------------------------------------------------------------------------------------------
-// spObjectContainer
+// _spObjectContainer
 //
 // Container class - containts objects. Mimics some aspects of a vector interface.
 //
@@ -1081,11 +1081,11 @@ class spObject : public spPersist, public _spProperty2Container, public spDescri
 //
 // Note, it ensures that the class is a spObject
 
-template <typename T> class spObjectContainer : public T, public std::vector<T *>
+template <typename T> class _spObjectContainer : public T, public std::vector<T *>
 {
 
   public:
-    spObjectContainer()
+    _spObjectContainer()
     {
         // Make sure the container type has sp object as it's baseclass or it's a spObject
         // Compile-time check
@@ -1115,7 +1115,15 @@ template <typename T> class spObjectContainer : public T, public std::vector<T *
 
         return true;
     };
+
+    void add( T *value ){
+        this->std::vector<T*>::push_back(value);
+    }
+    void add( T &value ){
+        add(&value);
+    }
 };
+using spObjectContainer = _spObjectContainer<spObject>;
 
 //##############################################################################################################################
 //##############################################################################################################################
@@ -1150,10 +1158,10 @@ using spParameterList = std::vector<spParameter *>;
 // We want to bin parameters as input and output for storing different
 // arguments lists per object type via overloading. So define some simple classes
 
-class _spParameterIn : public spParameter
+class spParameterIn : public spParameter
 {
 };
-class _spParameterOut : public spParameter
+class spParameterOut : public spParameter
 {
 };
 //----------------------------------------------------------------------------------------
@@ -1169,13 +1177,13 @@ class _spParameterContainer
 
   public:
     //---------------------------------------------------------------------------------
-    void addParameter(_spParameterIn *newParam)
+    void addParameter(spParameterIn *newParam)
     {
         _input_parameters.push_back(newParam);
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(_spParameterIn &newParam)
+    void addParameter(spParameterIn &newParam)
     {
         addParameter(&newParam);
     };
@@ -1187,13 +1195,13 @@ class _spParameterContainer
     }
 
     //---------------------------------------------------------------------------------
-    void addParameter(_spParameterOut *newParam)
+    void addParameter(spParameterOut *newParam)
     {
         _output_parameters.push_back(newParam);
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(_spParameterOut &newParam)
+    void addParameter(spParameterOut &newParam)
     {
         addParameter(&newParam);
     };
@@ -1228,16 +1236,16 @@ class _spParameterContainer
 //
 //
 template <class T, class Object, T (Object::*_getter)()>
-class spParameterOut : public _spParameterOut, public _spDataOut<T>
+class _spParameterOut : public spParameterOut, public _spDataOut<T>
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-    spParameterOut() : my_object(0)
+    _spParameterOut() : my_object(0)
     {
     }
 
-    spParameterOut(Object *me) : my_object(me)
+    _spParameterOut(Object *me) : my_object(me)
     {
     }
 
@@ -1310,13 +1318,13 @@ class spParameterOut : public _spParameterOut, public _spDataOut<T>
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)()> using spParameterOutBool = spParameterOut<bool, Object, _getter>;
+template <class Object, bool (Object::*_getter)()> using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
 
-template <class Object, int (Object::*_getter)()> using spParameterOutInt = spParameterOut<int, Object, _getter>;
+template <class Object, int (Object::*_getter)()> using spParameterOutInt = _spParameterOut<int, Object, _getter>;
 
-template <class Object, uint (Object::*_getter)()> using spParameterOutUint = spParameterOut<uint, Object, _getter>;
+template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
 
-template <class Object, float (Object::*_getter)()> using spParameterOutFloat = spParameterOut<float, Object, _getter>;
+template <class Object, float (Object::*_getter)()> using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
 
 
 //----------------------------------------------------------------------------------------------------
@@ -1327,7 +1335,7 @@ template <class Object, float (Object::*_getter)()> using spParameterOutFloat = 
 //
 //
 template <class Object, std::string (Object::*_getter)()>
-class spParameterOutString : public _spParameterOut, public _spDataOutString
+class spParameterOutString : public spParameterOut, public _spDataOutString
 {
     Object *my_object; // Pointer to the containing object
 
@@ -1412,16 +1420,16 @@ class spParameterOutString : public _spParameterOut, public _spDataOutString
 
 
 template <class T, class Object, void (Object::*_setter)(T const &)>
-class spParameterIn : public _spParameterIn, _spDataIn<T>
+class _spParameterIn : public spParameterIn, _spDataIn<T>
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-    spParameterIn() : my_object(0)
+    _spParameterIn() : my_object(0)
     {
     }
 
-    spParameterIn(Object *me) : my_object(me)
+    _spParameterIn(Object *me) : my_object(me)
     {
     }
 
@@ -1489,22 +1497,22 @@ class spParameterIn : public _spParameterIn, _spDataIn<T>
 
 // bool
 template <class Object, void (Object::*_setter)(bool const &)>
-using spParameterInBool = spParameterIn<bool, Object, _setter>;
+using spParameterInBool = _spParameterIn<bool, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(int const &)>
-using spParameterInInt = spParameterIn<int, Object, _setter>;
+using spParameterInInt = _spParameterIn<int, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint const &)>
-using spParameterInUint = spParameterIn<uint, Object, _setter>;
+using spParameterInUint = _spParameterIn<uint, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(float const &)>
-using spParameterInFloat = spParameterIn<float, Object, _setter>;
+using spParameterInFloat = _spParameterIn<float, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(double const &)>
-using spParameterInDouble = spParameterIn<double, Object, _setter>;
+using spParameterInDouble = _spParameterIn<double, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(std::string const &)>
-using spParameterInString = spParameterIn<std::string, Object, _setter>;
+using spParameterInString = _spParameterIn<std::string, Object, _setter>;
 
 // Handy macros to "register attributes (props/params)"
 
@@ -1526,14 +1534,24 @@ using spParameterInString = spParameterIn<std::string, Object, _setter>;
 // Define a object type that suppoarts parameter lists (input and output)
 class spOperation : public spObject, public _spParameterContainer
 {
+public:
+    virtual spType *getType(void)
+    {
+        return (spType *)nullptr;
+    }
+
+    virtual bool loop(void)
+    {
+        return false;
+    }
 };
 
 // and a conainer for this thing
 
-template <typename T> class spOperationContainer : public T, public spObjectContainer<T>
+template <typename T> class _spOperationContainer : public _spObjectContainer<T>
 {
   public:
-    spOperationContainer()
+    _spOperationContainer()
     {
         // Make sure the container type has sp object as it's baseclass or it's a spObject
         // Compile-time check
@@ -1542,6 +1560,15 @@ template <typename T> class spOperationContainer : public T, public spObjectCont
     }
 };
 
+using spOperationContainer = _spOperationContainer<spOperation>;
+//-----------------------------------------
+// Spark Actions
+
+class spAction2 : public spOperation
+{
+};
+
+using spActionContainer2 = _spOperationContainer<spAction2>;
 //##############################################################################################################################
 //##############################################################################################################################
 // END rework of props/object

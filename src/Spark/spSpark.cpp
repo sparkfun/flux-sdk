@@ -46,7 +46,7 @@ bool spSpark::loop(void)
     bool rc = false;
 
     // Actions
-    spAction *pAction;
+    spAction2 *pAction;
     for (int i = 0; i < Actions.size(); i++)
     {
         pAction = Actions.at(i);
@@ -84,12 +84,12 @@ void spSpark::add(_spDevice *theDevice )
 bool spSpark::serializeJSON(char *szBuffer, size_t sz)
 {
 
-    StaticJsonDocument<500> jDoc;
+   // StaticJsonDocument<500> jDoc;
 
-    Actions.serializeJSON(jDoc);
-    Devices.serializeJSON(jDoc);
+   // Actions.serializeJSON(jDoc);
+   // Devices.serializeJSON(jDoc);
 
-    serializeJson(jDoc, szBuffer, sz);
+   // serializeJson(jDoc, szBuffer, sz);
 
     return true;
 }

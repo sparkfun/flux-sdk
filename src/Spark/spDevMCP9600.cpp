@@ -46,17 +46,17 @@ spDevMCP9600::spDevMCP9600()
     // Set default values for the properties. Note: If stored/serialized values exist,
     // they are loaded after this method - as the system starts up.
 
-    spRegisterProperty(ambient_resolution, false);
-    spRegisterProperty(thermocouple_resolution, 0);
-    spRegisterProperty(thermocouple_type, 0);
-    spRegisterProperty(filter_coefficent, 0);        
+    //spRegisterProperty(ambient_resolution, false);
+    //spRegisterProperty(thermocouple_resolution, 0);
+    //spRegisterProperty(thermocouple_type, 0);
+    //spRegisterProperty(filter_coefficent, 0);        
 
     // Setup output parameters - connect to the data method for the source.
     // Note: These methods are from the super class - the original qwiic library.
-    spSetupOutParameter(thermocouple_temp, spDevMCP9600::_getThermocoupleTemp);
-    spSetupOutParameter(ambient_temp, spDevMCP9600::_getAmbientTemp);
-    spSetupOutParameter(temp_delta, spDevMCP9600::_getTempDelta);
-    spSetupOutParameter(raw_adc, MCP9600::getRawADC);
+    //spSetupOutParameter(thermocouple_temp, spDevMCP9600::_getThermocoupleTemp);
+    //spSetupOutParameter(ambient_temp, spDevMCP9600::_getAmbientTemp);
+    //spSetupOutParameter(temp_delta, spDevMCP9600::_getTempDelta);
+    //spSetupOutParameter(raw_adc, MCP9600::getRawADC);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -81,15 +81,4 @@ bool spDevMCP9600::onInitialize(TwoWire &wirePort)
     return MCP9600::begin(address(), wirePort);
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevMCP9600::onPropertyUpdate(const char *propName)
-{
-
-    // Serial.print("PROPERTY UPDATE: ");Serial.println(propName);
-    // save();
-}
 

@@ -41,20 +41,20 @@ class spDevMCP9600 : public spDevice<spDevMCP9600>, public MCP9600
     bool onInitialize(TwoWire &);
 
     // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
+    //void onPropertyUpdate(const char *);
 
     // Define our public/managed properites for this class.
     // These same properties are registered with the system in the object constructor
-    spPropertyBool ambient_resolution;
-    spPropertyInt  thermocouple_resolution;
-    spPropertyInt  thermocouple_type;
-    spPropertyInt  filter_coefficent;    
+    //spPropertyBool ambient_resolution;
+    //spPropertyInt  thermocouple_resolution;
+    //spPropertyInt  thermocouple_type;
+    //spPropertyInt  filter_coefficent;    
 
     // output args
-    spParamOutFlt thermocouple_temp;
-    spParamOutFlt ambient_temp;
-    spParamOutFlt temp_delta;
-    spParamOutInt raw_adc;
+    //spParamOutFlt thermocouple_temp;
+    //spParamOutFlt ambient_temp;
+    //spParamOutFlt temp_delta;
+    //spParamOutInt raw_adc;
 
 
 

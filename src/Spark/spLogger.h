@@ -93,27 +93,27 @@ class spLogger : public spAction
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spBase &a1, Args &&...args)
+    template <typename... Args> void add(spOperation &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spBase *a1, Args &&...args)
+    template <typename... Args> void add(spOperation *a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spDataCore *a1, Args &&...args)
+    template <typename... Args> void add(spParameterOut *a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spDataCore &a1, Args &&...args)
+    template <typename... Args> void add(spParameterOut &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spDeviceList &a1, Args &&...args)
+    template <typename... Args> void add(spParameterOut &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
@@ -123,8 +123,8 @@ class spLogger : public spAction
     std::vector<spOutputFormat *> _Formatters;
 
     // The things we're logging
-    spBaseList _objsToLog;
-    spDataCoreList _paramsToLog;
+    spOperationContainer _objsToLog;
+    spParameterList _paramsToLog;
 
     template <typename T> void writeValue(const char *tag, T value);
     void logSection(const char *section_name, spDataCoreList &params);
@@ -164,28 +164,28 @@ class spLogger : public spAction
             _Formatters.push_back(writer);
     }
 
-    void _add(spBase &base)
+    void _add(spOperation &op)
     {
-        _objsToLog.push_back(&base);
+        _objsToLog.push_back(&op);
     }
-    void _add(spBase *base)
+    void _add(spOperation *op)
     {
-        if (base != nullptr)
-            _objsToLog.push_back(base);
+        if (op != nullptr)
+            _objsToLog.push_back(op);
     }
 
-    void _add(spDataCore &param)
+    void _add(spParameterOut &param)
     {
         _paramsToLog.push_back(&param);
     }
-    void _add(spDataCore *param)
+    void _add(spParameterOut *param)
     {
         if (param != nullptr)
             _paramsToLog.push_back(param);
     }
 
     // Internal method to add the contents of a device list
-    void _add(spDeviceList &deviceList)
+    void _add(spOperationContainer &deviceList)
     {
         // Only add devices that have output parameters ..
         for (auto device : deviceList)

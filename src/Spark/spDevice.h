@@ -50,7 +50,7 @@
 
 class spDeviceFactory_;
 
-class _spDevice : public spBase
+class _spDevice : public spOperation
 {
 
   public:
@@ -66,18 +66,7 @@ class _spDevice : public spBase
         return true;
     };
 
-    // Method called when a managed property is updated.
-    virtual void onPropertyUpdate(const char *){};
-
-    virtual spType *getType(void)
-    {
-        return (spType *)nullptr;
-    }
-
-    virtual bool loop(void)
-    {
-        return false;
-    }
+    
 
     virtual uint8_t getDefaultAddress(void){
     	return kSparkDeviceAddressNull;
@@ -126,7 +115,9 @@ class _spDevice : public spBase
 
 };
 
-using spDeviceContainer = spContainer<_spDevice>;
+//using spDeviceContainer = spContainer<_spDevice>;
+using spDeviceContainer = _spOperationContainer<_spDevice>;
+
 using spDeviceList = spContainer<_spDevice>;
 
 // Macro used to simplfy device setup

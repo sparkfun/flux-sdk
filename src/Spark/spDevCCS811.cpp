@@ -33,8 +33,8 @@ spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
     spSetupDeviceIdent(getDeviceName());
 
     // Setup output parameters - connect to the data method for the source
-    spSetupOutParameter(co2, spDevCCS811::getCO2);
-    spSetupOutParameter(tvoc, spDevCCS811::getTVOC);
+    //spSetupOutParameter(co2, spDevCCS811::getCO2);
+    //spSetupOutParameter(tvoc, spDevCCS811::getTVOC);
 }
 
 // Function to encapsualte the ops needed to ge tvalues form the sensor.

@@ -11,7 +11,7 @@ bool spark_start(bool bAutoLoad = true);
 bool spark_loop();
 
 // Define the main framework class  - note it's a singleton
-class spSpark : public spContainer<spBase>
+class spSpark : public spObjectContainer
 {
 
   public:
@@ -29,18 +29,18 @@ class spSpark : public spContainer<spBase>
     bool loop(void);
 
     // Add items to framework - use overloading to determine destination
-    void add(spAction &theAction)
+    void add(spAction2 &theAction)
     {
         Actions.add(&theAction);
     }
-    void add(spAction *theAction)
+    void add(spAction2 *theAction)
     {
         Actions.add(theAction);
     }
 
     void add(_spDevice &theDevice)
     {
-        Devices.add(&theDevice);
+        Devices.push_back(&theDevice);
     }
     void add(_spDevice *theDevice);
 
@@ -50,7 +50,7 @@ class spSpark : public spContainer<spBase>
 
     // leaving containers public - not sure if this is helpful
     spDeviceContainer Devices;
-    spActionContainer Actions;
+    spActionContainer2 Actions;
 
     // Call to serliaze the settings of the system as a JSON object
     bool serializeJSON(char *, size_t);
@@ -78,7 +78,7 @@ class spSpark : public spContainer<spBase>
         return false;
     }
 
-    spDeviceList &connectedDevices(void)
+    spDeviceContainer &connectedDevices(void)
     {
         return Devices;
     }
@@ -87,6 +87,7 @@ class spSpark : public spContainer<spBase>
   private:
     spDevI2C _i2cDriver;
 
+    // Note private constructor...
     spSpark()
     {
 
@@ -96,21 +97,27 @@ class spSpark : public spContainer<spBase>
         Actions.name = "actions";
 
         // Our container has two children, the device and the actions container
-        this->spContainer::add(&Devices);
-        this->spContainer::add(&Actions);
+        this->add(&Devices);
+        this->add(&Actions);
 
-    } // private Constructor
-    spBase *_getByType(spType *type)
+    } 
+
+    spOperation *_getByType(spType *type)
     {
         for (int i = 0; i < Devices.size(); i++)
         {
             if (type == Devices.at(i)->getType())
                 return Devices.at(i);
         }
+         for (int i = 0; i < Actions.size(); i++)
+        {
+            if (type == Actions.at(i)->getType())
+                return Actions.at(i);
+        }
         return nullptr;
     }
 
-    spBase *_getByType(spType &type)
+    spOperation *_getByType(spType &type)
     {
         return _getByType(&type);
     }

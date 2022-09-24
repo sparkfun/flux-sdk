@@ -45,14 +45,14 @@ spDevBME280::spDevBME280()
     // Set default values for the properties. Note: If stored/serialized values exist,
     // they are loaded after this method - as the system starts up.
 
-    spRegisterProperty(celsius, false);
+   // spRegisterProperty(celsius, false);
 
     // Setup output parameters - connect to the data method for the source.
     // Note: These methods are from the super class - the original qwiic library.
-    spSetupOutParameter(temperature_f, spDevBME280::readTempF);
-    spSetupOutParameter(temperature_c, spDevBME280::readTempC);
-    spSetupOutParameter(humidity, spDevBME280::readFloatHumidity);
-    spSetupOutParameter(pressure, spDevBME280::readFloatPressure);
+    //spSetupOutParameter(temperature_f, spDevBME280::readTempF);
+    //spSetupOutParameter(temperature_c, spDevBME280::readTempC);
+    //spSetupOutParameter(humidity, spDevBME280::readFloatHumidity);
+    //spSetupOutParameter(pressure, spDevBME280::readFloatPressure);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -78,16 +78,3 @@ bool spDevBME280::onInitialize(TwoWire &wirePort)
     BME280::setI2CAddress(address());
     return BME280::beginI2C(wirePort);
 }
-
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevBME280::onPropertyUpdate(const char *propName)
-{
-
-    // Serial.print("PROPERTY UPDATE: ");Serial.println(propName);
-    // save();
-}
-

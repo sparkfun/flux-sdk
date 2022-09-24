@@ -43,8 +43,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
+  /*
 
     spPropertyBool celsius;
 
@@ -55,7 +54,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     spParamOutFlt temperature_c;
     spParamOutFlt humidity;
     spParamOutFlt pressure;
-
+*/
     // Type testing:
     // A static instance var - that is an object (can check instance pointer)
     static spType Type;
