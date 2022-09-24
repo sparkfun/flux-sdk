@@ -30,104 +30,32 @@ using std::string;
 
 #define warning_message(_message_) debug_message("[Warning] - ", _message_);
 
-//-------------------------------------------------------------------------
-// Storage interface
-//-------------------------------------------------------------------------
-struct spIPersist
-{
 
-    virtual bool save(spStorageBlock *stBlk) = 0;
-    virtual bool restore(spStorageBlock *stBlk) = 0;
+//##############################################################################################################################
+//##############################################################################################################################
+// Sept 22 Refactor work
+//##############################################################################################################################
+//##############################################################################################################################
+//
+// Note: '2' used during dev to prevent symbol collisions
+//
+//----------------------------------------------------------------------------------------
+// spDescriptor
+//
+// Simple class that can be mixed-in to add a common name and description string
+// to user "exposed" objects in the framework..
+
+class spDescriptor
+{
+  public:
+    spDescriptor() : name{""}, description{""}
+    {
+    }
+
+    std::string name;
+    std::string description;
 };
 
-//-------------------------------------------------------------------------
-// Managed Properties -  definitions
-//-------------------------------------------------------------------------
-//
-// The goal is to create a simple property system that supports a level of introspection
-// and automates the setting/getting of simple scalar properties.
-//
-// MANAGED PROPERTIES
-// ------------------
-//
-// Each managed property is peformed using a simple *proxy* object, which enables
-// simple property introspection for the object. The object provides the
-// following:
-//
-//     - Stores name of the property
-//     - Implements operator overloading to allow assignment (set) or access (get)
-//       of the underlying property value. This allows simplified property access
-//			i.e.    object.property = value    (set)
-//					value = object.property    (get)
-//     - Implements a save/restore methodology - to save property state to EEPROM
-//     - Call back the owner object when a property is changed.
-//	   - Introspection - Enumerate object names and types
-//
-// DEFINITION AND SETUP
-// --------------------
-//
-// The system consists of a property object, which contains the property storage, set/get
-// methods, and save/restore logic.
-//
-// Example of definition:
-//
-//    For the following desired properties:
-//
-//          bool      humidity
-//          bool      pressure
-//          int8_t    temperature
-//          bool      celsius
-//
-//    The following property objects are declared in the class definition:
-//
-//          spPropertyBool humidity;
-//          spPropertyBool pressure;
-//          spPropertyInt8 temperature;
-//          spPropertyBool celsius;
-////
-//    Initialization:
-//
-//    In the main object's constructor, attributes and default values for the
-//    property objects are setup. Additionally, the property is registered with
-//    the superclass - this enables simple introspection as well as state serialization.
-//
-//    Example setup calls for the humidity property:
-//
-//    MyObject::MyObject(){
-//
-//         // set target object (this), name and storage in the property object.
-//         humidty.initWithDefault(this, "humidty", &_settings.name, 20);
-//
-//         // Add this property object to the list of managed properties
-//		   this->addProperty(humidty);
-//    }
-//
-//    These steps are encapsulated in a macro, so the actual setup call is:
-//
-//    Example - simplified setup call:
-//
-//    MyObject::MyObject(){
-//
-//        // Register property with system, set default value
-//        spRegisterPropertyWithDefault(humidity, 20);
-//    }
-//
-// Enums of data types - This enum is ussed to determine a type of an object using polymorphism -
-//                       a virtual method is called for an objects type - subclasses override this method and
-//                        return the type enum for the property implemented.
-//
-enum DataTypes
-{
-    TypeNone,
-    TypeBool,
-    TypeInt,
-    TypeFloat,
-    TypeDouble,
-    TypeString
-};
-
-//#################################################################################
-// Refactor
 typedef enum
 {
     spTypeNone,
@@ -198,206 +126,12 @@ class spDataTyper
     };
 };
 
-//#################################################################################
-// these are used in the object property intrface.
-class spPropertyBase;
-using spPropertyList = std::vector<spPropertyBase *>;
-
-//////////////////////////////////////////////////////////////////////
-// Object Property Interface
-//////////////////////////////////////////////////////////////////////
-class spIProperty : public spIPersist
+struct spPersist
 {
 
-  public:
-    // get/set property
-
-    template <typename T> bool getProperty(const char *name, T &value);
-    template <typename T> bool setProperty(const char *name, T &value);
-
-    // Method called when a managed property is updated.
-    virtual void onPropertyUpdate(const char *){};
-
-  protected:
-    friend spPropertyBase; // when a prop is registered, it adds itself to our list.
-
-    // persitence methods
-    virtual bool save(spStorageBlock *sBLK);
-    virtual bool restore(spStorageBlock *sBLK);
-    size_t save_size(void);
-
-    // Method for a sub-class to add a managed property
-    void addProperty(spPropertyBase *newProperty)
-    {
-        // TODO: Check for dups.
-        _myProps.push_back(newProperty);
-    };
-    // reference version...
-    void addProperty(spPropertyBase &newProperty)
-    {
-        addProperty(&newProperty);
-    };
-
-    spPropertyList _myProps;
-};
-
-//------------------------------------------------------------------------
-// core class to define a typed value
-
-class spDataCore
-{
-
-  public:
-    const char *name; // TODO - IS THIS NEEDED - KDB
-
-    // type method - how a property's type is determined at runtime.
-    virtual DataTypes type(void)
-    {
-        return TypeNone;
-    }
-
-    // methods to get the value of a data item. These are all virtual,
-    // with the expectation that the sub-class will fill in with the
-    // correct methods that they support...
-
-    virtual bool getBool() = 0;
-    virtual int getInt() = 0;
-    virtual float getFloat() = 0;
-    virtual std::string getString() = 0;
-    const char *getCString()
-    {
-        return getString().c_str();
-    };
-
-  protected:
-    // some method overloading to determine types
-    inline DataTypes _getType(std::nullptr_t *t)
-    {
-        return TypeNone;
-    };
-    inline DataTypes _getType(bool *t)
-    {
-        return TypeBool;
-    };
-    inline DataTypes _getType(int *t)
-    {
-        return TypeInt;
-    };
-    inline DataTypes _getType(float *t)
-    {
-        return TypeFloat;
-    };
-    inline DataTypes _getType(double *t)
-    {
-        return TypeDouble;
-    };
-    inline DataTypes _getType(std::string *t)
-    {
-        return TypeString;
-    };
-
-    std::string &to_string(std::string &data)
-    {
-        return data;
-    }
-
-    std::string to_string(int data)
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-
-    std::string to_string(float data)
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%f", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(bool data)
-    {
-        std::string stmp;
-        stmp = data ? "true" : "false";
-        return stmp;
-    }
-};
-
-using spDataCoreList = std::vector<spDataCore *>;
-
-//------------------------------------------------------------------------
-
-// Base class for our manage properites. This allows for easy storage of a list
-// of property objects, implementation of a name instance variable and definition of
-// the type method.
-
-class spPropertyBase : public spIPersist, public spDataCore
-{
-
-  public:
-    virtual size_t size(void)
-    {
-        return 0;
-    };
-    virtual size_t save_size(void)
-    {
-        return 0;
-    }; // number of bytes used to persist value
     virtual bool save(spStorageBlock *stBlk) = 0;
     virtual bool restore(spStorageBlock *stBlk) = 0;
-
-    // initialize the property
-    // pass in callback object, and name of the the property
-    void initialize(spIProperty *pTarget, const char *name)
-    {
-        _pTarget = pTarget;
-        this->name = name;
-
-        // Add this property to the target
-        pTarget->addProperty(this);
-    }
-
-    // get the value of a property, stash in JSON
-    virtual void getValue(const JsonVariant &) = 0;
-
-  protected:
-    // sub-classes call this to dispatch message to target object
-    void onPropertyUpdate(void)
-    {
-        if (_pTarget)
-            _pTarget->onPropertyUpdate(this->name);
-    }
-
-  protected:
-    spIProperty *_pTarget;
 };
-
-//##############################################################################################################################
-//##############################################################################################################################
-// Sept 22 Refactor work
-//##############################################################################################################################
-//##############################################################################################################################
-//
-// Note: '2' used during dev to prevent symbol collisions
-//
-//----------------------------------------------------------------------------------------
-// spDescriptor
-//
-// Simple class that can be mixed-in to add a common name and description string
-// to user "exposed" objects in the framework..
-
-class spDescriptor
-{
-  public:
-    spDescriptor() : name{""}, description{""}
-    {
-    }
-
-    std::string name;
-    std::string description;
-};
-
 //----------------------------------------------------------------------------------------
 // spDataOut
 //
@@ -545,7 +279,7 @@ template <typename T> class _spDataIn
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty2 : public spIPersist, public spDescriptor
+class spProperty2 : public spPersist, public spDescriptor
 {
 
   public:
@@ -1305,7 +1039,7 @@ inline bool operator==(const spType *lhs, const spType &rhs)
 //    - name and descriptor
 //    - typed.
 
-class spObject : public spIPersist, public _spProperty2Container, public spDescriptor
+class spObject : public spPersist, public _spProperty2Container, public spDescriptor
 {
 
   public:
@@ -1813,6 +1547,282 @@ template <typename T> class spOperationContainer : public T, public spObjectCont
 // END rework of props/object
 //##############################################################################################################################
 //##############################################################################################################################
+//-------------------------------------------------------------------------
+// Storage interface
+//-------------------------------------------------------------------------
+struct spIPersist
+{
+
+    virtual bool save(spStorageBlock *stBlk) = 0;
+    virtual bool restore(spStorageBlock *stBlk) = 0;
+};
+
+
+
+//-------------------------------------------------------------------------
+// Managed Properties -  definitions
+//-------------------------------------------------------------------------
+//
+// The goal is to create a simple property system that supports a level of introspection
+// and automates the setting/getting of simple scalar properties.
+//
+// MANAGED PROPERTIES
+// ------------------
+//
+// Each managed property is peformed using a simple *proxy* object, which enables
+// simple property introspection for the object. The object provides the
+// following:
+//
+//     - Stores name of the property
+//     - Implements operator overloading to allow assignment (set) or access (get)
+//       of the underlying property value. This allows simplified property access
+//          i.e.    object.property = value    (set)
+//                  value = object.property    (get)
+//     - Implements a save/restore methodology - to save property state to EEPROM
+//     - Call back the owner object when a property is changed.
+//     - Introspection - Enumerate object names and types
+//
+// DEFINITION AND SETUP
+// --------------------
+//
+// The system consists of a property object, which contains the property storage, set/get
+// methods, and save/restore logic.
+//
+// Example of definition:
+//
+//    For the following desired properties:
+//
+//          bool      humidity
+//          bool      pressure
+//          int8_t    temperature
+//          bool      celsius
+//
+//    The following property objects are declared in the class definition:
+//
+//          spPropertyBool humidity;
+//          spPropertyBool pressure;
+//          spPropertyInt8 temperature;
+//          spPropertyBool celsius;
+////
+//    Initialization:
+//
+//    In the main object's constructor, attributes and default values for the
+//    property objects are setup. Additionally, the property is registered with
+//    the superclass - this enables simple introspection as well as state serialization.
+//
+//    Example setup calls for the humidity property:
+//
+//    MyObject::MyObject(){
+//
+//         // set target object (this), name and storage in the property object.
+//         humidty.initWithDefault(this, "humidty", &_settings.name, 20);
+//
+//         // Add this property object to the list of managed properties
+//         this->addProperty(humidty);
+//    }
+//
+//    These steps are encapsulated in a macro, so the actual setup call is:
+//
+//    Example - simplified setup call:
+//
+//    MyObject::MyObject(){
+//
+//        // Register property with system, set default value
+//        spRegisterPropertyWithDefault(humidity, 20);
+//    }
+//
+// Enums of data types - This enum is ussed to determine a type of an object using polymorphism -
+//                       a virtual method is called for an objects type - subclasses override this method and
+//                        return the type enum for the property implemented.
+//
+enum DataTypes
+{
+    TypeNone,
+    TypeBool,
+    TypeInt,
+    TypeFloat,
+    TypeDouble,
+    TypeString
+};
+
+//#################################################################################
+// Refactor
+
+
+//#################################################################################
+// these are used in the object property intrface.
+class spPropertyBase;
+using spPropertyList = std::vector<spPropertyBase *>;
+
+//////////////////////////////////////////////////////////////////////
+// Object Property Interface
+//////////////////////////////////////////////////////////////////////
+class spIProperty : public spIPersist
+{
+
+  public:
+    // get/set property
+
+    template <typename T> bool getProperty(const char *name, T &value);
+    template <typename T> bool setProperty(const char *name, T &value);
+
+    // Method called when a managed property is updated.
+    virtual void onPropertyUpdate(const char *){};
+
+  protected:
+    friend spPropertyBase; // when a prop is registered, it adds itself to our list.
+
+    // persitence methods
+    virtual bool save(spStorageBlock *sBLK);
+    virtual bool restore(spStorageBlock *sBLK);
+    size_t save_size(void);
+
+    // Method for a sub-class to add a managed property
+    void addProperty(spPropertyBase *newProperty)
+    {
+        // TODO: Check for dups.
+        _myProps.push_back(newProperty);
+    };
+    // reference version...
+    void addProperty(spPropertyBase &newProperty)
+    {
+        addProperty(&newProperty);
+    };
+
+    spPropertyList _myProps;
+};
+
+//------------------------------------------------------------------------
+// core class to define a typed value
+
+class spDataCore
+{
+
+  public:
+    const char *name; // TODO - IS THIS NEEDED - KDB
+
+    // type method - how a property's type is determined at runtime.
+    virtual DataTypes type(void)
+    {
+        return TypeNone;
+    }
+
+    // methods to get the value of a data item. These are all virtual,
+    // with the expectation that the sub-class will fill in with the
+    // correct methods that they support...
+
+    virtual bool getBool() = 0;
+    virtual int getInt() = 0;
+    virtual float getFloat() = 0;
+    virtual std::string getString() = 0;
+    const char *getCString()
+    {
+        return getString().c_str();
+    };
+
+  protected:
+    // some method overloading to determine types
+    inline DataTypes _getType(std::nullptr_t *t)
+    {
+        return TypeNone;
+    };
+    inline DataTypes _getType(bool *t)
+    {
+        return TypeBool;
+    };
+    inline DataTypes _getType(int *t)
+    {
+        return TypeInt;
+    };
+    inline DataTypes _getType(float *t)
+    {
+        return TypeFloat;
+    };
+    inline DataTypes _getType(double *t)
+    {
+        return TypeDouble;
+    };
+    inline DataTypes _getType(std::string *t)
+    {
+        return TypeString;
+    };
+
+    std::string &to_string(std::string &data)
+    {
+        return data;
+    }
+
+    std::string to_string(int data)
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%d", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
+
+    std::string to_string(float data)
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%f", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
+    std::string to_string(bool data)
+    {
+        std::string stmp;
+        stmp = data ? "true" : "false";
+        return stmp;
+    }
+};
+
+using spDataCoreList = std::vector<spDataCore *>;
+
+//------------------------------------------------------------------------
+
+// Base class for our manage properites. This allows for easy storage of a list
+// of property objects, implementation of a name instance variable and definition of
+// the type method.
+
+class spPropertyBase : public spIPersist, public spDataCore
+{
+
+  public:
+    virtual size_t size(void)
+    {
+        return 0;
+    };
+    virtual size_t save_size(void)
+    {
+        return 0;
+    }; // number of bytes used to persist value
+    virtual bool save(spStorageBlock *stBlk) = 0;
+    virtual bool restore(spStorageBlock *stBlk) = 0;
+
+    // initialize the property
+    // pass in callback object, and name of the the property
+    void initialize(spIProperty *pTarget, const char *name)
+    {
+        _pTarget = pTarget;
+        this->name = name;
+
+        // Add this property to the target
+        pTarget->addProperty(this);
+    }
+
+    // get the value of a property, stash in JSON
+    virtual void getValue(const JsonVariant &) = 0;
+
+  protected:
+    // sub-classes call this to dispatch message to target object
+    void onPropertyUpdate(void)
+    {
+        if (_pTarget)
+            _pTarget->onPropertyUpdate(this->name);
+    }
+
+  protected:
+    spIProperty *_pTarget;
+};
 
 // The property object template used to define a type of the object.
 //
