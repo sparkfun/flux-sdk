@@ -41,8 +41,9 @@ class spDevCCS811 : public spDevice<spDevCCS811>, public CCS811
     float getCO2();
     float getTVOC();
 
-    //spParamOutFlt co2;
-    //spParamOutFlt tvoc;
+    // Define our output parameters - specify the get functions to call.
+    spParameterOutFloat<spDevCCS811, &spDevCCS811::getCO2> co2;
+    spParameterOutFloat<spDevCCS811, &spDevCCS811::getTVOC> tvoc;    
 
     // Type testing:
     static spType Type;
