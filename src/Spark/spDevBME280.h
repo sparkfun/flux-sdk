@@ -43,6 +43,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
+    // methods used to get values for our output parameters
     float readHumidity();
     float readTemperatureF();
     float readTemperatureC();    
