@@ -5,7 +5,7 @@
 
 #include "spSpark.h"
 
-class spTimer : public spAction2
+class spTimer : public spAction
 {
 
     // for our timing
@@ -26,7 +26,7 @@ class spTimer : public spAction2
     spSignalVoid on_interval;
 
     // Property  - interval for the timer
-    spPropertyInt2<spTimer> interval;
+    spPropertyInt<spTimer> interval;
 
     bool loop(void)
     {

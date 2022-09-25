@@ -43,11 +43,13 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-  /*
+    float readFloatHumidity();
 
-    spPropertyBool celsius;
+    spPropertyBool<spDevBME280> celsius;
 
+    spParameterOutFloat<spDevBME280, &spDevBME280::readFloatHumidity> humidity;
 
+    /*
     // END
     // output args
     spParamOutFlt temperature_f;

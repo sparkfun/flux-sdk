@@ -81,10 +81,10 @@ public:
 
     };
     // Define standard properties 
-    spPropertyBool2<test_properties>     prop_bool;
-    spPropertyInt2<test_properties>      prop_int;
-    spPropertyFloat2<test_properties>    prop_float;
-    spPropertyString2<test_properties>   prop_str;
+    spPropertyBool<test_properties>     prop_bool;
+    spPropertyInt<test_properties>      prop_int;
+    spPropertyFloat<test_properties>    prop_float;
+    spPropertyString<test_properties>   prop_str;
 
     // Define RW (getter/setter) Properties
     spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
@@ -376,7 +376,6 @@ void loop() {
     // Retrieve the data from the devices.
     digitalWrite(LED_BUILTIN, HIGH);   // turn on the log led    
     
-    Serial.println();
     // Our loop delay 
     delay(1000);                       
     digitalWrite(LED_BUILTIN, LOW);   // turn off the log led

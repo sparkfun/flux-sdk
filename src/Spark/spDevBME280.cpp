@@ -41,9 +41,11 @@ spDevBME280::spDevBME280()
 
     // Register the properties with the system - this makes the connections needed
     // to support managed properties/public properties
-    //
-    // Set default values for the properties. Note: If stored/serialized values exist,
-    // they are loaded after this method - as the system starts up.
+
+    spRegister(celsius, "Celsius", "Use celsius for temperature units");
+    celsius = false;
+
+    spRegister(humidity);
 
    // spRegisterProperty(celsius, false);
 
@@ -77,4 +79,9 @@ bool spDevBME280::onInitialize(TwoWire &wirePort)
     // set the device address
     BME280::setI2CAddress(address());
     return BME280::beginI2C(wirePort);
+}
+
+float spDevBME280::readFloatHumidity()
+{
+    return BME280::readFloatHumidity();
 }

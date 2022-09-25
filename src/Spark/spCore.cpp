@@ -7,73 +7,13 @@
 // Object Property Interface
 //////////////////////////////////////////////////////////////////////
 //
-// get/set property
-template <typename T> bool spIProperty::getProperty(const char *name, T &value)
-{
-
-    if (!name || !_myProps.size())
-        return false;
-
-    for (auto property : _myProps)
-    {
-        if (!strcmp(name, property->name))
-        {
-            value = (T)property;
-            return true;
-        }
-    }
-}
-//-----------------------------------------------------------------
-template <typename T> bool spIProperty::setProperty(const char *name, T &value)
-{
-
-    if (!name || !_myProps.size())
-        return false;
-
-    for (auto property : _myProps)
-    {
-        if (!strcmp(name, property->name))
-        {
-            property = (T)value;
-            return true;
-        }
-    }
-}
-
-//-----------------------------------------------------------------
-bool spIProperty::save(spStorageBlock *sBLK)
-{
-
-    for (auto property : _myProps)
-        property->save(sBLK);
-
-    return true;
-}
-//-----------------------------------------------------------------
-bool spIProperty::restore(spStorageBlock *sBLK)
-{
-
-    for (auto property : _myProps)
-        property->restore(sBLK);
-
-    return true;
-}
-//-----------------------------------------------------------------
-size_t spIProperty::save_size(void)
-{
-
-    size_t sz = 0;
-
-    for (auto property : _myProps)
-        sz += property->save_size();
-
-    return sz;
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Internal hash function used to generate a unique ID based on a string
 //    From: http://www.cse.yorku.ca/~oz/hash.html
 
+
+/*
 static uint16_t id_hash(const char *str)
 {
 
@@ -83,11 +23,12 @@ static uint16_t id_hash(const char *str)
     while (c != 0)
     {
         c = *str++;
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c 
     }
 
     return hash & 0xFFFF; // NOTE - we're just using 16 bits
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define a simple class hierarchy interface definitions. Used to walk the hierarchy.
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -96,14 +37,6 @@ static uint16_t id_hash(const char *str)
 //
 // Counter to help with object naming
 uint16_t spBase::_name_count = 1;
-
-void spBase::onPropertyUpdate(const char *)
-{
-
-    // TODO Did the name change? If so, we need to update the ID.
-
-    // NOOP ...
-}
 
 //---------------------------------------------------------------------------
 // getID()
@@ -182,3 +115,4 @@ bool spBase::serializeJSON(JsonObject &jObj)
 
     return true;
 }
+*/

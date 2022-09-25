@@ -29,11 +29,11 @@ class spSpark : public spObjectContainer
     bool loop(void);
 
     // Add items to framework - use overloading to determine destination
-    void add(spAction2 &theAction)
+    void add(spAction &theAction)
     {
         Actions.add(&theAction);
     }
-    void add(spAction2 *theAction)
+    void add(spAction *theAction)
     {
         Actions.add(theAction);
     }
@@ -50,7 +50,7 @@ class spSpark : public spObjectContainer
 
     // leaving containers public - not sure if this is helpful
     spDeviceContainer Devices;
-    spActionContainer2 Actions;
+    spActionContainer Actions;
 
     // Call to serliaze the settings of the system as a JSON object
     bool serializeJSON(char *, size_t);

@@ -98,7 +98,18 @@ class spFormatCSV : public spOutputFormat
         if (!append_csv_value(value, _header_buffer))
             error_message("CSV - internal data buffer size exceeded.");
     }
+	//-----------------------------------------------------------------
+    void logValue(const std::string &tag, const char * value)
+    {
+        // header?
+        if (_bWriteHeader)
+            if (!append_to_header(tag))
+                warning_message("CSV - internal header buffer size exceeded.");
 
+
+        if (!append_csv_value(std::string(value), _header_buffer))
+            error_message("CSV - internal data buffer size exceeded.");
+    }
     //-----------------------------------------------------------------
     // structure cycle
 

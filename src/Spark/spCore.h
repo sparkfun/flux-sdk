@@ -30,15 +30,6 @@ using std::string;
 
 #define warning_message(_message_) debug_message("[Warning] - ", _message_);
 
-
-//##############################################################################################################################
-//##############################################################################################################################
-// Sept 22 Refactor work
-//##############################################################################################################################
-//##############################################################################################################################
-//
-// Note: '2' used during dev to prevent symbol collisions
-//
 //----------------------------------------------------------------------------------------
 // spDescriptor
 //
@@ -144,31 +135,30 @@ class spDataOut
 
     virtual spDataType_t type(void)=0;
 
-    virtual operator bool() const = 0;
-    virtual operator int() const = 0;
-    virtual operator uint() const = 0;
-    virtual operator float() const = 0;
-    virtual operator double() const = 0;
-    virtual operator std::string() const = 0;
-    virtual operator char *() const = 0;
+    virtual bool getBool()  = 0;
+    virtual int getInt()  = 0;
+    virtual uint getUint()  = 0;
+    virtual float getFloat()  = 0;
+    virtual double getDouble()  = 0;
+    virtual std::string getString()  = 0;
 
     bool get_value(bool){
-        return bool();
+        return getBool();
     }
     int get_value(int){
-        return int();
+        return getInt();
     }
     uint get_value(uint){
-        return uint();
+        return getUint();
     }
     float get_value(float){
-        return float();
+        return getFloat();
     }       
     double get_value(double){
-        return double();
+        return getDouble();
     }       
     std::string get_value(std::string){
-        return std::string();
+        return getString();
     }               
 
 
@@ -233,35 +223,33 @@ template <typename T> class _spDataOut : public spDataOut
 
 
     virtual T get(void) const = 0;
-    operator bool() const override
+
+    bool getBool() 
     {
         return (bool)get();
     }
-    operator int() const override
+    int getInt()  
     {
         return (int)get();
     }
-    operator uint() const override
+    uint getUint() 
     {
         return (uint)get();
     }
-    operator float() const override
+    float getFloat() 
     {
         return (float)get();
     }
-    operator double() const override
+    double getDouble() 
     {
         return (double)get();
     }
-    operator std::string() const override
+    std::string getString() 
     {
         T c = get();
         return to_string(c);
     }
-    operator char *() const override
-    {
-        return (char *)to_string(get()).c_str();
-    };
+
     typedef T value_type; // might be handy in future
 };
 
@@ -278,34 +266,31 @@ class _spDataOutString : public spDataOut
 
     virtual std::string get(void) const = 0;
 
-    operator bool() const override
+    bool getBool() 
     {
         return get() == "true";
     }
-    operator int() const override
+    int getInt() 
     {
         return std::stoi(get());
     };
-    operator uint() const override
+    uint getUint() 
     {
         return std::stoul(get());
     };
-    operator float() const override
+    float getFloat() 
     {
         return std::stof(get());
     }
-    operator double() const override
+    double getDouble() 
     {
         return std::stod(get());
     }
-    operator std::string() const override
+    std::string getString() 
     {
         return get();
     }
-    operator char *() const override
-    {
-        return (char *)get().c_str();
-    };
+
     typedef std::string value_type; // might be handy in future
 };
 
@@ -332,7 +317,7 @@ template <typename T> class _spDataIn : public spDataIn
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty2 : public spPersist, public spDescriptor
+class spProperty : public spPersist, public spDescriptor
 {
 
   public:
@@ -355,7 +340,7 @@ class spProperty2 : public spPersist, public spDescriptor
 };
 
 // simple def - list of spProperty objects (it's a vector)
-using spProperty2List = std::vector<spProperty2 *>;
+using spPropertyList = std::vector<spProperty *>;
 
 //----------------------------------------------------------------------------------------
 // spPropertyContainer
@@ -364,24 +349,24 @@ using spProperty2List = std::vector<spProperty2 *>;
 //
 // The intent is to add this into other classes that want to expose properties.
 //
-class _spProperty2Container
+class _spPropertyContainer
 {
 
   public:
     //---------------------------------------------------------------------------------
-    void addProperty(spProperty2 *newProperty)
+    void addProperty(spProperty *newProperty)
     {
         _properties.push_back(newProperty);
     };
 
     //---------------------------------------------------------------------------------
-    void addProperty(spProperty2 &newProperty)
+    void addProperty(spProperty &newProperty)
     {
         addProperty(&newProperty);
     };
 
     //---------------------------------------------------------------------------------
-    spProperty2List &getProperties(void)
+    spPropertyList &getProperties(void)
     {
         return _properties;
     };
@@ -409,7 +394,7 @@ class _spProperty2Container
     };
 
   private:
-    spProperty2List _properties;
+    spPropertyList _properties;
 };
 
 //----------------------------------------------------------------------------------------
@@ -421,7 +406,7 @@ class _spProperty2Container
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T> class _spProperty2Base : public spProperty2, public _spDataIn<T>, public _spDataOut<T>
+template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
 {
 
   public:
@@ -474,7 +459,7 @@ template <class T> class _spProperty2Base : public spProperty2, public _spDataIn
 // are differnet, so they require a unique implementation. I'm sure there's some
 // magic that could reduce the code duplication - but this isn't happening today ...
 //
-class _spProperty2BaseString : public spProperty2, _spDataIn<std::string>, _spDataOutString
+class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spDataOutString
 {
 
   public:
@@ -555,7 +540,7 @@ class _spProperty2BaseString : public spProperty2, _spDataIn<std::string>, _spDa
 //
 //
 template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)>
-class _spPropertyTypedRW : public _spProperty2Base<T>
+class _spPropertyTypedRW : public _spPropertyBase<T>
 {
     Object *my_object; // Pointer to the containing object
 
@@ -580,8 +565,8 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
     // Also thie containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spProperty2Container
-        static_assert(std::is_base_of<_spProperty2Container, Object>::value,
+        // my_object must be derived from _spPropertyContainer
+        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyTypedRW: type parameter of this class must derive from spPropertyContainer");
 
         my_object = obj;
@@ -636,22 +621,7 @@ class _spPropertyTypedRW : public _spProperty2Base<T>
     {
         return get() == rhs;
     }
-    bool operator >(const T &rhs)
-    {
-        return get() > rhs;
-    }
-    bool operator <(const T &rhs)
-    {
-        return get() < rhs;
-    }
-    bool operator <=(const T &rhs)
-    {
-        return get() <= rhs;
-    }
-    bool operator >=(const T &rhs)
-    {
-        return get() >= rhs;
-    }
+    
     //---------------------------------------------------------------------------------
     // get -> property()
     T operator()() const
@@ -711,7 +681,7 @@ using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 // A read/write property string class that takes a getter and a setter method and the target object
 //
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string const &)>
-class spPropertyRWString : public _spProperty2BaseString
+class spPropertyRWString : public _spPropertyBaseString
 {
     Object *my_object;
 
@@ -737,7 +707,7 @@ class spPropertyRWString : public _spProperty2BaseString
     {
         // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
         // Compile-time check
-        static_assert(std::is_base_of<_spProperty2Container, Object>::value,
+        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyTypedRWString: type parameter of this class must derive from spPropertyContainer");
 
         my_object = obj;
@@ -828,7 +798,7 @@ class spPropertyRWString : public _spProperty2BaseString
 //
 // Template class for a property object that contains storage for the property.
 //
-template <class Object, class T> class _spPropertyTyped : public _spProperty2Base<T>
+template <class Object, class T> class _spPropertyTyped : public _spPropertyBase<T>
 {
 
   public:
@@ -843,10 +813,10 @@ template <class Object, class T> class _spPropertyTyped : public _spProperty2Bas
     {
         // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
         // Compile-time check
-        static_assert(std::is_base_of<_spProperty2Container, Object>::value,
+        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyTyped: type parameter of this class must derive from spPropertyContainer");
 
-        // my_object must be derived from _spProperty2Container
+        // my_object must be derived from _spPropertyContainer
         assert(me);
         if (me)
             me->addProperty(this);
@@ -884,28 +854,17 @@ template <class Object, class T> class _spPropertyTyped : public _spProperty2Bas
         data = value;
     }
 
+    bool operator>(int rhs)
+    {
+        return (get() > rhs);
+    }
     //---------------------------------------------------------------------------------
     //  need to overload the equality operator
     bool operator==(const T &rhs)
     {
         return get() == rhs;
     }
-    bool operator >(const T &rhs)
-    {
-        return get() > rhs;
-    }
-    bool operator <(const T &rhs)
-    {
-        return get() < rhs;
-    }
-    bool operator <=(const T &rhs)
-    {
-        return get() <= rhs;
-    }
-    bool operator >=(const T &rhs)
-    {
-        return get() >= rhs;
-    }
+
     //---------------------------------------------------------------------------------
     // function call syntax
     // get -> property()
@@ -942,10 +901,10 @@ template <class Object, class T> class _spPropertyTyped : public _spProperty2Bas
 };
 
 // Define typed properties
-template <class Object> using spPropertyBool2 = _spPropertyTyped<Object, bool>;
-template <class Object> using spPropertyInt2 = _spPropertyTyped<Object, int>;
-template <class Object> using spPropertyFloat2 = _spPropertyTyped<Object, float>;
-template <class Object> using spPropertyDouble2 = _spPropertyTyped<Object, double>;
+template <class Object> using spPropertyBool = _spPropertyTyped<Object, bool>;
+template <class Object> using spPropertyInt = _spPropertyTyped<Object, int>;
+template <class Object> using spPropertyFloat = _spPropertyTyped<Object, float>;
+template <class Object> using spPropertyDouble = _spPropertyTyped<Object, double>;
 
 //----------------------------------------------------------------------------------------------------
 // spPropertyString
@@ -954,7 +913,7 @@ template <class Object> using spPropertyDouble2 = _spPropertyTyped<Object, doubl
 //
 // Implements the property, but uses string specific logic
 
-template <class Object> class spPropertyString2 : public _spProperty2BaseString
+template <class Object> class spPropertyString : public _spPropertyBaseString
 {
 
   public:
@@ -971,7 +930,7 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
     {
         // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
         // Compile-time check
-        static_assert(std::is_base_of<_spProperty2Container, Object>::value,
+        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyString: type parameter of this class must derive from spPropertyContainer");
 
         assert(me);
@@ -1042,7 +1001,7 @@ template <class Object> class spPropertyString2 : public _spProperty2BaseString
 
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
-    spPropertyString2<Object> &operator=(std::string const &value)
+    spPropertyString<Object> &operator=(std::string const &value)
     {
         set(value);
         return *this;
@@ -1116,7 +1075,7 @@ inline bool operator==(const spType *lhs, const spType &rhs)
 //    - name and descriptor
 //    - typed.
 
-class spObject : public spPersist, public _spProperty2Container, public spDescriptor
+class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
 {
 
   public:
@@ -1315,8 +1274,9 @@ class _spParameterContainer
 // Output Parameter Template
 //
 //
+
 template <class T, class Object, T (Object::*_getter)()>
-class _spParameterOut : public spParameterOut, public _spDataOut<T>
+class _spParameterOut : public _spDataOut<T>, public spParameterOut
 {
     Object *my_object; // Pointer to the containing object
 
@@ -1395,6 +1355,31 @@ class _spParameterOut : public spParameterOut, public _spDataOut<T>
     {
         return get();
     };
+
+    bool getBool()
+    {
+       return _spDataOut<T>::getBool();
+    };
+    int getInt()
+    {
+        return _spDataOut<T>::getInt();
+    };
+    uint getUint()
+    {
+       return _spDataOut<T>::getUint();
+    };
+    float getFloat()
+    {
+        return _spDataOut<T>::getFloat();
+    };
+    double getDouble()
+    {
+        return _spDataOut<T>::getDouble();
+    };
+    std::string getString()
+    {
+        return _spDataOut<T>::getString();
+    };
 };
 
 // Define by type
@@ -1405,6 +1390,8 @@ template <class Object, int (Object::*_getter)()> using spParameterOutInt = _spP
 template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
 
 template <class Object, float (Object::*_getter)()> using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
+
+template <class Object, float (Object::*_getter)()> using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
 
 
 //----------------------------------------------------------------------------------------------------
@@ -1493,6 +1480,31 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     std::string operator()() const
     {
         return get();
+    };
+
+    bool getBool()
+    {
+       return _spDataOutString::getBool();
+    };
+    int getInt()
+    {
+        return _spDataOutString::getInt();
+    };
+    uint getUint()
+    {
+       return _spDataOutString::getUint();
+    };
+    float getFloat()
+    {
+        return _spDataOutString::getFloat();
+    };
+    double getDouble()
+    {
+        return _spDataOutString::getDouble();
+    };
+    std::string getString()
+    {
+        return _spDataOutString::getString();
     };
 };
 
@@ -1644,16 +1656,11 @@ using spOperationContainer = _spOperationContainer<spOperation>;
 //-----------------------------------------
 // Spark Actions
 
-class spAction2 : public spOperation
+class spAction : public spOperation
 {
 };
 
-using spActionContainer2 = _spOperationContainer<spAction2>;
-//##############################################################################################################################
-//##############################################################################################################################
-// END rework of props/object
-//##############################################################################################################################
-//##############################################################################################################################
+using spActionContainer = _spOperationContainer<spAction>;
 
 //-----------------------------------------------------------------------
 // 5/20 - Impl based on https://schneegans.github.io/tutorials/2015/09/20/signal-slot

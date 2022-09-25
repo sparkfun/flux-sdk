@@ -46,7 +46,7 @@ bool spSpark::loop(void)
     bool rc = false;
 
     // Actions
-    spAction2 *pAction;
+    spAction *pAction;
     for (int i = 0; i < Actions.size(); i++)
     {
         pAction = Actions.at(i);

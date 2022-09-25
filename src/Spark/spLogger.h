@@ -19,7 +19,7 @@
 #include "spSpark.h"
 
 // Define the QwiicLog class
-class spLogger : public spAction2
+class spLogger : public spAction
 {
 
   public:
@@ -118,17 +118,17 @@ class spLogger : public spAction2
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spProperty2 &a1, Args &&...args)
+    template <typename... Args> void add(spProperty &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spProperty2 *a1, Args &&...args)
+    template <typename... Args> void add(spProperty *a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spProperty2List &a1, Args &&...args)
+    template <typename... Args> void add(spPropertyList &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
@@ -140,7 +140,7 @@ class spLogger : public spAction2
     // The things we're logging
     spOperationContainer _objsToLog;
     spParameterOutList _paramsToLog;
-    spProperty2List _propsToLog;
+    spPropertyList _propsToLog;
 
     template <typename T> void writeValue(const std::string&, T value);
     void logSection(const char *section_name, spParameterOutList &params);
@@ -221,15 +221,15 @@ class spLogger : public spAction2
         }
     }
 
-    void _add(spProperty2 *prop)
+    void _add(spProperty *prop)
     {
     	_propsToLog.push_back(prop);
     }
-    void _add(spProperty2 &prop)
+    void _add(spProperty &prop)
     {
     	_add(&prop);
     }
-    void _add(spProperty2List &propList)
+    void _add(spPropertyList &propList)
     {
     	for (auto prop : propList)
     	{

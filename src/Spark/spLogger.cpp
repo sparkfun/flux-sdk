@@ -32,22 +32,22 @@ void spLogger::logSection(const char * section_name, spParameterOutList &paramLi
         switch (param->type())
         {
         case spTypeBool:
-            writeValue(param->name, (bool)*param);
+            writeValue(param->name, param->getBool());
             break;
         case spTypeInt:
-            writeValue(param->name, (int)*param);
+            writeValue(param->name, param->getInt());
             break;
         case spTypeUInt:
-            writeValue(param->name, (uint)*param);
+            writeValue(param->name, param->getUint());
             break;
         case spTypeFloat:
-            writeValue(param->name, (float)*param);
+            writeValue(param->name, param->getFloat());
             break;
         case spTypeDouble:
-            writeValue(param->name, (double)*param);
+            writeValue(param->name, param->getDouble());
             break;                                    
         case spTypeString:
-            writeValue(param->name, param->operator std::string());
+            writeValue(param->name, param->getString());
             break;
 
         default:
