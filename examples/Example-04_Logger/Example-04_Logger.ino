@@ -89,7 +89,7 @@ void setup() {
     for (auto device: myDevices )
     {
 
-        Serial.printf("Device: %s, Output Number: %d", (char*)device->name, device->nOutputParameters());
+        Serial.printf("Device: %s, Output Number: %d", device->name.c_str(), device->nOutputParameters());
         if ( device->nOutputParameters() > 0)
         {
             Serial.printf("  - Adding to logger\r\n");
