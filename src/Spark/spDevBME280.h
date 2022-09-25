@@ -43,20 +43,21 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-    float readFloatHumidity();
+    float readHumidity();
+    float readTemperatureF();
+    float readTemperatureC();    
+    float readPressure();
 
     spPropertyBool<spDevBME280> celsius;
 
-    spParameterOutFloat<spDevBME280, &spDevBME280::readFloatHumidity> humidity;
+    // Define our output parameters - specify the get functions to call.
+    spParameterOutFloat<spDevBME280, &spDevBME280::readHumidity> humidity;
+    spParameterOutFloat<spDevBME280, &spDevBME280::readTemperatureF> temperatureF;    
+    spParameterOutFloat<spDevBME280, &spDevBME280::readTemperatureC> temperatureC;    
+    spParameterOutFloat<spDevBME280, &spDevBME280::readPressure> pressure;        
 
-    /*
-    // END
-    // output args
-    spParamOutFlt temperature_f;
-    spParamOutFlt temperature_c;
-    spParamOutFlt humidity;
-    spParamOutFlt pressure;
-*/
+
+
     // Type testing:
     // A static instance var - that is an object (can check instance pointer)
     static spType Type;

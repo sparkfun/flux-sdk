@@ -42,19 +42,16 @@ spDevBME280::spDevBME280()
     // Register the properties with the system - this makes the connections needed
     // to support managed properties/public properties
 
+    // Register Property
     spRegister(celsius, "Celsius", "Use celsius for temperature units");
     celsius = false;
 
+    // Register parameters
     spRegister(humidity);
+    spRegister(temperatureF);    
+    spRegister(temperatureC);    
+    spRegister(pressure);
 
-   // spRegisterProperty(celsius, false);
-
-    // Setup output parameters - connect to the data method for the source.
-    // Note: These methods are from the super class - the original qwiic library.
-    //spSetupOutParameter(temperature_f, spDevBME280::readTempF);
-    //spSetupOutParameter(temperature_c, spDevBME280::readTempC);
-    //spSetupOutParameter(humidity, spDevBME280::readFloatHumidity);
-    //spSetupOutParameter(pressure, spDevBME280::readFloatPressure);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -80,8 +77,21 @@ bool spDevBME280::onInitialize(TwoWire &wirePort)
     BME280::setI2CAddress(address());
     return BME280::beginI2C(wirePort);
 }
-
-float spDevBME280::readFloatHumidity()
+// GETTER methods for output params
+float spDevBME280::readHumidity()
 {
     return BME280::readFloatHumidity();
+}
+
+float spDevBME280::readTemperatureF()
+{
+    return BME280::readTempF();
+}
+float spDevBME280::readTemperatureC()
+{
+    return BME280::readTempC();
+}
+float spDevBME280::readPressure()
+{
+    return BME280::readFloatPressure();
 }
