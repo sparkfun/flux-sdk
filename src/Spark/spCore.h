@@ -1248,7 +1248,7 @@ class _spParameterContainer
     //---------------------------------------------------------------------------------
     size_t nOutputParameters()
     {
-        return _input_parameters.size();
+        return _output_parameters.size();
     }
 
     //---------------------------------------------------------------------------------
