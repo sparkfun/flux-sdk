@@ -19,7 +19,7 @@
 #include "spSpark.h"
 
 // Define the QwiicLog class
-class spLogger : public spAction
+class spLogger : public spAction2
 {
 
   public:
@@ -44,22 +44,22 @@ class spLogger : public spAction
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spBase *a1, Args &...args) : spLogger()
+    template <typename... Args> spLogger(spOperation *a1, Args &...args) : spLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spBase &a1, Args &...args) : spLogger()
+    template <typename... Args> spLogger(spOperation &a1, Args &...args) : spLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spDataCore *a1, Args &...args) : spLogger()
+    template <typename... Args> spLogger(spParameterOut *a1, Args &...args) : spLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spDataCore &a1, Args &...args) : spLogger()
+    template <typename... Args> spLogger(spParameterOut &a1, Args &...args) : spLogger()
     {
         va_add(a1, args...);
     }
@@ -113,7 +113,22 @@ class spLogger : public spAction
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spParameterOut &a1, Args &&...args)
+    template <typename... Args> void add(spParameterOutList &a1, Args &&...args)
+    {
+        va_add(a1, args...);
+    }
+
+    template <typename... Args> void add(spProperty2 &a1, Args &&...args)
+    {
+        va_add(a1, args...);
+    }
+
+    template <typename... Args> void add(spProperty2 *a1, Args &&...args)
+    {
+        va_add(a1, args...);
+    }
+
+    template <typename... Args> void add(spProperty2List &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
@@ -124,11 +139,15 @@ class spLogger : public spAction
 
     // The things we're logging
     spOperationContainer _objsToLog;
-    spParameterList _paramsToLog;
+    spParameterOutList _paramsToLog;
+    spProperty2List _propsToLog;
 
-    template <typename T> void writeValue(const char *tag, T value);
-    void logSection(const char *section_name, spDataCoreList &params);
+    template <typename T> void writeValue(const std::string&, T value);
+    void logSection(const char *section_name, spParameterOutList &params);
 
+    void logSection(const std::string& name, spParameterOutList &params){
+    	logSection(name.c_str(), params);
+    }
     // vargs management - how to add things recursively.
     //
     // General pattern for the below methods:
@@ -184,6 +203,13 @@ class spLogger : public spAction
             _paramsToLog.push_back(param);
     }
 
+    void _add(spParameterOutList &parameterList)
+    {
+    	for (auto param : parameterList)
+    	{
+    		_add(param);
+    	}
+    }
     // Internal method to add the contents of a device list
     void _add(spOperationContainer &deviceList)
     {
@@ -193,5 +219,21 @@ class spLogger : public spAction
             if (device->nOutputParameters() > 0)
                 _add(device);
         }
+    }
+
+    void _add(spProperty2 *prop)
+    {
+    	_propsToLog.push_back(prop);
+    }
+    void _add(spProperty2 &prop)
+    {
+    	_add(&prop);
+    }
+    void _add(spProperty2List &propList)
+    {
+    	for (auto prop : propList)
+    	{
+    		_add(prop);
+    	}
     }
 };

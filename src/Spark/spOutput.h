@@ -33,11 +33,13 @@ class spOutputFormat
     spOutputFormat(){};
 
     // value methods
-    virtual void logValue(const char *tag, bool value) = 0;
-    virtual void logValue(const char *tag, int value) = 0;
-    virtual void logValue(const char *tag, float value) = 0;
-    virtual void logValue(const char *tag, const char *value) = 0;
-    virtual void logValue(const char *tag, std::string value)
+    virtual void logValue(const std::string &tag, bool value) = 0;
+    virtual void logValue(const std::string &tag, int value) = 0;
+    virtual void logValue(const std::string &tag, uint value) = 0;    
+    virtual void logValue(const std::string &tag, float value) = 0;
+    virtual void logValue(const std::string &tag, double value) = 0;
+    virtual void logValue(const std::string &tag, const char *value) = 0;
+    virtual void logValue(const std::string &tag, std::string& value)
     {
         logValue(tag, value.c_str());
     }
@@ -46,6 +48,10 @@ class spOutputFormat
 
     virtual void beginObservation(const char *szTitle = nullptr) = 0;
     virtual void beginSection(const char *szName){};
+    virtual void beginSection(const std::string &name)
+    {
+    	beginSection(name.c_str());
+    }
     virtual void endSection(void){};
     virtual void endObservation(void) = 0;
 

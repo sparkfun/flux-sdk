@@ -5,7 +5,7 @@
 
 #include "spSpark.h"
 
-class spTimer : public spAction
+class spTimer : public spAction2
 {
 
     // for our timing
@@ -15,7 +15,7 @@ class spTimer : public spAction
     spTimer(int start = 500) : _lastLogTime(0)
     {
 
-        spRegisterProperty(interval, start);
+        spRegister(interval);
 
         spark.add(this);
 
@@ -26,7 +26,7 @@ class spTimer : public spAction
     spSignalVoid on_interval;
 
     // Property  - interval for the timer
-    spPropertyInt interval;
+    spPropertyInt2<spTimer> interval;
 
     bool loop(void)
     {

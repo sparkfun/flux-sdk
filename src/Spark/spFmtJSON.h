@@ -18,28 +18,40 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
 
     //-----------------------------------------------------------------
     // value methods
-    void logValue(const char *tag, bool value)
+    void logValue(const std::string &tag, bool value)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
 
     //-----------------------------------------------------------------
-    void logValue(const char *tag, int value)
+    void logValue(const std::string &tag, int value)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
 
     //-----------------------------------------------------------------
-    void logValue(const char *tag, float value)
+    void logValue(const std::string &tag, uint value)
+    {
+        if (!_jSection.isNull())
+            (_jSection)[tag] = value;
+    }
+    //-----------------------------------------------------------------
+    void logValue(const std::string &tag, float value)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
 
     //-----------------------------------------------------------------
-    void logValue(const char *tag, const char *value)
+    void logValue(const std::string &tag, double value)
+    {
+        if (!_jSection.isNull())
+            (_jSection)[tag] = value;
+    }
+    //-----------------------------------------------------------------
+    void logValue(const std::string &tag, const std::string &value)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
@@ -60,7 +72,6 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     {
         _jSection = _jDoc.createNestedObject(szName);
     }
-
     //-----------------------------------------------------------------
     void endObservation(void)
     {

@@ -30,7 +30,7 @@ class spFormatCSV : public spOutputFormat
 
     //-----------------------------------------------------------------
     // value methods
-    void logValue(const char *tag, bool value)
+    void logValue(const std::string &tag, bool value)
     {
         // header?
         if (_bWriteHeader)
@@ -42,7 +42,7 @@ class spFormatCSV : public spOutputFormat
     }
 
     //-----------------------------------------------------------------
-    void logValue(const char *tag, int value)
+    void logValue(const std::string &tag, int value)
     {
         // header?
         if (_bWriteHeader)
@@ -56,7 +56,25 @@ class spFormatCSV : public spOutputFormat
     }
 
     //-----------------------------------------------------------------
-    void logValue(const char *tag, float value)
+    void logValue(const std::string &tag, uint value)
+    {
+        // header?
+        if (_bWriteHeader)
+            if (!append_to_header(tag))
+                warning_message("CSV - internal header buffer size exceeded.");
+
+        char szBuffer[32] = {'\0'};
+        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
+        if (!append_csv_value(szBuffer, _data_buffer))
+            error_message("CSV - internal data buffer size exceeded.");
+    }
+    //-----------------------------------------------------------------
+    void logValue(const std::string &tag, float value)
+    {
+    	logValue(tag, (double)value);
+    }
+	//-----------------------------------------------------------------
+    void logValue(const std::string &tag, double value)
     {
         // header?
         if (_bWriteHeader)
@@ -69,9 +87,8 @@ class spFormatCSV : public spOutputFormat
         if (!append_csv_value(szBuffer, _data_buffer))
             error_message("CSV - internal data buffer size exceeded.");
     }
-
     //-----------------------------------------------------------------
-    void logValue(const char *tag, const char *value)
+    void logValue(const std::string &tag, const std::string &value)
     {
         // header?
         if (_bWriteHeader)
@@ -165,7 +182,7 @@ class spFormatCSV : public spOutputFormat
 
     }
 
-    bool append_csv_value(const char *value, std::string &buffer)
+    bool append_csv_value(const std::string &value, std::string &buffer)
     {
 
         if (buffer.length() > 0)
@@ -176,9 +193,9 @@ class spFormatCSV : public spOutputFormat
         return true;
     }
     //-----------------------------------------------------------------
-    bool append_to_header(const char *tag)
+    bool append_to_header(const std::string& tag)
     {
-        if (!tag)
+        if (tag.length() == 0)
             return true;
 
         // build up our header title for this element. Title is {section name}.{tag}
@@ -189,7 +206,7 @@ class spFormatCSV : public spOutputFormat
             strlcpy(szBuffer, _section_name, sizeof(szBuffer));
             strlcat(szBuffer, ".", sizeof(szBuffer));
         }
-        strlcat(szBuffer, tag, sizeof(szBuffer));
+        strlcat(szBuffer, tag.c_str(), sizeof(szBuffer));
 
         return append_csv_value(szBuffer, _header_buffer);
     }

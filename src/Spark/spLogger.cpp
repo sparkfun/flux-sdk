@@ -9,7 +9,7 @@
 //----------------------------------------------------------------------------
 // When we log a value, we need to write it to all formatters. Seems like a lot
 // of short loops, but we want to write the SAME value to all formatters
-template <typename T> void spLogger::writeValue(const char *tag, T value)
+template <typename T> void spLogger::writeValue(const std::string &tag, T value)
 {
 
     for (auto theFormatter : _Formatters)
@@ -18,40 +18,43 @@ template <typename T> void spLogger::writeValue(const char *tag, T value)
 
 //----------------------------------------------------------------------------
 // Log the data in a section of the output - title and parameter values
-void spLogger::logSection(const char *section_name, spDataCoreList &params)
+void spLogger::logSection(const char * section_name, spParameterOutList &paramList)
 {
 
-    if (params.size() == 0)
+    if (paramList.size() == 0)
         return;
 
     for (auto theFormatter : _Formatters)
         theFormatter->beginSection(section_name);
 
-    for (auto op : params)
+    for (auto param : paramList)
     {
-
-        switch (op->type())
+        switch (param->type())
         {
-        case TypeBool:
-            writeValue(op->name, op->getBool());
+        case spTypeBool:
+            writeValue(param->name, (bool)*param);
             break;
-        case TypeInt:
-            writeValue(op->name, op->getInt());
+        case spTypeInt:
+            writeValue(param->name, (int)*param);
             break;
-
-        case TypeFloat:
-        case TypeDouble:
-            writeValue(op->name, op->getFloat());
+        case spTypeUInt:
+            writeValue(param->name, (uint)*param);
             break;
-
-        case TypeString:
-            writeValue(op->name, op->getString());
+        case spTypeFloat:
+            writeValue(param->name, (float)*param);
+            break;
+        case spTypeDouble:
+            writeValue(param->name, (double)*param);
+            break;                                    
+        case spTypeString:
+            writeValue(param->name, param->operator std::string());
             break;
 
         default:
             Serial.println("Unknown Parameter Value");
             break;
-        }
+        } 
+    
     }
 
     for (auto theFormatter : _Formatters)
