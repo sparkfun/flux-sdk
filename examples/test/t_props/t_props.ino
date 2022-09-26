@@ -43,7 +43,7 @@ public:
 
         return _b_data;
     }
-    void set_bool(const bool &b){
+    void set_bool( bool b){
 
         _b_data=b;
 
@@ -54,7 +54,7 @@ public:
 
         return _i_data;
     }
-    void set_int(const int &data){
+    void set_int( int data){
 
         _i_data=data;
 
@@ -65,7 +65,7 @@ public:
 
         return _f_data;
     }
-    void set_float(const float &data){
+    void set_float( float data){
 
         _f_data=data;
     };
@@ -75,7 +75,7 @@ public:
 
         return _s_data;
     }
-    void set_str(const std::string &data){
+    void set_str(std::string data){
 
         _s_data=data;
 
