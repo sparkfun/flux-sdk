@@ -44,27 +44,37 @@ class spDevMCP9600 : public spDevice<spDevMCP9600>, public MCP9600
     //void onPropertyUpdate(const char *);
 
     // Define our public/managed properites for this class.
-    // These same properties are registered with the system in the object constructor
-    //spPropertyBool ambient_resolution;
-    //spPropertyInt  thermocouple_resolution;
-    //spPropertyInt  thermocouple_type;
-    //spPropertyInt  filter_coefficent;    
+    
+    void set_AmbientResolution(bool);
+    bool get_AmbientResolution(void);
 
-    // output args
-    //spParamOutFlt thermocouple_temp;
-    //spParamOutFlt ambient_temp;
-    //spParamOutFlt temp_delta;
-    //spParamOutInt raw_adc;
+    spPropertyRWBool<spDevMCP9600, &spDevMCP9600::get_AmbientResolution, &spDevMCP9600::set_AmbientResolution> ambient_resolution;
+
+    void setThermocoupleResolution(uint);
+    uint getThermocoupleResolution(void);
+    
+    spPropertyRWUint<spDevMCP9600, &spDevMCP9600::getThermocoupleResolution, 
+                                    &spDevMCP9600::setThermocoupleResolution> thermocouple_resolution;
+
+    void setThermocoupleType(uint);
+    uint  getThermocoupleType(void);
+
+    spPropertyRWUint<spDevMCP9600, &spDevMCP9600::getThermocoupleType, 
+                                    &spDevMCP9600::setThermocoupleType> thermocouple_type;
+
+    void setFilterCoefficient(uint);
+    uint getFilterCoefficient(void);
+
+    spPropertyRWUint<spDevMCP9600, &spDevMCP9600::getFilterCoefficient, 
+                                    &spDevMCP9600::setFilterCoefficient> filter_coefficent;
+
+    void setBurstSamples(uint);
+    uint getBurstSamples(void);
+
+    spPropertyRWUint<spDevMCP9600, &spDevMCP9600::getBurstSamples, 
+                                    &spDevMCP9600::setBurstSamples> burst_samples;
 
 
-
-    // A static instance var - that is an object (can check instance pointer)
-    static spType Type;
-    spType *getType(void)
-    {
-        return &Type;
-    }
-private:
     // For the output param call - no args
     float _getThermocoupleTemp(void)
     {
@@ -77,5 +87,19 @@ private:
     float _getTempDelta(void)
     {
         return MCP9600::getTempDelta();
+    }
+
+    // Output args
+
+    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::_getThermocoupleTemp> thermocouple_temp;
+    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::_getAmbientTemp> ambient_temp;
+    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::_getTempDelta> temp_delta;        
+
+
+    // A static instance var - that is an object (can check instance pointer)
+    static spType Type;
+    spType *getType(void)
+    {
+        return &Type;
     }
 };

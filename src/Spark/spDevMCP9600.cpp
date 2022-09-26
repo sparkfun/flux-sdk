@@ -37,26 +37,18 @@ spDevMCP9600::spDevMCP9600()
     // Setup unique identifiers for this device and basic device object systems
     spSetupDeviceIdent(getDeviceName());
 
+    // register properties
+    spRegister(ambient_resolution);
+    spRegister(thermocouple_resolution);
+    spRegister(thermocouple_type);
+    spRegister(filter_coefficent);
+    spRegister(burst_samples);
 
+    // register parameters
+    spRegister(thermocouple_temp);
+    spRegister(ambient_temp);
+    spRegister(temp_delta);  
 
-
-    // Register the properties with the system - this makes the connections needed
-    // to support managed properties/public properties
-    //
-    // Set default values for the properties. Note: If stored/serialized values exist,
-    // they are loaded after this method - as the system starts up.
-
-    //spRegisterProperty(ambient_resolution, false);
-    //spRegisterProperty(thermocouple_resolution, 0);
-    //spRegisterProperty(thermocouple_type, 0);
-    //spRegisterProperty(filter_coefficent, 0);        
-
-    // Setup output parameters - connect to the data method for the source.
-    // Note: These methods are from the super class - the original qwiic library.
-    //spSetupOutParameter(thermocouple_temp, spDevMCP9600::_getThermocoupleTemp);
-    //spSetupOutParameter(ambient_temp, spDevMCP9600::_getAmbientTemp);
-    //spSetupOutParameter(temp_delta, spDevMCP9600::_getTempDelta);
-    //spSetupOutParameter(raw_adc, MCP9600::getRawADC);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -81,4 +73,46 @@ bool spDevMCP9600::onInitialize(TwoWire &wirePort)
     return MCP9600::begin(address(), wirePort);
 }
 
+
+void spDevMCP9600::set_AmbientResolution(bool value)
+{
+    MCP9600::setAmbientResolution((Ambient_Resolution)value); 
+}
+
+bool spDevMCP9600::get_AmbientResolution(void){
+
+    return (bool)MCP9600::getAmbientResolution();
+}
+void spDevMCP9600::setThermocoupleResolution(uint value){
+
+    MCP9600::setThermocoupleResolution((Thermocouple_Resolution)value);
+}
+uint spDevMCP9600::getThermocoupleResolution(void){
+
+    return  (uint)MCP9600::getThermocoupleResolution();
+}
+void spDevMCP9600::setThermocoupleType(uint value){
+
+    MCP9600::setThermocoupleType((Thermocouple_Type)value);
+}
+uint spDevMCP9600::getThermocoupleType(void){
+
+    return MCP9600::getThermocoupleType();
+}
+void spDevMCP9600::setFilterCoefficient(uint value){
+
+    MCP9600::setFilterCoefficient(value);
+}
+uint spDevMCP9600::getFilterCoefficient(void){
+
+    return MCP9600::getFilterCoefficient();
+}
+void spDevMCP9600::setBurstSamples(uint value){
+
+    MCP9600::setBurstSamples((Burst_Sample)value);
+}
+uint spDevMCP9600::getBurstSamples(void){
+
+    return MCP9600::getBurstSamples();
+}
 
