@@ -29,6 +29,10 @@ void spLogger::logSection(const char * section_name, spParameterOutList &paramLi
 
     for (auto param : paramList)
     {
+        // Is this parameter enabled?
+        if ( !param->enabled() )
+            continue;
+            
         switch (param->type())
         {
         case spTypeBool:
