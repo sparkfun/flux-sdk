@@ -901,6 +901,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
 // Define typed properties
 template <class Object> using spPropertyBool = _spPropertyTyped<Object, bool>;
 template <class Object> using spPropertyInt = _spPropertyTyped<Object, int>;
+template <class Object> using spPropertyUint = _spPropertyTyped<Object, uint>;
 template <class Object> using spPropertyFloat = _spPropertyTyped<Object, float>;
 template <class Object> using spPropertyDouble = _spPropertyTyped<Object, double>;
 
