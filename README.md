@@ -8,3 +8,4 @@ Framework to simplify the development of embedded applications
 
 ## Documentation
 * Implementing [Properties](docs/properties.md) 
+* Implementing [Parameters](docs/parameters.md) 

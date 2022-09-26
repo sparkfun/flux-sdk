@@ -1,13 +1,13 @@
 
 # Properties
 
-Properties represent the "_settings_" for a particular object withing the system. This property values describe their object, as well as how the object behaves/operates within the system. 
+Properties represent the "_settings_" for a particular object within the system. This property values describe their object, as well as how the object behaves/operates within the system. 
 
 It's worth noting that properties don't reflect the input or output data from an object within the framework - this managed by *parameter* objects.
 
 ### Property Attributes
 The following are key attributes of properties within the framework
-* Properties can be added to any classed derived from the spObject class.
+* Properties can be added to any classed derived from the spObject class
 * Properties can be read (get) and written (set) to
 * Property objects are typed
 * Property objects can act like a variable
@@ -45,7 +45,7 @@ For the framework, two types of property classes exist.
 These property objects define a typed property and provided storage for this property. As such, they act like a instance variable for their containment class. 
 
 #### Declaring the Property
-Within the definition of a class the property is for, the property is define using the following pattern:
+Within the definition of the class the property is for, the property is defined using the following pattern:
 ```C++
     spPropertyType<ClassName>  property_name;
 ```
@@ -106,7 +106,7 @@ These property objects define a typed property and required a get and set method
 By calling methods on read and write of the property, the Read/Write property objects allow for the immediate response to a property operation. 
 
 #### Declaring the Property
-Within the definition of a class the property is for, the property is define using the following pattern:
+Within the definition of a class the property is for, the property is defined using the following pattern:
 
 ```C++
 spPropertyRWType<ClassName, &ClassName::Getter, &ClassName::Setter>  property_name;
