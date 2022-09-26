@@ -41,7 +41,7 @@ class spDevMCP9600 : public spDevice<spDevMCP9600>, public MCP9600
     bool onInitialize(TwoWire &);
 
   private:
-    // Define our public/managed properites callbacks for this class.
+    // Define our public/managed properties callbacks for this class.
 
     void set_AmbientResolution(bool);
     bool get_AmbientResolution(void);
@@ -76,16 +76,16 @@ class spDevMCP9600 : public spDevice<spDevMCP9600>, public MCP9600
 
   private:
     // For the output param call - no args
-    float get_ThermocoupleTemp(void);
-    float get_AmbientTemp(void);
-    float get_TempDelta(void);
+    float read_ThermocoupleTemp(void);
+    float read_AmbientTemp(void);
+    float read_TempDelta(void);
 
   public:
     // Output args
 
-    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::get_ThermocoupleTemp> thermocouple_temp;
-    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::get_AmbientTemp> ambient_temp;
-    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::get_TempDelta> temp_delta;
+    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_ThermocoupleTemp> thermocouple_temp;
+    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_AmbientTemp> ambient_temp;
+    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_TempDelta> temp_delta;
 
     // A static instance var - that is an object (can check instance pointer)
     static spType Type;

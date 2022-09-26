@@ -45,19 +45,19 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
 
 private:
     // methods used to get values for our output parameters
-    float get_Humidity();
-    float get_TemperatureF();
-    float get_TemperatureC();    
-    float get_Pressure();
+    float read_Humidity();
+    float read_TemperatureF();
+    float read_TemperatureC();    
+    float read_Pressure();
 
 public:
     spPropertyBool<spDevBME280> celsius;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevBME280, &spDevBME280::get_Humidity> humidity;
-    spParameterOutFloat<spDevBME280, &spDevBME280::get_TemperatureF> temperatureF;    
-    spParameterOutFloat<spDevBME280, &spDevBME280::get_TemperatureC> temperatureC;    
-    spParameterOutFloat<spDevBME280, &spDevBME280::get_Pressure> pressure;        
+    spParameterOutFloat<spDevBME280, &spDevBME280::read_Humidity> humidity;
+    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureF> temperatureF;    
+    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureC> temperatureC;    
+    spParameterOutFloat<spDevBME280, &spDevBME280::read_Pressure> pressure;        
 
 
 
