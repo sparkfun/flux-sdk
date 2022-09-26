@@ -3,8 +3,8 @@
 
 Framework to simplify the development of embedded applications
 
-### Status -  In development
+## Status -  In development
 
 
-### Key Features
-* Auto-device detection
+## Documentation
+* Implementing [Properties](docs/properties.md) 
