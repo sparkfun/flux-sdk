@@ -11,7 +11,6 @@
 
 #include "spDevMCP9600.h"
 
-
 #define kMCPAddressDefault 0x60
 
 // Define our class static variables - allocs storage for them
@@ -47,8 +46,7 @@ spDevMCP9600::spDevMCP9600()
     // register parameters
     spRegister(thermocouple_temp);
     spRegister(ambient_temp);
-    spRegister(temp_delta);  
-
+    spRegister(temp_delta);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -57,7 +55,6 @@ bool spDevMCP9600::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
 
     return i2cDriver.ping(address);
-
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()
@@ -73,46 +70,53 @@ bool spDevMCP9600::onInitialize(TwoWire &wirePort)
     return MCP9600::begin(address(), wirePort);
 }
 
-
-void spDevMCP9600::setAmbientResolution(bool value)
+void spDevMCP9600::set_AmbientResolution(bool value)
 {
-    MCP9600::setAmbientResolution((Ambient_Resolution)value); 
+    MCP9600::setAmbientResolution((Ambient_Resolution)value);
 }
 
-bool spDevMCP9600::getAmbientResolution(void){
+bool spDevMCP9600::get_AmbientResolution(void)
+{
 
     return (bool)MCP9600::getAmbientResolution();
 }
-void spDevMCP9600::setThermocoupleResolution(uint value){
+void spDevMCP9600::set_ThermocoupleResolution(uint value)
+{
 
     MCP9600::setThermocoupleResolution((Thermocouple_Resolution)value);
 }
-uint spDevMCP9600::getThermocoupleResolution(void){
+uint spDevMCP9600::get_ThermocoupleResolution(void)
+{
 
-    return  (uint)MCP9600::getThermocoupleResolution();
+    return (uint)MCP9600::getThermocoupleResolution();
 }
-void spDevMCP9600::setThermocoupleType(uint value){
+void spDevMCP9600::set_ThermocoupleType(uint value)
+{
 
     MCP9600::setThermocoupleType((Thermocouple_Type)value);
 }
-uint spDevMCP9600::getThermocoupleType(void){
+uint spDevMCP9600::get_ThermocoupleType(void)
+{
 
     return MCP9600::getThermocoupleType();
 }
-void spDevMCP9600::setFilterCoefficient(uint value){
+void spDevMCP9600::set_FilterCoefficient(uint value)
+{
 
     MCP9600::setFilterCoefficient(value);
 }
-uint spDevMCP9600::getFilterCoefficient(void){
+uint spDevMCP9600::get_FilterCoefficient(void)
+{
 
     return MCP9600::getFilterCoefficient();
 }
-void spDevMCP9600::setBurstSamples(uint value){
+void spDevMCP9600::set_BurstSamples(uint value)
+{
 
     MCP9600::setBurstSamples((Burst_Sample)value);
 }
-uint spDevMCP9600::getBurstSamples(void){
+uint spDevMCP9600::get_BurstSamples(void)
+{
 
     return MCP9600::getBurstSamples();
 }
-
