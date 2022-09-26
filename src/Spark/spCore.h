@@ -539,7 +539,7 @@ class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spData
 // A read/write property base class that takes a getter and a setter method and the target object
 //
 //
-template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T const &)>
+template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T )>
 class _spPropertyTypedRW : public _spPropertyBase<T>
 {
     Object *my_object; // Pointer to the containing object
@@ -658,19 +658,22 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
 // Create typed read/writer property objects - type and RW objects as super classes
 
 // bool
-template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool const &)>
+template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
 using spPropertyRWBool = _spPropertyTypedRW<bool, Object, _getter, _setter>;
 
 // int
-template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int const &)>
+template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
 using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
 
+template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
+using spPropertyRWUint = _spPropertyTypedRW<uint, Object, _getter, _setter>;
+
 // float
-template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float const &)>
+template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
 using spPropertyRWFloat = _spPropertyTypedRW<float, Object, _getter, _setter>;
 
 // double
-template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double const &)>
+template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double )>
 using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 
 //---------------------------------------------------------------------------------
@@ -680,7 +683,7 @@ using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 //
 // A read/write property string class that takes a getter and a setter method and the target object
 //
-template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string const &)>
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string )>
 class spPropertyRWString : public _spPropertyBaseString
 {
     Object *my_object;
