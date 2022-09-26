@@ -120,3 +120,16 @@ uint spDevMCP9600::get_BurstSamples(void)
 
     return MCP9600::getBurstSamples();
 }
+// For the output param call - no args
+float spDevMCP9600::get_ThermocoupleTemp(void)
+{
+    return MCP9600::getThermocoupleTemp();
+}
+float spDevMCP9600::get_AmbientTemp(void)
+{
+    return MCP9600::getAmbientTemp();
+}
+float spDevMCP9600::get_TempDelta(void)
+{
+    return MCP9600::getTempDelta();
+}
