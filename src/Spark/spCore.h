@@ -3,16 +3,11 @@
 #pragma once
 
 #include <functional>
-#include <iostream>
-#include <map>
 #include <string>
 #include <type_traits>
 #include <vector>
 
-using std::string;
-
-// Testing
-#include <ArduinoJson.h>
+//using std::string;
 
 #include "spStorage.h"
 
