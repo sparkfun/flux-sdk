@@ -74,12 +74,12 @@ bool spDevMCP9600::onInitialize(TwoWire &wirePort)
 }
 
 
-void spDevMCP9600::set_AmbientResolution(bool value)
+void spDevMCP9600::setAmbientResolution(bool value)
 {
     MCP9600::setAmbientResolution((Ambient_Resolution)value); 
 }
 
-bool spDevMCP9600::get_AmbientResolution(void){
+bool spDevMCP9600::getAmbientResolution(void){
 
     return (bool)MCP9600::getAmbientResolution();
 }

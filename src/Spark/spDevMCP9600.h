@@ -45,10 +45,10 @@ class spDevMCP9600 : public spDevice<spDevMCP9600>, public MCP9600
 
     // Define our public/managed properites for this class.
     
-    void set_AmbientResolution(bool);
-    bool get_AmbientResolution(void);
+    void setAmbientResolution(bool);
+    bool getAmbientResolution(void);
 
-    spPropertyRWBool<spDevMCP9600, &spDevMCP9600::get_AmbientResolution, &spDevMCP9600::set_AmbientResolution> ambient_resolution;
+    spPropertyRWBool<spDevMCP9600, &spDevMCP9600::getAmbientResolution, &spDevMCP9600::setAmbientResolution> ambient_resolution;
 
     void setThermocoupleResolution(uint);
     uint getThermocoupleResolution(void);
