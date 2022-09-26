@@ -38,12 +38,14 @@ class spDevCCS811 : public spDevice<spDevCCS811>, public CCS811
 
     bool onInitialize(TwoWire &);
 
-    float getCO2();
-    float getTVOC();
+private:
+    float get_CO2();
+    float get_TVOC();
 
+public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevCCS811, &spDevCCS811::getCO2> co2;
-    spParameterOutFloat<spDevCCS811, &spDevCCS811::getTVOC> tvoc;    
+    spParameterOutFloat<spDevCCS811, &spDevCCS811::get_CO2> co2;
+    spParameterOutFloat<spDevCCS811, &spDevCCS811::get_TVOC> tvoc;    
 
     // Type testing:
     static spType Type;

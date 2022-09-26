@@ -78,20 +78,20 @@ bool spDevBME280::onInitialize(TwoWire &wirePort)
     return BME280::beginI2C(wirePort);
 }
 // GETTER methods for output params
-float spDevBME280::readHumidity()
+float spDevBME280::get_Humidity()
 {
     return BME280::readFloatHumidity();
 }
 
-float spDevBME280::readTemperatureF()
+float spDevBME280::get_TemperatureF()
 {
     return BME280::readTempF();
 }
-float spDevBME280::readTemperatureC()
+float spDevBME280::get_TemperatureC()
 {
     return BME280::readTempC();
 }
-float spDevBME280::readPressure()
+float spDevBME280::get_Pressure()
 {
     return BME280::readFloatPressure();
 }

@@ -43,19 +43,21 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
+private:
     // methods used to get values for our output parameters
-    float readHumidity();
-    float readTemperatureF();
-    float readTemperatureC();    
-    float readPressure();
+    float get_Humidity();
+    float get_TemperatureF();
+    float get_TemperatureC();    
+    float get_Pressure();
 
+public:
     spPropertyBool<spDevBME280> celsius;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevBME280, &spDevBME280::readHumidity> humidity;
-    spParameterOutFloat<spDevBME280, &spDevBME280::readTemperatureF> temperatureF;    
-    spParameterOutFloat<spDevBME280, &spDevBME280::readTemperatureC> temperatureC;    
-    spParameterOutFloat<spDevBME280, &spDevBME280::readPressure> pressure;        
+    spParameterOutFloat<spDevBME280, &spDevBME280::get_Humidity> humidity;
+    spParameterOutFloat<spDevBME280, &spDevBME280::get_TemperatureF> temperatureF;    
+    spParameterOutFloat<spDevBME280, &spDevBME280::get_TemperatureC> temperatureC;    
+    spParameterOutFloat<spDevBME280, &spDevBME280::get_Pressure> pressure;        
 
 
 

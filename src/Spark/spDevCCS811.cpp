@@ -40,7 +40,7 @@ spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
 
 // Function to encapsualte the ops needed to ge tvalues form the sensor.
 // Shouldnt' this be part of the original library?
-float spDevCCS811::getCO2()
+float spDevCCS811::get_CO2()
 {
 
     if (!dataAvailable())
@@ -54,7 +54,7 @@ float spDevCCS811::getCO2()
     return CCS811::getCO2();
 }
 //
-float spDevCCS811::getTVOC()
+float spDevCCS811::get_TVOC()
 {
 
     if (!CCS811::dataAvailable())
