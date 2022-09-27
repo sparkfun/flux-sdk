@@ -41,7 +41,7 @@ uint16_t spBase::_name_count = 1;
 //---------------------------------------------------------------------------
 // getID()
 //
-// Return a unique id for the class - used with serliazation...
+// Return a unique id for the class - used with serialization...
 //
 uint16_t spBase::getID(void)
 {
@@ -83,7 +83,7 @@ bool spBase::save(void)
 bool spBase::restore(void)
 {
 
-    // TODO: something isnt fully working here
+    // TODO: something isn't fully working here
     // Serial.print("BASE RESTORE: "); Serial.println(this->getName());
     uint16_t id = getID(); // object id.
 
@@ -102,7 +102,7 @@ bool spBase::restore(void)
 bool spBase::serializeJSON(JsonObject &jObj)
 {
 
-    // Place the property values + the object name in the Json Object prrovided.
+    // Place the property values + the object name in the Json Object provided.
     jObj["id_debug"] = getID();
 
     for (auto prop : _myProps)
