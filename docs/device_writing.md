@@ -45,6 +45,7 @@ Note
 >* It is common to define a constant or macro for the device name and return it from ```getDeviceName()```
 
 ### Device Detection
+#### Device Addresses
 
 The first step for a given driver is the retrieval of default addresses for the device.In this step, the system calls the ```getDefaultAddresses()``` method of the driver. The driver should return an array of type uint8_t, with the last value of the array being the sentinel value of ```kSparkDeviceAddressNull``` 
 
@@ -52,7 +53,7 @@ The first step for a given driver is the retrieval of default addresses for the 
 ```C++
 static const uint8_t *getDefaultAddresses();
 ```
-
+#### Is Connected
 For each of the addresses returned, the system calls the drivers ```isConnected()``` method. The driver should returns `true` if the device is connected at the given address, otherwise `false`.
 
 How the driver determines if a device is connected is determined by the implementation
@@ -66,182 +67,138 @@ static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
 * i2cDriver - a I2C Bus driver object the driver can use to query the I2C bus
 * address - The address to check for a device 
 
+#### Device Name
 
+The static interface for the device also includes a method to return the name of the device. 
 
-
-.
-### Parameter Attributes
-The following are key attributes of parameters within the framework
-* Parameters can be added to any classed derived from the spOperation class
-* Parameter objects are typed
-* Parameter objects can act like a function
-* Parameter objects allow introspection - they can be discovered and manipulated at runtime via software
-
-#### Parameter Data Types
-The following types are available for properties
-* bool
-* int
-* uint
-* float
-* double
-* string 
-
-#### Parameter Use
-Setting an value of a Input Parameter - named ```input``` in this example:
-```c++
-    anObject.input(value);
-    anObject.input.set(value);
-```
-Getting a value of an Output Parameter - named ```output``` in this example:
+##### Method Signature
 ```C++
-    value = anObject.output();
-    value = anObject.output.get();
+static const char *getDeviceName()
 ```
+This method returns a constant C string. 
 
-### Defining a Parameter
-For the framework, two types of Parameter classes exist. 
-* Input Parameter - Defines a Parameter to set input value to an operation
-* Output Parameter - Defines a Parameter to get an output value from an operation
+#### Example Method Definition
 
-Note
-> The get and set operations on a parameter are mapped to methods implemented by the containing class. 
+This example is taken from the device driver for the BME280 device. 
 
-### Input Parameter Objects
-These parameter objects are used to define a input parameter to an operation. Besides allowing introspection at runtime, they also pass on the provided value to a method.
-
-#### Declaring the Input Parameter
-Within the definition of the class the parameter is for, the input parameter is defined using the following pattern:
-
+The class definition
 ```C++
-spParameterInType<ClassName, &ClassName::Writer>  input_name;
-```
-Where:
-* spParameterInType - the type of the input parameter class to use 
-* ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in. 
-* Writer - the name of the _write_ method the parameter should call when it's value is set. **NOTE**: A reference, `& operator`, to the writer is provided
+// What is the name used to ID this device?
+#define kBME280DeviceName "bme280";
 
-##### Available Input Parameter Types:
-
-* spParameterInBool - bool property
-* spParameterInInt  - integer property
-* spParameterInUint - unsigned integer
-* spParameterInFloat - float
-* spParameterInDouble - double
-* spParameterInString - string -> std::string
-
-##### Writer Methods
-
-These methods are implemented on the containing class and are called when the value of a parameter is set. These methods have the following signature:
-
-```C++
-void ClassName::write_Name(parameter_type value);
-```
-Where
-
-* parameter_type - the type of the parameter (bool, int, uint, float, double, std::string)
-* ClassName - the name of the containing class for the property
-
-Note
->By convention, writer method names are prefixed by ```write_```
-
-##### Example
-
-```C++
-class MyClass : public spObject
+// Define our class - note sub-classing from the Qwiic Library
+class spDevBME280 : public spDevice<spDevBME280>, public BME280
 {
-private:
-    void write_myInput(int value);
 
-public:
-   // Define an input parameter
-   spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input;
+  public:
+    spDevBME280();
+
+    // Device is connected methods
+    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static const char *getDeviceName()
+    {
+        return kBME280DeviceName;
+    };
+
+    static const uint8_t *getDefaultAddresses()
+    {
+        return defaultDeviceAddress;
+    }
+    // holds list of possible addresses/IDs for this objects
+    static uint8_t defaultDeviceAddress[];
+
+    // Method called to initialize the class
+    bool onInitialize(TwoWire &);
+};
+```
+#### Notes
+* This device defined its name, bme280, using the macro `kBME280DeviceName`
+* Default device addresses are contained in a class variable  ``` defaultDeviceAddress[];```
+* The method ```onInitialize()``` is called after the object is instantiated. 
+* The class subclasses from spDevice, passing in the class name to the template
+
+### Auto Discovery - Class Implementation 
+
+To complete the auto-discovery capabilities of the system, besides the implementation of the above methods, the classes implementation file must include to register the device.
+
+This is call is placed before the class implementation and has the following signature:
+```C++
+spRegisterDevice(DeviceName);
+```
+Where `DeviceName` is the class name of the device being registered. 
+
+Once a device is registered, it is available for auto-detection and loading by the framework during the startup process of system. 
+
+Building off the above BME280 example, the implementation looks like:
+```C++
+#define kBMEAddressDefault 0x77
+#define kBMEAddressAlt1 0x76
+
+// Define our class static variables - allocs storage for them
+
+uint8_t spDevBME280::defaultDeviceAddress[] = {kBMEAddressDefault, 
+                    kBMEAddressAlt1, 
+                    kSparkDeviceAddressNull};
+
+// Register this class with the system,
+spRegisterDevice(spDevBME280);
+
+//----------------------------------------
+// Constructor
+
+spDevBME280::spDevBME280()
+{
+
+    // Setup unique identifiers for this device and basic device object systems
+    spSetupDeviceIdent(getDeviceName());
+
+}
+```
+
+Notes
+* This example includes the implementation of ```defaultDeviceAddress[]```, the class variable holding the addresses for the device.
+* The device is registered before the class constructor
+* In the constructor, the device identity is set, which is based of runtime conditions.
+
+The isConnected() method for this example is:
+```C++
+bool spDevBME280::isConnected(spDevI2C &i2cDriver, uint8_t address)
+{
+
+    uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); 
+    // Should return 0x60 or 0x58
+
+    return (chipID == 0x58 || chipID == 0x60);
 }
 ```
 Note
-> * By convention declaring the input writer method as private. This can be optional
-> * The writer method must be declared before defining the parameter
-> * The use of the `write_` prefix on the writer methods help identify the methods as supporting a parameter.
+* This is a static (has no `this` instance) and as such uses the methods on the passed in I2C bus driver to determine in a BME280 is connected to the system
 
-### Output Parameter Objects
-These parameter objects are used to define a output parameter to an operation. Besides allowing introspection at runtime, they also retrieve the desired value from a method.
 
-#### Declaring the Output Parameter
-Within the definition of the class the parameter is for, the output parameter is defined using the following pattern:
+### Startup Sequence 
+The last part of implementing a device descriptor/driver class is the addition of an initialization method, named ``onInitialize()``. 
 
+##### Method Signature
 ```C++
-spParameterOutType<ClassName, &ClassName::Reader>  output_name;
-```
-Where:
-* spParameterOutType - the type of the output parameter class to use 
-* ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in. 
-* Reader - the name of the _read_ method the parameter should call when it's value is retrieved. **NOTE**: A reference, `& operator`, to the reader is provided
+ bool onInitialize(TwoWire &);
+ ```
+The only argument to this methods is the Arduino I2C `TwoWire` class, which the class can use to initialize the device. The method returns `true` on success, `false` on failure. 
 
-##### Available Input Parameter Types:
-
-* spParameterOutBool - bool property
-* spParameterOutInt  - integer property
-* spParameterOutUint - unsigned integer
-* spParameterOutFloat - float
-* spParameterOutDouble - double
-* spParameterOutString - string -> std::string
-
-##### Reader Methods
-
-These methods are implemented on the containing class and are called when the value of a parameter is requested. These methods have the following signature:
-
+The BME280 example implementation:
 ```C++
-parameter_type ClassName::read_Name(void);
-```
-Where
-
-* parameter_type - the type of the parameter (bool, int, uint, float, double, std::string)
-* ClassName - the name of the containing class for the property
-
-Note
->By convention, reader method names are prefixed by ```read_```
-
-##### Example
-
-```C++
-class MyClass : public spObject
+bool spDevBME280::onInitialize(TwoWire &wirePort)
 {
-private:
-    int read_myOutput(void);
 
-public:
-   // Define an output parameter
-   spParameterOutInt<MyClass, &MyClass::read_MyOutput>  my_output;
+    // set the device address
+    BME280::setI2CAddress(address());
+    return BME280::beginI2C(wirePort);
 }
 ```
 Note
-> * By convention declaring the output reader method as private. This can be optional
-> * The reader method must be declared before defining the parameter
-> * The use of the `read_` prefix on the writer methods help identify the methods as supporting a parameter.
+* The ```address()``` method returns the device address for this instance of the driver. 
 
-#### Runtime Registration
+## Device Properties
+See the detailed description of [Properties](properties.md)
 
-When an instance of the object that contains the parameter is created, the parameter is registered with that object using the ```spRegister()``` function. This step connects the object instance with the parameter. 
-
-The calling sequence for spRegister is:
-
-```C++
-    spRegister(Object [, Name][,Description]);
-```
-Where:
-
-* Object - the object to register - either a property or parameter
-* Name - Optional human readable name for the object
-* Description - Optional human readable description for the object
-
-For the example above, the registration call looks like:
-
-```C++
-// MyClass Constructor
-MyClass()     
-{
-    // Register our input parameter
-    spRegister(my_input);
-    spRegister(my_output, "calibration", "Calibrated data output");
-}
-```
- 
+## Device Prarameters
+See the detailed description of [Parameters](parameters.md)
