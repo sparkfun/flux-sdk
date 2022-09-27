@@ -1120,6 +1120,99 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     //   - Add type?
     //   - Add instance ID counter
 };
+//####################################################################
+// Container update
+//
+// spContainer
+//
+// A list/container that holds spObjects and supports serialization. The 
+// container itself is a object
+
+template <class T> class spContainer : public spObject
+{
+  protected:
+    // Use a vector to store data
+    std::vector<T> _vector;
+
+  public:
+
+    spContainer() : _vector()
+    {
+    }
+    // we're compositing the std::vector inteface - just bridge it up to
+    // our interface
+    auto size() const -> decltype(_vector.size())
+    {
+        return _vector.size();
+    }
+
+    void push_back( T& value)
+    {
+        _vector.push_back(value);
+        value->setParent(this);
+    }
+    void push_back( T&& value)
+    {
+        _vector.push_back(value);
+        value->setParent(this);
+    }
+    void pop_back(void) const 
+    {
+        _vector.pop_back();
+    }
+
+    auto back(void) const -> decltype(_vector.back())
+    {
+        return _vector.back();
+    }
+    auto front() const -> decltype(_vector.front())
+    {
+        return _vector.front();
+    }
+    T& at(size_t pos )  
+    {
+        return _vector.at(pos);
+    }    
+    auto cbegin() const -> decltype(_vector.cbegin())
+    {
+        return _vector.cbegin();
+    }
+    auto cend() const -> decltype(_vector.cend())
+    {
+        return _vector.cend();
+    }
+
+    auto begin() const -> decltype(_vector.begin())
+    {
+        return _vector.begin();
+    }
+    auto end() const -> decltype(_vector.end())
+    {
+        return _vector.end();
+    }
+    auto rbegin() const -> decltype(_vector.rbegin())
+    {
+        return _vector.rbegin();
+    }
+    auto rend() const -> decltype(_vector.rend())
+    {
+        return _vector.rend();
+    }
+    auto empty() -> decltype(_vector.empty())
+    {
+        return _vector.empty();
+    }
+
+    typedef typename std::vector<T>::const_iterator iterator;
+
+    iterator erase( iterator pos)
+    {
+        return _vector.erase(pos);
+    }
+};
+
+//####################################################################
+
 
 //----------------------------------------------------------------------------------------------------
 // _spObjectContainer

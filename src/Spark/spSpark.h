@@ -31,11 +31,11 @@ class spSpark : public spObjectContainer
     // Add items to framework - use overloading to determine destination
     void add(spAction &theAction)
     {
-        Actions.add(&theAction);
+        Actions.push_back(&theAction);
     }
     void add(spAction *theAction)
     {
-        Actions.add(theAction);
+        Actions.push_back(theAction);
     }
 
     void add(_spDevice &theDevice)
@@ -50,6 +50,7 @@ class spSpark : public spObjectContainer
 
     // leaving containers public - not sure if this is helpful
     spDeviceContainer Devices;
+    //spContainer<_spDevice*> Devices;
     spActionContainer Actions;
 
     // Call to serliaze the settings of the system as a JSON object
@@ -97,8 +98,9 @@ class spSpark : public spObjectContainer
         Actions.name = "actions";
 
         // Our container has two children, the device and the actions container
-        this->add(&Devices);
-        this->add(&Actions);
+        // TODO
+        //this->add(&Devices);
+        //this->add(&Actions);
 
     } 
 
@@ -106,13 +108,13 @@ class spSpark : public spObjectContainer
     {
         for (int i = 0; i < Devices.size(); i++)
         {
-            if (type == Devices.at(i)->getType())
-                return Devices.at(i);
+            if (type == ((_spDevice*)Devices.at(i))->getType())
+                return (spOperation*)Devices.at(i);
         }
          for (int i = 0; i < Actions.size(); i++)
         {
             if (type == Actions.at(i)->getType())
-                return Actions.at(i);
+                return (spOperation*)Actions.at(i);
         }
         return nullptr;
     }

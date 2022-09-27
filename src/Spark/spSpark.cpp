@@ -75,7 +75,7 @@ void spSpark::add(_spDevice *theDevice )
 	if ( !theDevice->autoload() )
 		spDeviceFactory::get().purneAutoload(*theDevice, Devices);
 
-	Devices.add(theDevice);
+	Devices.push_back(theDevice);
 }
 //------------------------------------------------------------------------------
 // serializeJSON()

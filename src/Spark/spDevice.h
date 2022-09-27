@@ -116,7 +116,8 @@ class _spDevice : public spOperation
 };
 
 //using spDeviceContainer = spContainer<_spDevice>;
-using spDeviceContainer = _spOperationContainer<_spDevice>;
+//using spDeviceContainer = _spOperationContainer<_spDevice>;
+using spDeviceContainer = spContainer<_spDevice*>;
 using spDeviceList = spDeviceContainer;
 
 // Macro used to simplfy device setup
