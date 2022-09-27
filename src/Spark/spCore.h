@@ -1077,11 +1077,25 @@ inline bool operator==(const spType *lhs, const spType &rhs)
 class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
 {
 
+    spObject * _parent;
   public:
     spObject()
     {
     }
 
+    void setParent(spObject * parent)
+    {
+        _parent = parent;
+    }
+    void setParent(spObject &parent)
+    {
+        setParent(&parent);
+    }
+
+    spObject * parent()
+    {
+        return _parent;
+    }
     //---------------------------------------------------------------------------------
     virtual bool save(spStorageBlock *stBlk)
     {
@@ -1153,6 +1167,7 @@ template <typename T> class _spObjectContainer : public T, public std::vector<T 
 
     void add( T *value ){
         this->std::vector<T*>::push_back(value);
+        value->setParent(this);
     }
     void add( T &value ){
         add(&value);
