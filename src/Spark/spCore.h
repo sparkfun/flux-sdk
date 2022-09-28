@@ -1141,7 +1141,7 @@ template <class T> class spContainer : public spObject
     }
     // we're compositing the std::vector inteface - just bridge it up to
     // our interface
-    auto size() const -> decltype(_vector.size())
+    auto size()  -> decltype(_vector.size())
     {
         return _vector.size();
     }
@@ -1149,23 +1149,23 @@ template <class T> class spContainer : public spObject
     void push_back( T& value)
     {
         _vector.push_back(value);
-        value->setParent(this);
+        value.setParent(this);
     }
-    void push_back( T&& value)
+    void push_back( T* value)
     {
         _vector.push_back(value);
         value->setParent(this);
     }
-    void pop_back(void) const 
+    void pop_back(void)  
     {
         _vector.pop_back();
     }
 
-    auto back(void) const -> decltype(_vector.back())
+    auto back(void)  -> decltype(_vector.back())
     {
         return _vector.back();
     }
-    auto front() const -> decltype(_vector.front())
+    auto front()  -> decltype(_vector.front())
     {
         return _vector.front();
     }
@@ -1173,28 +1173,28 @@ template <class T> class spContainer : public spObject
     {
         return _vector.at(pos);
     }    
-    auto cbegin() const -> decltype(_vector.cbegin())
+    auto cbegin()  -> decltype(_vector.cbegin())
     {
         return _vector.cbegin();
     }
-    auto cend() const -> decltype(_vector.cend())
+    auto cend()  -> decltype(_vector.cend())
     {
         return _vector.cend();
     }
 
-    auto begin() const -> decltype(_vector.begin())
+    auto begin()  -> decltype(_vector.begin())
     {
         return _vector.begin();
     }
-    auto end() const -> decltype(_vector.end())
+    auto end()  -> decltype(_vector.end())
     {
         return _vector.end();
     }
-    auto rbegin() const -> decltype(_vector.rbegin())
+    auto rbegin()  -> decltype(_vector.rbegin())
     {
         return _vector.rbegin();
     }
-    auto rend() const -> decltype(_vector.rend())
+    auto rend()  -> decltype(_vector.rend())
     {
         return _vector.rend();
     }
@@ -1203,7 +1203,7 @@ template <class T> class spContainer : public spObject
         return _vector.empty();
     }
 
-    typedef typename std::vector<T>::const_iterator iterator;
+    typedef typename std::vector<T>::iterator iterator;
 
     iterator erase( iterator pos)
     {
@@ -1759,7 +1759,7 @@ template <typename T> class _spOperationContainer : public _spObjectContainer<T>
     }
 };
 
-using spOperationContainer = _spOperationContainer<spOperation>;
+using spOperationContainer = spContainer<spOperation>;
 //-----------------------------------------
 // Spark Actions
 

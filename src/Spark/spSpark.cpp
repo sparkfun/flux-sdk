@@ -57,7 +57,7 @@ bool spSpark::loop(void)
 
     // i2c devices
     for (int i = 0; i < Devices.size(); i++)
-        rc = rc || Devices.at(i)->loop();
+        rc = rc || Devices.at(i).loop();
 
     return rc;
 }
@@ -75,7 +75,7 @@ void spSpark::add(spDevice *theDevice )
 	if ( !theDevice->autoload() )
 		spDeviceFactory::get().purneAutoload(*theDevice, Devices);
 
-	Devices.push_back(theDevice);
+	Devices.push_back(*theDevice);
 }
 //------------------------------------------------------------------------------
 // serializeJSON()

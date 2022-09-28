@@ -35,7 +35,7 @@ bool spDeviceFactory::addressInUse(uint8_t address)
     // loop over connected/created devices - if the address is a match, return true
     for (auto device : spark.connectedDevices())
     {
-        if (device->address() == address)
+        if (device.address() == address)
             return true;
     }
     return false;
@@ -123,15 +123,15 @@ void spDeviceFactory::purneAutoload(spDevice &theDevice, spDeviceContainer &devL
 	while ( itDevice != devList.end())
 	{
 		// only check autoloads
-		if (  (*itDevice)->autoload() )
+		if (  itDevice->autoload() )
 		{
-			if ( theDevice.getType() == (*itDevice)->getType() && 
-				 theDevice.address() == (*itDevice)->address() )
+			if ( theDevice.getType() == itDevice->getType() && 
+				 theDevice.address() == itDevice->address() )
 			{
 				// remove the device - returns updated iterator
-				spDevice * pTmp = *itDevice;
+				spDevice &pTmp = *itDevice;
 				itDevice = devList.erase(itDevice);
-				delete pTmp;
+				delete &pTmp;
 				break;
 			}
 			else

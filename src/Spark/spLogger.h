@@ -185,12 +185,12 @@ class spLogger : public spAction
 
     void _add(spOperation &op)
     {
-        _objsToLog.push_back(&op);
+        _objsToLog.push_back(op);
     }
     void _add(spOperation *op)
     {
         if (op != nullptr)
-            _objsToLog.push_back(op);
+            _objsToLog.push_back(*op);
     }
 
     void _add(spParameterOut &param)
@@ -216,7 +216,7 @@ class spLogger : public spAction
         // Only add devices that have output parameters ..
         for (auto device : deviceList)
         {
-            if (device->nOutputParameters() > 0)
+            if (device.nOutputParameters() > 0)
                 _add(device);
         }
     }

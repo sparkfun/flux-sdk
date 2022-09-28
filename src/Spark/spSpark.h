@@ -40,7 +40,7 @@ class spSpark : public spObjectContainer
 
     void add(spDevice &theDevice)
     {
-        Devices.push_back(&theDevice);
+        Devices.push_back(theDevice);
     }
     void add(spDevice *theDevice);
 
@@ -72,7 +72,7 @@ class spSpark : public spObjectContainer
 
         for (int i = 0; i < Devices.size(); i++)
         {
-            if (T::Type == Devices.at(i)->getType())
+            if (T::Type == Devices.at(i).getType())
                 return true;
         }
         return false;
@@ -105,10 +105,11 @@ class spSpark : public spObjectContainer
 
     spOperation *_getByType(spType *type)
     {
-        for ( auto device : Devices)
+
+        for (int i = 0; i < Devices.size(); i++)
         {
-            if ( type == device->getType())
-                return device;
+            if (type == Devices.at(i).getType())
+                return (spOperation*)&(Devices.at(i));
         }
 
         for (int i = 0; i < Actions.size(); i++)

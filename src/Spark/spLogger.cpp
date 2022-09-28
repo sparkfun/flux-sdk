@@ -78,7 +78,7 @@ void spLogger::logObservation(void)
 
     // loop over objs to log - each object is in a named section. Logs to all formatters
     for (auto pObj : _objsToLog)
-        logSection(pObj->name, pObj->getOutputParameters());
+        logSection(pObj.name, pObj.getOutputParameters());
 
     // And end the observation for each formatter
     for (auto theFormatter : _Formatters)
