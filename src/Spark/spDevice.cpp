@@ -7,7 +7,7 @@
 #include "spDevice.h"
 #include "spSpark.h"
 
-_spDevice::_spDevice()
+spDevice::spDevice()
 {
 
 	_address = kSparkDeviceAddressNull;
@@ -15,7 +15,7 @@ _spDevice::_spDevice()
 
 }
 
-bool _spDevice::initialize(TwoWire &wirePort)
+bool spDevice::initialize(TwoWire &wirePort)
 {
     if (_address == kSparkDeviceAddressNull)
         _address = getDefaultAddress();
@@ -79,7 +79,7 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
             // See if the device is connected
             if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
             {
-                _spDevice *pDevice = deviceBuilder->create();
+                spDevice *pDevice = deviceBuilder->create();
                 if (!pDevice)
                 {
                     Serial.print("ERROR: Device create failed - ");
@@ -113,7 +113,7 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
 //
 // A device match = Device::type is the same and the address is the same.
 
-void spDeviceFactory::purneAutoload(_spDevice &theDevice, spDeviceContainer &devList)
+void spDeviceFactory::purneAutoload(spDevice &theDevice, spDeviceContainer &devList)
 {
 	if ( theDevice.autoload() || devList.size() == 0 )
 		return; // makes no sense.
@@ -129,7 +129,7 @@ void spDeviceFactory::purneAutoload(_spDevice &theDevice, spDeviceContainer &dev
 				 theDevice.address() == (*itDevice)->address() )
 			{
 				// remove the device - returns updated iterator
-				_spDevice * pTmp = *itDevice;
+				spDevice * pTmp = *itDevice;
 				itDevice = devList.erase(itDevice);
 				delete pTmp;
 				break;

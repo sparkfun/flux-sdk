@@ -70,7 +70,7 @@ bool spSpark::loop(void)
 //
 // To pevent this, if a device added that is not autoload, we have the 
 // device list checked and pruned!
-void spSpark::add(_spDevice *theDevice )
+void spSpark::add(spDevice *theDevice )
 {
 	if ( !theDevice->autoload() )
 		spDeviceFactory::get().purneAutoload(*theDevice, Devices);

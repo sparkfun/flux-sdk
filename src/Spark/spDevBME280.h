@@ -19,7 +19,7 @@
 #define kBME280DeviceName "bme280";
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBME280 : public spDevice<spDevBME280>, public BME280
+class spDevBME280 : public spDeviceType<spDevBME280>, public BME280
 {
 
   public:

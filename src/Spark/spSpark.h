@@ -38,11 +38,11 @@ class spSpark : public spObjectContainer
         Actions.push_back(theAction);
     }
 
-    void add(_spDevice &theDevice)
+    void add(spDevice &theDevice)
     {
         Devices.push_back(&theDevice);
     }
-    void add(_spDevice *theDevice);
+    void add(spDevice *theDevice);
 
     // This is a singleton class - so delete copy & assignment constructors
     spSpark(spSpark const &) = delete;
@@ -50,7 +50,6 @@ class spSpark : public spObjectContainer
 
     // leaving containers public - not sure if this is helpful
     spDeviceContainer Devices;
-    //spContainer<_spDevice*> Devices;
     spActionContainer Actions;
 
     // Call to serliaze the settings of the system as a JSON object
@@ -106,12 +105,13 @@ class spSpark : public spObjectContainer
 
     spOperation *_getByType(spType *type)
     {
-        for (int i = 0; i < Devices.size(); i++)
+        for ( auto device : Devices)
         {
-            if (type == ((_spDevice*)Devices.at(i))->getType())
-                return (spOperation*)Devices.at(i);
+            if ( type == device->getType())
+                return device;
         }
-         for (int i = 0; i < Actions.size(); i++)
+
+        for (int i = 0; i < Actions.size(); i++)
         {
             if (type == Actions.at(i)->getType())
                 return (spOperation*)Actions.at(i);

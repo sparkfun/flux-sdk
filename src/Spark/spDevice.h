@@ -50,13 +50,13 @@
 
 class spDeviceFactory_;
 
-class _spDevice : public spOperation
+class spDevice : public spOperation
 {
 
   public:
-    _spDevice();
+    spDevice();
 
-    virtual ~_spDevice(){}
+    virtual ~spDevice(){}
     // Interface
 
     // Methods for Sub-class to override - for device activities.
@@ -117,25 +117,25 @@ class _spDevice : public spOperation
 
 //using spDeviceContainer = spContainer<_spDevice>;
 //using spDeviceContainer = _spOperationContainer<_spDevice>;
-using spDeviceContainer = spContainer<_spDevice*>;
+using spDeviceContainer = spContainer<spDevice*>;
 using spDeviceList = spDeviceContainer;
 
 // Macro used to simplfy device setup
 #define spSetupDeviceIdent(_name_) this->name = _name_;
 
 //------------------------------------------------------------------------
-// spDevice()
+// spDeviceType()
 // 
-// This subclass of _spDevice via template allows the core device class to 
+// This subclass of spDevice via template allows the core device class to 
 // access the static list of addresses to get the default address without 
 // requiring the subclass to implement a method to do this. 
 //
 // Devices should subclass from this object using the following pattern:
 //
-//   class <classname> : spDevice<classname>, ...
+//   class <classname> : spDeviceType<classname>, ...
 //
 template <typename T>
-class spDevice : public _spDevice
+class spDeviceType : public spDevice
 {
 	// get the default address for the device. If none exists,
 	// return Null Address...
@@ -219,7 +219,7 @@ class spDeviceFactory
     // Called to build a list of device objects for the devices connected to the system.
     int buildDevices(spDevI2C &);
 
-	void purneAutoload(_spDevice &, spDeviceContainer &);
+	void purneAutoload(spDevice &, spDeviceContainer &);
 
     // Delete copy and assignment constructors - b/c this is singleton.
     spDeviceFactory(spDeviceFactory const &) = delete;
@@ -241,7 +241,7 @@ class spDeviceFactory
 class spDeviceBuilder
 {
   public:
-    virtual _spDevice *create(void) = 0;                                 // create the underlying device obj.
+    virtual spDevice *create(void) = 0;                                 // create the underlying device obj.
     virtual bool isConnected(spDevI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;

@@ -16,7 +16,7 @@
 #define kMCP9600DeviceName "mcp9600";
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevMCP9600 : public spDevice<spDevMCP9600>, public MCP9600
+class spDevMCP9600 : public spDeviceType<spDevMCP9600>, public MCP9600
 {
 
   public:
