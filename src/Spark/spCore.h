@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <vector>
 
-//using std::string;
+// using std::string;
 
 #include "spStorage.h"
 
@@ -41,26 +41,26 @@ class spDescriptor
     {
     }
 
-    void setName( const char *new_name)
+    void setName(const char *new_name)
     {
         _name = new_name;
     }
-    const char * name()
+    const char *name()
     {
         return _name;
     }
-    void setDescription( const char *new_desc)
+    void setDescription(const char *new_desc)
     {
         _description = new_desc;
     }
-    const char * description()
+    const char *description()
     {
         return _description;
     }
-protected:
-     const char * _name;
-     const char * _description;
 
+  protected:
+    const char *_name;
+    const char *_description;
 };
 
 typedef enum
@@ -76,7 +76,7 @@ typedef enum
 
 class spDataTyper
 {
-public:
+  public:
     // some method overloading to determine types
     static spDataType_t type(std::nullptr_t *t)
     {
@@ -148,36 +148,39 @@ class spDataOut
 {
 
   public:
+    virtual spDataType_t type(void) = 0;
 
-    virtual spDataType_t type(void)=0;
+    virtual bool getBool() = 0;
+    virtual int getInt() = 0;
+    virtual uint getUint() = 0;
+    virtual float getFloat() = 0;
+    virtual double getDouble() = 0;
+    virtual std::string getString() = 0;
 
-    virtual bool getBool()  = 0;
-    virtual int getInt()  = 0;
-    virtual uint getUint()  = 0;
-    virtual float getFloat()  = 0;
-    virtual double getDouble()  = 0;
-    virtual std::string getString()  = 0;
-
-    bool get_value(bool){
+    bool get_value(bool)
+    {
         return getBool();
     }
-    int get_value(int){
+    int get_value(int)
+    {
         return getInt();
     }
-    uint get_value(uint){
+    uint get_value(uint)
+    {
         return getUint();
     }
-    float get_value(float){
+    float get_value(float)
+    {
         return getFloat();
-    }       
-    double get_value(double){
+    }
+    double get_value(double)
+    {
         return getDouble();
-    }       
-    std::string get_value(std::string){
+    }
+    std::string get_value(std::string)
+    {
         return getString();
-    }               
-
-
+    }
 
     std::string &to_string(std::string &data) const
     {
@@ -229,7 +232,6 @@ template <typename T> class _spDataOut : public spDataOut
 {
 
   public:
-
     // Type of property
     spDataType_t type(void)
     {
@@ -237,30 +239,29 @@ template <typename T> class _spDataOut : public spDataOut
         return spDataTyper::type(c);
     };
 
-
     virtual T get(void) const = 0;
 
-    bool getBool() 
+    bool getBool()
     {
         return (bool)get();
     }
-    int getInt()  
+    int getInt()
     {
         return (int)get();
     }
-    uint getUint() 
+    uint getUint()
     {
         return (uint)get();
     }
-    float getFloat() 
+    float getFloat()
     {
         return (float)get();
     }
-    double getDouble() 
+    double getDouble()
     {
         return (double)get();
     }
-    std::string getString() 
+    std::string getString()
     {
         T c = get();
         return to_string(c);
@@ -273,36 +274,35 @@ class _spDataOutString : public spDataOut
 {
 
   public:
-
     // Type of property
-    spDataType_t  type(void)
+    spDataType_t type(void)
     {
         return spTypeString;
     };
 
     virtual std::string get(void) const = 0;
 
-    bool getBool() 
+    bool getBool()
     {
         return get() == "true";
     }
-    int getInt() 
+    int getInt()
     {
         return std::stoi(get());
     };
-    uint getUint() 
+    uint getUint()
     {
         return std::stoul(get());
     };
-    float getFloat() 
+    float getFloat()
     {
         return std::stof(get());
     }
-    double getDouble() 
+    double getDouble()
     {
         return std::stod(get());
     }
-    std::string getString() 
+    std::string getString()
     {
         return get();
     }
@@ -310,9 +310,10 @@ class _spDataOutString : public spDataOut
     typedef std::string value_type; // might be handy in future
 };
 
-class spDataIn{
-public:
-    virtual spDataType_t type(void)=0;
+class spDataIn
+{
+  public:
+    virtual spDataType_t type(void) = 0;
 };
 
 template <typename T> class _spDataIn : public spDataIn
@@ -427,7 +428,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 
   public:
     //---------------------------------------------------------------------------------
-    
+
     //---------------------------------------------------------------------------------
     // size in bytes of this property
     virtual size_t size()
@@ -463,7 +464,6 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
         return stBlk->readBytes(save_size(), (char *)&c);
         set(c);
     };
-
 };
 
 //----------------------------------------------------------------------------------------
@@ -539,7 +539,6 @@ class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spData
         }
         return rc;
     };
-
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -555,7 +554,7 @@ class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spData
 // A read/write property base class that takes a getter and a setter method and the target object
 //
 //
-template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T )>
+template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T)>
 class _spPropertyTypedRW : public _spPropertyBase<T>
 {
     Object *my_object; // Pointer to the containing object
@@ -637,7 +636,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     {
         return get() == rhs;
     }
-    
+
     //---------------------------------------------------------------------------------
     // get -> property()
     T operator()() const
@@ -689,7 +688,7 @@ template <class Object, float (Object::*_getter)(), void (Object::*_setter)(floa
 using spPropertyRWFloat = _spPropertyTypedRW<float, Object, _getter, _setter>;
 
 // double
-template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double )>
+template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 
 //---------------------------------------------------------------------------------
@@ -699,7 +698,7 @@ using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 //
 // A read/write property string class that takes a getter and a setter method and the target object
 //
-template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string )>
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
 class spPropertyRWString : public _spPropertyBaseString
 {
     Object *my_object;
@@ -1098,13 +1097,14 @@ inline bool operator==(const spType *lhs, const spType &rhs)
 class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
 {
 
-    spObject * _parent;
+    spObject *_parent;
+
   public:
     spObject()
     {
     }
 
-    void setParent(spObject * parent)
+    void setParent(spObject *parent)
     {
         _parent = parent;
     }
@@ -1113,7 +1113,7 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
         setParent(&parent);
     }
 
-    spObject * parent()
+    spObject *parent()
     {
         return _parent;
     }
@@ -1146,7 +1146,7 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
 //
 // spContainer
 //
-// A list/container that holds spObjects and supports serialization. The 
+// A list/container that holds spObjects and supports serialization. The
 // container itself is a object
 
 template <class T> class spContainer : public spObject
@@ -1156,66 +1156,65 @@ template <class T> class spContainer : public spObject
     std::vector<T> _vector;
 
   public:
-
     spContainer() : _vector()
     {
     }
     // we're compositing the std::vector inteface - just bridge it up to
     // our interface
-    auto size()  -> decltype(_vector.size())
+    auto size() -> decltype(_vector.size())
     {
         return _vector.size();
     }
 
-    void push_back( T& value)
+    void push_back(T &value)
     {
         _vector.push_back(value);
         value->setParent(this);
     }
-    void push_back( T* value)
+    void push_back(T *value)
     {
         _vector.push_back(value);
         value->setParent(this);
     }
-    void pop_back(void)  
+    void pop_back(void)
     {
         _vector.pop_back();
     }
 
-    auto back(void)  -> decltype(_vector.back())
+    auto back(void) -> decltype(_vector.back())
     {
         return _vector.back();
     }
-    auto front()  -> decltype(_vector.front())
+    auto front() -> decltype(_vector.front())
     {
         return _vector.front();
     }
-    T& at(size_t pos )  
+    T &at(size_t pos)
     {
         return _vector.at(pos);
-    }    
-    auto cbegin()  -> decltype(_vector.cbegin())
+    }
+    auto cbegin() -> decltype(_vector.cbegin())
     {
         return _vector.cbegin();
     }
-    auto cend()  -> decltype(_vector.cend())
+    auto cend() -> decltype(_vector.cend())
     {
         return _vector.cend();
     }
 
-    auto begin()  -> decltype(_vector.begin())
+    auto begin() -> decltype(_vector.begin())
     {
         return _vector.begin();
     }
-    auto end()  -> decltype(_vector.end())
+    auto end() -> decltype(_vector.end())
     {
         return _vector.end();
     }
-    auto rbegin()  -> decltype(_vector.rbegin())
+    auto rbegin() -> decltype(_vector.rbegin())
     {
         return _vector.rbegin();
     }
-    auto rend()  -> decltype(_vector.rend())
+    auto rend() -> decltype(_vector.rend())
     {
         return _vector.rend();
     }
@@ -1226,17 +1225,14 @@ template <class T> class spContainer : public spObject
 
     typedef typename std::vector<T>::iterator iterator;
 
-    iterator erase( iterator pos)
+    iterator erase(iterator pos)
     {
         return _vector.erase(pos);
     }
 };
 
-using spObjectContainer = spContainer<spObject*>;
+using spObjectContainer = spContainer<spObject *>;
 //####################################################################
-
-
-
 
 //##############################################################################################################################
 //##############################################################################################################################
@@ -1264,8 +1260,6 @@ class spParameter : public spDescriptor
         _isEnabled = enabled;
     };
 };
-
-
 
 // We want to bin parameters as input and output for storing different
 // arguments lists per object type via overloading. So define some simple classes
@@ -1435,7 +1429,7 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
 
     bool getBool()
     {
-       return _spDataOut<T>::getBool();
+        return _spDataOut<T>::getBool();
     };
     int getInt()
     {
@@ -1443,7 +1437,7 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     };
     uint getUint()
     {
-       return _spDataOut<T>::getUint();
+        return _spDataOut<T>::getUint();
     };
     float getFloat()
     {
@@ -1468,8 +1462,8 @@ template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _s
 
 template <class Object, float (Object::*_getter)()> using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
 
-template <class Object, float (Object::*_getter)()> using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
-
+template <class Object, float (Object::*_getter)()>
+using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
 
 //----------------------------------------------------------------------------------------------------
 // spParameterOutString
@@ -1561,7 +1555,7 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
 
     bool getBool()
     {
-       return _spDataOutString::getBool();
+        return _spDataOutString::getBool();
     };
     int getInt()
     {
@@ -1569,7 +1563,7 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     };
     uint getUint()
     {
-       return _spDataOutString::getUint();
+        return _spDataOutString::getUint();
     };
     float getFloat()
     {
@@ -1584,9 +1578,6 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
         return _spDataOutString::getString();
     };
 };
-
-
-
 
 template <class T, class Object, void (Object::*_setter)(T const &)>
 class _spParameterIn : public spParameterIn, _spDataIn<T>
@@ -1703,7 +1694,7 @@ using spParameterInString = _spParameterIn<std::string, Object, _setter>;
 // Define a object type that suppoarts parameter lists (input and output)
 class spOperation : public spObject, public _spParameterContainer
 {
-public:
+  public:
     virtual spType *getType(void)
     {
         return (spType *)nullptr;
@@ -1715,7 +1706,7 @@ public:
     }
 };
 
-using spOperationContainer = spContainer<spOperation*>;
+using spOperationContainer = spContainer<spOperation *>;
 //-----------------------------------------
 // Spark Actions
 
@@ -1723,4 +1714,4 @@ class spAction : public spOperation
 {
 };
 
-using spActionContainer = spContainer<spAction*>;
+using spActionContainer = spContainer<spAction *>;

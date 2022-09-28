@@ -10,9 +10,8 @@
 spDevice::spDevice()
 {
 
-	_address = kSparkDeviceAddressNull;
-	_autoload = false;
-
+    _address = kSparkDeviceAddressNull;
+    _autoload = false;
 }
 
 bool spDevice::initialize(TwoWire &wirePort)
@@ -20,7 +19,7 @@ bool spDevice::initialize(TwoWire &wirePort)
     if (_address == kSparkDeviceAddressNull)
         _address = getDefaultAddress();
 
-	// Add this device to the system
+    // Add this device to the system
     spark.add(this);
 
     return onInitialize(wirePort);
@@ -40,7 +39,6 @@ bool spDeviceFactory::addressInUse(uint8_t address)
     }
     return false;
 }
-
 
 //-------------------------------------------------------------------------------
 // buildConnectedDevices()
@@ -106,9 +104,9 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
 //----------------------------------------------------------------------------------
 // pruneAutoload()
 //
-// Called when a non-autoload device is created. 
+// Called when a non-autoload device is created.
 //
-// If a new device is created by the user outside of this factory, but that 
+// If a new device is created by the user outside of this factory, but that
 // device was "autoloaded", we prune the autoload device.
 //
 // A device match = Device::type is the same and the address is the same.
@@ -116,26 +114,25 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
 void spDeviceFactory::purneAutoload(spDevice *theDevice, spDeviceContainer &devList)
 {
 
-	if ( theDevice->autoload() || devList.size() == 0 )
-		return; // makes no sense.
+    if (theDevice->autoload() || devList.size() == 0)
+        return; // makes no sense.
 
-	auto itDevice = devList.begin(); // get the iterator for the list
+    auto itDevice = devList.begin(); // get the iterator for the list
 
-	while ( itDevice != devList.end())
-	{
-		// only check autoloads
-		if (  (*itDevice)->autoload() )
-		{
-			if ( theDevice->getType() == (*itDevice)->getType() && 
-				 theDevice->address() == (*itDevice)->address() )
-			{
-				// remove the device - returns updated iterator
-				spDevice *pTmp = *itDevice;
-				itDevice = devList.erase(itDevice);
-				delete pTmp;
-				break;
-			}
-		}
+    while (itDevice != devList.end())
+    {
+        // only check autoloads
+        if ((*itDevice)->autoload())
+        {
+            if (theDevice->getType() == (*itDevice)->getType() && theDevice->address() == (*itDevice)->address())
+            {
+                // remove the device - returns updated iterator
+                spDevice *pTmp = *itDevice;
+                itDevice = devList.erase(itDevice);
+                delete pTmp;
+                break;
+            }
+        }
         itDevice++;
-	}
+    }
 }

@@ -45,7 +45,7 @@ class spDevMCP9600 : public spDeviceType<spDevMCP9600>, public MCP9600
 
     void set_AmbientResolution(bool);
     bool get_AmbientResolution(void);
-    
+
     void set_ThermocoupleResolution(uint);
     uint get_ThermocoupleResolution(void);
 

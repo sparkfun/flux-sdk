@@ -41,7 +41,6 @@ class spSpark : public spObjectContainer
     void add(spDevice &theDevice)
     {
         add(&theDevice);
-
     }
     void add(spDevice *theDevice);
 
@@ -96,10 +95,9 @@ class spSpark : public spObjectContainer
 
         // Our container has two children, the device and the actions container
         // TODO
-        //this->add(&Devices);
-        //this->add(&Actions);
-
-    } 
+        // this->add(&Devices);
+        // this->add(&Actions);
+    }
 
     spOperation *_getByType(spType *type)
     {
@@ -107,13 +105,13 @@ class spSpark : public spObjectContainer
         for (int i = 0; i < Devices.size(); i++)
         {
             if (type == Devices.at(i)->getType())
-                return (spOperation*)Devices.at(i);
+                return (spOperation *)Devices.at(i);
         }
 
         for (int i = 0; i < Actions.size(); i++)
         {
             if (type == Actions.at(i)->getType())
-                return (spOperation*)Actions.at(i);
+                return (spOperation *)Actions.at(i);
         }
         return nullptr;
     }
@@ -126,4 +124,4 @@ class spSpark : public spObjectContainer
 
 // have a "global" variable that allows access to the spark environment from anywhere...
 
-extern spSpark& spark;
+extern spSpark &spark;

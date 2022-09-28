@@ -56,7 +56,9 @@ class spDevice : public spOperation
   public:
     spDevice();
 
-    virtual ~spDevice(){}
+    virtual ~spDevice()
+    {
+    }
     // Interface
 
     // Methods for Sub-class to override - for device activities.
@@ -66,10 +68,9 @@ class spDevice : public spOperation
         return true;
     };
 
-    
-
-    virtual uint8_t getDefaultAddress(void){
-    	return kSparkDeviceAddressNull;
+    virtual uint8_t getDefaultAddress(void)
+    {
+        return kSparkDeviceAddressNull;
     };
 
     bool initialize(TwoWire &wirePort = Wire);
@@ -86,7 +87,7 @@ class spDevice : public spOperation
 
     bool autoload()
     {
-    	return _autoload;
+        return _autoload;
     }
 
   private:
@@ -107,46 +108,44 @@ class spDevice : public spOperation
     }
     void setAutoload()
     {
-    	_autoload = true;
+        _autoload = true;
     }
-    
-    uint8_t _address;
-    bool 	_autoload; 
 
+    uint8_t _address;
+    bool _autoload;
 };
 
-//using spDeviceContainer = spContainer<_spDevice>;
-//using spDeviceContainer = _spOperationContainer<_spDevice>;
-using spDeviceContainer = spContainer<spDevice*>;
+// using spDeviceContainer = spContainer<_spDevice>;
+// using spDeviceContainer = _spOperationContainer<_spDevice>;
+using spDeviceContainer = spContainer<spDevice *>;
 
 // Macro used to simplfy device setup
 #define spSetupDeviceIdent(_name_) this->setName(_name_);
 
 //------------------------------------------------------------------------
 // spDeviceType()
-// 
-// This subclass of spDevice via template allows the core device class to 
-// access the static list of addresses to get the default address without 
-// requiring the subclass to implement a method to do this. 
+//
+// This subclass of spDevice via template allows the core device class to
+// access the static list of addresses to get the default address without
+// requiring the subclass to implement a method to do this.
 //
 // Devices should subclass from this object using the following pattern:
 //
 //   class <classname> : spDeviceType<classname>, ...
 //
-template <typename T>
-class spDeviceType : public spDevice
+template <typename T> class spDeviceType : public spDevice
 {
-	// get the default address for the device. If none exists,
-	// return Null Address...
-	virtual uint8_t getDefaultAddress(void)
+    // get the default address for the device. If none exists,
+    // return Null Address...
+    virtual uint8_t getDefaultAddress(void)
     {
-    	// call the classes static method to get all addresses
-    	// supported by this device (or the core addrs)
-    	const uint8_t *addresses = T::getDefaultAddresses();
-    	if(!addresses)
-    		return kSparkDeviceAddressNull;
+        // call the classes static method to get all addresses
+        // supported by this device (or the core addrs)
+        const uint8_t *addresses = T::getDefaultAddresses();
+        if (!addresses)
+            return kSparkDeviceAddressNull;
 
-    	return addresses[0];
+        return addresses[0];
     }
 };
 
@@ -218,7 +217,7 @@ class spDeviceFactory
     // Called to build a list of device objects for the devices connected to the system.
     int buildDevices(spDevI2C &);
 
-	void purneAutoload(spDevice *, spDeviceContainer &);
+    void purneAutoload(spDevice *, spDeviceContainer &);
 
     // Delete copy and assignment constructors - b/c this is singleton.
     spDeviceFactory(spDeviceFactory const &) = delete;
@@ -230,7 +229,6 @@ class spDeviceFactory
 
     std::vector<spDeviceBuilder *> _Builders;
 };
-
 
 //----------------------------------------------------------------------------------
 // Define our builder class.
@@ -282,7 +280,6 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilder
         return DeviceType::getDefaultAddresses();
     }
 };
-
 
 // Macro to define the global builder object.
 #define spRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;

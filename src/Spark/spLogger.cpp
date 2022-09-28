@@ -18,7 +18,7 @@ template <typename T> void spLogger::writeValue(const std::string &tag, T value)
 
 //----------------------------------------------------------------------------
 // Log the data in a section of the output - title and parameter values
-void spLogger::logSection(const char * section_name, spParameterOutList &paramList)
+void spLogger::logSection(const char *section_name, spParameterOutList &paramList)
 {
 
     if (paramList.size() == 0)
@@ -30,9 +30,9 @@ void spLogger::logSection(const char * section_name, spParameterOutList &paramLi
     for (auto param : paramList)
     {
         // Is this parameter enabled?
-        if ( !param->enabled() )
+        if (!param->enabled())
             continue;
-            
+
         switch (param->type())
         {
         case spTypeBool:
@@ -49,7 +49,7 @@ void spLogger::logSection(const char * section_name, spParameterOutList &paramLi
             break;
         case spTypeDouble:
             writeValue(param->name(), param->getDouble());
-            break;                                    
+            break;
         case spTypeString:
             writeValue(param->name(), param->getString());
             break;
@@ -57,8 +57,7 @@ void spLogger::logSection(const char * section_name, spParameterOutList &paramLi
         default:
             Serial.println("Unknown Parameter Value");
             break;
-        } 
-    
+        }
     }
 
     for (auto theFormatter : _Formatters)

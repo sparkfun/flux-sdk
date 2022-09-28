@@ -7,7 +7,7 @@
 #include "spStorage.h"
 
 // Global object - for quick access to Spark.
-spSpark& spark = spSpark::get();
+spSpark &spark = spSpark::get();
 //-------------------------------------------------------
 //
 // Note: Autoload is true by default
@@ -46,11 +46,11 @@ bool spSpark::loop(void)
     bool rc = false;
 
     // Actions
-    for ( auto pAction : Actions)
+    for (auto pAction : Actions)
         rc = rc || pAction->loop();
 
     // i2c devices
-    for ( auto pDevice : Devices)
+    for (auto pDevice : Devices)
         rc = rc || pDevice->loop();
 
     return rc;
@@ -59,17 +59,17 @@ bool spSpark::loop(void)
 // add()  -- a device pointer
 //
 // If a device is being added by the user, not autoload, there is a chance
-// that autoload picked up the device before the user added it/created it. 
+// that autoload picked up the device before the user added it/created it.
 // This leads to having "dups" in our connected device list.
 //
-// To pevent this, if a device added that is not autoload, we have the 
+// To pevent this, if a device added that is not autoload, we have the
 // device list checked and pruned!
-void spSpark::add( spDevice *theDevice )
+void spSpark::add(spDevice *theDevice)
 {
-	if ( !theDevice->autoload() )
-		spDeviceFactory::get().purneAutoload(theDevice, Devices);
+    if (!theDevice->autoload())
+        spDeviceFactory::get().purneAutoload(theDevice, Devices);
 
-	Devices.push_back(theDevice);
+    Devices.push_back(theDevice);
 }
 
 // functions for external access - lifecycle things.

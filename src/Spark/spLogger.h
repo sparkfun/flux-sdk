@@ -142,11 +142,12 @@ class spLogger : public spAction
     spParameterOutList _paramsToLog;
     spPropertyList _propsToLog;
 
-    template <typename T> void writeValue(const std::string&, T value);
+    template <typename T> void writeValue(const std::string &, T value);
     void logSection(const char *section_name, spParameterOutList &params);
 
-    void logSection(const std::string& name, spParameterOutList &params){
-    	logSection(name.c_str(), params);
+    void logSection(const std::string &name, spParameterOutList &params)
+    {
+        logSection(name.c_str(), params);
     }
     // vargs management - how to add things recursively.
     //
@@ -185,7 +186,7 @@ class spLogger : public spAction
 
     void _add(spOperation &op)
     {
-    	_add(&op);
+        _add(&op);
     }
     void _add(spOperation *op)
     {
@@ -205,10 +206,10 @@ class spLogger : public spAction
 
     void _add(spParameterOutList &parameterList)
     {
-    	for (auto param : parameterList)
-    	{
-    		_add(param);
-    	}
+        for (auto param : parameterList)
+        {
+            _add(param);
+        }
     }
     // Internal method to add the contents of a device list
     void _add(spOperationContainer &deviceList)
@@ -223,17 +224,17 @@ class spLogger : public spAction
 
     void _add(spProperty *prop)
     {
-    	_propsToLog.push_back(prop);
+        _propsToLog.push_back(prop);
     }
     void _add(spProperty &prop)
     {
-    	_add(&prop);
+        _add(&prop);
     }
     void _add(spPropertyList &propList)
     {
-    	for (auto prop : propList)
-    	{
-    		_add(prop);
-    	}
+        for (auto prop : propList)
+        {
+            _add(prop);
+        }
     }
 };
