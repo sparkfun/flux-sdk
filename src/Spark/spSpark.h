@@ -31,7 +31,7 @@ class spSpark : public spObjectContainer
     // Add items to framework - use overloading to determine destination
     void add(spAction &theAction)
     {
-        Actions.push_back(&theAction);
+        add(&theAction);
     }
     void add(spAction *theAction)
     {
@@ -40,7 +40,8 @@ class spSpark : public spObjectContainer
 
     void add(spDevice &theDevice)
     {
-        Devices.push_back(theDevice);
+        add(&theDevice);
+
     }
     void add(spDevice *theDevice);
 
@@ -51,9 +52,6 @@ class spSpark : public spObjectContainer
     // leaving containers public - not sure if this is helpful
     spDeviceContainer Devices;
     spActionContainer Actions;
-
-    // Call to serliaze the settings of the system as a JSON object
-    bool serializeJSON(char *, size_t);
 
     // get/find a device by type template.
     template <class T> T *get(void)
@@ -72,7 +70,7 @@ class spSpark : public spObjectContainer
 
         for (int i = 0; i < Devices.size(); i++)
         {
-            if (T::Type == Devices.at(i).getType())
+            if (T::Type == Devices.at(i)->getType())
                 return true;
         }
         return false;
@@ -108,8 +106,8 @@ class spSpark : public spObjectContainer
 
         for (int i = 0; i < Devices.size(); i++)
         {
-            if (type == Devices.at(i).getType())
-                return (spOperation*)&(Devices.at(i));
+            if (type == Devices.at(i)->getType())
+                return (spOperation*)Devices.at(i);
         }
 
         for (int i = 0; i < Actions.size(); i++)

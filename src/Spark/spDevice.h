@@ -117,8 +117,7 @@ class spDevice : public spOperation
 
 //using spDeviceContainer = spContainer<_spDevice>;
 //using spDeviceContainer = _spOperationContainer<_spDevice>;
-using spDeviceContainer = spContainer<spDevice>;
-using spDeviceList = spDeviceContainer;
+using spDeviceContainer = spContainer<spDevice*>;
 
 // Macro used to simplfy device setup
 #define spSetupDeviceIdent(_name_) this->setName(_name_);
@@ -219,7 +218,7 @@ class spDeviceFactory
     // Called to build a list of device objects for the devices connected to the system.
     int buildDevices(spDevI2C &);
 
-	void purneAutoload(spDevice &, spDeviceContainer &);
+	void purneAutoload(spDevice *, spDeviceContainer &);
 
     // Delete copy and assignment constructors - b/c this is singleton.
     spDeviceFactory(spDeviceFactory const &) = delete;

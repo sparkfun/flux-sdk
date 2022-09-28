@@ -46,18 +46,12 @@ bool spSpark::loop(void)
     bool rc = false;
 
     // Actions
-    spAction *pAction;
-    for (int i = 0; i < Actions.size(); i++)
-    {
-        pAction = Actions.at(i);
-        if (!pAction)
-            break;
+    for ( auto pAction : Actions)
         rc = rc || pAction->loop();
-    }
 
     // i2c devices
-    for (int i = 0; i < Devices.size(); i++)
-        rc = rc || Devices.at(i).loop();
+    for ( auto pDevice : Devices)
+        rc = rc || pDevice->loop();
 
     return rc;
 }
@@ -70,28 +64,12 @@ bool spSpark::loop(void)
 //
 // To pevent this, if a device added that is not autoload, we have the 
 // device list checked and pruned!
-void spSpark::add(spDevice *theDevice )
+void spSpark::add( spDevice *theDevice )
 {
 	if ( !theDevice->autoload() )
-		spDeviceFactory::get().purneAutoload(*theDevice, Devices);
+		spDeviceFactory::get().purneAutoload(theDevice, Devices);
 
-	Devices.push_back(*theDevice);
-}
-//------------------------------------------------------------------------------
-// serializeJSON()
-//
-// Used to get JSON version of the system
-bool spSpark::serializeJSON(char *szBuffer, size_t sz)
-{
-
-   // StaticJsonDocument<500> jDoc;
-
-   // Actions.serializeJSON(jDoc);
-   // Devices.serializeJSON(jDoc);
-
-   // serializeJson(jDoc, szBuffer, sz);
-
-    return true;
+	Devices.push_back(theDevice);
 }
 
 // functions for external access - lifecycle things.

@@ -1167,7 +1167,7 @@ template <class T> class spContainer : public spObject
     void push_back( T& value)
     {
         _vector.push_back(value);
-        value.setParent(this);
+        value->setParent(this);
     }
     void push_back( T* value)
     {
@@ -1229,62 +1229,11 @@ template <class T> class spContainer : public spObject
     }
 };
 
+using spObjectContainer = spContainer<spObject*>;
 //####################################################################
 
 
-//----------------------------------------------------------------------------------------------------
-// _spObjectContainer
-//
-// Container class - containts objects. Mimics some aspects of a vector interface.
-//
-// It's a template, so it can be typed to subclasses.
-//
-// Note, it ensures that the class is a spObject
 
-template <typename T> class _spObjectContainer : public T, public std::vector<T *>
-{
-
-  public:
-    _spObjectContainer()
-    {
-        // Make sure the container type has sp object as it's baseclass or it's a spObject
-        // Compile-time check
-        static_assert(std::is_base_of<spObject, T>::value,
-                      "spObjectContainer: type parameter of this class must derive from spObject");
-    }
-
-    //---------------------------------------------------------------------------------
-    // State things -- entry for save/restore
-    bool save(spStorageBlock *stBlk)
-    {
-        // save ourselfs
-        this->T::save(stBlk);
-        for (auto it = this->std::vector<T *>::begin(); it != this->std::vector<T *>::end(); it++)
-            (*it)->save(stBlk);
-
-        return true;
-    };
-
-    //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock *stBlk)
-    {
-        // restore ourselfs
-        this->T::restore(stBlk);
-        for (auto it = this->std::vector<T *>::begin(); it != std::vector<T *>::end(); it++)
-            (*it)->restore(stBlk);
-
-        return true;
-    };
-
-    void add( T *value ){
-        this->std::vector<T*>::push_back(value);
-        value->setParent(this);
-    }
-    void add( T &value ){
-        add(&value);
-    }
-};
-using spObjectContainer = _spObjectContainer<spObject>;
 
 //##############################################################################################################################
 //##############################################################################################################################
@@ -1763,21 +1712,7 @@ public:
     }
 };
 
-// and a conainer for this thing
-
-template <typename T> class _spOperationContainer : public _spObjectContainer<T>
-{
-  public:
-    _spOperationContainer()
-    {
-        // Make sure the container type has sp object as it's baseclass or it's a spObject
-        // Compile-time check
-        static_assert(std::is_base_of<spOperation, T>::value,
-                      "spOperationContainer: type parameter of this class must derive from spOperation");
-    }
-};
-
-using spOperationContainer = spContainer<spOperation>;
+using spOperationContainer = spContainer<spOperation*>;
 //-----------------------------------------
 // Spark Actions
 
@@ -1785,7 +1720,7 @@ class spAction : public spOperation
 {
 };
 
-using spActionContainer = _spOperationContainer<spAction>;
+using spActionContainer = spContainer<spAction*>;
 
 //-----------------------------------------------------------------------
 // 5/20 - Impl based on https://schneegans.github.io/tutorials/2015/09/20/signal-slot
