@@ -11,7 +11,9 @@ namespace sp_utils
 
 size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 3);
 
+uint16_t id_hash_string(const char *str);
 }
+
 
 /*
  * Example of how to use the stack based allocator with a string:

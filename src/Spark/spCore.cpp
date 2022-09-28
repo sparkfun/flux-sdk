@@ -7,27 +7,7 @@
 // Object Property Interface
 //////////////////////////////////////////////////////////////////////
 //
-
-////////////////////////////////////////////////////////////////////////////////////////
-// Internal hash function used to generate a unique ID based on a string
-//    From: http://www.cse.yorku.ca/~oz/hash.html
-
-
 /*
-static uint16_t id_hash(const char *str)
-{
-
-    uint32_t hash = 5381;
-    int c = *str;
-
-    while (c != 0)
-    {
-        c = *str++;
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c 
-    }
-
-    return hash & 0xFFFF; // NOTE - we're just using 16 bits
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Define a simple class hierarchy interface definitions. Used to walk the hierarchy.
