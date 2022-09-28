@@ -45,12 +45,18 @@ spDevBME280::spDevBME280()
     // Register Property
     spRegister(celsius, "Celsius", "Use celsius for temperature units");
     celsius = false;
+    spRegister(metres, "Metres", "Use metres for altitude units");
+    metres = false;
 
     // Register parameters
     spRegister(humidity);
+    //spRegister(temperature);    
     spRegister(temperatureF);    
     spRegister(temperatureC);    
     spRegister(pressure);
+    //spRegister(altitude);
+    spRegister(altitudeM);
+    spRegister(altitudeF);
 
 }
 
@@ -83,6 +89,13 @@ float spDevBME280::read_Humidity()
     return BME280::readFloatHumidity();
 }
 
+float spDevBME280::read_Temperature()
+{
+    if (celsius)
+        return read_TemperatureC();
+    else
+        return read_TemperatureF();
+}
 float spDevBME280::read_TemperatureF()
 {
     return BME280::readTempF();
@@ -91,7 +104,24 @@ float spDevBME280::read_TemperatureC()
 {
     return BME280::readTempC();
 }
+
 float spDevBME280::read_Pressure()
 {
     return BME280::readFloatPressure();
+}
+
+float spDevBME280::read_Altitude()
+{
+    if (metres)
+        return read_AltitudeM();
+    else
+        return read_AltitudeF();
+}
+float spDevBME280::read_AltitudeM()
+{
+    return BME280::readFloatAltitudeMeters();
+}
+float spDevBME280::read_AltitudeF()
+{
+    return BME280::readFloatAltitudeFeet();
 }
