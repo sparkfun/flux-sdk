@@ -50,14 +50,13 @@ spDevBME280::spDevBME280()
 
     // Register parameters
     spRegister(humidity);
-    //spRegister(temperature);    
-    spRegister(temperatureF);    
-    spRegister(temperatureC);    
+    // spRegister(temperature);
+    spRegister(temperatureF);
+    spRegister(temperatureC);
     spRegister(pressure);
-    //spRegister(altitude);
+    // spRegister(altitude);
     spRegister(altitudeM);
     spRegister(altitudeF);
-
 }
 
 //----------------------------------------------------------------------------------------------------------

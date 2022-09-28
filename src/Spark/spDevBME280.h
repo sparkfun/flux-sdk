@@ -22,7 +22,7 @@
 class spDevBME280 : public spDeviceType<spDevBME280>, public BME280
 {
 
-  public:
+public:
     spDevBME280();
 
     // Static Interface - used by the system to determine if this device is
@@ -48,7 +48,7 @@ private:
     float read_Humidity();
     float read_Temperature();
     float read_TemperatureF();
-    float read_TemperatureC();    
+    float read_TemperatureC();
     float read_Pressure();
     float read_Altitude();
     float read_AltitudeM();
@@ -62,12 +62,11 @@ public:
     spParameterOutFloat<spDevBME280, &spDevBME280::read_Humidity> humidity;
     spParameterOutFloat<spDevBME280, &spDevBME280::read_Temperature> temperature;
     spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureF> temperatureF;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureC> temperatureC;    
+    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureC> temperatureC;
     spParameterOutFloat<spDevBME280, &spDevBME280::read_Pressure> pressure;
     spParameterOutFloat<spDevBME280, &spDevBME280::read_Altitude> altitude;
     spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeM> altitudeM;
     spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeF> altitudeF;
-
 
     // Type testing:
     // A static instance var - that is an object (can check instance pointer)
