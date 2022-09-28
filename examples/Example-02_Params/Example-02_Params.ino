@@ -65,26 +65,32 @@ void loop() {
     // Retrieve the data from the devices.
     digitalWrite(LED_BUILTIN, HIGH);   // turn on the log led    
 
-    Serial.print("Device: "); Serial.println(myBME.name);
+    Serial.print("Device: "); Serial.println(myBME.name.c_str());
     if (BMEIsConnected){
 
         // Loop over the output parameters of this device and print name and value
         for (auto param : myBME.getOutputParameters() )
         {
 
-            Serial.print(" "); Serial.print(param->name); Serial.print(" = ");
+            Serial.print(" "); Serial.print(param->name.c_str()); Serial.print(" = ");
 
             switch(param->type()){
-                case TypeBool: case TypeInt:    
+                case spTypeBool: 
+                    Serial.println(param->getBool());
+                    break;
+                case spTypeInt:    
                     Serial.println(param->getInt());
                     break;
 
-                case TypeFloat: case TypeDouble:
+                case spTypeFloat: 
                     Serial.println(param->getFloat());
                     break;
+                case spTypeDouble:
+                    Serial.println(param->getDouble());
+                    break;
 
-                case TypeString:
-                    Serial.println(param->getCString());                 
+                case spTypeString:
+                    Serial.println(param->getString().c_str());                 
                     break;
                 default:
                     Serial.println("Unknown Parameter Type");
