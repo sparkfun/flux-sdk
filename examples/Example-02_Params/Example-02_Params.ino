@@ -65,14 +65,14 @@ void loop() {
     // Retrieve the data from the devices.
     digitalWrite(LED_BUILTIN, HIGH);   // turn on the log led    
 
-    Serial.print("Device: "); Serial.println(myBME.name.c_str());
+    Serial.print("Device: "); Serial.println(myBME.name());
     if (BMEIsConnected){
 
         // Loop over the output parameters of this device and print name and value
         for (auto param : myBME.getOutputParameters() )
         {
 
-            Serial.print(" "); Serial.print(param->name.c_str()); Serial.print(" = ");
+            Serial.print(" "); Serial.print(param->name()); Serial.print(" = ");
 
             switch(param->type()){
                 case spTypeBool: 

@@ -12,7 +12,7 @@
 #include "spDevice.h"
 
 // What is the name used to ID this device?
-#define kButtonDeviceName "button";
+#define kButtonDeviceName "button"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevButton : public spDeviceType<spDevButton>, public QwiicButton

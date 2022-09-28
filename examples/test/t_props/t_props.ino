@@ -110,8 +110,8 @@ void run_tests()
     Serial.println("BOOL Tests:");
     bool b_test = false;
 
-    Serial.print("NAME: "); Serial.print(myTest.prop_bool.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.prop_bool.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.prop_bool.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.prop_bool.description());
     myTest.prop_bool = b_test;
     Serial.print("   Test 1: "); Serial.println( (myTest.prop_bool == b_test ? "PASS" : "FAIL"));
 
@@ -137,8 +137,8 @@ void run_tests()
 
     //---------------------------------------------------------------------------------------------------
     Serial.println("Int Tests:");
-    Serial.print("NAME: "); Serial.print(myTest.prop_int.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.prop_int.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.prop_int.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.prop_int.description());
     int i_test = 3;
 
     myTest.prop_int = i_test;
@@ -167,8 +167,8 @@ void run_tests()
 //---------------------------------------------------------------------------------------------------
     Serial.println("Float RW Tests:");
     float f_test = 3;
-    Serial.print("NAME: "); Serial.print(myTest.prop_float.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.prop_float.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.prop_float.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.prop_float.description());
 
     myTest.prop_float = f_test;
     Serial.print("   Test 1: "); Serial.println( (myTest.prop_float == f_test ? "PASS" : "FAIL"));
@@ -197,8 +197,8 @@ void run_tests()
     Serial.println("String Tests:");
     std::string s_test = "one";
 
-    Serial.print("NAME: "); Serial.print(myTest.prop_str.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.prop_str.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.prop_str.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.prop_str.description());
 
     myTest.prop_str = s_test;
 
@@ -232,8 +232,8 @@ void run_rw_tests()
     Serial.println("BOOL RW Tests:");
     bool b_test = false;
 
-    Serial.print("NAME: "); Serial.print(myTest.rw_prop_bool.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_bool.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.rw_prop_bool.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_bool.description());
     myTest.rw_prop_bool = b_test;
     Serial.print("   Test 1: "); Serial.println( (myTest.rw_prop_bool == b_test ? "PASS" : "FAIL"));
 
@@ -262,8 +262,8 @@ void run_rw_tests()
     Serial.println("Int RW Tests:");
     int i_test = 3;
 
-    Serial.print("NAME: "); Serial.print(myTest.rw_prop_int.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_int.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.rw_prop_int.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_int.description());
 
     myTest.rw_prop_int = i_test;
     Serial.print("   Test 1: "); Serial.println( (myTest.rw_prop_int == i_test ? "PASS" : "FAIL"));
@@ -292,8 +292,8 @@ void run_rw_tests()
     Serial.println("Float Tests:");
     float f_test = 3;
 
-    Serial.print("NAME: "); Serial.print(myTest.rw_prop_float.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_float.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.rw_prop_float.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_float.description());
 
     myTest.rw_prop_float = f_test;
     Serial.print("   Test 1: "); Serial.println( (myTest.rw_prop_float == f_test ? "PASS" : "FAIL"));
@@ -323,8 +323,8 @@ void run_rw_tests()
     Serial.println("String RW Tests:");
     std::string s_test = "one";
 
-    Serial.print("NAME: "); Serial.print(myTest.rw_prop_str.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_str.description.c_str());
+    Serial.print("NAME: "); Serial.print(myTest.rw_prop_str.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.rw_prop_str.description());
 
     myTest.rw_prop_str = s_test;
 

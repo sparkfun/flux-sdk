@@ -36,22 +36,22 @@ void spLogger::logSection(const char * section_name, spParameterOutList &paramLi
         switch (param->type())
         {
         case spTypeBool:
-            writeValue(param->name, param->getBool());
+            writeValue(param->name(), param->getBool());
             break;
         case spTypeInt:
-            writeValue(param->name, param->getInt());
+            writeValue(param->name(), param->getInt());
             break;
         case spTypeUInt:
-            writeValue(param->name, param->getUint());
+            writeValue(param->name(), param->getUint());
             break;
         case spTypeFloat:
-            writeValue(param->name, param->getFloat());
+            writeValue(param->name(), param->getFloat());
             break;
         case spTypeDouble:
-            writeValue(param->name, param->getDouble());
+            writeValue(param->name(), param->getDouble());
             break;                                    
         case spTypeString:
-            writeValue(param->name, param->getString());
+            writeValue(param->name(), param->getString());
             break;
 
         default:
@@ -78,7 +78,7 @@ void spLogger::logObservation(void)
 
     // loop over objs to log - each object is in a named section. Logs to all formatters
     for (auto pObj : _objsToLog)
-        logSection(pObj.name, pObj.getOutputParameters());
+        logSection(pObj.name(), pObj.getOutputParameters());
 
     // And end the observation for each formatter
     for (auto theFormatter : _Formatters)

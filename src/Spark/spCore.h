@@ -34,12 +34,30 @@
 class spDescriptor
 {
   public:
-    spDescriptor() : name{""}, description{""}
+    spDescriptor() : _name{NULL}, _description{NULL}
     {
     }
 
-    std::string name;
-    std::string description;
+    void setName( const char *new_name)
+    {
+        _name = new_name;
+    }
+    const char * name()
+    {
+        return _name;
+    }
+    void setDescription( const char *new_desc)
+    {
+        _description = new_desc;
+    }
+    const char * description()
+    {
+        return _description;
+    }
+protected:
+     const char * _name;
+     const char * _description;
+
 };
 
 typedef enum
@@ -574,7 +592,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name = name;
+            spDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -584,7 +602,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;
+            spDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -718,7 +736,7 @@ class spPropertyRWString : public _spPropertyBaseString
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name = name;
+            setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -728,7 +746,7 @@ class spPropertyRWString : public _spPropertyBaseString
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;
+            setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -824,7 +842,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
 
         // set the name of the property on init
         if (name)
-            spDescriptor::name = name;
+            spDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -834,7 +852,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;
+            spDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -940,7 +958,7 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     void operator()(Object *obj, const char *name)
     {
         if (name)
-            spDescriptor::name = name;
+            setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -951,7 +969,7 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;
+            setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -1429,7 +1447,7 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name = name;
+            setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -1439,7 +1457,7 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;
+            setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -1555,7 +1573,7 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name = name;
+            setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -1565,7 +1583,7 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;
+            setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -1658,7 +1676,7 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::name = name;
+            setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -1668,7 +1686,7 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     {
         // Description of the object
         if (desc)
-            spDescriptor::description = desc;
+            setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);

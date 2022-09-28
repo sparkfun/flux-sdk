@@ -13,7 +13,7 @@
 
 
 
-#define kCCS811DeviceName "ccs811";
+#define kCCS811DeviceName "ccs811"
 
 // Define our class
 class spDevCCS811 : public spDeviceType<spDevCCS811>, public CCS811

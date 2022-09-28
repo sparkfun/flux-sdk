@@ -25,7 +25,7 @@ class spLogger : public spAction
   public:
     spLogger()
     {
-        name = "Logger";
+        setName("Logger");
     }
 
     // Template trick - use template varargs to allow multiple objs to be

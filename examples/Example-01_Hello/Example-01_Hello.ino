@@ -73,17 +73,17 @@ void loop() {
     // Retrieve the data from the devices.
     digitalWrite(LED_BUILTIN, HIGH);   // turn on the log led    
 
-    Serial.print("Device: "); Serial.println(myBME.name);
+    Serial.print("Device: "); Serial.println(myBME.name());
     if (BMEIsConnected)
     {
-        Serial.print("   Temp F   : "); Serial.println(myBME.temperature_f()); 
+        Serial.print("   Temp F   : "); Serial.println(myBME.temperatureF()); 
         Serial.print("   Humidity : "); Serial.println(myBME.humidity());     
     } 
     else 
         Serial.println("Not Connected.");
     
 
-    Serial.print("\nDevice: "); Serial.println(myCCS.name);
+    Serial.print("\nDevice: "); Serial.println(myCCS.name());
 
     if (CCSIsConnected)
     {

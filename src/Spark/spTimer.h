@@ -19,7 +19,7 @@ class spTimer : public spAction
 
         spark.add(this);
 
-        name = "Timer";
+        setName("Timer");
     };
 
     // Our output event

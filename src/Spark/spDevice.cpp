@@ -88,7 +88,7 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
                 else
                 {
                     nDevs++;
-                    pDevice->name = deviceBuilder->getDeviceName();
+                    pDevice->setName(deviceBuilder->getDeviceName());
                     pDevice->setAddress(deviceAddresses[i]);
                     pDevice->setAutoload();
                     pDevice->initialize(i2cDriver);
@@ -115,6 +115,7 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
 
 void spDeviceFactory::purneAutoload(spDevice &theDevice, spDeviceContainer &devList)
 {
+
 	if ( theDevice.autoload() || devList.size() == 0 )
 		return; // makes no sense.
 
@@ -134,8 +135,7 @@ void spDeviceFactory::purneAutoload(spDevice &theDevice, spDeviceContainer &devL
 				delete &pTmp;
 				break;
 			}
-			else
-				itDevice++;
 		}
+        itDevice++;
 	}
 }

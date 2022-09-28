@@ -121,7 +121,7 @@ using spDeviceContainer = spContainer<spDevice>;
 using spDeviceList = spDeviceContainer;
 
 // Macro used to simplfy device setup
-#define spSetupDeviceIdent(_name_) this->name = _name_;
+#define spSetupDeviceIdent(_name_) this->setName(_name_);
 
 //------------------------------------------------------------------------
 // spDeviceType()

@@ -116,10 +116,10 @@ void run_tests()
     Serial.println("BOOL Tests:");
     bool b_test = false;
 
-    Serial.print("Input NAME: "); Serial.print(myTest.in_bool.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.in_bool.description.c_str());
-    Serial.print("Output NAME: "); Serial.print(myTest.out_bool.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.out_bool.description.c_str());  
+    Serial.print("Input NAME: "); Serial.print(myTest.in_bool.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_bool.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_bool.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_bool.description());  
 
     myTest.in_bool(b_test);
     Serial.print("   Test 1: "); Serial.println( (myTest.out_bool() == b_test ? "PASS" : "FAIL"));
@@ -131,10 +131,10 @@ void run_tests()
     //---------------------------------------------------------------------------------------------------
     Serial.println();
     Serial.println("Int Tests:");
-    Serial.print("Input NAME: "); Serial.print(myTest.in_int.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.in_int.description.c_str());
-    Serial.print("Output NAME: "); Serial.print(myTest.out_int.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.out_int.description.c_str());
+    Serial.print("Input NAME: "); Serial.print(myTest.in_int.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_int.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_int.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_int.description());
 
     int i_test = 3;
 
@@ -148,10 +148,10 @@ void run_tests()
     //---------------------------------------------------------------------------------------------------
     Serial.println();    
     Serial.println("Float Tests:");
-    Serial.print("Input NAME: "); Serial.print(myTest.in_float.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.in_float.description.c_str());
-    Serial.print("Output NAME: "); Serial.print(myTest.out_float.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.out_float.description.c_str());
+    Serial.print("Input NAME: "); Serial.print(myTest.in_float.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_float.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_float.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_float.description());
 
     float f_test = 3.134;
 
@@ -164,10 +164,10 @@ void run_tests()
     //---------------------------------------------------------------------------------------------------
     Serial.println();    
     Serial.println("String Tests:");
-    Serial.print("Input NAME: "); Serial.print(myTest.in_string.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.in_string.description.c_str());
-    Serial.print("Output NAME: "); Serial.print(myTest.out_string.name.c_str()); 
-        Serial.print("  DESC: "); Serial.println(myTest.out_string.description.c_str());
+    Serial.print("Input NAME: "); Serial.print(myTest.in_string.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_string.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_string.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_string.description());
 
     std::string s_test = "COW";
 

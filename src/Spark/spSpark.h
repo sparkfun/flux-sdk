@@ -92,9 +92,9 @@ class spSpark : public spObjectContainer
     {
 
         // setup some default heirarchy things ...
-        this->name = "spark";
-        Devices.name = "devices";
-        Actions.name = "actions";
+        this->setName("spark");
+        Devices.setName("devices");
+        Actions.setName("actions");
 
         // Our container has two children, the device and the actions container
         // TODO
