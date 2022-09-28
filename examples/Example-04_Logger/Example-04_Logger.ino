@@ -86,13 +86,11 @@ void setup() {
     Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
 
     // Loop over the device list - note that it is iterable. 
-    _spDevice *pDevice;
     for (auto device: myDevices )
     {
 
         Serial.printf("Device: %s, Output Number: %d", device->name.c_str(), device->nOutputParameters());
-        pDevice = (_spDevice*)device;
-        if ( pDevice->nOutputParameters() > 0)
+        if ( device->nOutputParameters() > 0)
         {
             Serial.printf("  - Adding to logger\r\n");
             logger.add(device);
