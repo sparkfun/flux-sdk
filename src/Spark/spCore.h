@@ -34,7 +34,7 @@
 class spDescriptor
 {
   public:
-    spDescriptor() : _name{NULL}, _description{NULL}
+    spDescriptor() : _name{""}, _description{""}
     {
     }
 
