@@ -15,14 +15,14 @@ The device class should following the naming patter `spDev[Name]`, where Name is
 
 The implementation requires separate header and implementation files, since a several class variables and a global object are defined that required the use of an implementation file.  
 
-The new device class should subclass from the frameworks ```spDevice``` class, using the ```spDevice<DeviceName>``` template. Additionally, the device class subclasses from the underlying driver class. This allows the descriptor class to support the existing driver's interface. 
+The new device class should subclass from the frameworks ```spDevice``` class, using the ```spDeviceType<DeviceName>``` template. Additionally, the device class subclasses from the underlying driver class. This allows the descriptor class to support the existing driver's interface. 
 
 ##### Example of a class definition
 
 Implementing a driver for the `BME280` Device.
 
 ```C++
-class spDevBME280 : public spDevice<spDevBME280>, public BME280
+class spDevBME280 : public spDeviceType<spDevBME280>, public BME280
 {
 
 };
@@ -117,7 +117,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
 * The method ```onInitialize()``` is called after the object is instantiated. 
 * The class subclasses from spDevice, passing in the class name to the template
 
-### Auto Discovery - Class Implementation 
+### Auto Discovery - Class Implementation
 
 To complete the auto-discovery capabilities of the system, besides the implementation of the above methods, the classes implementation file must include to register the device.
 
@@ -175,7 +175,7 @@ Note
 * This is a static (has no `this` instance) and as such uses the methods on the passed in I2C bus driver to determine in a BME280 is connected to the system
 
 
-### Startup Sequence 
+### Startup Sequence
 The last part of implementing a device descriptor/driver class is the addition of an initialization method, named ``onInitialize()``. 
 
 ##### Method Signature
