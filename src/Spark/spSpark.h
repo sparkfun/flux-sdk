@@ -55,11 +55,10 @@ class spSpark : public spObjectContainer
     // get/find a device by type template.
     template <class T> T *get(void)
     {
-        spType *type = &T::Type;
-        return (T *)_getByType(type);
+        return (T *)_getByType(T::type());
     }
 
-    template <class T> T *get(spType &type)
+    template <class T> T *get(spTypeID type)
     {
         return (T *)_getByType(type);
     }
@@ -99,7 +98,7 @@ class spSpark : public spObjectContainer
         // this->add(&Actions);
     }
 
-    spOperation *_getByType(spType *type)
+    spOperation *_getByType(spTypeID type)
     {
 
         for (int i = 0; i < Devices.size(); i++)
@@ -116,10 +115,6 @@ class spSpark : public spObjectContainer
         return nullptr;
     }
 
-    spOperation *_getByType(spType &type)
-    {
-        return _getByType(&type);
-    }
 };
 
 // have a "global" variable that allows access to the spark environment from anywhere...
