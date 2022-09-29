@@ -1,6 +1,6 @@
 /*
  *
- * QwiicDevButton.h
+ * QwiicDevButton.cpp
  *
  *  Device object for the Qwiic Button device.
  *
@@ -32,16 +32,18 @@ spDevButton::spDevButton()
     // Setup unique identifiers for this device and basic device object systems
     spSetupDeviceIdent(kButtonDeviceName);
 
-    was_clicked = false;
+    last_button_state = false;
+    this_button_state = false;
+    toggle_state = false;
 
     // Register Property
-    spRegister(toggleLEDonClick, "Toggle LED on click", "Toggle the LED state when the button is clicked");
-    toggleLEDonClick = true;
+    spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
+    pressMode = true;
     spRegister(ledBrightness, "LED brightness", "Set the LED brightness: 0 - 255");
     ledBrightness = 128;
 
     // Register parameters
-    spRegister(clickedState);
+    spRegister(buttonState);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -66,16 +68,21 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
     if (!rc)
         Serial.println("BUTTON - begin failed");
 
-    was_clicked = false; // Make sure was_clicked is false
-    QwiicButton::LEDoff(); // Make sure the LED is off
+    this_button_state = QwiicButton::isPressed();
+    last_button_state = this_button_state;
+
+    rc &= QwiicButton::LEDoff(); // Make sure the LED is off
 
     return rc;
 }
 
 // GETTER methods for output params
-bool spDevButton::read_clicked_state()
+bool spDevButton::read_button_state()
 {
-    return was_clicked;
+    if (pressMode)
+        return this_button_state;
+    else
+        return toggle_state;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -94,19 +101,38 @@ bool spDevButton::loop(void)
 {
 
     // process events
-    // process events
-    if (QwiicButton::isClickedQueueEmpty() == false) // If there are click events in the queue
+    last_button_state = this_button_state; // Store the last button state
+    this_button_state = QwiicButton::isPressed(); // Read the current button state
+
+    if (pressMode)
     {
-        QwiicButton::popClickedQueue(); // Pop the click event
-        was_clicked = !was_clicked; // Toggle was_clicked
-        if (toggleLEDonClick) // Toggle the LED
+        if (last_button_state != this_button_state) // Has the button changed state?
         {
-            if (was_clicked)
+            if (this_button_state) // Is the button pressed now?
+            {
+                QwiicButton::LEDon(ledBrightness);
+            }
+            else
+            {
+                QwiicButton::LEDoff();
+            }
+
+            on_clicked.emit(this_button_state);
+        }
+    }
+    else // Click (Toggle) mode
+    {
+        if ((last_button_state == false) && (this_button_state == true)) // Has the button cbeen pressed down?
+        {
+            toggle_state = !toggle_state; // Toggle toggle_state
+
+            if (toggle_state) // Toggle the LED
                 QwiicButton::LEDon(ledBrightness);
             else
                 QwiicButton::LEDoff();
+
+            on_clicked.emit(toggle_state);
         }
-        on_clicked.emit(was_clicked); // Emit was_clicked
     }
 
     return false;

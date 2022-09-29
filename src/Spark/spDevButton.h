@@ -58,14 +58,16 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
     bool loop(void);
 
   private:
-    bool was_clicked = false;
+    bool last_button_state = false;
+    bool this_button_state = false;
+    bool toggle_state = false;
     // methods used to get values for our output parameters
-    bool read_clicked_state();
+    bool read_button_state();
 
   public:
-    spPropertyBool<spDevButton> toggleLEDonClick;
+    spPropertyBool<spDevButton> pressMode; // true = Press mode. false = Click (Toggle) mode
     spPropertyUint<spDevButton> ledBrightness;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutBool<spDevButton, &spDevButton::read_clicked_state> clickedState;
+    spParameterOutBool<spDevButton, &spDevButton::read_button_state> buttonState;
 };
