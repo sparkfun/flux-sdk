@@ -65,7 +65,9 @@ typedef enum
 {
     spTypeNone,
     spTypeBool,
+    spTypeInt8,
     spTypeInt,
+    spTypeUInt8,
     spTypeUInt,
     spTypeFloat,
     spTypeDouble,
@@ -84,9 +86,17 @@ class spDataTyper
     {
         return spTypeBool;
     };
+    static spDataType_t type(int8_t *t)
+    {
+        return spTypeInt8;
+    };
     static spDataType_t type(int *t)
     {
         return spTypeInt;
+    };
+    static spDataType_t type(uint8_t *t)
+    {
+        return spTypeUInt8;
     };
     static spDataType_t type(uint *t)
     {
@@ -110,7 +120,15 @@ class spDataTyper
     {
         return type(&t);
     };
+    static spDataType_t type(int8_t &t)
+    {
+        return type(&t);
+    };
     static spDataType_t type(int &t)
+    {
+        return type(&t);
+    };
+    static spDataType_t type(uint8_t &t)
     {
         return type(&t);
     };
@@ -149,8 +167,10 @@ class spDataOut
     virtual spDataType_t type(void) = 0;
 
     virtual bool getBool() = 0;
+    virtual int8_t getInt8() = 0;
     virtual int getInt() = 0;
-    virtual uint getUint() = 0;
+    virtual uint8_t getUint8() = 0;
+    virtual uint getUint() = 0;    
     virtual float getFloat() = 0;
     virtual double getDouble() = 0;
     virtual std::string getString() = 0;
@@ -159,9 +179,17 @@ class spDataOut
     {
         return getBool();
     }
+    int8_t get_value(int8_t)
+    {
+        return getInt8();
+    }
     int get_value(int)
     {
         return getInt();
+    }
+    uint8_t get_value(uint8_t)
+    {
+        return getUint8();
     }
     uint get_value(uint)
     {
@@ -243,9 +271,17 @@ template <typename T> class _spDataOut : public spDataOut
     {
         return (bool)get();
     }
+    int8_t getInt8()
+    {
+        return (int8_t)get();
+    }
     int getInt()
     {
         return (int)get();
+    }
+    uint8_t getUint8()
+    {
+        return (uint8_t)get();
     }
     uint getUint()
     {
@@ -284,9 +320,17 @@ class _spDataOutString : public spDataOut
     {
         return get() == "true";
     }
+    int8_t getInt8()
+    {
+        return (int8_t)std::stoi(get());
+    };
     int getInt()
     {
         return std::stoi(get());
+    };
+    uint8_t getUint8()
+    {
+        return (uint8_t)std::stoul(get());
     };
     uint getUint()
     {

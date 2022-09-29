@@ -206,9 +206,17 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     {
         return _spDataOut<T>::getBool();
     };
+    int8_t getInt8()
+    {
+        return _spDataOut<T>::getInt8();
+    };
     int getInt()
     {
         return _spDataOut<T>::getInt();
+    };
+    uint8_t getUint8()
+    {
+        return _spDataOut<T>::getUint8();
     };
     uint getUint()
     {
@@ -231,14 +239,17 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
 // Define by type
 template <class Object, bool (Object::*_getter)()> using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
 
+template <class Object, int8_t (Object::*_getter)()> using spParameterOutInt8 = _spParameterOut<int8_t, Object, _getter>;
+
 template <class Object, int (Object::*_getter)()> using spParameterOutInt = _spParameterOut<int, Object, _getter>;
+
+template <class Object, uint8_t (Object::*_getter)()> using spParameterOutUint8 = _spParameterOut<uint8_t, Object, _getter>;
 
 template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
 
 template <class Object, float (Object::*_getter)()> using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
 
-template <class Object, float (Object::*_getter)()>
-using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
+template <class Object, double (Object::*_getter)()> using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
 
 //----------------------------------------------------------------------------------------------------
 // spParameterOutString
@@ -332,9 +343,17 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     {
         return _spDataOutString::getBool();
     };
+    int8_t getInt8()
+    {
+        return _spDataOutString::getInt8();
+    };
     int getInt()
     {
         return _spDataOutString::getInt();
+    };
+    uint8_t getUint8()
+    {
+        return _spDataOutString::getUint8();
     };
     uint getUint()
     {
@@ -434,8 +453,14 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
 template <class Object, void (Object::*_setter)(bool const &)>
 using spParameterInBool = _spParameterIn<bool, Object, _setter>;
 
+template <class Object, void (Object::*_setter)(int8_t const &)>
+using spParameterInInt8 = _spParameterIn<int8_t, Object, _setter>;
+
 template <class Object, void (Object::*_setter)(int const &)>
 using spParameterInInt = _spParameterIn<int, Object, _setter>;
+
+template <class Object, void (Object::*_setter)(uint8_t const &)>
+using spParameterInUint8 = _spParameterIn<uint8_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint const &)>
 using spParameterInUint = _spParameterIn<uint, Object, _setter>;
