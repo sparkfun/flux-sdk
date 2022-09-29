@@ -1,6 +1,9 @@
 /*
  *
- * QwiicDevButton.cpp
+ * QwiicDevButton.h
+ *
+ *  Device object for the Qwiic Button device.
+ *
  *
  */
 
@@ -56,4 +59,13 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
 
   private:
     bool was_clicked = false;
+    // methods used to get values for our output parameters
+    bool read_clicked_state();
+
+  public:
+    spPropertyBool<spDevButton> toggleLEDonClick;
+    spPropertyUint<spDevButton> ledBrightness;
+
+    // Define our output parameters - specify the get functions to call.
+    spParameterOutBool<spDevButton, &spDevButton::read_clicked_state> clickedState;
 };

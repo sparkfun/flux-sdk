@@ -1,8 +1,8 @@
 /*
  *
- * QwiicDevBME280.cpp
+ * QwiicDevButton.h
  *
- *  Device object for the BME280 Qwiic device.
+ *  Device object for the Qwiic Button device.
  *
  *
  *
@@ -33,6 +33,15 @@ spDevButton::spDevButton()
     spSetupDeviceIdent(kButtonDeviceName);
 
     was_clicked = false;
+
+    // Register Property
+    spRegister(toggleLEDonClick, "Toggle LED on click", "Toggle the LED state when the button is clicked");
+    toggleLEDonClick = true;
+    spRegister(ledBrightness, "LED brightness", "Set the LED brightness: 0 - 255");
+    ledBrightness = 128;
+
+    // Register parameters
+    spRegister(clickedState);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -57,7 +66,16 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
     if (!rc)
         Serial.println("BUTTON - begin failed");
 
+    was_clicked = false; // Make sure was_clicked is false
+    QwiicButton::LEDoff(); // Make sure the LED is off
+
     return rc;
+}
+
+// GETTER methods for output params
+bool spDevButton::read_clicked_state()
+{
+    return was_clicked;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -77,10 +95,18 @@ bool spDevButton::loop(void)
 
     // process events
     // process events
-    if (QwiicButton::isPressed() != was_clicked)
+    if (QwiicButton::isClickedQueueEmpty() == false) // If there are click events in the queue
     {
-        was_clicked = !was_clicked;
-        on_clicked.emit(was_clicked);
+        QwiicButton::popClickedQueue(); // Pop the click event
+        was_clicked = !was_clicked; // Toggle was_clicked
+        if (toggleLEDonClick) // Toggle the LED
+        {
+            if (was_clicked)
+                QwiicButton::LEDon(ledBrightness);
+            else
+                QwiicButton::LEDoff();
+        }
+        on_clicked.emit(was_clicked); // Emit was_clicked
     }
 
     return false;
