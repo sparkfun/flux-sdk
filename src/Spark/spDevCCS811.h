@@ -47,10 +47,4 @@ public:
     spParameterOutFloat<spDevCCS811, &spDevCCS811::read_CO2> co2;
     spParameterOutFloat<spDevCCS811, &spDevCCS811::read_TVOC> tvoc;    
 
-    // Type testing:
-    static spType Type;
-    spType *getType(void)
-    {
-        return &Type;
-    }
 };

@@ -729,58 +729,6 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     std::string data; // storage for the property
 };
 
-//---------------------------------------------------------
-// Class/device typing. use an empty class to define a type. Each typed
-// object adds a spType object as a class instance varable - one per class definition.
-// Since there is only one instance per  object definition, the address to that sptype
-// instance forms a "type" ID for the class that contains it.
-//
-// So, to find something of a specific type, see if the address of the spType object
-// matches that of the target Class.
-//
-// Simple Example:
-//
-//  Define a class with a static spType variable, called Type
-//       class cow {
-//	          static spType Type;
-//            ...
-//        };
-//
-// And in the class implementation ,init this static variable (this creates the actual insance)
-//        spType cow::Type;
-//
-// Later:
-//
-//     pThing = nextItem();
-//
-//     // Is this a cow?
-//
-//     if ( pTying->Type == cow::Type) Serial.print("THIS IS A COW");
-//
-// Define the class and a few operators for quick compairison.
-
-struct spType
-{
-    spType(){};
-    // copy and assign constructors - delete them to prevent extra copys being
-    // made. We only want a singletype objects to be part of the class definiton.
-    // Basically: One spType object pre defined type.
-    spType(spType const &) = delete;
-    void operator=(spType const &) = delete;
-};
-
-inline bool operator==(const spType &lhs, const spType &rhs)
-{
-    return &lhs == &rhs;
-}
-inline bool operator==(const spType &lhs, const spType *rhs)
-{
-    return &lhs == rhs;
-}
-inline bool operator==(const spType *lhs, const spType &rhs)
-{
-    return lhs == &rhs;
-}
 
 //----------------------------------------------------------------------------------------------------
 // spObject

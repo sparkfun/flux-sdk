@@ -11,8 +11,6 @@
 
 #include "spDevTwist.h"
 
-// For type system testing
-spType spDevTwist::Type;
 uint8_t spDevTwist::defaultDeviceAddress[] = {QWIIC_TWIST_ADDR, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------

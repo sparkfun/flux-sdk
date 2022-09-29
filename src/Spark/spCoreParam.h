@@ -495,9 +495,9 @@ using spParameterInString = _spParameterIn<std::string, Object, _setter>;
 class spOperation : public spObject, public _spParameterContainer
 {
   public:
-    virtual spType *getType(void)
+    virtual spTypeID getType(void)
     {
-        return (spType *)nullptr;
+        return (spTypeID)nullptr;
     }
 
     virtual bool loop(void)

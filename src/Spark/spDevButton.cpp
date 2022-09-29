@@ -11,8 +11,6 @@
 
 #include "spDevButton.h"
 
-// For type system testing
-spType spDevButton::Type;
 uint8_t spDevButton::defaultDeviceAddress[] = {SFE_QWIIC_BUTTON_DEFAULT_ADDRESS, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------

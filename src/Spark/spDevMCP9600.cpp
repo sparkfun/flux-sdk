@@ -15,7 +15,6 @@
 
 // Define our class static variables - allocs storage for them
 
-spType spDevMCP9600::Type;
 uint8_t spDevMCP9600::defaultDeviceAddress[] = {kMCPAddressDefault, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
