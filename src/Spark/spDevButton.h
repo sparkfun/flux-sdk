@@ -46,6 +46,7 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
     // Events
     // Our output event
     spSignalBool on_clicked;
+    spSignalVoid on_clicked_event;
 
     // Type testing:
     // A static instance var - that is an object (can check instance pointer)

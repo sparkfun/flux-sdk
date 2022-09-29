@@ -6,10 +6,9 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/spLogger.h>
-#include <Spark/spFmtJSON.h>
 #include <Spark/spFmtCSV.h>
-#include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
+#include <Spark/spDevButton.h>
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -48,11 +47,7 @@ void setup() {
     //               This should be done after all devices are added..for now...
     spark.start();  
 
-    // Logging is done at an interval - using an interval timer. 
-    // Connect logger to the timer event
-    logger.listen(timer.on_interval);  
-
-    // We want to output JSON and CSV to the serial consol.
+    // We want to output CSV to the serial consol.
     //  - Add Serial to our  formatters
     fmtCSV.add(spSerial());    
 
@@ -60,7 +55,7 @@ void setup() {
     logger.add(fmtCSV);    
 
     // What devices has the system detected?
-    // List them and add them to the logger
+    // List them
 
     spDeviceContainer  myDevices = spark.connectedDevices();
 
@@ -80,28 +75,31 @@ void setup() {
     {
 
         Serial.printf("Device: %s, Output Number: %d", device->name(), device->nOutputParameters());
+        
         if ( device->nOutputParameters() > 0)
         {
             Serial.printf("  - Adding to logger\r\n");
             logger.add(device);
         }
         else
-            Serial.printf(" - Not adding to logger \r\n");
+            Serial.printf(" - Not adding to logger\r\n");
+            
+        if ( strcmp(device->name(), "button") == 0 ) // Have we detected a button?
+            Serial.printf("Hey! This one is a button! It is using address 0x%02x\r\n", device->address());
     }
 
     spDevButton *pButton = spark.get<spDevButton>();
 
     if(pButton)
     {
-        // dump button messages to the logger
-        spSerial()->listen( pButton->on_clicked);
+        pButton->pressMode = false; // Change from Press Mode to Click (Toggle) Mode
+        
+        // Connect logger to the clicked event
+        logger.listen(pButton->on_clicked_event);
         Serial.println("Button Connected");
     }
-    else
-    {
-        Serial.println("No Button Connected. Ending");
-        while(1);
-    }
+    else 
+        Serial.println("No Button Connected.");
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
@@ -122,7 +120,7 @@ void loop() {
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 
-    delay(1000);                       
+    delay(10);                       
     digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
-    delay(1000);
+    delay(10);
 }

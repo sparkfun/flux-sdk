@@ -13,7 +13,11 @@
 
 // For type system testing
 spType spDevButton::Type;
-uint8_t spDevButton::defaultDeviceAddress[] = {SFE_QWIIC_BUTTON_DEFAULT_ADDRESS, kSparkDeviceAddressNull};
+
+// The Qwiic Button can be configured to have any I2C address (via I2C methods)
+// The four jumper links on the back of the board allow it to be given 16 addresses: 0x6F - 0x60
+// To avoid collisions with other sensors (MCP9600, VCNL4040, SCD30) we'll limit the supported addresses here to: 0x6F - 0x68
+uint8_t spDevButton::defaultDeviceAddress[] = {0x6F, 0x6E, 0x6D, 0x6C, 0x6B, 0x6A, 0x69, 0x68, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -118,11 +122,12 @@ bool spDevButton::loop(void)
             }
 
             on_clicked.emit(this_button_state);
+            on_clicked_event.emit();
         }
     }
     else // Click (Toggle) mode
     {
-        if ((last_button_state == false) && (this_button_state == true)) // Has the button cbeen pressed down?
+        if ((last_button_state == false) && (this_button_state == true)) // Has the button been pressed down?
         {
             toggle_state = !toggle_state; // Toggle toggle_state
 
@@ -132,6 +137,7 @@ bool spDevButton::loop(void)
                 QwiicButton::LEDoff();
 
             on_clicked.emit(toggle_state);
+            on_clicked_event.emit();
         }
     }
 
