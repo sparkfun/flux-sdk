@@ -18,7 +18,7 @@ spSpark &spark = spSpark::get();
 bool spSpark::start(bool bAutoLoad)
 {
 
-    // setup our logging system.
+    // setup our logging system. 
     _logDriver.setOutput(spSerial());
     spLog.setLogDriver(_logDriver);
 
@@ -27,7 +27,7 @@ bool spSpark::start(bool bAutoLoad)
 
     if (bAutoLoad)
     {
-        // Build drivers for the registerd devices connected to the system
+        // Build drivers for the registered devices connected to the system
         spDeviceFactory::get().buildDevices(_i2cDriver);
 
         // restore state - loads save property values for this object and
