@@ -1,8 +1,8 @@
 /*
  *
- * QwiicDevBME280.cpp
+ *  spDevMCP9600.cpp
  *
- *  Device object for the BME280 Qwiic device.
+ *  Driver for the MCP9600 Thermocouple Amp
  *
  *
  *
@@ -11,11 +11,10 @@
 
 #include "spDevMCP9600.h"
 
-#define kMCPAddressDefault 0x60
-
 // Define our class static variables - allocs storage for them
 
-uint8_t spDevMCP9600::defaultDeviceAddress[] = {kMCPAddressDefault, kSparkDeviceAddressNull};
+// The MCP9600 supports multiple addresses (resistor-configurable)
+uint8_t spDevMCP9600::defaultDeviceAddress[] = {0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -43,9 +42,9 @@ spDevMCP9600::spDevMCP9600()
     spRegister(burst_samples);
 
     // register parameters
-    spRegister(thermocouple_temp);
-    spRegister(ambient_temp);
-    spRegister(temp_delta);
+    spRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature (C)");
+    spRegister(ambient_temp, "Ambient temperature", "Ambient temperature (C)");
+    spRegister(temp_delta, "Temperature delta", "Temperature change since last reset (C)");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -73,12 +72,12 @@ void spDevMCP9600::set_AmbientResolution(bool value)
 {
     MCP9600::setAmbientResolution((Ambient_Resolution)value);
 }
-
 bool spDevMCP9600::get_AmbientResolution(void)
 {
 
     return (bool)MCP9600::getAmbientResolution();
 }
+
 void spDevMCP9600::set_ThermocoupleResolution(uint value)
 {
 
@@ -89,6 +88,7 @@ uint spDevMCP9600::get_ThermocoupleResolution(void)
 
     return (uint)MCP9600::getThermocoupleResolution();
 }
+
 void spDevMCP9600::set_ThermocoupleType(uint value)
 {
 
@@ -99,6 +99,7 @@ uint spDevMCP9600::get_ThermocoupleType(void)
 
     return MCP9600::getThermocoupleType();
 }
+
 void spDevMCP9600::set_FilterCoefficient(uint value)
 {
 
@@ -109,6 +110,7 @@ uint spDevMCP9600::get_FilterCoefficient(void)
 
     return MCP9600::getFilterCoefficient();
 }
+
 void spDevMCP9600::set_BurstSamples(uint value)
 {
 
@@ -119,6 +121,7 @@ uint spDevMCP9600::get_BurstSamples(void)
 
     return MCP9600::getBurstSamples();
 }
+
 // For the output param call - no args
 float spDevMCP9600::read_ThermocoupleTemp(void)
 {

@@ -1,6 +1,6 @@
 /*
  *
- * spDevCCS811.cpp
+ *  spDevCCS811.h
  *
  *  Spark Device object for the CCS811 Qwiic device.
  */
@@ -41,6 +41,8 @@ class spDevCCS811 : public spDeviceType<spDevCCS811>, public CCS811
 private:
     float read_CO2();
     float read_TVOC();
+    bool _tvoc = false; // Flags to avoid calling readAlgorithmResults twice
+    bool _co2 = false;
 
 public:
     // Define our output parameters - specify the get functions to call.
