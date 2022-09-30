@@ -25,9 +25,9 @@ spDevADS122C04::spDevADS122C04()
 
     // Register Property
     spRegister(wireMode, "Wire mode", "Wire mode: 0 = 4-wire, 1 = 3-wire, 2 = 2-wire");
-    wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode
+    wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode. See SFE_ADS122C04::ADS122C04_4WIRE_MODE etc.
     spRegister(sampleRate, "Sample rate", "Sample rate: 0 = 20SPS, 6 = 1000SPS");
-    sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second
+    sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second. See SFE_ADS122C04::ADS122C04_DATA_RATE_20SPS etc.
 
     // Register output params
     spRegister(temperatureC, "Probe temperature (C)", "Probe temperature (C)");
