@@ -10,6 +10,7 @@
 #include <Spark/spSerial.h>
 
 #include <Spark/spDevButton.h> // For getAll testing
+#include <Spark/spDevTwist.h> // For getAll testing
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -101,6 +102,25 @@ void setup() {
             ((spDevButton*)b)->ledBrightness = 8; // Change the LED brightness from 128 (default) to 8
 
             logger.listen(((spDevButton*)b)->on_clicked_event); // Connect logger to the clicked event
+        }
+    }
+
+    // Identify any Qwiic Twists
+    // Add their on_clicked and on_twist events as logger triggers
+    auto twists = spark.getAll<spDevTwist>();
+    
+    Serial.printf("Number of twists: %d\r\n", twists->size());
+
+    if (twists->size() > 0)
+    {
+        for( auto t : *twists)
+        {
+            Serial.printf("Connecting the logger to the twist named %s at address 0x%02X\r\n", t->name(), t->address());
+            
+            ((spDevTwist*)t)->pressMode = false; // Change the mode from Press Mode to Click (Toggle) Mode
+
+            logger.listen(((spDevTwist*)t)->on_clicked_event); // Connect logger to the clicked event
+            logger.listen(((spDevTwist*)t)->on_twist_event); // Connect logger to the twist event
         }
     }
 

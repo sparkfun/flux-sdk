@@ -1,8 +1,8 @@
 /*
  *
- * QwiicDevBME280.cpp
+ *  spDevTwist.cpp
  *
- *  Device object for the BME280 Qwiic device.
+ *  Device object for the Qwiic Twistdevice.
  *
  *
  *
@@ -11,7 +11,11 @@
 
 #include "spDevTwist.h"
 
-uint8_t spDevTwist::defaultDeviceAddress[] = {QWIIC_TWIST_ADDR, kSparkDeviceAddressNull};
+
+// The Qwiic Button can be configured to have one of many I2C address (via I2C methods)
+// The jumper link on the back of the board changes the default address from 0x3F to 0x3E
+// We'll limit the supported addresses here to: 0x3F and 0x3E
+uint8_t spDevTwist::defaultDeviceAddress[] = {0x3F, 0x3E, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -29,6 +33,25 @@ spDevTwist::spDevTwist()
 
     // Setup unique identifiers for this device and basic device object systems
     spSetupDeviceIdent(kTwistDeviceName);
+
+    last_count = 0;
+    last_button_state = false;
+    this_button_state = false;
+    toggle_state = false;
+
+    // Register Property
+    spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
+    pressMode = true;
+    spRegister(ledRed, "LED Red", "Set the red LED brightness: 0 - 255");
+    ledRed = 128;
+    spRegister(ledGreen, "LED Green", "Set the green LED brightness: 0 - 255");
+    ledGreen = 0;
+    spRegister(ledBlue, "LED Blue", "Set the blue LED brightness: 0 - 255");
+    ledBlue = 128;
+
+    // Register parameters
+    spRegister(buttonState);
+    spRegister(twistCount);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -53,9 +76,26 @@ bool spDevTwist::onInitialize(TwoWire &wirePort)
     if (!rc)
         Serial.println("TWIST - begin failed");
 
-    last_count = 0;
-    was_clicked = TWIST::isPressed();
+    this_button_state = TWIST::isPressed();
+    last_button_state = this_button_state;
+
+    rc &= TWIST::setColor(0,0,0); // Make sure the LED is off
+
     return rc;
+}
+
+// GETTER methods for output params
+bool spDevTwist::read_button_state()
+{
+    if (pressMode)
+        return this_button_state;
+    else
+        return toggle_state;
+}
+
+int spDevTwist::get_twist_count()
+{
+    return last_count;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -72,12 +112,45 @@ void spDevTwist::onPropertyUpdate(const char *propName)
 
 bool spDevTwist::loop(void)
 {
+    bool result = false;
 
     // process events
-    if (TWIST::isPressed() != was_clicked)
+    last_button_state = this_button_state; // Store the last button state
+    this_button_state = TWIST::isPressed(); // Read the current button state
+
+    if (pressMode)
     {
-        was_clicked = !was_clicked;
-        on_clicked.emit(was_clicked);
+        if (last_button_state != this_button_state) // Has the button changed state?
+        {
+            if (this_button_state) // Is the button pressed now?
+            {
+                TWIST::setColor(ledRed, ledGreen, ledBlue);
+            }
+            else
+            {
+                TWIST::setColor(0,0,0);
+            }
+
+            on_clicked.emit(this_button_state);
+            on_clicked_event.emit();
+            result = true;
+        }
+    }
+    else // Click (Toggle) mode
+    {
+        if ((last_button_state == false) && (this_button_state == true)) // Has the button been pressed down?
+        {
+            toggle_state = !toggle_state; // Toggle toggle_state
+
+            if (toggle_state) // Toggle the LED
+                TWIST::setColor(ledRed, ledGreen, ledBlue);
+            else
+                TWIST::setColor(0,0,0);
+
+            on_clicked.emit(toggle_state);
+            on_clicked_event.emit();
+            result = true;
+        }
     }
 
     int tmp = TWIST::getCount();
@@ -85,8 +158,10 @@ bool spDevTwist::loop(void)
     {
         last_count = tmp;
         on_twist.emit(last_count);
+        on_twist_event.emit();
+        result = true;
     }
 
-    return false;
+    return result;
 }
 
