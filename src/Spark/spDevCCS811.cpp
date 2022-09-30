@@ -1,8 +1,8 @@
 /*
  *
- * spDevBME280.cpp
+ *  spDevCCS811.cpp
  *
- *  Spark Device object for the BME280 Qwiic device.
+ *  Spark Device object for the CCS811 Qwiic device.
  */
 
 #include "Arduino.h"
@@ -37,8 +37,8 @@ spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
 
 }
 
-// Function to encapsulate the ops needed to get values form the sensor.
-// Shouldn't' this be part of the original library?
+// Function to encapsulate the ops needed to get values from the sensor.
+// Shouldn't this be part of the original library?
 float spDevCCS811::read_CO2()
 {
 
