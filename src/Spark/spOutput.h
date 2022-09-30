@@ -3,7 +3,8 @@
 //
 
 #pragma once
-
+#include <string>
+#include <vector>
 //-----------------------------------------
 // Define an interface for output of log information.
 
