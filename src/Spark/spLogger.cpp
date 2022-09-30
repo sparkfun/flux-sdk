@@ -7,16 +7,6 @@
 #include "spLogger.h"
 
 //----------------------------------------------------------------------------
-// When we log a value, we need to write it to all formatters. Seems like a lot
-// of short loops, but we want to write the SAME value to all formatters
-template <typename T> void spLogger::writeValue(const std::string &tag, T value)
-{
-
-    for (auto theFormatter : _Formatters)
-        theFormatter->logValue(tag, value);
-}
-
-//----------------------------------------------------------------------------
 // Log the data in a section of the output - title and parameter values
 void spLogger::logSection(const char *section_name, spParameterOutList &paramList)
 {
@@ -71,11 +61,13 @@ void spLogger::logObservation(void)
     for (auto theFormatter : _Formatters)
         theFormatter->beginObservation();
 
-    // if we have general params to log, do those. This will log to all formatters
+    // if we have general params to log, do those. This will log to all
+    // formatters
     if (_paramsToLog.size() > 0)
         logSection("General", _paramsToLog);
 
-    // loop over objs to log - each object is in a named section. Logs to all formatters
+    // loop over objs to log - each object is in a named section. Logs to all
+    // formatters
     for (auto pObj : _objsToLog)
         logSection(pObj->name(), pObj->getOutputParameters());
 
