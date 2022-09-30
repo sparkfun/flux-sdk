@@ -1,6 +1,6 @@
 /*
  *
- *  spDevMCP9600.h
+ *  spDevMCP9600.cpp
  *
  *  Driver for the MCP9600 Thermocouple Amp
  *
