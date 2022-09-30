@@ -162,7 +162,7 @@ template <typename T> class spDeviceType : public spDevice
     static spTypeID type(void)
     {
         static spType _myType;
-        return &_myType;
+        return (spTypeID)&_myType;
     }
 
     // Return the type ID of this
