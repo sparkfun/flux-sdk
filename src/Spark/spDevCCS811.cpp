@@ -1,8 +1,8 @@
 /*
  *
- * spDevBME280.cpp
+ *  spDevCCS811.cpp
  *
- *  Spark Device object for the BME280 Qwiic device.
+ *  Spark Device object for the CCS811 Qwiic device.
  */
 
 #include "Arduino.h"
@@ -37,31 +37,40 @@ spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
 
 }
 
-// Function to encapsulate the ops needed to get values form the sensor.
-// Shouldn't' this be part of the original library?
+// Function to encapsulate the ops needed to get values from the sensor.
+// Shouldn't this be part of the original library?
 float spDevCCS811::read_CO2()
 {
 
-    if (!dataAvailable())
+    if (_co2 == false)
     {
-        return 0.0;
+        if (CCS811::dataAvailable())
+        {
+            CCS811::readAlgorithmResults();
+            _tvoc = true;
+        }
     }
+    _co2 = false;
 
-    readAlgorithmResults();
-
-    // call the supers method
+    // Call the supers method
+    // If !dataAvailable, getCO2 returns the previous value. Do this instead of returning 0.0.
     return CCS811::getCO2();
 }
 //
 float spDevCCS811::read_TVOC()
 {
-
-    if (!CCS811::dataAvailable())
-        return 0.0;
-
-    readAlgorithmResults();
+    if (_tvoc == false)
+    {
+        if (CCS811::dataAvailable())
+        {
+            CCS811::readAlgorithmResults();
+            _co2 = true;
+        }
+    }
+    _tvoc = false;
 
     // Call the supers method
+    // If !dataAvailable, getTVOC returns the previous value. Do this instead of returning 0.0.
     return CCS811::getTVOC();
 }
 
@@ -69,6 +78,9 @@ float spDevCCS811::read_TVOC()
 
 bool spDevCCS811::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
+    // For speed, ping the device address first
+    if (!i2cDriver.ping(address))
+        return false;
 
     uint8_t chipID = i2cDriver.readRegister(address, kCCS811ChipIdReg); 
 
@@ -84,6 +96,9 @@ bool spDevCCS811::isConnected(spDevI2C &i2cDriver, uint8_t address)
 //
 bool spDevCCS811::onInitialize(TwoWire &wirePort)
 {
+    _tvoc = false; // Flags to avoid calling readAlgorithmResults twice
+    _co2 = false;
+
 	// set the underlying drivers address to the one determined during
 	// device construction
     CCS811::setI2CAddress(address());

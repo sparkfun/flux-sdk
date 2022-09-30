@@ -1,6 +1,8 @@
 /*
  *
- * Driver for the MCP9600 Thermocouple Amp
+ *  spDevMCP9600.h
+ *
+ *  Driver for the MCP9600 Thermocouple Amp
  *
  *
  */
@@ -10,7 +12,7 @@
 #include "Arduino.h"
 
 #include "spDevice.h"
-#include <SparkFun_MCP9600.h>
+#include "SparkFun_MCP9600.h"
 
 // What is the name used to ID this device?
 #define kMCP9600DeviceName "mcp9600"

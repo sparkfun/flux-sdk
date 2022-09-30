@@ -62,6 +62,9 @@ spDevBME280::spDevBME280()
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
 bool spDevBME280::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
+    // For speed, ping the device address first
+    if (!i2cDriver.ping(address))
+        return false;
 
     uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); // Should return 0x60 or 0x58
 

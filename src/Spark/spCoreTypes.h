@@ -400,6 +400,8 @@ template <typename T> class _spDataIn : public spDataIn
 //
 // Define the class and a few operators for quick compairison.
 
+typedef uint32_t spTypeID;
+
 struct spType
 {
     spType(){};
@@ -410,13 +412,13 @@ struct spType
     void operator=(spType const &) = delete;
 
 public:
-    inline spType* typeID(void)
+    inline spTypeID typeID(void)
     {
-        return this; 
+        return (spTypeID)this; 
     }
 
 };
-typedef spType* spTypeID;
+
 
 inline bool operator==(const spType &lhs, const spType &rhs)
 {
