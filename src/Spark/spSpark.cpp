@@ -1,10 +1,14 @@
 
 
 #include <Arduino.h>
-#include <ArduinoJson.h>
 
 #include "spSpark.h"
+#include "spSerial.h"
 #include "spStorage.h"
+
+// for logging - define output driver on the stack
+
+static spLoggingDrvDefault _logDriver;
 
 // Global object - for quick access to Spark.
 spSpark &spark = spSpark::get();
@@ -13,6 +17,10 @@ spSpark &spark = spSpark::get();
 // Note: Autoload is true by default
 bool spSpark::start(bool bAutoLoad)
 {
+
+    // setup our logging system.
+    _logDriver.setOutput(spSerial());
+    spLog.setLogDriver(_logDriver);
 
     // Init our I2C driver
     _i2cDriver.begin();
