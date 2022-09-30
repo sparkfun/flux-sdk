@@ -42,9 +42,9 @@ spDevMCP9600::spDevMCP9600()
     spRegister(burst_samples);
 
     // register parameters
-    spRegister(thermocouple_temp);
-    spRegister(ambient_temp);
-    spRegister(temp_delta);
+    spRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature (C)");
+    spRegister(ambient_temp, "Ambient temperature", "Ambient temperature (C)");
+    spRegister(temp_delta, "Temperature delta", "Temperature change since last reset (C)");
 }
 
 //----------------------------------------------------------------------------------------------------------
