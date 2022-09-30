@@ -58,27 +58,13 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
     return rc;
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevButton::onPropertyUpdate(const char *propName)
-{
-
-    // Serial.print("PROPERTY UPDATE: ");Serial.println(propName);
-    // save();
-}
-
 bool spDevButton::loop(void)
 {
-
-    // process events
     // process events
     if (QwiicButton::isPressed() != was_clicked)
     {
         was_clicked = !was_clicked;
-        on_clicked.emit(was_clicked);
+        on_clicked.emit(was_clicked);      
     }
 
     return false;
