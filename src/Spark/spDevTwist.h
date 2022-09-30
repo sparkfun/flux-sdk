@@ -48,14 +48,6 @@ class spDevTwist : public spDeviceType<spDevTwist>, public TWIST
     spSignalBool on_clicked;
     spSignalInt on_twist;
 
-    // Type testing:
-    // A static instance var - that is an object (can check instance pointer)
-    static spType Type;
-    spType *getType(void)
-    {
-        return &Type;
-    }
-
     bool loop(void);
 
   private:

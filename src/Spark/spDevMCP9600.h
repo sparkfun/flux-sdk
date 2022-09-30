@@ -86,11 +86,5 @@ class spDevMCP9600 : public spDeviceType<spDevMCP9600>, public MCP9600
     spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_ThermocoupleTemp> thermocouple_temp;
     spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_AmbientTemp> ambient_temp;
     spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_TempDelta> temp_delta;
-
-    // A static instance var - that is an object (can check instance pointer)
-    static spType Type;
-    spType *getType(void)
-    {
-        return &Type;
-    }
+    
 };

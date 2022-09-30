@@ -17,7 +17,6 @@
 #define kCCS811AddressDefault 0x5B
 #define kCCS811AddressAlt1 0x5A
 
-spType spDevCCS811::Type;
 uint8_t spDevCCS811::defaultDeviceAddress[] = { kCCS811AddressDefault, 
 												kCCS811AddressAlt1, 
 												kSparkDeviceAddressNull};

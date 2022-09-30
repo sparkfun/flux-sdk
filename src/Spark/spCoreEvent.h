@@ -65,8 +65,12 @@ template <typename ArgT> class spSignal
 };
 
 typedef spSignal<bool> spSignalBool;
+typedef spSignal<int8_t> spSignalInt8;
 typedef spSignal<int> spSignalInt;
+typedef spSignal<uint8_t> spSignalUInt8;
+typedef spSignal<uint> spSignalUInt;
 typedef spSignal<float> spSignalFloat;
+typedef spSignal<double> spSignalDouble;
 typedef spSignal<std::string &> spSignalString;
 
 // Signal - zero arg - aka void function callback type. Unable to template this, so

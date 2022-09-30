@@ -364,10 +364,19 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
 using spPropertyRWBool = _spPropertyTypedRW<bool, Object, _getter, _setter>;
 
+// int8
+template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
+using spPropertyRWInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter>;
+
 // int
 template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
 using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
 
+// unsigned int 8
+template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
+using spPropertyRWUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter>;
+
+// unsigned int
 template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
 using spPropertyRWUint = _spPropertyTypedRW<uint, Object, _getter, _setter>;
 
@@ -608,7 +617,9 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
 
 // Define typed properties
 template <class Object> using spPropertyBool = _spPropertyTyped<Object, bool>;
+template <class Object> using spPropertyInt8 = _spPropertyTyped<Object, int8_t>;
 template <class Object> using spPropertyInt = _spPropertyTyped<Object, int>;
+template <class Object> using spPropertyUint8 = _spPropertyTyped<Object, uint8_t>;
 template <class Object> using spPropertyUint = _spPropertyTyped<Object, uint>;
 template <class Object> using spPropertyFloat = _spPropertyTyped<Object, float>;
 template <class Object> using spPropertyDouble = _spPropertyTyped<Object, double>;
@@ -718,58 +729,6 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     std::string data; // storage for the property
 };
 
-//---------------------------------------------------------
-// Class/device typing. use an empty class to define a type. Each typed
-// object adds a spType object as a class instance varable - one per class definition.
-// Since there is only one instance per  object definition, the address to that sptype
-// instance forms a "type" ID for the class that contains it.
-//
-// So, to find something of a specific type, see if the address of the spType object
-// matches that of the target Class.
-//
-// Simple Example:
-//
-//  Define a class with a static spType variable, called Type
-//       class cow {
-//	          static spType Type;
-//            ...
-//        };
-//
-// And in the class implementation ,init this static variable (this creates the actual insance)
-//        spType cow::Type;
-//
-// Later:
-//
-//     pThing = nextItem();
-//
-//     // Is this a cow?
-//
-//     if ( pTying->Type == cow::Type) Serial.print("THIS IS A COW");
-//
-// Define the class and a few operators for quick compairison.
-
-struct spType
-{
-    spType(){};
-    // copy and assign constructors - delete them to prevent extra copys being
-    // made. We only want a singletype objects to be part of the class definiton.
-    // Basically: One spType object pre defined type.
-    spType(spType const &) = delete;
-    void operator=(spType const &) = delete;
-};
-
-inline bool operator==(const spType &lhs, const spType &rhs)
-{
-    return &lhs == &rhs;
-}
-inline bool operator==(const spType &lhs, const spType *rhs)
-{
-    return &lhs == rhs;
-}
-inline bool operator==(const spType *lhs, const spType &rhs)
-{
-    return lhs == &rhs;
-}
 
 //----------------------------------------------------------------------------------------------------
 // spObject

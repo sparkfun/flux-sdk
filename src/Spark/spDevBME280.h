@@ -68,11 +68,4 @@ public:
     spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeM> altitudeM;
     spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeF> altitudeF;
 
-    // Type testing:
-    // A static instance var - that is an object (can check instance pointer)
-    static spType Type;
-    spType *getType(void)
-    {
-        return &Type;
-    }
 };

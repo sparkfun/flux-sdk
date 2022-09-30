@@ -11,6 +11,11 @@
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
+// KDB TESTING
+#include <Spark/spDevBME280.h>
+#include <Spark/spDevButton.h>
+
+
 
 //------------------------------------------
 // Default log interval in milli secs
@@ -88,7 +93,9 @@ void setup() {
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-
+        // TYPE ID TESTING
+        Serial.printf("TYPEID: %d %d\n\r", device->getType(), spDevBME280::type());
+        // END TESTING
         Serial.printf("Device: %s, Output Number: %d", device->name(), device->nOutputParameters());
         if ( device->nOutputParameters() > 0)
         {
@@ -99,6 +106,16 @@ void setup() {
             Serial.printf(" - Not adding to logger \r\n");
     }
 
+    ////////////
+    // getAll() testing
+    auto buttons = spark.getAll<spDevButton>();
+
+    Serial.printf("Number of buttons: %d \n\r", buttons->size());
+    for( auto b : *buttons)
+        Serial.printf("Button Name: %s", b->name());
+
+    /// END TESTING
+    
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
     Serial.printf("\n\rLog Output:\n\r");

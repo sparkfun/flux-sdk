@@ -135,6 +135,7 @@ using spDeviceContainer = spContainer<spDevice *>;
 //
 template <typename T> class spDeviceType : public spDevice
 {
+  public:
     // get the default address for the device. If none exists,
     // return Null Address...
     virtual uint8_t getDefaultAddress(void)
@@ -146,6 +147,33 @@ template <typename T> class spDeviceType : public spDevice
             return kSparkDeviceAddressNull;
 
         return addresses[0];
+    }
+
+    // Typing system for devices
+    //
+    // Defines a type specific static method - so can be called outside
+    // of an instance.
+    //
+    // Have a static type object in this method - so it's the same value
+    // across all instances of this class.
+
+    // Use the poniter to this value as our type ID.
+
+    static spTypeID type(void)
+    {
+        static spType _myType;
+        return &_myType;
+    }
+
+    // Return the type ID of this
+    spTypeID getType(void)
+    {
+        return type();
+    }
+
+    bool isType(spTypeID type)
+    {
+        return type == getType();
     }
 };
 

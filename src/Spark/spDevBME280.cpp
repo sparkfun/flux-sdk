@@ -18,7 +18,6 @@
 
 // Define our class static variables - allocs storage for them
 
-spType spDevBME280::Type;
 uint8_t spDevBME280::defaultDeviceAddress[] = {kBMEAddressDefault, kBMEAddressAlt1, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
