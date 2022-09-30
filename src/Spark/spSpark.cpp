@@ -45,13 +45,21 @@ bool spSpark::loop(void)
     // Pump our actions by calling there loop methods
     bool rc = false;
 
+    bool rc2;
     // Actions
     for (auto pAction : Actions)
-        rc = rc || pAction->loop();
+    {
+        rc2 = pAction->loop();
+        rc = rc || rc2;
+    }
+
 
     // i2c devices
     for (auto pDevice : Devices)
-        rc = rc || pDevice->loop();
+    {
+        rc2 = pDevice->loop();
+        rc = rc || rc2;
+    }
 
     return rc;
 }
