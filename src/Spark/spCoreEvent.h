@@ -45,6 +45,13 @@ template <typename ArgT> class spSignal
             (*func)(uValue, var);
         });
     }
+
+    template <typename T, typename U> void call(T *inst, void (T::*func)(U uVal, ArgT var), U uValue)
+    {
+        connect([=](ArgT var) { // users a lambda for the callback
+            (inst->*func)(uValue, var);
+        });
+    }
     // connects a std::function to the spSignal.
     void connect(std::function<void(ArgT var)> const &slot) const
     {
@@ -60,6 +67,8 @@ template <typename ArgT> class spSignal
         }
     }
 
+    typedef ArgT value_type;
+
   private:
     mutable std::vector<std::function<void(ArgT &var)>> slots_;
 };
@@ -71,7 +80,7 @@ typedef spSignal<uint8_t> spSignalUInt8;
 typedef spSignal<uint> spSignalUInt;
 typedef spSignal<float> spSignalFloat;
 typedef spSignal<double> spSignalDouble;
-typedef spSignal<std::string &> spSignalString;
+typedef spSignal<const char*> spSignalString;
 
 // Signal - zero arg - aka void function callback type. Unable to template this, so
 // just brute force the impl.
@@ -99,6 +108,13 @@ class spSignalVoid
     {
         connect([=]() { // users a lambda for the callback
             (*func)(uValue);
+        });
+    }
+    // Just call a user supplied function and object but with a User Defined value
+    template <typename T, typename U> void call(T *inst, void (T::*func)(U uval), U uValue)
+    {
+        connect([=]() { // users a lambda for the callback
+            (inst->*func)(uValue);
         });
     }
 
