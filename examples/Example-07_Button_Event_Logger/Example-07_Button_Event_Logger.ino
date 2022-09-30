@@ -8,7 +8,8 @@
 #include <Spark/spLogger.h>
 #include <Spark/spFmtCSV.h>
 #include <Spark/spSerial.h>
-#include <Spark/spDevButton.h>
+
+#include <Spark/spDevButton.h> // For getAll testing
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -44,11 +45,10 @@ void setup() {
     Serial.println("\n---- Startup ----");
     
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
-    //               This should be done after all devices are added..for now...
     spark.start();  
 
     // We want to output CSV to the serial consol.
-    //  - Add Serial to our  formatters
+    //  - Add Serial to our formatters
     fmtCSV.add(spSerial());    
 
     //  - Add the JSON and CVS format to the logger
@@ -83,23 +83,26 @@ void setup() {
         }
         else
             Serial.printf(" - Not adding to logger\r\n");
-            
-        if ( strcmp(device->name(), "button") == 0 ) // Have we detected a button?
-            Serial.printf("Hey! This one is a button! It is using address 0x%02x\r\n", device->address());
     }
 
-    spDevButton *pButton = spark.get<spDevButton>();
+    // Identify any buttons
+    // Add their on_clicked events as logger triggers
+    auto buttons = spark.getAll<spDevButton>();
+    
+    Serial.printf("Number of buttons: %d\r\n", buttons->size());
 
-    if(pButton)
+    if (buttons->size() > 0)
     {
-        pButton->pressMode = false; // Change from Press Mode to Click (Toggle) Mode
-        
-        // Connect logger to the clicked event
-        logger.listen(pButton->on_clicked_event);
-        Serial.println("Button Connected");
+        for( auto b : *buttons)
+        {
+            Serial.printf("Connecting the logger to the button named %s at address 0x%02X\r\n", b->name(), b->address());
+            
+            ((spDevButton*)b)->pressMode = false; // Change the button from Press Mode to Click (Toggle) Mode
+            ((spDevButton*)b)->ledBrightness = 8; // Change the LED brightness from 128 (default) to 8
+
+            logger.listen(((spDevButton*)b)->on_clicked_event); // Connect logger to the clicked event
+        }
     }
-    else 
-        Serial.println("No Button Connected.");
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
@@ -120,7 +123,6 @@ void loop() {
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 
-    delay(10);                       
+    delay(50);                       
     digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
-    delay(10);
 }

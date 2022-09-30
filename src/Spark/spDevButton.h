@@ -1,6 +1,6 @@
 /*
  *
- * QwiicDevButton.h
+ *  spDevButton.h
  *
  *  Device object for the Qwiic Button device.
  *
@@ -59,7 +59,7 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
 
   public:
     spPropertyBool<spDevButton> pressMode; // true = Press mode. false = Click (Toggle) mode
-    spPropertyUint<spDevButton> ledBrightness;
+    spPropertyUint8<spDevButton> ledBrightness;
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutBool<spDevButton, &spDevButton::read_button_state> buttonState;

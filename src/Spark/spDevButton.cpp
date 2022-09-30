@@ -1,6 +1,6 @@
 /*
  *
- * QwiicDevButton.cpp
+ *  spDevButton.cpp
  *
  *  Device object for the Qwiic Button device.
  *
@@ -10,9 +10,6 @@
 #include "Arduino.h"
 
 #include "spDevButton.h"
-
-// For type system testing
-spType spDevButton::Type;
 
 // The Qwiic Button can be configured to have any I2C address (via I2C methods)
 // The four jumper links on the back of the board allow it to be given 16 addresses: 0x6F - 0x60
@@ -103,6 +100,7 @@ void spDevButton::onPropertyUpdate(const char *propName)
 
 bool spDevButton::loop(void)
 {
+    bool result = false;
 
     // process events
     last_button_state = this_button_state; // Store the last button state
@@ -123,6 +121,7 @@ bool spDevButton::loop(void)
 
             on_clicked.emit(this_button_state);
             on_clicked_event.emit();
+            result = true;
         }
     }
     else // Click (Toggle) mode
@@ -138,9 +137,9 @@ bool spDevButton::loop(void)
 
             on_clicked.emit(toggle_state);
             on_clicked_event.emit();
+            result = true;
         }
     }
 
-    return false;
+    return result;
 }
-
