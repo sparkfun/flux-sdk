@@ -136,7 +136,7 @@ void loop() {
     ///////////////////////////////////////////////////////////////////
     // Spark
     //
-    // Just call the spark framework loop() method. Spark will maanage
+    // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
     if(spark.loop())        // will return true if an action did something
