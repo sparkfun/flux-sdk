@@ -112,7 +112,15 @@ void setup() {
 
     Serial.printf("Number of buttons: %d \n\r", buttons->size());
     for( auto b : *buttons)
+    {
         Serial.printf("Button Name: %s", b->name());
+
+        // Have the button trigger a log entry
+        logger.listen(((spDevButton*)b)->on_clicked);
+        
+        // Lets long the value of the button event
+        logger.listenLogEvent(((spDevButton*)b)->on_clicked, b);        
+    }
 
     /// END TESTING
     
