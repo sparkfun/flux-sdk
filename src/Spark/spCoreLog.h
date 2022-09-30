@@ -14,6 +14,7 @@ typedef enum {
     spLogError,
     spLogWarning,
     spLogInfo,
+    spLogDebug,
     spLogVerbose
 } spLogLevel_t;
 
@@ -31,7 +32,28 @@ class spLoggingDriver {
 // log level also passed in
 public:
     virtual int logPrintf(const spLogLevel_t level, const char *fmt, va_list args)=0;
+
+    virtual void setLogLevel(spLogLevel_t level){}
 };
+
+#ifdef THIS_IS_NOT_WORKING_ON_ESP32
+// ----------------------------------------------------------------------------
+// spLoggingDrvESP32  - 
+//
+// Sends log output to the ESP32 native, IDF system 
+
+class spLoggingDrvESP32 : public spLoggingDriver
+{
+public:
+    spLoggingDrvESP32(){}
+
+    int logPrintf(const spLogLevel_t level, const char *fmt, va_list args);
+
+    void setLogLevel(spLogLevel_t level);
+private:
+   uint getESPLevel(const spLogLevel_t level);
+};
+#endif
 // ----------------------------------------------------------------------------
 // spLoggingDrvDefault  - our Default driver for log output
 
@@ -75,6 +97,8 @@ public:
     void setLogLevel(spLogLevel_t level)
     {
         _logLevel = level;
+        if (_pLogDriver)
+            _pLogDriver->setLogLevel(level);
     }
 
     //-------------------------------------------------------------------------
@@ -86,6 +110,7 @@ public:
     void setLogDriver(spLoggingDriver &theDriver){
 
         _pLogDriver = &theDriver;
+        _pLogDriver->setLogLevel(_logLevel);        
     }
 
     //-------------------------------------------------------------------------
@@ -118,6 +143,7 @@ extern spLogging &spLog;
 #ifdef SP_LOGGING_ENABLED
 
 #define spLog_V(format, ...) spLog.logPrintf(spLogVerbose, format, ##__VA_ARGS__)
+#define spLog_D(format, ...) spLog.logPrintf(spLogDebug, format, ##__VA_ARGS__)
 #define spLog_I(format, ...) spLog.logPrintf(spLogInfo, format, ##__VA_ARGS__)
 #define spLog_W(format, ...) spLog.logPrintf(spLogWarning, format, ##__VA_ARGS__)
 #define spLog_E(format, ...) spLog.logPrintf(spLogError, format, ##__VA_ARGS__)
@@ -125,6 +151,7 @@ extern spLogging &spLog;
 #else
 
 #define spLog_V(format, ...) do {} while(0)
+#define spLog_D(format, ...) do {} while(0)
 #define spLog_I(format, ...) do {} while(0)
 #define spLog_W(format, ...) do {} while(0)
 #define spLog_E(format, ...) do {} while(0)
