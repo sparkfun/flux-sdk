@@ -45,7 +45,7 @@ void spLogger::logSection(const char *section_name, spParameterOutList &paramLis
             break;
 
         default:
-            Serial.println("Unknown Parameter Value");
+            spLog_D("Unknown Parameter Value");
             break;
         }
     }

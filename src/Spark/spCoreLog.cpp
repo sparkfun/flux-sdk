@@ -25,6 +25,8 @@ int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, const char *fmt, va
     static char szBuffer[kOutputBufferSize];
     char *pBuffer = szBuffer;
 
+    int lenBuffer = kOutputBufferSize;
+
     int len;
 
     va_list copy;
@@ -49,10 +51,13 @@ int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, const char *fmt, va
         // success?
         if (pBuffer == NULL)
             return 0;
+
+        lenBuffer = len + 1 + kOutputPrefixLen;
     }
     // set our prefix
-    snprintf(pBuffer, len + 1, kOutputPrefixFMT, OutputPrefixCodes[level]);
-    // Okay, now we have room - print and go
+    snprintf(pBuffer, lenBuffer, kOutputPrefixFMT, OutputPrefixCodes[level]);
+
+    // Okay,print, staring past prefex
     vsnprintf(pBuffer + kOutputPrefixLen, len + 1, fmt, args);
 
     // send to our output device

@@ -6,9 +6,10 @@
 #include <stdarg.h>
 #include "spOutput.h"
 
+// Lets enable logging
 #define SP_LOGGING_ENABLED
-// Define logging levels
 
+// Define logging levels
 typedef enum {
     spLogNone,
     spLogError,
@@ -77,6 +78,7 @@ private:
     // our output device
     spWriter * _wrOutput;   
 };
+
 // ----------------------------------------------------------------------------
 // main interface for the logging system
 class spLogging 
