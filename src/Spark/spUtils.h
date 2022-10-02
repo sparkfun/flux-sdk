@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string>
+#include <string.h>
 // use a utils namespace
 
 namespace sp_utils
@@ -11,7 +13,27 @@ namespace sp_utils
 
 size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 3);
 
-uint16_t id_hash_string(const char *str);
+uint32_t id_hash_string(const char *str);
+
+// Type strings in ordinary C++ syntax
+template <typename T>
+char const * classname_helper()
+{
+  return __PRETTY_FUNCTION__ + sizeof(
+    #ifdef __clang__
+      "const char* sp_utils::classname_helper() [T = "
+    #else
+      "const char* sp_utils::classname_helper() [with T = "
+    #endif
+      ) - 1;
+}
+
+template <typename T> std::string getClassName() {
+
+  char const * const p = classname_helper<T>();
+  return std::string(p, strlen(p) - sizeof(']'));
+}
+
 }
 
 
