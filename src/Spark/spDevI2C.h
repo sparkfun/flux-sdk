@@ -35,9 +35,10 @@ class spDevI2C
     // readRegister reads one register
     uint8_t readRegister(uint8_t i2c_address, uint8_t);
 
-    // Reads two regs, LSByte then MSByte order, and concatenates them
+    // Reads two regs and concatenates them
     // Used for two-byte reads
-    int16_t readRegister16(uint8_t i2c_address, uint8_t offset);
+    uint16_t readRegister16(uint8_t i2c_address, uint8_t offset, bool littleEndian = true);
+    bool readRegister16(uint8_t i2c_address, uint8_t offset, uint16_t *value, bool littleEndian = true);
 
     bool ping(uint8_t i2c_address); // ping the address ...
 

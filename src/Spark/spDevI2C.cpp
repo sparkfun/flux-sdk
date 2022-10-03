@@ -58,13 +58,25 @@ uint8_t spDevI2C::readRegister(uint8_t i2c_address, uint8_t offset)
     return result;
 }
 
-int16_t spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset)
+uint16_t spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset, bool littleEndian)
+{
+
+    uint16_t myBuffer = 0;
+    readRegister16(i2c_address, offset, &myBuffer, littleEndian); // Does memory transfer
+
+    return myBuffer;
+}
+
+bool spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset, uint16_t *value, bool littleEndian)
 {
 
     uint8_t myBuffer[2];
-    readRegisterRegion(i2c_address, offset, myBuffer, 2); // Does memory transfer
+    bool result = readRegisterRegion(i2c_address, offset, myBuffer, 2); // Does memory transfer
 
-    return (int16_t)myBuffer[0] | (int16_t)myBuffer[1] << 8;
+    if (result)
+        *value = littleEndian ? (uint16_t)myBuffer[0] | (uint16_t)myBuffer[1] << 8 : (uint16_t)myBuffer[0] << 8 | (uint16_t)myBuffer[1];
+
+    return result;
 }
 
 //////////////////////////////////////
