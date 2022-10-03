@@ -76,6 +76,10 @@ class _spPropertyContainer
         return _properties;
     };
 
+    uint nProperties(void){
+
+        return _properties.size();
+    }
     //---------------------------------------------------------------------------------
     // save/restore for properties in this container. Note, since we
     // expect this to be a "mix-in" class, we use a different interface
