@@ -13,7 +13,9 @@
 
 
 // The ADS122C04 supports multiple addresses. The SparkX breakout can be set to 0x45, 0x44, 0x41, 0x40
-uint8_t spDevADS122C04::defaultDeviceAddress[] = { 0x45, 0x44, 0x41, 0x40, kSparkDeviceAddressNull};
+// 0x40 clashes with the humidity sensor on the MS8607 PHT sensor...
+// HACK: let's ignore 0x40 for now...
+uint8_t spDevADS122C04::defaultDeviceAddress[] = { 0x45, 0x44, 0x41, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 spRegisterDevice(spDevADS122C04);
