@@ -132,7 +132,6 @@ bool spDevTwist::loop(void)
             }
 
             on_clicked.emit(this_button_state);
-            on_clicked_event.emit();
             result = true;
         }
     }
@@ -148,7 +147,6 @@ bool spDevTwist::loop(void)
                 TWIST::setColor(0,0,0);
 
             on_clicked.emit(toggle_state);
-            on_clicked_event.emit();
             result = true;
         }
     }
@@ -158,7 +156,6 @@ bool spDevTwist::loop(void)
     {
         last_count = tmp;
         on_twist.emit(last_count);
-        on_twist_event.emit();
         result = true;
     }
 

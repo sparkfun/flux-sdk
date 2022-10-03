@@ -9,8 +9,8 @@
 #include <Spark/spFmtCSV.h>
 #include <Spark/spSerial.h>
 
-#include <Spark/spDevButton.h> // For getAll testing
-#include <Spark/spDevTwist.h> // For getAll testing
+#include <Spark/spDevButton.h> // For get testing
+#include <Spark/spDevTwist.h> // For get testing
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -37,6 +37,8 @@ spLogger  logger;
 //
 void setup() {
 
+    delay(1000);
+
     // Begin setup - turn on board LED during setup.
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH); 
@@ -48,11 +50,11 @@ void setup() {
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     spark.start();  
 
-    // We want to output CSV to the serial consol.
+    // We want to output CSV to the serial console.
     //  - Add Serial to our formatters
     fmtCSV.add(spSerial());    
 
-    //  - Add the JSON and CVS format to the logger
+    //  - Add the CSV format to the logger
     logger.add(fmtCSV);    
 
     // What devices has the system detected?
@@ -88,7 +90,7 @@ void setup() {
 
     // Identify any buttons
     // Add their on_clicked events as logger triggers
-    auto buttons = spark.getAll<spDevButton>();
+    auto buttons = spark.get<spDevButton>();
     
     Serial.printf("Number of buttons: %d\r\n", buttons->size());
 
@@ -101,13 +103,13 @@ void setup() {
             ((spDevButton*)b)->pressMode = false; // Change the button from Press Mode to Click (Toggle) Mode
             ((spDevButton*)b)->ledBrightness = 8; // Change the LED brightness from 128 (default) to 8
 
-            logger.listen(((spDevButton*)b)->on_clicked_event); // Connect logger to the clicked event
+            logger.listen(((spDevButton*)b)->on_clicked); // Connect logger to the clicked event
         }
     }
 
     // Identify any Qwiic Twists
     // Add their on_clicked and on_twist events as logger triggers
-    auto twists = spark.getAll<spDevTwist>();
+    auto twists = spark.get<spDevTwist>();
     
     Serial.printf("Number of twists: %d\r\n", twists->size());
 
@@ -119,8 +121,8 @@ void setup() {
             
             ((spDevTwist*)t)->pressMode = false; // Change the mode from Press Mode to Click (Toggle) Mode
 
-            logger.listen(((spDevTwist*)t)->on_clicked_event); // Connect logger to the clicked event
-            logger.listen(((spDevTwist*)t)->on_twist_event); // Connect logger to the twist event
+            logger.listen(((spDevTwist*)t)->on_clicked); // Connect logger to the clicked event
+            logger.listen(((spDevTwist*)t)->on_twist); // Connect logger to the twist event
         }
     }
 
@@ -136,7 +138,7 @@ void loop() {
     ///////////////////////////////////////////////////////////////////
     // Spark
     //
-    // Just call the spark framework loop() method. Spark will maanage
+    // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
     if(spark.loop())        // will return true if an action did something

@@ -120,7 +120,6 @@ bool spDevButton::loop(void)
             }
 
             on_clicked.emit(this_button_state);
-            on_clicked_event.emit();
             result = true;
         }
     }
@@ -136,7 +135,6 @@ bool spDevButton::loop(void)
                 QwiicButton::LEDoff();
 
             on_clicked.emit(toggle_state);
-            on_clicked_event.emit();
             result = true;
         }
     }

@@ -46,7 +46,6 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
     // Events
     // Our output event
     spSignalBool on_clicked;
-    spSignalVoid on_clicked_event;
 
     bool loop(void);
 

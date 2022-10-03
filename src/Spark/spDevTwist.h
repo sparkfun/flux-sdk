@@ -49,9 +49,7 @@ class spDevTwist : public spDeviceType<spDevTwist>, public TWIST
     // Events
     // Our output event
     spSignalBool on_clicked;
-    spSignalVoid on_clicked_event;
     spSignalInt on_twist;
-    spSignalVoid on_twist_event;
 
     bool loop(void);
 
