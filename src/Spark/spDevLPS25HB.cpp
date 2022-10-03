@@ -1,44 +1,44 @@
 /*
  *
- *  spDevAHT20.cpp
+ *  spDevLPS25HB.cpp
  *
- *  Spark Device object for the AHT20 device.
+ *  Spark Device object for the LPS25HB device.
  * 
  * 
  */
 
 #include "Arduino.h"
 
-#include "spDevAHT20.h"
+#include "spDevLPS25HB.h"
 
-uint8_t spDevAHT20::defaultDeviceAddress[] = { AHT20_DEFAULT_ADDRESS, kSparkDeviceAddressNull};
+uint8_t spDevLPS25HB::defaultDeviceAddress[] = { LPS25HB_I2C_ADDR_DEF, LPS25HB_I2C_ADDR_ALT, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
-spRegisterDevice(spDevAHT20);
+spRegisterDevice(spDevLPS25HB);
 
-spDevAHT20::spDevAHT20()
+spDevLPS25HB::spDevLPS25HB()
 {
 
     spSetupDeviceIdent(getDeviceName());
 
     // Register output params
     spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
-    spRegister(humidity, "Humidity (%RH)", "Humidity (%RH)");
+    spRegister(pressurehPa, "Pressure (hPa)", "Pressure (hPa)");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.
-float spDevAHT20::read_temperature_c()
+float spDevLPS25HB::read_temperature_c()
 {
-    return AHT20::getTemperature();
+    return LPS25HB::getTemperature_degC();
 }
-float spDevAHT20::read_humidity()
+float spDevLPS25HB::read_pressure_hpa()
 {
-    return AHT20::getHumidity();
+    return LPS25HB::getPressure_hPa();
 }
 
 // Static method used to determine if this device is connected
 
-bool spDevAHT20::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevLPS25HB::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
 
     return i2cDriver.ping(address);
@@ -51,14 +51,14 @@ bool spDevAHT20::isConnected(spDevI2C &i2cDriver, uint8_t address)
 //
 // Place to initialized the underlying device library/driver
 //
-bool spDevAHT20::onInitialize(TwoWire &wirePort)
+bool spDevLPS25HB::onInitialize(TwoWire &wirePort)
 {
 	// set the underlying drivers address to the one determined during
 	// device construction
-    bool result = AHT20::begin(wirePort);
+    bool result = LPS25HB::begin(wirePort, address());
 
     if (!result)
-        spLog_E("AHT20 - begin failed");
+        spLog_E("LPS25HB - begin failed");
 
     return result;
 }
@@ -68,7 +68,7 @@ bool spDevAHT20::onInitialize(TwoWire &wirePort)
 //
 // Called when the value of a managed property was updated.
 //
-void spDevAHT20::onPropertyUpdate(const char *propName)
+void spDevLPS25HB::onPropertyUpdate(const char *propName)
 {
 }
 
