@@ -2,7 +2,7 @@
  *
  *  spDevTwist.cpp
  *
- *  Device object for the Qwiic Twistdevice.
+ *  Device object for the Qwiic Twist device.
  *
  *
  *
@@ -78,6 +78,8 @@ bool spDevTwist::onInitialize(TwoWire &wirePort)
 
     this_button_state = TWIST::isPressed();
     last_button_state = this_button_state;
+
+    last_count = TWIST::getCount();
 
     rc &= TWIST::setColor(0,0,0); // Make sure the LED is off
 
