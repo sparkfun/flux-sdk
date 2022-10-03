@@ -78,7 +78,7 @@ bool spDevADS122C04::onInitialize(TwoWire &wirePort)
     bool result = SFE_ADS122C04::begin(address(), wirePort);
 
     if (!result)
-        Serial.println("ADS122C04 - begin failed");
+        spLog_E("ADS122C04 - begin failed");
 
     result &= SFE_ADS122C04::configureADCmode(wireMode);
     result &= SFE_ADS122C04::setDataRate(sampleRate);
