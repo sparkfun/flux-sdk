@@ -100,10 +100,10 @@ void setup() {
         {
             Serial.printf("Connecting the logger to the button named %s at address 0x%02X\r\n", b->name(), b->address());
             
-            ((spDevButton*)b)->pressMode = false; // Change the button from Press Mode to Click (Toggle) Mode
-            ((spDevButton*)b)->ledBrightness = 8; // Change the LED brightness from 128 (default) to 8
+            b->pressMode = false; // Change the button from Press Mode to Click (Toggle) Mode
+            b->ledBrightness = 8; // Change the LED brightness from 128 (default) to 8
 
-            logger.listen(((spDevButton*)b)->on_clicked); // Connect logger to the clicked event
+            logger.listen(b->on_clicked); // Connect logger to the clicked event
         }
     }
 
@@ -119,10 +119,10 @@ void setup() {
         {
             Serial.printf("Connecting the logger to the twist named %s at address 0x%02X\r\n", t->name(), t->address());
             
-            ((spDevTwist*)t)->pressMode = false; // Change the mode from Press Mode to Click (Toggle) Mode
+            t->pressMode = false; // Change the mode from Press Mode to Click (Toggle) Mode
 
-            logger.listen(((spDevTwist*)t)->on_clicked); // Connect logger to the clicked event
-            logger.listen(((spDevTwist*)t)->on_twist); // Connect logger to the twist event
+            logger.listen(t->on_clicked); // Connect logger to the clicked event
+            logger.listen(t->on_twist); // Connect logger to the twist event
         }
     }
 
