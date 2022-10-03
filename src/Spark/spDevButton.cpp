@@ -67,7 +67,7 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
     bool rc = QwiicButton::begin(address(), wirePort);
 
     if (!rc)
-        Serial.println("BUTTON - begin failed");
+        spLog_E("BUTTON - begin failed");
 
     this_button_state = QwiicButton::isPressed();
     last_button_state = this_button_state;

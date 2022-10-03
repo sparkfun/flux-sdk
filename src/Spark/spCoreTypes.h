@@ -15,17 +15,6 @@
 // Handy macro
 #define variable_name(A) #A
 
-#define debug_message(_prompt_, _value_)                                                                               \
-    {                                                                                                                  \
-        Serial.print(_prompt_);                                                                                        \
-        Serial.println(_value_);                                                                                       \
-    }
-
-// TODO clean up messaging
-#define error_message(_message_) debug_message("[Error] - ", _message_);
-
-#define warning_message(_message_) debug_message("[Warning] - ", _message_);
-
 //----------------------------------------------------------------------------------------
 // spDescriptor
 //
@@ -371,67 +360,10 @@ template <typename T> class _spDataIn : public spDataIn
 };
 
 //---------------------------------------------------------
-// Class/device typing. use an empty class to define a type. Each typed
-// object adds a spType object as a class instance varable - one per class definition.
-// Since there is only one instance per  object definition, the address to that sptype
-// instance forms a "type" ID for the class that contains it.
-//
-// So, to find something of a specific type, see if the address of the spType object
-// matches that of the target Class.
-//
-// Simple Example:
-//
-//  Define a class with a static spType variable, called Type
-//       class cow {
-//            static spType Type;
-//            ...
-//        };
-//
-// And in the class implementation ,init this static variable (this creates the actual insance)
-//        spType cow::Type;
-//
-// Later:
-//
-//     pThing = nextItem();
-//
-//     // Is this a cow?
-//
-//     if ( pTying->Type == cow::Type) Serial.print("THIS IS A COW");
-//
-// Define the class and a few operators for quick compairison.
+// Define simple type ID "types" - used for class IDs
 
 typedef uint32_t spTypeID;
-
-struct spType
-{
-    spType(){};
-    // copy and assign constructors - delete them to prevent extra copys being
-    // made. We only want a singletype objects to be part of the class definiton.
-    // Basically: One spType object pre defined type.
-    spType(spType const &) = delete;
-    void operator=(spType const &) = delete;
-
-public:
-    inline spTypeID typeID(void)
-    {
-        return (spTypeID)this; 
-    }
-
-};
-
-
-inline bool operator==(const spType &lhs, const spType &rhs)
-{
-    return &lhs == &rhs;
-}
-inline bool operator==(const spType &lhs, const spType *rhs)
-{
-    return &lhs == rhs;
-}
-inline bool operator==(const spType *lhs, const spType &rhs)
-{
-    return lhs == &rhs;
-}
+#define kspTypeIDNone 0
 
 
 

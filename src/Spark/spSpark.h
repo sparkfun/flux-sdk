@@ -53,16 +53,69 @@ class spSpark : public spObjectContainer
     spDeviceContainer Devices;
     spActionContainer Actions;
 
+    //--------------------------------------------------------
     // get/find a device by type template.
-    template <class T> T *get(void)
+    //
+    // Returns a list/vector off all things found based on 
+    // the specified type
+    //
+    // This is returning a smart pointer to a vector of the type passed in.
+    // Once the smart pointer goes out of scope, it frees up the underlying 
+    // vector memory.
+    //
+    // example - getting all the buttons :
+    // -------------------------------
+    //
+    //  auto buttons = spark.getAll<spDevButton>();
+    //
+    //  Serial.printf("Number of buttons: %d \n\r", buttons->size());
+    //  for( auto b : *buttons)
+    //  {
+    //      Serial.printf("Button Name: %s", b->name());
+    //
+    //      logger.listen(button->on_clicked);  // add to logger
+    //  }
+    //
+
+    template <class T> std::shared_ptr<spContainer<T*>> get()
     {
-        return (T *)_getByType(T::type());
+        spContainer<T*> results;
+
+        spTypeID type = T::type();
+
+        T* theItem;
+        for (int i = 0; i < Devices.size(); i++)
+        {
+            if (type == Devices.at(i)->getType())
+            {
+                theItem = (T*)Devices.at(i);
+                results.push_back(theItem);
+            }
+        }
+        // make a smart pointer
+        return std::make_shared<spContainer<T*>>(std::move(results));
     }
 
-    template <class T> T *get(spTypeID type)
+    //--------------------------------------------------------
+    // Get all that are of the provided type ID
+    std::shared_ptr<spOperationContainer> get(spTypeID type)
     {
-        return (T *)_getByType(type);
+        spOperationContainer results;
+
+        spOperation* theItem;
+        for (int i = 0; i < Devices.size(); i++)
+        {
+            if (type == Devices.at(i)->getType())
+            {
+                theItem = (spOperation*)Devices.at(i);
+                results.push_back(theItem);                               
+            }
+        }
+        // make a smart pointer
+        return std::make_shared<spOperationContainer>(std::move(results));
     }
+
+    //--------------------------------------------------------
 
     template <class T> bool isConnected()
     {
@@ -78,35 +131,6 @@ class spSpark : public spObjectContainer
     spDeviceContainer &connectedDevices(void)
     {
         return Devices;
-    }
-
-    // Experimental - a get method to get every instance of a type
-    //
-    // This is returning a smart pointer to a vector. Once the smart pointer
-    // goes out of scope, it should free up the underlying vectory memory.
-    //
-    // example - getting all the buttons :
-    // -------------------------------
-    //
-    // 	auto buttons = spark.getAll<spDevButton>();
-    //
-    // 	Serial.printf("Number of buttons: %d \n\r", buttons->size());
-    // 	for( auto b : *buttons)
-    //     	Serial.printf("Button Name: %s", b->name());
-
-    template <class T> std::shared_ptr<spDeviceContainer> getAll()
-    {
-        spDeviceContainer results;
-
-        spTypeID type = T::type();
-
-        for (int i = 0; i < Devices.size(); i++)
-        {
-            if (type == Devices.at(i)->getType())
-                results.push_back(Devices.at(i));
-        }
-        // make a smart pointer
-        return std::make_shared<spDeviceContainer>(std::move(results));
     }
 
   private:

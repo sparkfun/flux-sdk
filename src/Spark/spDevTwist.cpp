@@ -74,7 +74,7 @@ bool spDevTwist::onInitialize(TwoWire &wirePort)
     bool rc = TWIST::begin(wirePort, address());
 
     if (!rc)
-        Serial.println("TWIST - begin failed");
+        spLog_E("TWIST - begin failed");
 
     this_button_state = TWIST::isPressed();
     last_button_state = this_button_state;

@@ -77,6 +77,67 @@ class spLogger : public spAction
         theEvent.call(this, &spLogger::logObservation);
     }
 
+    // Used some template magic to support all event types.
+    // Need:
+    //   - a callback that takes an arg from the signal - any type
+    template<typename T>
+    void logObservation(T value)
+    {
+    	// Trigger a log event
+    	logObservation(); 
+    }
+    // And a listen that can take any event type and wire up the callback.
+    //
+    // Note: Using the defined parameter type of the signal to drive the
+    // logObservation template.
+    template <typename T>
+    void listen(T &theEvent)
+    {
+    	theEvent.call(this, &spLogger::logObservation<typename T::value_type>);
+    }
+
+    //----------------------------------------------------------------------------
+    // Log Event
+    //
+    // These set of routines are setup to log an actual event. Outputting
+    // the value and the name of the object that tiggered the event
+	
+	void logEvent(spOperation *theObj)
+	{
+		// TODO: Probably need to do more here than dump out the value, but
+		// for now this works		
+    	writeValue(theObj->name(), "void");
+	}
+
+	// Used to register the event we want to listen to, which will trigger this
+    // activity.
+    void listenLogEvent(spSignalVoid &theEvent, spOperation *theObj)
+    {
+        theEvent.call(this, &spLogger::logEvent, theObj);
+    }
+
+    // Used some template magic to support all event types.
+    // Need:
+    //   - a callback that takes an arg from the signal - any type
+    template<typename T>
+	void logEvent(spOperation *theObj, T value)
+	{
+		// TODO: Probably need to do more here than dump out the value, but
+		// for now this works
+    	writeValue(theObj->name(), value);
+
+	}
+    // And a listen that can take any event type and wire up the callback.
+    //
+    // Note: Using the defined parameter type of the signal to drive the
+    // logObservation template.
+    template <typename T>
+    void listenLogEvent(T &theEvent, spOperation *theObj)
+    {
+    	theEvent.call(this, &spLogger::logEvent<typename T::value_type>, theObj);
+    }
+
+
     // Add routines with var args. Allows any combo of writer, param or spBase
     // to be added in one method call to this object.
     //
@@ -142,7 +203,17 @@ class spLogger : public spAction
     spParameterOutList _paramsToLog;
     spPropertyList _propsToLog;
 
-    template <typename T> void writeValue(const std::string &, T value);
+    //----------------------------------------------------------------------------
+	// When we log a value, we need to write it to all formatters. Seems like a lot
+	// of short loops, but we want to write the SAME value to all formatters
+	template <typename T>
+	void writeValue(const std::string &tag, T value) {
+
+    	for (auto theFormatter : _Formatters)
+        	theFormatter->logValue(tag, value);
+	}
+
+
     void logSection(const char *section_name, spParameterOutList &params);
 
     void logSection(const std::string &name, spParameterOutList &params)

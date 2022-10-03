@@ -1,10 +1,14 @@
 
 
 #include <Arduino.h>
-#include <ArduinoJson.h>
 
 #include "spSpark.h"
+#include "spSerial.h"
 #include "spStorage.h"
+
+// for logging - define output driver on the stack
+
+static spLoggingDrvDefault _logDriver;
 
 // Global object - for quick access to Spark.
 spSpark &spark = spSpark::get();
@@ -14,12 +18,16 @@ spSpark &spark = spSpark::get();
 bool spSpark::start(bool bAutoLoad)
 {
 
+    // setup our logging system. 
+    _logDriver.setOutput(spSerial());
+    spLog.setLogDriver(_logDriver);
+
     // Init our I2C driver
     _i2cDriver.begin();
 
     if (bAutoLoad)
     {
-        // Build drivers for the registerd devices connected to the system
+        // Build drivers for the registered devices connected to the system
         spDeviceFactory::get().buildDevices(_i2cDriver);
 
         // restore state - loads save property values for this object and
@@ -45,13 +53,21 @@ bool spSpark::loop(void)
     // Pump our actions by calling there loop methods
     bool rc = false;
 
+    bool rc2;
     // Actions
     for (auto pAction : Actions)
-        rc = rc || pAction->loop();
+    {
+        rc2 = pAction->loop();
+        rc = rc || rc2;
+    }
+
 
     // i2c devices
     for (auto pDevice : Devices)
-        rc = rc || pDevice->loop();
+    {
+        rc2 = pDevice->loop();
+        rc = rc || rc2;
+    }
 
     return rc;
 }

@@ -9,6 +9,7 @@
 
 #include "spStorage.h"
 
+#include "spCoreLog.h"
 #include "spCoreTypes.h"
 #include "spCoreProps.h"
 #include "spCoreParam.h"

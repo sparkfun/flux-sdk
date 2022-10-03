@@ -16,7 +16,8 @@ class spTimer : public spAction
     {
 
         spRegister(interval);
-
+        interval = start;
+        
         spark.add(this);
 
         setName("Timer");

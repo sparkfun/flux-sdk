@@ -92,7 +92,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
         // TODO: Add Error output
         if (n > buffer_size + 1)
         {
-            Serial.println("[WARNING] - JSON document buffer output buffer trimmed");
+            spLog_W(" JSON document buffer output buffer trimmed");
             szBuffer[buffer_size] = '\0';
         }
 

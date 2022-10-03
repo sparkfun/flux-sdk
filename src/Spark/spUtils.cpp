@@ -104,7 +104,7 @@ size_t sp_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t pr
 // Internal hash function used to generate a unique ID based on a string
 //    From: http://www.cse.yorku.ca/~oz/hash.html
 
- uint16_t id_hash_string(const char *str)
+ uint32_t sp_utils::id_hash_string(const char *str)
 {
 
     uint32_t hash = 5381;
@@ -116,5 +116,5 @@ size_t sp_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t pr
         hash = ((hash << 5) + hash) + c; // hash * 33 + c 
     }
 
-    return hash & 0xFFFF; // NOTE - we're just using 16 bits
+    return hash ; //& 0xFFFF; // NOTE - we're just using 16 bits
 }
