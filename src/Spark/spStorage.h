@@ -8,6 +8,8 @@
 
 #include <Arduino.h>
 
+#include "spCoreLog.h"
+
 class spStorage_;
 
 //------------------------------------------------------------------------------

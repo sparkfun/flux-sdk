@@ -51,7 +51,7 @@ bool spDevTwist::onInitialize(TwoWire &wirePort)
     bool rc = TWIST::begin(wirePort, address());
 
     if (!rc)
-        Serial.println("TWIST - begin failed");
+        spLog_E("TWIST - begin failed");
 
     last_count = 0;
     was_clicked = TWIST::isPressed();

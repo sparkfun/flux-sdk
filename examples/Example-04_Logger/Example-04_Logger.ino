@@ -93,8 +93,6 @@ void setup() {
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-        // TYPE ID TESTING
-        Serial.printf("TYPEID: %d %d\n\r", device->getType(), spDevBME280::type());
         // END TESTING
         Serial.printf("Device: %s, Output Number: %d", device->name(), device->nOutputParameters());
         if ( device->nOutputParameters() > 0)
@@ -108,11 +106,19 @@ void setup() {
 
     ////////////
     // getAll() testing
-    auto buttons = spark.getAll<spDevButton>();
+    auto allButtons = spark.get<spDevButton>();
 
-    Serial.printf("Number of buttons: %d \n\r", buttons->size());
-    for( auto b : *buttons)
-        Serial.printf("Button Name: %s", b->name());
+    Serial.printf("Number of buttons: %d \n\r", allButtons->size());
+    for( auto button: *allButtons)
+    {
+        Serial.printf("Button Name: %s", button->name());
+
+        // Have the button trigger a log entry
+        logger.listen(button->on_clicked);
+        
+        // Lets long the value of the button event
+        logger.listenLogEvent(button->on_clicked, button);        
+    }
 
     /// END TESTING
     
@@ -128,7 +134,7 @@ void loop() {
     ///////////////////////////////////////////////////////////////////
     // Spark
     //
-    // Just call the spark framework loop() method. Spark will maanage
+    // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
     if(spark.loop())        // will return true if an action did something

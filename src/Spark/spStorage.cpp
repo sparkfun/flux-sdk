@@ -56,7 +56,7 @@ void spStorage_::initialize(void)
 
     if (!this->validStorage())
     {
-        Serial.println("EEPROM - Initializing");
+        spLog_E("EEPROM - Initializing");
         this->initStorage();
     }
 }

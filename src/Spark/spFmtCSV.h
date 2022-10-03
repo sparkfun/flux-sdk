@@ -35,10 +35,10 @@ class spFormatCSV : public spOutputFormat
         // header?
         if (_bWriteHeader)
             if (!append_to_header(tag))
-                warning_message("CSV - internal header buffer size exceeded.");
+                spLog_W("CSV - internal header buffer size exceeded.");
 
         if (!append_csv_value(value ? "true" : "false", _data_buffer))
-            error_message("CSV - internal data buffer size exceeded.");
+            spLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -47,12 +47,12 @@ class spFormatCSV : public spOutputFormat
         // header?
         if (_bWriteHeader)
             if (!append_to_header(tag))
-                warning_message("CSV - internal header buffer size exceeded.");
+                spLog_W("CSV - internal header buffer size exceeded.");
 
         char szBuffer[32] = {'\0'};
         snprintf(szBuffer, sizeof(szBuffer), "%d", value);
         if (!append_csv_value(szBuffer, _data_buffer))
-            error_message("CSV - internal data buffer size exceeded.");
+            spLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -61,12 +61,12 @@ class spFormatCSV : public spOutputFormat
         // header?
         if (_bWriteHeader)
             if (!append_to_header(tag))
-                warning_message("CSV - internal header buffer size exceeded.");
+                spLog_W("CSV - internal header buffer size exceeded.");
 
         char szBuffer[32] = {'\0'};
         snprintf(szBuffer, sizeof(szBuffer), "%u", value);
         if (!append_csv_value(szBuffer, _data_buffer))
-            error_message("CSV - internal data buffer size exceeded.");
+            spLog_E("CSV - internal data buffer size exceeded.");
     }
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, float value)
@@ -79,13 +79,13 @@ class spFormatCSV : public spOutputFormat
         // header?
         if (_bWriteHeader)
             if (!append_to_header(tag))
-                warning_message("CSV - internal header buffer size exceeded.");
+                spLog_W("CSV - internal header buffer size exceeded.");
 
         char szBuffer[32] = {'\0'};
         (void)sp_utils::dtostr(value, szBuffer, sizeof(szBuffer));
 
         if (!append_csv_value(szBuffer, _data_buffer))
-            error_message("CSV - internal data buffer size exceeded.");
+            spLog_E("CSV - internal data buffer size exceeded.");
     }
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, const std::string &value)
@@ -93,10 +93,10 @@ class spFormatCSV : public spOutputFormat
         // header?
         if (_bWriteHeader)
             if (!append_to_header(tag))
-                warning_message("CSV - internal header buffer size exceeded.");
+                spLog_W("CSV - internal header buffer size exceeded.");
 
         if (!append_csv_value(value, _header_buffer))
-            error_message("CSV - internal data buffer size exceeded.");
+            spLog_E("CSV - internal data buffer size exceeded.");
     }
 	//-----------------------------------------------------------------
     void logValue(const std::string &tag, const char * value)
@@ -104,11 +104,11 @@ class spFormatCSV : public spOutputFormat
         // header?
         if (_bWriteHeader)
             if (!append_to_header(tag))
-                warning_message("CSV - internal header buffer size exceeded.");
+                spLog_W("CSV - internal header buffer size exceeded.");
 
 
         if (!append_csv_value(std::string(value), _header_buffer))
-            error_message("CSV - internal data buffer size exceeded.");
+            spLog_E("CSV - internal data buffer size exceeded.");
     }
     //-----------------------------------------------------------------
     // structure cycle

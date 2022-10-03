@@ -42,9 +42,9 @@ void setup() {
     spark.start();  
 
 
-    spDevTwist *pTwist = spark.get<spDevTwist>();
+    auto theTwists = spark.get<spDevTwist>();
 
-    if(pTwist)
+    for ( auto pTwist : *theTwists)
     {
         // dump twist messages to serial
         spSerial()->listen( pTwist->on_twist );
@@ -52,20 +52,23 @@ void setup() {
 
         Serial.println("Twist Connected");
     }
-    else 
+
+    if ( theTwists->size() == 0)
         Serial.println("No Twist Connected.");
 
-    spDevButton *pButton = spark.get<spDevButton>();
+    auto theButtons = spark.get<spDevButton>();
 
-    if(pButton){
+    for ( auto pButton : *theButtons)        
+    {
         // dump button messages to serial
         spSerial()->listen( pButton->on_clicked);
         Serial.println("Button Connected");
     }
-    else 
+
+    if( theButtons->size() == 0)
         Serial.println("No Button Connected.");
   
-    if (!pButton && !pTwist )
+    if ( theTwists->size() == 0 && theButtons->size() == 0)
     {
         Serial.println("No devices connected. Ending");
         while(1);
