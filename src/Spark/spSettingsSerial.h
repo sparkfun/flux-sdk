@@ -5,6 +5,8 @@
 #include "spCore.h"
 #include "spDevice.h"
 
+#define kReadBufferTimoutExpired 255
+
 class spSettingsSerial : public spAction {
 
   public:
@@ -39,11 +41,14 @@ class spSettingsSerial : public spAction {
     int selectMenu(spActionContainer *, uint);
     int selectMenu(spDeviceContainer *, uint);
 
+    // get the selected menu item
+    uint8_t getMenuSelection(uint max, uint timeout = 30);
+
   private:
 
-  	bool isEscape(uint8_t ch){
+  	inline bool isEscape(uint8_t ch){
 
-  		return ( ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B');
+  		return ( ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == kReadBufferTimoutExpired);
   	}
 	//-----------------------------------------------------------------------------
     // drawPage()  - spContainer version
@@ -56,17 +61,28 @@ class spSettingsSerial : public spAction {
 
         uint8_t selected = 0;
 
+        int nMenuItems;
+
         while ( true ){
 
 			drawPageHeader(pCurrent);
 
-			drawMenu<T>(pCurrent, 0);
+			nMenuItems = drawMenu<T>(pCurrent, 0);
+
+			if( nMenuItems ==0 )
+				Serial.println("No Entries");
+			else if (nMenuItems < 0)
+			{
+				Serial.println("Error generating menu entries.");
+				spLog_E("Error generating menu entries");
+				return false;
+			}
 
 			drawPageFooter(pCurrent);
 
 			// Get the menu item selected by the user
 
-			selected = 'x';
+			selected = getMenuSelection((uint)nMenuItems);
 
 			// done?
 			if ( isEscape(selected))
@@ -123,7 +139,7 @@ class spSettingsSerial : public spAction {
 
         // First, cascade to the spObject portion of the menu
 
-        int returnLevel = drawMenu((spObject *)pCurrent, level);
+        int returnLevel = selectMenu((spObject *)pCurrent, level);
 
         // returnLevel < 0 = ERROR
 
@@ -146,7 +162,7 @@ class spSettingsSerial : public spAction {
 
         // Call next page with this ...
 
-        // TODO
+        drawPage(pNext);
 
         // return the current level
         return level;

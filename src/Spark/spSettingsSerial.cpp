@@ -1,8 +1,10 @@
 
 
+#include <ctype.h>
 #include "spSettingsSerial.h"
 
 #define kOutputBufferSize 128
+
 //-----------------------------------------------------------------------------
 // Draw Page
 //-----------------------------------------------------------------------------
@@ -14,18 +16,33 @@ bool spSettingsSerial::drawPage(spObject* pCurrent)
 		return false;
 
 	uint8_t selected = 0;
+	int nMenuItems;
 
 	while ( true )
 	{
 		drawPageHeader(pCurrent);
 
-		drawMenu(pCurrent, 0);
+		nMenuItems = drawMenu(pCurrent, 0);
+		if( nMenuItems ==0 )
+			Serial.println("No Entries");
+		else if (nMenuItems < 0)
+		{
+			Serial.println("Error generating menu entries.");
+			spLog_E("Error generating menu entries");
+			return false;
+		}
 
 		drawPageFooter(pCurrent);
+
+		selected = getMenuSelection((uint)nMenuItems);
 
 		// done?
 		if ( isEscape(selected))
 			break;
+
+		selectMenu(pCurrent, selected);
+
+
 	}
 	return true;
 }
@@ -41,7 +58,7 @@ bool spSettingsSerial::drawPage(spObject* pCurrent, spProperty* pProp)
 	{
 		drawPageHeader(pCurrent);
 
-		// TODO Property page
+		Serial.println("Property Page Test - press 'b' [back]  for now");
 
 		drawPageFooter(pCurrent);
 
@@ -60,14 +77,25 @@ bool spSettingsSerial::drawPage(spOperation* pCurrent)
 
 	uint8_t selected = 0;
 
+	int nMenuItems;
+
 	while ( true )
 	{
 		drawPageHeader(pCurrent);
 
-		drawMenu(pCurrent, 0);
-
+		nMenuItems = drawMenu(pCurrent, 0);
+		
+		if( nMenuItems ==0 )
+			Serial.println("No Entries");
+		else if (nMenuItems < 0)
+		{
+			Serial.println("Error generating menu entries.");
+			spLog_E("Error generating menu entries");
+			return false;
+		}
 		drawPageFooter(pCurrent);
 
+		selected = getMenuSelection((uint)nMenuItems);
 
 		// done?
 		if ( isEscape(selected))
@@ -90,6 +118,7 @@ bool spSettingsSerial::drawPage(spOperation* pCurrent, spParameter* pParam)
 		drawPageHeader(pCurrent);
 
 		// Draw a parameter page ....
+		Serial.println("Parameter Page Test - press 'b' [back]  for now");
 
 		drawPageFooter(pCurrent);
 
@@ -131,8 +160,6 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent)
 
 	char szBuffer[kOutputBufferSize]={0};
 	char szOutput[kOutputBufferSize]={0};
-
-	spObject *pParent = nullptr;
 
   	Serial.println();
 
@@ -209,7 +236,7 @@ int spSettingsSerial::drawMenu( spObject *pCurrent, uint level){
 	for ( auto prop : pCurrent->getProperties())
 	{
 		level++;
-		drawMenuEntry(level, pCurrent);
+		drawMenuEntry(level, prop);
 	}
 
 	// return the current level 
@@ -233,20 +260,77 @@ int spSettingsSerial::selectMenu( spObject *pCurrent, uint level){
 		return -1;
 
 	// Is the selected item here - a property?
-	if ( level  >= pCurrent->nProperties() ) 
+	if ( level  > pCurrent->nProperties() ) 
 		return level + pCurrent->nProperties();  // no
 
 	// Get the property targeted and start a new page on it.
 
-	spProperty * theProp = pCurrent->getProperties().at(level);
+	spProperty * theProp = pCurrent->getProperties().at(level-1);
 
 	// Call a new page 
+
+	drawPage(pCurrent, theProp);
 
 	// return the current level 
 	return level; 
 
 }
 
+//-----------------------------------------------------------------------------
+// selectMenu()  - spOperation version
+//
+// Selects the menu portion specific to the object. 
+//
+// Return Values
+//     -1 = Error
+
+
+int spSettingsSerial::selectMenu( spOperation *pCurrent, uint level){
+
+
+	if ( !pCurrent )
+		return -1;
+
+	// First, cascade to the spObject portion of the menu
+
+	int returnLevel = selectMenu( (spObject*)pCurrent, level);
+
+	if ( returnLevel < 0 ) 
+		return returnLevel;    // error happened
+
+	// was this handled ?
+	if ( returnLevel <= level ) 
+		return returnLevel;      
+
+	// Output Param?
+
+	if ( level <= returnLevel + pCurrent->nOutputParameters() )
+	{
+		auto outParam = pCurrent->getOutputParameters().at(level - returnLevel - 1);
+
+		drawPage(pCurrent, outParam);
+
+		return level;
+	} 
+	else
+		returnLevel += pCurrent->nOutputParameters();
+
+	if ( level <= returnLevel + pCurrent->nInputParameters() )
+	{
+		auto inParam = pCurrent->getInputParameters().at(level - returnLevel - 1);
+
+		drawPage(pCurrent, inParam);
+
+		return level;
+	} 
+	else
+		returnLevel += pCurrent->nInputParameters();
+
+
+	// return the current level 
+	return returnLevel; 
+
+}
 //-----------------------------------------------------------------------------
 // drawMenu()  - spOperation version
 //
@@ -303,6 +387,10 @@ int spSettingsSerial::drawMenu( spOperation *pCurrent, uint level){
 	return level; 
 
 }
+
+
+
+
 //-----------------------------------------------------------------------------
 // Container typed wrappers that use the container template for all the work
 int spSettingsSerial::drawMenu(spObjectContainer* pCurrent, uint level)
@@ -356,4 +444,54 @@ int spSettingsSerial::selectMenu(spActionContainer* pCurrent, uint level)
 	return selectMenu<spAction*>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
+uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, uint timeout)
+{
 
+ 	// TODO - abstract out serial calls.
+ 	Serial.flush();
+
+ 	// delay from open log Artemis
+
+ 	delay(500);
+
+ 	// clear buffer
+ 	while( Serial.available()  > 0 )
+ 		Serial.read();
+
+
+ 	timeout = timeout * 1000;
+ 	unsigned long startTime = millis();
+
+ 	uint8_t chIn;
+ 	uint value;
+ 	while ( true )
+ 	{
+ 		if ( Serial.available() > 0)
+ 		{
+
+ 			chIn = Serial.read();
+
+ 			Serial.print("CHar is:"); Serial.println((int)(chIn - '0'));
+ 			// if it's a number, or an escape letter(set by this app) drop out of loop
+ 			if ( isEscape(chIn) )
+ 				break;
+ 			else if ( isdigit(chIn) )
+ 			{
+ 				value = chIn - '0';
+ 				if ( value > 0 && value <= maxEntry )
+ 				break;
+ 			}
+ 		}
+
+ 		// Timeout?
+ 		if ( (millis() - startTime) > timeout)
+ 		{
+ 			Serial.println("No user input recieved.");
+ 			chIn = kReadBufferTimoutExpired;
+ 			break;
+ 		}
+ 		delay(100);
+ 	}
+ 	Serial.println("Leaving read");
+ 	return chIn;
+}
