@@ -497,7 +497,8 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint t
             if (isEscape(chIn))
             {
                 Serial.print( (hasParent ? 'b' : 'x'));
-
+                //Serial.print("\u2588"); // kdb block
+                //Serial.print('\a');  // kdb bell
                 chIn = kReadBufferExit;
                 break;
             }
@@ -509,6 +510,7 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint t
                 {
                     chIn -= '0';
                     Serial.print(chIn);
+
                     break;
                 }
             }
