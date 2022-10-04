@@ -86,6 +86,8 @@ void setup() {
     Serial.printf("\n\rStarting Settings Test:\n\r");
 
     serialSettings.drawPage(&spark);
+    Serial.println();
+    Serial.println("End Settings");
 }
 
 //---------------------------------------------------------------------
