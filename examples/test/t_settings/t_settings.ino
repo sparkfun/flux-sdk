@@ -52,42 +52,34 @@ void setup() {
 
     Serial.begin(115200);  
     while (!Serial);
-    Serial.println("\n---- Startup ----");
+    Serial.println("\n---- Startup Serial Settings Test ----");
     
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
     spark.start();  
 
     
+    // What's connected
     spDeviceContainer  myDevices = spark.connectedDevices();
-
-    // The device list can be added directly to the logger object using an 
-    // add() method call. This will only add devices with output parameters. 
-    //
-    // Example:
-    //      logger.add(myDevices);   
-    //
-    // But for this example, let's loop over our devices and show how use the
-    // device parameters.
 
     Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
 
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-        spLog_E("Object: %s, Type ID: %u", device->name(), device->getType());
-        Serial.printf("Device: %s, Output Number: %d", device->name(), device->nOutputParameters());
+        Serial.printf("Device: %s, Output Number: %d\n\r", device->name(), device->nOutputParameters());
         
     }
 
     
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
-    Serial.printf("\n\rStarting Settings Test:\n\r");
+    // Set the settigns system to start at root of the spark system.
+    serialSettings.setSystemRoot(&spark);
 
-    serialSettings.drawPage(&spark);
-    Serial.println();
-    Serial.println("End Settings");
+    // Add serial settings to spark - the spark loop call will take care
+    // of everything else.
+    spark.add(serialSettings);
 }
 
 //---------------------------------------------------------------------
@@ -100,11 +92,10 @@ void loop() {
     // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    //if(spark.loop())        // will return true if an action did something
-    //    digitalWrite(LED_BUILTIN, HIGH); 
+    spark.loop();
 
     // Our loop delay 
-    delay(1000);                       
-    digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
-    delay(1000);
+    delay(500);                       
+    //digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
+    //delay(500);
 }
