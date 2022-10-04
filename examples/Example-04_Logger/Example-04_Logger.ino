@@ -93,7 +93,6 @@ void setup() {
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-        // END TESTING
         Serial.printf("Device: %s, Output Number: %d", device->name(), device->nOutputParameters());
         if ( device->nOutputParameters() > 0)
         {
