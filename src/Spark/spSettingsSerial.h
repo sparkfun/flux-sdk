@@ -61,10 +61,11 @@ class spSettingsSerial : public spAction
   private:
 
   	// was the entered value a "escape" value -- lev this page! 
+    // note 27 == escape key
     inline bool isEscape(uint8_t ch)
     {
-
-        return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == kReadBufferTimoutExpired);
+        return (ch == 'x' || ch == 'X' || ch == 'b' || 
+                ch == 'B' || ch == 27 || ch == kReadBufferTimoutExpired);
     }
 
     //-----------------------------------------------------------------------------
