@@ -15,12 +15,13 @@ class spTimer : public spAction
     spTimer(int start = 500) : _lastLogTime(0)
     {
 
-        spRegister(interval);
+        spRegister(interval, "interval", "The ms time interval for the timer");
         interval = start;
         
         spark.add(this);
 
         setName("Timer");
+        setDescription("A reoccurring timer");
     };
 
     // Our output event
