@@ -359,6 +359,96 @@ class spDataIn
 {
   public:
     virtual spDataType_t type(void) = 0;
+
+    virtual void setBool(bool) = 0;
+    virtual void setInt8(int8_t) = 0;
+    virtual void setInt(int ) = 0;
+    virtual void setUint8(uint8_t) = 0;
+    virtual void setUint(uint) = 0;
+    virtual void setFloat(float) = 0;
+    virtual void setDouble(double) = 0;
+    virtual void setString(std::string&) = 0;
+
+    void set_value(bool v)
+    {
+        setBool(v);
+    }
+    void set_value(int8_t v)
+    {
+        setInt8(v);
+    }
+    void set_value(int v)
+    {
+        setInt(v);
+    }
+    void set_value(uint8_t v)
+    {
+        setUint8(v);
+    }
+    void set_value(uint v)
+    {
+        setUint(v);
+    }
+    void set_value(float v)
+    {
+        setFloat(v);
+    }
+    void set_value(double v)
+    {
+        setDouble(v);
+    }
+    void set_value(std::string & v)
+    {
+        setString(v);
+    }
+
+    // TODO: Move the conversion routines to utils?
+    std::string &to_string(std::string &data) const
+    {
+        return data;
+    }
+
+    const std::string &to_string(std::string const &data) const
+    {
+        return data;
+    }
+
+    int to_int(std::string const &data) const
+    {
+        return std::stoi(data);
+    }
+    int8_t to_int8(std::string const &data) const
+    {
+        return (int8_t)std::stoi(data);        
+    }
+    uint to_uint(std::string const &data) const
+    {
+        return std::stoul(data);
+    }
+    uint8_t to_uint8(std::string const &data) const
+    {
+        return (uint8_t)std::stoul(data);
+    }
+    float to_float(std::string const &data) const
+    {
+        return std::stof(data);
+    }
+    double to_double(std::string const &data) const
+    {
+        return std::stof(data);
+
+    }
+    bool to_bool(std::string const &data) const
+    {
+        // First, test for literal values
+        if (data == "true")
+            return true;
+        else if ( data == "false")
+            return false;
+
+        // if we are here, we consider true any value set
+        return data.length() > 0;
+    }
 };
 
 template <typename T> class _spDataIn : public spDataIn
@@ -371,6 +461,70 @@ template <typename T> class _spDataIn : public spDataIn
         return spDataTyper::type(c);
     };
     virtual void set(T const &value) = 0;
+
+
+    void setBool(bool value)
+    {
+        set((T)value);
+    }
+    void setInt8(int8_t value)
+    {
+        set((T)value);
+    }
+    void setInt(int value )
+    {
+        set((T)value);
+    }
+    void setUint8(uint8_t value)
+    {
+        set((T)value);
+    }
+    void setUint(uint value)
+    {
+        set((T)value);
+    }
+    void setFloat(float value)
+    {
+        set((T)value);
+    }
+    void setDouble(double value)
+    {
+        set((T)value);
+    }
+    void setString(std::string& value)
+    {
+        //Convert string to native type..
+        switch ( this->type() )
+        {
+            case spTypeBool:
+                set( to_bool(value));
+                break;
+            case spTypeInt:
+                set( to_int(value));
+                break;
+            case spTypeInt8:
+                set( to_int8(value));
+                break;
+            case spTypeUInt:
+                set( to_uint(value));
+                break;
+            case spTypeUInt8:
+                set( to_uint8(value));
+                break;
+            case spTypeFloat:
+                set( to_float(value));
+                break;
+            case spTypeDouble:
+                set( to_double(value));
+                break;
+            case spTypeString:
+                break;
+            default:
+                spLog_W("Unknown property type set");
+                break;
+
+        }
+    };
 };
 
 //---------------------------------------------------------
