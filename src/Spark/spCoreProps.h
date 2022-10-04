@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "spCoreTypes.h"
+#include "spUtils.h"
 #include "spStorage.h"
 
 //----------------------------------------------------------------------------------------
@@ -787,7 +788,11 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
         // TODO implement - finish
         return true;
     };
-
+    // Return the type ID of this
+    virtual spTypeID getType(void)
+    {
+        return 0;
+    }
     // TODO:
     //   - Add type?
     //   - Add instance ID counter
@@ -879,6 +884,35 @@ template <class T> class spContainer : public spObject
     iterator erase(iterator pos)
     {
         return _vector.erase(pos);
+    }
+
+    // Defines a type specific static method - so can be called outside
+    // of an instance.
+    //
+    // The typeID is determined by hashing the name of the class.
+    // This way the type ID is consistant across invocations 
+
+    static spTypeID type(void)
+    {
+        static spTypeID _myTypeID = kspTypeIDNone;
+
+        if ( _myTypeID != kspTypeIDNone )
+            return _myTypeID;
+
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
+        // to create our ID. The macro gives us a unique name for 
+        // each class b/c it uses the template parameter.
+
+        // Hash the name, make that our type ID. 
+        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+
+        return _myTypeID;
+    }
+
+    // Return the type ID of this
+    spTypeID getType(void)
+    {
+        return type();
     }
 };
 
