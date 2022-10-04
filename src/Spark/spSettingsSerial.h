@@ -6,26 +6,26 @@
 #include "spDevice.h"
 
 #define kReadBufferTimoutExpired 255
+#define kReadBufferExit 254
 
-class spSettingsSerial : public spAction {
+class spSettingsSerial : public spAction
+{
 
   public:
+    // Draw Settings Page entres -- this is the entry pont for this menu
 
-  	// Draw Settings Page entries
+    bool drawPage(spObject *);
+    bool drawPage(spObject *, spProperty *);
+    bool drawPage(spOperation *);
+    bool drawPage(spOperation *, spParameter *);
 
-  	bool drawPage(spObject*);
-  	bool drawPage(spObject*, spProperty*);
-  	bool drawPage(spOperation*); 
-  	bool drawPage(spOperation*, spParameter*);
-
-
-	bool drawPage(spObjectContainer *);
+    bool drawPage(spObjectContainer *);
     bool drawPage(spOperationContainer *);
     bool drawPage(spActionContainer *);
-    bool drawPage(spDeviceContainer *);  	
+    bool drawPage(spDeviceContainer *);
 
-  protected: 
-  	// Draw menu entries
+  protected:
+    // Draw menu entries
     int drawMenu(spObject *, uint);
     int drawMenu(spOperation *, uint);
     int drawMenu(spObjectContainer *, uint);
@@ -34,7 +34,7 @@ class spSettingsSerial : public spAction {
     int drawMenu(spDeviceContainer *, uint);
 
     // Select menu entries
-	int selectMenu(spObject *, uint);
+    int selectMenu(spObject *, uint);
     int selectMenu(spOperation *, uint);
     int selectMenu(spObjectContainer *, uint);
     int selectMenu(spOperationContainer *, uint);
@@ -46,15 +46,19 @@ class spSettingsSerial : public spAction {
 
   private:
 
-  	inline bool isEscape(uint8_t ch){
+  	// was the entered value a "escape" value -- lev this page! 
+    inline bool isEscape(uint8_t ch)
+    {
 
-  		return ( ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == kReadBufferTimoutExpired);
-  	}
-	//-----------------------------------------------------------------------------
+        return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == kReadBufferTimoutExpired);
+    }
+
+    //-----------------------------------------------------------------------------
     // drawPage()  - spContainer version
     //
 
-    template <class T> bool drawPage(spContainer<T> *pCurrent) {
+    template <class T> bool drawPage(spContainer<T> *pCurrent)
+    {
 
         if (!pCurrent)
             return false;
@@ -63,31 +67,34 @@ class spSettingsSerial : public spAction {
 
         int nMenuItems;
 
-        while ( true ){
+        while (true)
+        {
 
-			drawPageHeader(pCurrent);
+            drawPageHeader(pCurrent);
 
-			nMenuItems = drawMenu<T>(pCurrent, 0);
+            nMenuItems = drawMenu<T>(pCurrent, 0);
 
-			if( nMenuItems ==0 )
-				Serial.println("No Entries");
-			else if (nMenuItems < 0)
-			{
-				Serial.println("Error generating menu entries.");
-				spLog_E("Error generating menu entries");
-				return false;
-			}
+            if (nMenuItems == 0)
+                Serial.println("No Entries");
+            else if (nMenuItems < 0)
+            {
+                Serial.println("Error generating menu entries.");
+                spLog_E("Error generating menu entries");
+                return false;
+            }
 
-			drawPageFooter(pCurrent);
+            drawPageFooter(pCurrent);
 
-			// Get the menu item selected by the user
+            // Get the menu item selected by the user
 
-			selected = getMenuSelection((uint)nMenuItems);
+            selected = getMenuSelection((uint)nMenuItems);
 
-			// done?
-			if ( isEscape(selected))
-				break;
-		}
+            // done?
+            if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+                break;
+
+            selectMenu<T>(pCurrent, selected);
+        }
         return true;
     };
 
@@ -103,7 +110,8 @@ class spSettingsSerial : public spAction {
     //
     //      N = The current menu entry -- (the last entry number used)
 
-    template <class T> int drawMenu(spContainer<T> *pCurrent, uint level) {
+    template <class T> int drawMenu(spContainer<T> *pCurrent, uint level)
+    {
 
         if (!pCurrent)
             return -1;
@@ -118,7 +126,8 @@ class spSettingsSerial : public spAction {
         level = returnLevel;
 
         // Loop over each item in the container and draw a menu entry
-        for (auto item : *pCurrent) {
+        for (auto item : *pCurrent)
+        {
             level++;
             drawMenuEntry(level, item);
         }
@@ -128,10 +137,10 @@ class spSettingsSerial : public spAction {
     };
 
     //-----------------------------------------------------------------------------
-    // selectMenu()
+    // selectMenu() - container version
     //
     // Called with a menu item is selected.
-    template <class T> int selectMenu(spContainer<T> *pCurrent, uint level) 
+    template <class T> int selectMenu(spContainer<T> *pCurrent, uint level)
     {
 
         if (!pCurrent)
@@ -142,18 +151,19 @@ class spSettingsSerial : public spAction {
         int returnLevel = selectMenu((spObject *)pCurrent, level);
 
         // returnLevel < 0 = ERROR
-
         if (returnLevel < 0)
             return returnLevel; // error happened
 
         // Was the item handled?
-        if (level < returnLevel)
+        if (level == returnLevel)
             return returnLevel;
 
-        // Okay, we need to page out to the next page using the selected item
+        // Okay, we need to page out to the next page using the selected item.
+        // switch from 1's base, to - based index
+        uint item = level - returnLevel - 1;
 
-        uint item = level - returnLevel;
-        if (item >= pCurrent->size()) {
+        if (item >= pCurrent->size())
+        {
             // item is not at this level, return
             return returnLevel + pCurrent->size();
         }
@@ -162,13 +172,31 @@ class spSettingsSerial : public spAction {
 
         // Call next page with this ...
 
-        drawPage(pNext);
+        // This is a little hacky, but use the device runtime typeID to determine
+        // how to dispatch the item. This is needed b/c of how containers are built.
+
+        spTypeID typeID = pNext->getType();
+
+        if (typeID == spObjectContainer::type())
+            drawPage((spObjectContainer *)pNext);
+
+        else if (typeID == spDeviceContainer::type())
+            drawPage((spDeviceContainer *)pNext);
+
+        else if (typeID == spActionContainer::type())
+            drawPage((spActionContainer *)pNext);
+
+        else if (typeID == spOperationContainer::type())
+            drawPage((spOperationContainer *)pNext);
+
+        else
+            drawPage(pNext);
 
         // return the current level
         return level;
     };
-    void drawMenuEntry(uint item, spDescriptor *pDesc);
 
-    void drawPageHeader(spObject *);
+    void drawMenuEntry(uint item, spDescriptor *pDesc);
+    void drawPageHeader(spObject *, const char *szItem = nullptr);
     void drawPageFooter(spObject *);
 };
