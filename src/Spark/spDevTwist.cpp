@@ -32,8 +32,9 @@ spDevTwist::spDevTwist()
 {
 
     // Setup unique identifiers for this device and basic device object systems
-    spSetupDeviceIdent(kTwistDeviceName);
-
+    setName(getDeviceName());
+    setDescription("The SparkFun Qwiic Twist RGB Encoder");
+    
     last_count = 0;
     last_button_state = false;
     this_button_state = false;

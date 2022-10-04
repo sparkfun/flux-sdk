@@ -36,7 +36,8 @@ spDevBME280::spDevBME280()
 {
 
     // Setup unique identifiers for this device and basic device object systems
-    spSetupDeviceIdent(getDeviceName());
+    setName(getDeviceName());
+    setDescription("The Bosch BME280 Atmospheric Sensor.");
 
     // Register the properties with the system - this makes the connections needed
     // to support managed properties/public properties
