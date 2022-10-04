@@ -12,6 +12,18 @@ class spSettingsSerial : public spAction
 {
 
   public:
+
+  	spSettingsSerial() : _systemRoot{nullptr}{
+
+  		setName("Serial Setttings System");
+  		setDescription("Set system settings via the Serial Console");
+  	}
+
+
+  	void setSystemRoot(spObjectContainer * theRoot)
+  	{
+  		_systemRoot = theRoot;
+  	}
     // Draw Settings Page entres -- this is the entry pont for this menu
 
     bool drawPage(spObject *);
@@ -23,6 +35,8 @@ class spSettingsSerial : public spAction
     bool drawPage(spOperationContainer *);
     bool drawPage(spActionContainer *);
     bool drawPage(spDeviceContainer *);
+
+    bool loop();
 
   protected:
     // Draw menu entries
@@ -75,7 +89,7 @@ class spSettingsSerial : public spAction
             nMenuItems = drawMenu<T>(pCurrent, 0);
 
             if (nMenuItems == 0)
-                Serial.println("No Entries");
+                Serial.printf("\tNo Entries\n\r");
             else if (nMenuItems < 0)
             {
                 Serial.println("Error generating menu entries.");
@@ -199,4 +213,7 @@ class spSettingsSerial : public spAction
     void drawMenuEntry(uint item, spDescriptor *pDesc);
     void drawPageHeader(spObject *, const char *szItem = nullptr);
     void drawPageFooter(spObject *);
+    // root for the system
+
+    spObjectContainer * _systemRoot;
 };

@@ -9,6 +9,7 @@
 // Draw Page
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
 bool spSettingsSerial::drawPage(spObject *pCurrent)
 {
@@ -24,7 +25,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 
         nMenuItems = drawMenu(pCurrent, 0);
         if (nMenuItems == 0)
-            Serial.println("No Entries");
+            Serial.printf("\tNo Entries\n\r");                        
         else if (nMenuItems < 0)
         {
             Serial.println("Error generating menu entries.");
@@ -44,6 +45,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
     }
     return true;
 }
+
 //-----------------------------------------------------------------------------
 bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 {
@@ -58,7 +60,9 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     {
         drawPageHeader(pCurrent, pProp->name());
 
-        Serial.println("Property Page Test - press 'b' [back]  for now");
+        // TODO - getting the value of the property needs work ....
+        Serial.printf("Property %s, Value: %s\n\r\n\r", pProp->name(), pProp->getString().c_str());
+        Serial.println("Property Page Not Implemented - press 'b' [back]  for now");
 
         drawPageFooter(pCurrent);
 
@@ -88,7 +92,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         nMenuItems = drawMenu(pCurrent, 0);
 
         if (nMenuItems == 0)
-            Serial.println("No Entries");
+            Serial.printf("\tNo Entries\n\r");            
         else if (nMenuItems < 0)
         {
             Serial.println("Error generating menu entries.");
@@ -497,4 +501,25 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, uint timeout)
         delay(100);
     }
     return chIn;
+}
+
+//--------------------------------------------------------------------------
+// Loop call
+//
+// If we see input on the serial console, and we have a menu root set, start
+// a settings session
+
+bool spSettingsSerial::loop(void)
+{
+
+	if ( _systemRoot && Serial.available()){
+		drawPage(_systemRoot);
+		Serial.printf("\n\r\n\rEnd Settings\n\r");
+
+		// clear buffer
+    	while (Serial.available() > 0)
+        	Serial.read();
+	}
+
+    return true;
 }
