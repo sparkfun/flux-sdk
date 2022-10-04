@@ -45,7 +45,7 @@ spDevButton::spDevButton()
     ledBrightness = 128;
 
     // Register parameters
-    spRegister(buttonState);
+    spRegister(buttonState, "Button State", "The current state of the button");
 }
 
 //----------------------------------------------------------------------------------------------------------
