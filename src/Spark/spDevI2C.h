@@ -30,7 +30,7 @@ class spDevI2C
 
     // ReadRegisterRegion takes a uint8 array address as input and reads
     // a chunk of memory into that array.
-    bool readRegisterRegion(uint8_t i2c_address, uint8_t, uint8_t *, uint8_t);
+    bool readRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *outputPointer, uint8_t length);
 
     // readRegister reads one register
     uint8_t readRegister(uint8_t i2c_address, uint8_t offset);
