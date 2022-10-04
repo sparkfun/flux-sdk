@@ -39,6 +39,7 @@ class spProperty : public spPersist, public spDescriptor
         return 0; // number of bytes used to persist value
     };
 
+    // Expect subclasses will overide this 
     virtual std::string getString()
     {
         std::string s = "";
@@ -162,6 +163,12 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
         return stBlk->readBytes(save_size(), (char *)&c);
         set(c);
     };
+
+    // use this to route the call to our dataOut baseclass
+    virtual std::string getString(void)
+    {
+        return _spDataOut<T>::getString();
+    }
 };
 
 //----------------------------------------------------------------------------------------
