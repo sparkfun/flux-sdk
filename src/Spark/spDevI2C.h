@@ -33,7 +33,8 @@ class spDevI2C
     bool readRegisterRegion(uint8_t i2c_address, uint8_t, uint8_t *, uint8_t);
 
     // readRegister reads one register
-    uint8_t readRegister(uint8_t i2c_address, uint8_t);
+    uint8_t readRegister(uint8_t i2c_address, uint8_t offset);
+    bool readRegister(uint8_t i2c_address, uint8_t offset, uint8_t *outputPointer);
 
     // Reads two regs and concatenates them
     // Used for two-byte reads
@@ -44,20 +45,20 @@ class spDevI2C
 
     // Writes nothing
 
-    bool write(uint8_t i2c_address, uint8_t);
+    bool write(uint8_t i2c_address, uint8_t offset);
 
     // write a block of data
     bool write(uint8_t i2c_address, uint8_t *pData, uint8_t length);
 
     // Writes a byte;
-    bool writeRegister(uint8_t i2c_address, uint8_t, uint8_t);
+    bool writeRegister(uint8_t i2c_address, uint8_t offset, uint8_t dataToWrite);
 
-    bool writeRegister16(uint8_t i2c_address, uint8_t, uint16_t);
+    bool writeRegister16(uint8_t i2c_address, uint8_t offset, uint16_t dataToWrite);
 
-    bool writeRegister24(uint8_t i2c_address, uint8_t, uint32_t);
+    bool writeRegister24(uint8_t i2c_address, uint8_t offset, uint32_t value);
 
     // write a data region
-    bool writeRegisterRegion(uint8_t, uint8_t, uint8_t *, uint8_t);
+    bool writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *inputPointer, uint8_t length);
 
   private:
     TwoWire *_i2cPort;

@@ -47,15 +47,34 @@ uint8_t spDevI2C::readRegister(uint8_t i2c_address, uint8_t offset)
     // Return value
     uint8_t result = 0;
 
+    readRegister( i2c_address, offset, &result );
+
+    return result;
+}
+
+bool spDevI2C::readRegister(uint8_t i2c_address, uint8_t offset, uint8_t *outputPointer)
+{
+
+    // Return value
+    uint8_t result = 0;
+
+    int nData = 0;
+
     _i2cPort->beginTransmission(i2c_address);
     _i2cPort->write(offset);
     _i2cPort->endTransmission();
     _i2cPort->requestFrom(i2c_address, (uint8_t)1);
 
     while (_i2cPort->available())  // slave may send less than requested
+    {
         result = _i2cPort->read(); // receive a byte as a proper uint8_t
+        nData++;
+    }
 
-    return result;
+    if (nData == 1) // Only update outputPointer if a single byte was returned
+        *outputPointer = result;
+
+    return (nData == 1);
 }
 
 uint16_t spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset, bool littleEndian)
