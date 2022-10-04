@@ -35,7 +35,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems);
+        selected = getMenuSelection((uint)nMenuItems, pCurrent->parent() != nullptr);
 
         // done?
         if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
@@ -43,6 +43,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 
         selectMenu(pCurrent, selected);
     }
+
     return true;
 }
 
@@ -67,7 +68,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems);
+        selected = getMenuSelection((uint)nMenuItems );
 
         // done?
         if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
@@ -102,7 +103,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         }
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems);
+        selected = getMenuSelection((uint)nMenuItems, pCurrent->parent() != nullptr);
 
         // done?
         if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
@@ -466,7 +467,7 @@ int spSettingsSerial::selectMenu(spActionContainer *pCurrent, uint level)
     return selectMenu<spAction *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, uint timeout)
+uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint timeout)
 {
 
     // TODO - abstract out serial calls.
@@ -495,6 +496,8 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, uint timeout)
             // if it's a number, or an escape letter(set by this app) drop out of loop
             if (isEscape(chIn))
             {
+                Serial.print( (hasParent ? 'b' : 'x'));
+
                 chIn = kReadBufferExit;
                 break;
             }
@@ -505,6 +508,7 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, uint timeout)
                 if (value > 0 && value <= maxEntry)
                 {
                     chIn -= '0';
+                    Serial.print(chIn);
                     break;
                 }
             }
@@ -519,6 +523,7 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, uint timeout)
         }
         delay(100);
     }
+    Serial.flush();
     return chIn;
 }
 

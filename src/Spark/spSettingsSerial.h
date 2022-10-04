@@ -56,7 +56,7 @@ class spSettingsSerial : public spAction
     int selectMenu(spDeviceContainer *, uint);
 
     // get the selected menu item
-    uint8_t getMenuSelection(uint max, uint timeout = 30);
+    uint8_t getMenuSelection(uint max, bool hasParent = true, uint timeout = 30);
 
   private:
 
@@ -102,7 +102,7 @@ class spSettingsSerial : public spAction
 
             // Get the menu item selected by the user
 
-            selected = getMenuSelection((uint)nMenuItems);
+            selected = getMenuSelection((uint)nMenuItems, pCurrent->parent() != nullptr);
 
             // done?
             if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
