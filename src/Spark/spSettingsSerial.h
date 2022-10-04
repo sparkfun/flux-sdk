@@ -211,6 +211,7 @@ class spSettingsSerial : public spAction
     };
 
     void drawMenuEntry(uint item, spDescriptor *pDesc);
+    void drawMenuEntry(uint item, const char *);    
     void drawPageHeader(spObject *, const char *szItem = nullptr);
     void drawPageFooter(spObject *);
     // root for the system

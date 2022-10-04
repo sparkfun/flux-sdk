@@ -60,8 +60,9 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     {
         drawPageHeader(pCurrent, pProp->name());
 
-        // TODO - getting the value of the property needs work ....
-        Serial.printf("Property %s, Value: %s\n\r\n\r", pProp->name(), pProp->getString().c_str());
+        // TODO: Finish/clean this up. ..
+        Serial.printf("Change Property Value\n\r");
+        Serial.printf("\tProperty:\t%s\n\r\tCurrent Value:\t%s\n\r\n\r", pProp->name(), pProp->getString().c_str());
         Serial.println("Property Page Not Implemented - press 'b' [back]  for now");
 
         drawPageFooter(pCurrent);
@@ -116,28 +117,37 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
     return true;
 }
 //-----------------------------------------------------------------------------
+// Page for a Parameter -- just enable/disable it
+
 bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 {
     if (!pCurrent)
         return false;
 
     uint8_t selected = 0;
-    int nMenuItems = 0;
+    char szBuffer[kOutputBufferSize];
 
     while (true)
     {
         drawPageHeader(pCurrent, pParam->name());
 
-        // Draw a parameter page ....
-        Serial.println("Parameter Page Test - press 'b' [back]  for now");
+        Serial.printf("Enable/Disable Parameter\n\r\n\r");
+        Serial.printf("\t%s is %s\n\r\n\r", pParam->name(), pParam->enabled() ? "Enabled" : "Disabled");
+
+        snprintf(szBuffer, kOutputBufferSize, "Enable %s", pParam->name());
+        drawMenuEntry(1, szBuffer);
+        snprintf(szBuffer, kOutputBufferSize, "Disable %s", pParam->name());        
+        drawMenuEntry(2, szBuffer);
 
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems);
+        selected = getMenuSelection((uint)2);
 
         // done?
         if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
             break;
+
+        pParam->setEnabled( selected == 1 );
     }
 
     return true;
@@ -200,9 +210,9 @@ void spSettingsSerial::drawPageFooter(spObject *pCurrent)
     Serial.println();
 
     if (pCurrent->parent())
-        Serial.printf("\t b) Back\n\r");
+        Serial.printf("\t b)  Back\n\r");
     else
-        Serial.printf("\t x) Exit\n\r");
+        Serial.printf("\t x)  Exit\n\r");
 
     Serial.printf("\n\rSelect Option: ");
 }
@@ -219,6 +229,15 @@ void spSettingsSerial::drawMenuEntry(uint item, spDescriptor *pDesc)
         return;
 
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
+}
+
+void spSettingsSerial::drawMenuEntry(uint item, const char * szTitle)
+{
+
+    if (!szTitle)
+        return;
+
+    Serial.printf("\t%2d)  %s\n\r", item, szTitle);
 }
 
 //-----------------------------------------------------------------------------
