@@ -187,7 +187,7 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
         snprintf(szOutput, kOutputBufferSize, "/%s", szItem);
 
     // build a "breadcrumb" string...
-    do
+    while (pCurrent)
     {
         snprintf(szBuffer, kOutputBufferSize, "/%s", pCurrent->name());
         if (strlen(szOutput) > 0)
@@ -196,7 +196,7 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
         strlcpy(szOutput, szBuffer, kOutputBufferSize);
 
         pCurrent = pCurrent->parent();
-    } while (pCurrent);
+    } 
 
     Serial.println();
     Serial.println();
