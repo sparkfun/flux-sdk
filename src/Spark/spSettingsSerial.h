@@ -15,7 +15,7 @@ class spSettingsSerial : public spAction
 
   	spSettingsSerial() : _systemRoot{nullptr}{
 
-  		setName("Serial Setttings System");
+  		setName("Serial System Setttings");
   		setDescription("Set system settings via the Serial Console");
   	}
 
