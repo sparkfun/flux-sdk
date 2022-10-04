@@ -39,6 +39,11 @@ class spProperty : public spPersist, public spDescriptor
         return 0; // number of bytes used to persist value
     };
 
+    virtual std::string getString()
+    {
+        std::string s = "";
+        return s;
+    }
     //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
     virtual bool save(spStorageBlock *stBlk) = 0;

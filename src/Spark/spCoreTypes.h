@@ -214,7 +214,21 @@ class spDataOut
         std::string stmp = szBuffer;
         return stmp;
     }
+    std::string to_string(int8_t const data) const
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%d", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
     std::string to_string(uint const data) const
+    {
+        char szBuffer[20];
+        snprintf(szBuffer, sizeof(szBuffer), "%u", data);
+        std::string stmp = szBuffer;
+        return stmp;
+    }
+    std::string to_string(uint8_t const data) const
     {
         char szBuffer[20];
         snprintf(szBuffer, sizeof(szBuffer), "%u", data);
