@@ -91,7 +91,7 @@ float spDevNAU7802::read_calibration_factor()
     return NAU7802::getCalibrationFactor();
 }
 
-void spDevNAU7802::calculate_zero_offset(bool dummy)
+void spDevNAU7802::calculate_zero_offset(const bool &dummy)
 {
     (void)dummy;
 
@@ -99,7 +99,7 @@ void spDevNAU7802::calculate_zero_offset(bool dummy)
     zeroOffset = NAU7802::getZeroOffset();
 }
 
-void spDevNAU7802::calculate_calibration_factor(float weight_in_units)
+void spDevNAU7802::calculate_calibration_factor(const float &weight_in_units)
 {
     NAU7802::calculateCalibrationFactor(weight_in_units, 64); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount = 8)
     calibrationFactor = NAU7802::getCalibrationFactor();
@@ -111,7 +111,7 @@ void spDevNAU7802::calculate_calibration_factor(float weight_in_units)
 //
 // Called when the value of a managed property was updated.
 //
-void spDevButton::onPropertyUpdate(const char *propName)
+void spDevNAU7802::onPropertyUpdate(const char *propName)
 {
 
     if (strcmp(propName, "zeroOffset") == 0) // New zero offset applied
