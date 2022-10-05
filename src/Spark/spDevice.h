@@ -167,8 +167,8 @@ template <typename T> class spDeviceType : public spDevice
 
         // Use the name of this method via the __PRETTY_FUNCTION__ macro 
         // to create our ID. The macro gives us a unique name for 
-        // each class b/c it uses the template paraemter.
-        
+        // each class b/c it uses the template parameter.
+
         // Hash the name, make that our type ID. 
         _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
 

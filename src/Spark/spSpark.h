@@ -142,13 +142,18 @@ class spSpark : public spObjectContainer
 
         // setup some default heirarchy things ...
         this->setName("spark");
-        Devices.setName("devices");
-        Actions.setName("actions");
+        Devices.setName("Devices");
+        Devices.setDescription("The devices connected to this system.");
+        Actions.setName("Actions");
+        Actions.setDescription("The operations/actions registered with this system.");
 
         // Our container has two children, the device and the actions container
-        // TODO
-        // this->add(&Devices);
-        // this->add(&Actions);
+        // Cast the devices and actions to objects to add. And had to use
+        // a temp var to get the references to take.
+        spObject *pTmp = &Devices;
+        this->push_back(pTmp);
+        pTmp = &Actions;
+        this->push_back(pTmp);
     }
 
     spOperation *_getByType(spTypeID type)

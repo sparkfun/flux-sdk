@@ -31,7 +31,8 @@ spDevButton::spDevButton()
 {
 
     // Setup unique identifiers for this device and basic device object systems
-    spSetupDeviceIdent(kButtonDeviceName);
+    setName(getDeviceName());
+    setDescription("The SparkFun Qwiic Button");
 
     last_button_state = false;
     this_button_state = false;
@@ -44,7 +45,7 @@ spDevButton::spDevButton()
     ledBrightness = 128;
 
     // Register parameters
-    spRegister(buttonState);
+    spRegister(buttonState, "Button State", "The current state of the button");
 }
 
 //----------------------------------------------------------------------------------------------------------

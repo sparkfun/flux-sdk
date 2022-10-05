@@ -36,7 +36,8 @@ spDevBME280::spDevBME280()
 {
 
     // Setup unique identifiers for this device and basic device object systems
-    spSetupDeviceIdent(getDeviceName());
+    setName(getDeviceName());
+    setDescription("The Bosch BME280 Atmospheric Sensor.");
 
     // Register the properties with the system - this makes the connections needed
     // to support managed properties/public properties
@@ -48,14 +49,14 @@ spDevBME280::spDevBME280()
     metres = false;
 
     // Register parameters
-    spRegister(humidity);
+    spRegister(humidity, "Humidity", "The sensed humidity value");
     // spRegister(temperature);
-    spRegister(temperatureF);
-    spRegister(temperatureC);
-    spRegister(pressure);
+    spRegister(temperatureF, "TemperatureF", "The sensed Temerature in degrees Fahrenheit");
+    spRegister(temperatureC, "TemperatureC", "The sensed Temerature in degrees Celsius");
+    spRegister(pressure, "Pressure", "The sensed pressure");
     // spRegister(altitude);
-    spRegister(altitudeM);
-    spRegister(altitudeF);
+    spRegister(altitudeM, "AltitudeM", "The sensed altitude in meters");
+    spRegister(altitudeF, "AltitudeF", "The sensed altitude in feet");
 }
 
 //----------------------------------------------------------------------------------------------------------

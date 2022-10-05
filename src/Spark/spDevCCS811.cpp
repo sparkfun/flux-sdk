@@ -29,7 +29,8 @@ spRegisterDevice(spDevCCS811);
 spDevCCS811::spDevCCS811() //: CCS811(kCCS811AddressDefault)
 {
 
-    spSetupDeviceIdent(getDeviceName());
+    setName(getDeviceName());
+    setDescription("An air quality sensor from AMS.");
 
     // Register output params
     spRegister(co2, "CO2", "CO2 reading");

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "spCoreTypes.h"
+#include "spUtils.h"
 #include "spStorage.h"
 
 //----------------------------------------------------------------------------------------
@@ -38,6 +39,12 @@ class spProperty : public spPersist, public spDescriptor
         return 0; // number of bytes used to persist value
     };
 
+    // Expect subclasses will overide this 
+    virtual std::string getString()
+    {
+        std::string s = "";
+        return s;
+    }
     //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
     virtual bool save(spStorageBlock *stBlk) = 0;
@@ -76,6 +83,10 @@ class _spPropertyContainer
         return _properties;
     };
 
+    uint nProperties(void){
+
+        return _properties.size();
+    }
     //---------------------------------------------------------------------------------
     // save/restore for properties in this container. Note, since we
     // expect this to be a "mix-in" class, we use a different interface
@@ -152,6 +163,12 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
         return stBlk->readBytes(save_size(), (char *)&c);
         set(c);
     };
+
+    // use this to route the call to our dataOut baseclass
+    virtual std::string getString(void)
+    {
+        return _spDataOut<T>::getString();
+    }
 };
 
 //----------------------------------------------------------------------------------------
@@ -783,7 +800,11 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
         // TODO implement - finish
         return true;
     };
-
+    // Return the type ID of this
+    virtual spTypeID getType(void)
+    {
+        return 0;
+    }
     // TODO:
     //   - Add type?
     //   - Add instance ID counter
@@ -875,6 +896,35 @@ template <class T> class spContainer : public spObject
     iterator erase(iterator pos)
     {
         return _vector.erase(pos);
+    }
+
+    // Defines a type specific static method - so can be called outside
+    // of an instance.
+    //
+    // The typeID is determined by hashing the name of the class.
+    // This way the type ID is consistant across invocations 
+
+    static spTypeID type(void)
+    {
+        static spTypeID _myTypeID = kspTypeIDNone;
+
+        if ( _myTypeID != kspTypeIDNone )
+            return _myTypeID;
+
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
+        // to create our ID. The macro gives us a unique name for 
+        // each class b/c it uses the template parameter.
+
+        // Hash the name, make that our type ID. 
+        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+
+        return _myTypeID;
+    }
+
+    // Return the type ID of this
+    spTypeID getType(void)
+    {
+        return type();
     }
 };
 

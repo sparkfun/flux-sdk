@@ -80,8 +80,7 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
                 spDevice *pDevice = deviceBuilder->create();
                 if (!pDevice)
                 {
-                    Serial.print("ERROR: Device create failed - ");
-                    Serial.println(deviceBuilder->getDeviceName());
+                    spLog_E("Device create failed - %s", deviceBuilder->getDeviceName());
                 }
                 else
                 {

@@ -32,7 +32,8 @@ spDevMCP9600::spDevMCP9600()
 {
 
     // Setup unique identifiers for this device and basic device object systems
-    spSetupDeviceIdent(getDeviceName());
+    setName(getDeviceName());
+    setDescription("Microchip MCP9600 Thermocouple Amplifier.");
 
     // register properties
     spRegister(ambient_resolution);
