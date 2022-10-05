@@ -53,7 +53,15 @@ spDevMCP9600::spDevMCP9600()
 bool spDevMCP9600::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
 
-    return i2cDriver.ping(address);
+    // The MCP9600 is a fussy device. If we call isConnected twice in succession, the second call fails
+    // as the MCP9600 does not ACK on the second call. Only on the first.
+    //
+    // Long story short, we should not call i2cDriver.ping here. We should check the DeviceID instead.
+
+    uint16_t devID = i2cDriver.readRegister16(address, DEVICE_ID, false); // Big Endian. This is here because the first read doesn't seem to work, but the second does. No idea why :/
+    if (!i2cDriver.readRegister16(address, DEVICE_ID, &devID, false)) // Big Endian
+        return false;
+    return (DEV_ID_UPPER == devID >> 8);
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()

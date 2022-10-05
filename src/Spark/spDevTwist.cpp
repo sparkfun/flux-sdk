@@ -59,8 +59,15 @@ spDevTwist::spDevTwist()
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
 bool spDevTwist::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
+    // For speed, ping the device address first
+    if (!i2cDriver.ping(address))
+        return false;
 
-    return i2cDriver.ping(address);
+    // Read the version
+    uint16_t version = 0;
+    if (!i2cDriver.readRegister16(address, TWIST_VERSION, &version, false)) // Big Endian (Major, Minor)
+        return false;
+    return (version >= 0x0100);
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()

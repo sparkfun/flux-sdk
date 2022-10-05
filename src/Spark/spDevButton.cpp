@@ -52,8 +52,15 @@ spDevButton::spDevButton()
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
 bool spDevButton::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
+    // For speed, ping the device address first
+    if (!i2cDriver.ping(address))
+        return false;
 
-    return i2cDriver.ping(address);
+    // Read the version
+    uint16_t version = 0;
+    if (!i2cDriver.readRegister16(address, SFE_QWIIC_BUTTON_FIRMWARE_MAJOR, &version, false)) // Big Endian (Major, Minor)
+        return false;
+    return (version >= 0x0100);
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()
