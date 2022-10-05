@@ -40,8 +40,13 @@ float spDevLPS25HB::read_pressure_hpa()
 
 bool spDevLPS25HB::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
+    // For speed, ping the device address first
+    if (!i2cDriver.ping(address))
+        return false;
 
-    return i2cDriver.ping(address);
+    uint8_t chipID = i2cDriver.readRegister(address, LPS25HB_REG_WHO_AM_I); 
+
+    return (chipID == LPS25HB_DEVID);
 }
 
 //----------------------------------------------------------------------------------------------------------
