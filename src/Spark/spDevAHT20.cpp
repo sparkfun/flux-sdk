@@ -20,6 +20,7 @@ spDevAHT20::spDevAHT20()
 {
 
     spSetupDeviceIdent(getDeviceName());
+    setDescription("AHT20 Temperature and Humidity sensor");
 
     // Register output params
     spRegister(temperatureC, "Temperature (C)", "Temperature (C)");

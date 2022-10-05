@@ -20,6 +20,7 @@ spDevMAX17048::spDevMAX17048()
 {
 
     spSetupDeviceIdent(getDeviceName());
+    setDescription("MAX17048 LiPo Battery Fuel Gauge");
 
     // Register output params
     spRegister(voltageV, "Voltage (V)", "Voltage (V)");

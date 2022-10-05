@@ -20,6 +20,7 @@ spDevLPS25HB::spDevLPS25HB()
 {
 
     spSetupDeviceIdent(getDeviceName());
+    setDescription("LPS25HB Temperature and Pressure sensor");
 
     // Register output params
     spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
