@@ -1,22 +1,30 @@
 
 
 
+#include <string>
+
 #include "Spark.h"
 #include "Spark/spSerialField.h"
 
 spSerialField myField;
 
-char strValue[100] = {'\0'};
 
-int8_t  int8Value=0;
-int32_t  intValue=0;
+// For the test, two options:
+//
+// For strings, define STRING_TEST -- so output is done correctly 
+//
 
-uint8_t  uint8Value=0;
-uint32_t uintValue=0;
+//int8_t   Value=0;
+//int32_t  Value=0;
 
-float    fValue=0.;
-double   dValue=0.;
+//uint8_t  Value=0;
+//uint32_t Value=0;
 
+//float    Value=0.;
+//double   Value=0.;
+
+#define STRING_TEST
+std::string Value="";
 
 void setup() {
 
@@ -44,19 +52,17 @@ void loop() {
 
     Serial.print(">>");
 
-    bool returnValue = myField.editField(strValue, sizeof(strValue));
-    //bool returnValue = myField.editFieldInt(intValue);
-    //bool returnValue = myField.editFieldInt8(int8Value);    
-    //bool returnValue = myField.editFieldUInt(uintValue);
-    //bool returnValue = myField.editFieldUInt8(uint8Value);    
-    //bool returnValue = myField.editFieldFloat(fValue);        
-    //bool returnValue = myField.editFieldDouble(dValue);            
+    bool returnValue = myField.editField(Value);
 
     Serial.println();
     Serial.print("<<");
 
     if (returnValue)
-        Serial.println(strValue);
+#ifdef STRING_TEST
+        Serial.println(Value.c_str());
+#else
+        Serial.println(Value);        
+#endif
     else 
         Serial.println(" [ESC]");
 

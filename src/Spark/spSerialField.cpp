@@ -577,7 +577,7 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 //
 // editing operation with the provided character string as input
 
-bool spSerialField::editFieldString(char *value, size_t lenValue, uint32_t timeout)
+bool spSerialField::editFieldCString(char *value, size_t lenValue, uint32_t timeout)
 {
 
     if ( !value || lenValue == 0 )
@@ -600,6 +600,35 @@ bool spSerialField::editFieldString(char *value, size_t lenValue, uint32_t timeo
     {
         // Editing was successful - copy out entered value
         strlcpy(value, ctxEdit.all, lenValue);
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false; 
+}
+//--------------------------------------------------------------------------
+bool spSerialField::editFieldString(std::string &value, uint32_t timeout)
+{
+
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+    ctxEdit.validator = isTrue; // always true for text
+
+
+    // copy in our initial value.
+    ctxEdit.cursor = value.length();    
+    if ( ctxEdit.cursor > 0 )
+        strlcpy(ctxEdit.head, value.c_str(), kEditBufferMax);
+
+    // Okay, setup, lets dispatch to the editloop
+
+    if ( editLoop(ctxEdit, timeout) )
+    {
+        // Editing was successful - copy out entered value
+        value = ctxEdit.all;
+
         return true;
     }
 

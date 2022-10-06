@@ -3,6 +3,7 @@
 #pragma once
 
 #include <ctype.h>
+#include <string>
 
 #define kEditBufferMax 256
 
@@ -14,9 +15,13 @@ class spSerialField
 public:
 	bool editField(char *value, size_t lenValue, uint32_t timeout=60)
 	{
-		return editFieldString(value, lenValue, timeout);
+		return editFieldCString(value, lenValue, timeout);
 	}
 	
+	bool editField(std::string &value, uint32_t timeout=60)
+	{
+		return editFieldString(value,  timeout);
+	}
 	bool editField( int8_t &value, uint32_t timeout=60)
 	{
 		return editFieldInt8(value, timeout);
@@ -54,9 +59,10 @@ public:
 	bool editFieldUInt8( uint8_t &value, uint32_t timeout=60);
 	bool editFieldUInt( uint32_t &value, uint32_t timeout=60);	
 	bool editFieldFloat( float &value, uint32_t timeout=60);
-	bool editFieldDouble( double &value, uint32_t timeout=60);			
-	bool editFieldString(char *value, size_t lenValue, uint32_t timeout=60);
-	
+	bool editFieldDouble( double &value, uint32_t timeout=60);
+	bool editFieldString(std::string &value, uint32_t timeout=60);
+	bool editFieldCString(char *value, size_t lenValue, uint32_t timeout=60);
+
 private:
 	typedef struct {
     	char head[kEditBufferMax];  // 
