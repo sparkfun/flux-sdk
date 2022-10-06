@@ -6,10 +6,15 @@
 #include <stdint.h>
 #include <string>
 #include <string.h>
+
+#include "spCoreTypes.h"
 // use a utils namespace
 
 namespace sp_utils
 {
+
+const char * spTypeName(spDataType_t type);
+
 
 size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 3);
 
