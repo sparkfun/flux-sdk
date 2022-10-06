@@ -27,6 +27,14 @@ class spProperty : public spPersist, public spDescriptor
 {
 
   public:
+
+    virtual spDataType_t type(void) = 0;
+
+    // Editor interface method - called to have the value of the property
+    // displayed/set/managed in an editor
+
+    virtual bool editValue(spDataEditor&) = 0;
+
     //---------------------------------------------------------------------------------
     virtual size_t size(void)
     {
@@ -127,7 +135,10 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 
   public:
     //---------------------------------------------------------------------------------
-
+    spDataType_t type()
+    {
+        return _spDataOut<T>::type();
+    };
     //---------------------------------------------------------------------------------
     // size in bytes of this property
     virtual size_t size()
@@ -169,6 +180,23 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
     {
         return _spDataOut<T>::getString();
     }
+    //---------------------------------------------------------------------------------
+    // editValue()
+    //
+    // Send the property value to the passed in editor for -- well -- editing
+    bool editValue(spDataEditor& theEditor)
+    {
+
+        T value = get();
+
+        bool bSuccess = theEditor.editField(value);
+
+        if (bSuccess) // success
+            set(value);
+
+        return bSuccess;
+    }
+
 };
 
 //----------------------------------------------------------------------------------------
@@ -244,6 +272,22 @@ class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spData
         }
         return rc;
     };
+    //---------------------------------------------------------------------------------
+    // editValue()
+    //
+    // Send the property value to the passed in editor for -- well -- editing
+    bool editValue(spDataEditor& theEditor)
+    {
+
+        std::string value = get();
+
+        bool bSuccess = theEditor.editField(value);
+
+        if (bSuccess) // success
+            set(value);
+
+        return bSuccess;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------

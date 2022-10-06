@@ -1,6 +1,8 @@
 
 
+#include "spSerialField.h"
 #include "spSettingsSerial.h"
+#include "spUtils.h"
 #include <ctype.h>
 
 #define kOutputBufferSize 128
@@ -53,27 +55,31 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     if (!pCurrent)
         return false;
 
-    uint8_t selected = 0;
+    
+    // The data editor we're using - serial field
+    spSerialField theDataEditor;
 
-    int nMenuItems = 0;
+    // let's edit the property value
 
-    while (true)
-    {
-        drawPageHeader(pCurrent, pProp->name());
+    // Header
+    drawPageHeader(pCurrent, pProp->name());
 
-        // TODO: Finish/clean this up. ..
-        Serial.printf("Change Property Value\n\r");
-        Serial.printf("\tProperty:\t%s\n\r\tCurrent Value:\t%s\n\r\n\r", pProp->name(), pProp->getString().c_str());
-        Serial.println("Property Page Not Implemented - press 'b' [back]  for now");
+    // Editing Intro
+    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", 
+                    pProp->name(), sp_utils::spTypeName(pProp->type()));
+    Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
+    Serial.printf("\t%s = ", pProp->name());
+    
+    // Call the property editValue() method with our editor
+    bool bSuccess = pProp->editValue(theDataEditor);
 
-        drawPageFooter(pCurrent);
+    Serial.printf("\n\r\n\r");
+    if (bSuccess)
+        Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());    
+    else 
+        Serial.printf("\t[%s is unchanged]\n\r", pProp->name());    
 
-        selected = getMenuSelection((uint)nMenuItems );
-
-        // done?
-        if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
-            break;
-    }
+    delay(1000); // good UX here I think
 
     return true;
 }
