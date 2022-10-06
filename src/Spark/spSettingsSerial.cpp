@@ -8,11 +8,22 @@
 #define kOutputBufferSize 128
 
 //-----------------------------------------------------------------------------
+// System settings user experince - via the serial console
+//
+// Allows the user to walk the system hiearchy and change property values
+// and enable/disable parameters.
+//
+// The entire thing is dynamic and based on the structure of the system
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // Draw Page
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
+// drawPage()  - Generic Object edition.
+
 bool spSettingsSerial::drawPage(spObject *pCurrent)
 {
     if (!pCurrent)
@@ -50,6 +61,8 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 }
 
 //-----------------------------------------------------------------------------
+// drawPage() - Property Editing edition
+
 bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 {
     if (!pCurrent)
@@ -67,7 +80,9 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     // Editing Intro
     Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", 
                     pProp->name(), sp_utils::spTypeName(pProp->type()));
+
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
+    
     Serial.printf("\t%s = ", pProp->name());
     
     // Call the property editValue() method with our editor
@@ -84,6 +99,8 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     return true;
 }
 //-----------------------------------------------------------------------------
+// drawPage()  - Operation/Action edition
+
 bool spSettingsSerial::drawPage(spOperation *pCurrent)
 {
     if (!pCurrent)
@@ -124,7 +141,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
     return true;
 }
 //-----------------------------------------------------------------------------
-// Page for a Parameter -- just enable/disable it
+// drawPage() Parameter edition -- just enable/disable it
 
 bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 {
@@ -211,7 +228,7 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
     Serial.println(szOutput);
     Serial.println();
 }
-
+//-----------------------------------------------------------------------------
 void spSettingsSerial::drawPageFooter(spObject *pCurrent)
 {
     Serial.println();
@@ -237,7 +254,7 @@ void spSettingsSerial::drawMenuEntry(uint item, spDescriptor *pDesc)
 
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
 }
-
+//-----------------------------------------------------------------------------
 void spSettingsSerial::drawMenuEntry(uint item, const char * szTitle)
 {
 
