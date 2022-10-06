@@ -14,8 +14,10 @@ class spSerialField
 public:
 	bool editField(char *value, size_t lenValue, uint32_t timeout=60);
 
-	bool editFieldInt( int32_t &value, uint32_t timeout=60);
-	bool editFieldUInt( uint32_t &value, uint32_t timeout=60);
+	bool editFieldInt8( int8_t &value, uint32_t timeout=60);
+	bool editFieldInt( int32_t &value, uint32_t timeout=60);	
+	bool editFieldUInt8( uint8_t &value, uint32_t timeout=60);
+	bool editFieldUInt( uint32_t &value, uint32_t timeout=60);	
 	bool editFieldFloat( float &value, uint32_t timeout=60);
 	bool editFieldDouble( double &value, uint32_t timeout=60);			
 
