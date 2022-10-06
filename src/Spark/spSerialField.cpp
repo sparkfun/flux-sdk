@@ -636,6 +636,44 @@ bool spSerialField::editFieldString(std::string &value, uint32_t timeout)
     return false; 
 }
 //--------------------------------------------------------------------------
+bool spSerialField::editFieldBool( bool &value, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+
+    // Everything is a bool - :)
+    //  
+    //  false  = "", "0"
+    //  true   = <anything else> - ideally 1
+
+    ctxEdit.validator = isTrue;
+
+    // jam the current value into context head
+    snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value ? 1 : 0);
+    ctxEdit.cursor = strlen(ctxEdit.head);
+
+    if ( editLoop(ctxEdit, timeout) )
+    {
+        if ( strlen(ctxEdit.all) > 0)
+        {
+            char *p;
+            // Editing was successful - copy out entered value
+            value = ( strtol(ctxEdit.all, &p, 10) != 0 );
+
+            if (*p != 0) // conversion failed, so something was in the string.
+                value = true;
+        }else
+            value = false;
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false; 
+
+}
+//--------------------------------------------------------------------------
 bool spSerialField::editFieldInt8( int8_t &value, uint32_t timeout)
 {
     // setup context
@@ -660,7 +698,6 @@ bool spSerialField::editFieldInt8( int8_t &value, uint32_t timeout)
     return false; 
 
 }
-
 //--------------------------------------------------------------------------
 bool spSerialField::editFieldInt( int32_t &value, uint32_t timeout)
 {

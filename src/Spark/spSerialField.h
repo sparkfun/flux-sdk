@@ -5,11 +5,10 @@
 #include <ctype.h>
 #include <string>
 
-#define kEditBufferMax 256
+#include "spCore.h"
+#include "spCoreTypes.h"
 
-
-
-class spSerialField
+class spSerialField : public spDataEditor
 {
 
 public:
@@ -18,6 +17,11 @@ public:
 		return editFieldCString(value, lenValue, timeout);
 	}
 	
+	bool editField(bool &value, uint32_t timeout=60)
+	{
+		return editFieldBool(value,  timeout);
+	}
+
 	bool editField(std::string &value, uint32_t timeout=60)
 	{
 		return editFieldString(value,  timeout);
@@ -54,6 +58,7 @@ public:
 	
 
 
+	bool editFieldBool( bool &value, uint32_t timeout=60);
 	bool editFieldInt8( int8_t &value, uint32_t timeout=60);
 	bool editFieldInt( int32_t &value, uint32_t timeout=60);	
 	bool editFieldUInt8( uint8_t &value, uint32_t timeout=60);
@@ -64,6 +69,7 @@ public:
 	bool editFieldCString(char *value, size_t lenValue, uint32_t timeout=60);
 
 private:
+	static constexpr uint16_t kEditBufferMax = 256;
 	typedef struct {
     	char head[kEditBufferMax];  // 
     	char tail[kEditBufferMax];  // text after the cursor -  values at:  bcursor to kEditBufferMax-1 ;
