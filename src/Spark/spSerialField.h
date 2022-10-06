@@ -12,7 +12,42 @@ class spSerialField
 {
 
 public:
-	bool editField(char *value, size_t lenValue, uint32_t timeout=60);
+	bool editField(char *value, size_t lenValue, uint32_t timeout=60)
+	{
+		return editFieldString(value, lenValue, timeout);
+	}
+	
+	bool editField( int8_t &value, uint32_t timeout=60)
+	{
+		return editFieldInt8(value, timeout);
+	}
+
+	bool editField( int32_t &value, uint32_t timeout=60)
+	{
+		return editFieldInt(value, timeout);
+	}
+	
+	bool editField( uint8_t &value, uint32_t timeout=60)
+	{
+		return editFieldUInt8(value, timeout);
+	}
+	
+	bool editField( uint32_t &value, uint32_t timeout=60)
+	{
+		return editFieldUInt(value, timeout);
+	}
+		
+	bool editField( float &value, uint32_t timeout=60)
+	{
+		return editFieldFloat(value, timeout);
+	}
+	
+	bool editField( double &value, uint32_t timeout=60)
+	{
+		return editFieldDouble(value, timeout);
+	}
+	
+
 
 	bool editFieldInt8( int8_t &value, uint32_t timeout=60);
 	bool editFieldInt( int32_t &value, uint32_t timeout=60);	
@@ -20,7 +55,8 @@ public:
 	bool editFieldUInt( uint32_t &value, uint32_t timeout=60);	
 	bool editFieldFloat( float &value, uint32_t timeout=60);
 	bool editFieldDouble( double &value, uint32_t timeout=60);			
-
+	bool editFieldString(char *value, size_t lenValue, uint32_t timeout=60);
+	
 private:
 	typedef struct {
     	char head[kEditBufferMax];  // 

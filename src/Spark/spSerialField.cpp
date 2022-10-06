@@ -571,13 +571,13 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
     return returnValue;
 }
 //--------------------------------------------------------------------------
-// editField()
+// editFieldString()
 //
 // Public - main entry point - general data entry
 //
 // editing operation with the provided character string as input
 
-bool spSerialField::editField(char *value, size_t lenValue, uint32_t timeout)
+bool spSerialField::editFieldString(char *value, size_t lenValue, uint32_t timeout)
 {
 
     if ( !value || lenValue == 0 )
