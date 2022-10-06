@@ -44,7 +44,7 @@ spDevNAU7802::spDevNAU7802()
     zeroOffset = 0;
     spRegister(calibrationFactor, "Calibration Factor", "Used to convert the scale ADU into units");
     calibrationFactor = 1.0;
-    
+
     // Register parameters
     spRegister(weight, "Weight", "Weight in units - as set by the calibrationFactor");
 }
@@ -54,13 +54,17 @@ spDevNAU7802::spDevNAU7802()
 bool spDevNAU7802::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
+    // Ping it twice. The first one often fails...
+    i2cDriver.ping(address);
+    delay(10);
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t version = i2cDriver.readRegister(address, NAU7802_DEVICE_REV);
-    Serial.printf("NAU7802 version 0x%02X\r\n", version);
-
-    return true;
+    uint8_t PGA = 0;
+    if (!i2cDriver.readRegister(address, NAU7802_PGA, &PGA)) // REG0x1B: PGA Registers
+        return false;
+    
+    return ((PGA & 0x06) == 0); // Datasheet says bits 1 and 2 should be 0
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()
@@ -95,16 +99,15 @@ void spDevNAU7802::calculate_zero_offset(const bool &dummy)
 {
     (void)dummy;
 
-    NAU7802::calculateZeroOffset(64); // Zero the scale - calculateZeroOffset(uint8_t averageAmount = 8)
+    NAU7802::calculateZeroOffset(); // Zero the scale - calculateZeroOffset(uint8_t averageAmount = 8)
     zeroOffset = NAU7802::getZeroOffset();
 }
 
 void spDevNAU7802::calculate_calibration_factor(const float &weight_in_units)
 {
-    NAU7802::calculateCalibrationFactor(weight_in_units, 64); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount = 8)
+    NAU7802::calculateCalibrationFactor(weight_in_units); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount = 8)
     calibrationFactor = NAU7802::getCalibrationFactor();
 }
-
 
 //----------------------------------------------------------------------------------------------------------
 // onPropertyUpdate()
@@ -117,7 +120,6 @@ void spDevNAU7802::onPropertyUpdate(const char *propName)
     if (strcmp(propName, "zeroOffset") == 0) // New zero offset applied
         NAU7802::setZeroOffset(zeroOffset);
 
-    if (strcmp(propName, "calibrationFactor") == 0) // New zero offset applied
+    if (strcmp(propName, "calibrationFactor") == 0) // New calibration factor applied
         NAU7802::setCalibrationFactor(calibrationFactor);
 }
-
