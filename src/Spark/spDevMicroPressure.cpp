@@ -21,6 +21,7 @@ spDevMicroPressure::spDevMicroPressure()
 {
 
     spSetupDeviceIdent(getDeviceName());
+    setDescription("MPR series Micro-Pressure sensor from Honeywell");
 
     // Register output params
     spRegister(pressure_PSI, "Pressure (PSI)", "Pressure (PSI)");

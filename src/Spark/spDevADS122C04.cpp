@@ -22,6 +22,7 @@ spDevADS122C04::spDevADS122C04()
 {
 
     spSetupDeviceIdent(getDeviceName());
+    setDescription("ADS122C04 A/D Converter - used on Qwiic PT100");
 
     // Register Property
     spRegister(wireMode, "Wire mode", "Wire mode: 0 = 4-wire, 1 = 3-wire, 2 = 2-wire");
