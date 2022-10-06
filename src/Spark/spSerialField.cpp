@@ -97,7 +97,7 @@ const char chRightArrow[] = { kCodeESC, kCodeESCExtend, kCodeArrowRight};
 
 
 //--------------------------------------------------------------------------
-// Helpful, and hopefully vast validator functions
+// Helpful, and hopefully fast validator functions
 
 static bool isInteger(char *value )
 {
