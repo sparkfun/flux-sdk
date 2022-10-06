@@ -30,13 +30,16 @@
 //  * "Bell"      - rings terminal bell on error/warning
 //
 // ----------------------------------------------------------------------
-// How this works:
+// How this works using the context struct:
 //
 //    If you have have a line of text, with a cursor in the middle
 //
 //       This is some text and some more text
 //                         ^ cursor pos
 //       |---- head[] -----|| ---- tail[] ---|
+//
+//    The text to the left of the cursor is contained in .head[],
+//    and the text to the right of the cursor is contained in .tail[]
 //
 //    End of line:
 //       This is some text and some more text
@@ -84,7 +87,7 @@
 #define kCodeArrowLeft  68
 #define kCodeKPDel      126
 
-// Sequence to do a backspace and key out old text
+// Sequence to do a backspace and overwrite old text
 const char chBackSpace[]  = {kCodeBS, kCodeSpace, kCodeBS};
 const char chLeftArrow[]  = { kCodeESC, kCodeESCExtend, kCodeArrowLeft};
 const char chRightArrow[] = { kCodeESC, kCodeESCExtend, kCodeArrowRight};
@@ -92,19 +95,26 @@ const char chRightArrow[] = { kCodeESC, kCodeESCExtend, kCodeArrowRight};
 #define kInputBufferSize 32
 
 
-
+//--------------------------------------------------------------------------
+// drawTrailing()
+//
+// Draw the text contained in .tail[] in the context. 
+//
+// If isDelete is set, we also need to overwrite end text that is
+// invalid b/c of a deleted char.
+//
 void spSerialField::drawTrailing(FieldContext_t & ctx, bool isDelete) 
 {
 
     // Draw the text after the insertion point if any exists
-    int nBack =0;
+    int nBack = 0;
 
     if (ctx.bcursor < kEditBufferMax - 1) {
 
         Serial.write( ctx.tail + ctx.bcursor, kBCursorZero - ctx.bcursor);
         nBack =  kBCursorZero - ctx.bcursor;  // number of chars written
     }
-    // Is delete set ? If so, we need to end the line with a space to
+    // Is delete set? If so, we need to end the line with a space to
     // take into account a deleted char and the change of our insertion
     // point
     if (isDelete){
@@ -120,6 +130,10 @@ void spSerialField::drawTrailing(FieldContext_t & ctx, bool isDelete)
 
 
 //--------------------------------------------------------------------------
+// resetContext()
+//
+// Zero/Clear out the context struct. 
+//
 void spSerialField::resetContext( FieldContext_t & ctx) 
 {
 
@@ -128,7 +142,13 @@ void spSerialField::resetContext( FieldContext_t & ctx)
     ctx.bcursor = kBCursorZero;
 }
 //--------------------------------------------------------------------------
+// processArrowKeys()
 //
+// Take actions in respose to left or right arrow keys.
+//
+// Arrow keys come in as 3 chars, but this method is only passed in
+// the last of these chars -- which indicates which arrow was entered
+
 void spSerialField::processArrowKeys(FieldContext_t &ctxEdit, char inCode)
 {
 
@@ -162,7 +182,8 @@ void spSerialField::processArrowKeys(FieldContext_t &ctxEdit, char inCode)
 }
 
 //--------------------------------------------------------------------------
-// 
+// processDELKey()
+//
 // Keypad Delete key (delete the next char)
 
 void spSerialField::processDELKey(FieldContext_t &ctxEdit)
@@ -183,7 +204,8 @@ void spSerialField::processDELKey(FieldContext_t &ctxEdit)
 }
 
 //--------------------------------------------------------------------------
-// 
+// processKilltoEOL()
+//
 // Kill to end of line - ^K 
 
 void spSerialField::processKillToEOL(FieldContext_t &ctxEdit)
@@ -203,7 +225,8 @@ void spSerialField::processKillToEOL(FieldContext_t &ctxEdit)
 
 }
 //--------------------------------------------------------------------------
-// 
+// processBackspaceKey()
+//
 // Backspace key (delete the previous char)
 
 void spSerialField::processBackspaceKey(FieldContext_t &ctxEdit) 
@@ -229,8 +252,9 @@ void spSerialField::processBackspaceKey(FieldContext_t &ctxEdit)
 }
 
 //--------------------------------------------------------------------------
-// 
-// EOL key 
+// processEndOfLineKey()
+//
+// Move cursor to EOL
 
 void spSerialField::processEndOfLineKey(FieldContext_t &ctxEdit) 
 {
@@ -257,8 +281,9 @@ void spSerialField::processEndOfLineKey(FieldContext_t &ctxEdit)
 }
 
 //--------------------------------------------------------------------------
-// 
-// Start of Line key 
+// processStartOfLineKey()
+//
+// Move cursor to start of the line
 
 void spSerialField::processStartOfLineKey(FieldContext_t &ctxEdit) 
 {
@@ -284,9 +309,13 @@ void spSerialField::processStartOfLineKey(FieldContext_t &ctxEdit)
 }
 
 //--------------------------------------------------------------------------
-// 
-// Start of Line key 
-
+// processText()
+//
+// Process text entered
+//
+// TODO:
+//    Add validator concept, to enable restricted fields
+//
 void spSerialField::processText(FieldContext_t &ctxEdit, char * inputBuffer, uint length) 
 {
     
@@ -333,14 +362,17 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
     char inputBuffer[kInputBufferSize];
     uint nInput, nRead;
 
-    // Loop until the user stops (CR/Enter or ESC key)
+    // Loop until the user stops (CR/Enter or ESC key), or timeout
 
     bool returnValue = false;
 
-    timeout = timeout * 1000;
+    timeout = timeout * 1000; // secs to millis
 
-    // for timeout cal
+    // for timeout calc
     uint32_t startTime = millis();
+
+    // go go
+
     while ( true )
     {
         // input?
@@ -348,14 +380,15 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 
         if ( nInput == 0 ) // nope
         {
-            // timeout expired
+            // timeout expired?
             if (millis() - startTime > timeout)
-                break;
+                break; // end loop
 
             delay(100);
             continue;
         }
 
+        // check overflow on read
         if (nInput > kInputBufferSize)
             nInput = kInputBufferSize;
 
@@ -363,13 +396,12 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 
         if ( nRead == 0) 
         {
-            // TODO - issue warning
             spLog_W("Error reading from serial device");
             delay(100);
             continue;
         }
 
-        // if we are here, there was some activity. 
+        // if we are here, there was some activity. start timeout again
         startTime = millis();
 
         //Serial.printf("{%d}", inputBuffer[0]);
@@ -378,7 +410,7 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
         if ( inputBuffer[0] == kCodeESC)
         {
             if ( nRead == 1 ) // normal escape - abort entry
-                break;
+                break; // end loop
 
             // An "Escaped Key"
             if (inputBuffer[1] == kCodeESCExtend)
@@ -406,9 +438,9 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
                 ctxEdit.cursor = strlen(ctxEdit.head);
                 ctxEdit.bcursor = kBCursorZero;
             }
-            returnValue = true;
+            returnValue = true; 
 
-            break;
+            break; // end looop
         }
         else if ( inputBuffer[0] == kCodeEOL)    // Move to end of line.
             processEndOfLineKey(ctxEdit);
@@ -419,7 +451,7 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
         else if ( inputBuffer[0] == kCodeKillEOL)    // Kill to eol
             processKillToEOL(ctxEdit);            
 
-        else
+        else // enter text
             processText(ctxEdit, inputBuffer, nRead);
 
         Serial.flush();    
@@ -429,6 +461,8 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 }
 //--------------------------------------------------------------------------
 // editField()
+//
+// Public - main entry point
 //
 // editing operation with the provided character string as input
 
@@ -454,7 +488,7 @@ bool spSerialField::editField(char *value, size_t lenValue, uint32_t timeout)
 
     if ( editLoop(ctxEdit, timeout) )
     {
-        // Editing was successful 
+        // Editing was successful - copy out entered value
         strlcpy(value, ctxEdit.head, lenValue);
         return true;
     }
