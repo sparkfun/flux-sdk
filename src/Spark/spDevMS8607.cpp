@@ -20,6 +20,7 @@ spDevMS8607::spDevMS8607()
 {
 
     spSetupDeviceIdent(getDeviceName());
+    setDescription("MS8607 Pressure, Humidity and Temperature sensor");
 
     // Register output params
     spRegister(pressure_mbar, "Pressure (mbar)", "Pressure (mbar)");

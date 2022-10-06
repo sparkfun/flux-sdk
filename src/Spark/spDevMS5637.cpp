@@ -20,6 +20,7 @@ spDevMS5637::spDevMS5637()
 {
 
     spSetupDeviceIdent(getDeviceName());
+    setDescription("MS5637 Pressure and Temperature sensor");
 
     // Register output params
     spRegister(pressure_mbar, "Pressure (mbar)", "Pressure (mbar)");
