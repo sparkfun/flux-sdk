@@ -6,8 +6,11 @@
 
 spSerialField myField;
 
-char szBuffer[100] = {'\0'};
-
+char strValue[100] = {'\0'};
+int32_t  intValue=0;
+uint32_t uintValue=0;
+float    fValue=0.;
+double   dValue=0.;
 void setup() {
 
     Serial.begin(115200);
@@ -33,14 +36,18 @@ void loop() {
 
 
     Serial.print(">>");
-    //memset(szBuffer, '\0', sizeof(szBuffer));
-    bool returnValue = myField.editField(szBuffer, sizeof(szBuffer));
+
+    bool returnValue = myField.editField(strValue, sizeof(strValue));
+    //bool returnValue = myField.editFieldInt(intValue);
+    //bool returnValue = myField.editFieldUInt(uintValue);
+    //bool returnValue = myField.editFieldFloat(fValue);        
+    //bool returnValue = myField.editFieldDouble(dValue);            
 
     Serial.println();
     Serial.print("<<");
 
     if (returnValue)
-        Serial.println(szBuffer);
+        Serial.println(strValue);
     else 
         Serial.println(" [ESC]");
 

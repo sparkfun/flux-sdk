@@ -1,6 +1,7 @@
 
 
 #include <string.h>
+#include <inttypes.h>
 
 #include <Arduino.h>
 
@@ -95,6 +96,65 @@ const char chRightArrow[] = { kCodeESC, kCodeESCExtend, kCodeArrowRight};
 #define kInputBufferSize 32
 
 
+//--------------------------------------------------------------------------
+// Helpful, and hopefully vast validator functions
+
+static bool isInteger(char *value )
+{
+    if(!value )
+        return false;
+
+    char *p;
+    strtol(value, &p, 10);
+
+    return (*p == 0);
+}
+
+static bool isUnsignedInteger(char *value )
+{
+    if(!value )
+        return false;
+
+    // check for a negative number
+    char *p = value;
+
+    // skip white space
+    while(*p && isspace(*p))
+        p++;
+
+    // no negative numbers
+    if ( *p == '-')
+        return false;
+
+    strtoul(value, &p, 10);
+
+    return (*p == 0);
+}
+
+static bool isFloat(char *value)
+{
+    if(!value )
+        return false;
+
+    char *p;
+    strtof(value, &p);
+
+    return (*p == 0);
+}
+static bool isDouble(char *value)
+{
+    if(!value )
+        return false;
+
+    char *p;
+    strtod(value, &p);
+
+    return (*p == 0);
+}
+static bool isTrue(char *value)
+{
+    return true;
+}
 //--------------------------------------------------------------------------
 // drawTrailing()
 //
@@ -307,7 +367,18 @@ void spSerialField::processStartOfLineKey(FieldContext_t &ctxEdit)
         memset(ctxEdit.head, '\0', kEditBufferMax);
     }
 }
+void spSerialField::fulltext(FieldContext_t &ctxEdit, char *buffer, size_t length)
+{
 
+    if ( ctxEdit.cursor > 0)
+        memcpy(buffer, ctxEdit.head, ctxEdit.cursor);
+
+    if ( ctxEdit.bcursor < kBCursorZero)
+        memcpy(buffer + ctxEdit.cursor, ctxEdit.tail + ctxEdit.bcursor, kBCursorZero - ctxEdit.bcursor);
+
+    buffer[ctxEdit.cursor + kBCursorZero - ctxEdit.bcursor]='\0';
+    
+}
 //--------------------------------------------------------------------------
 // processText()
 //
@@ -332,14 +403,22 @@ void spSerialField::processText(FieldContext_t &ctxEdit, char * inputBuffer, uin
             break;
         }
         
-        // For Chars - just write
-        Serial.write(inputBuffer[i]);
-
         // Add to buffer
         ctxEdit.head[ctxEdit.cursor] = inputBuffer[i];
         ctxEdit.cursor++;
         ctxEdit.head[ctxEdit.cursor] = '\0';
 
+        fulltext( ctxEdit, ctxEdit.all);
+        if ( !ctxEdit.validator(ctxEdit.all) ){
+            Serial.write(kCodeBell);
+            // back out 
+            ctxEdit.cursor--;
+            ctxEdit.head[ctxEdit.cursor] = '\0';
+
+            break;
+        }
+        // For Chars - just write
+        Serial.write(inputBuffer[i]);
     }
     // And text after the insertion point?
     drawTrailing(ctxEdit,false);
@@ -371,7 +450,10 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
     // for timeout calc
     uint32_t startTime = millis();
 
-    // go go
+    // if there is an existing value in head, write it out
+    if ( ctxEdit.cursor > 0)
+        Serial.write(ctxEdit.head, ctxEdit.cursor);
+
 
     while ( true )
     {
@@ -429,17 +511,9 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
         }
         else if ( inputBuffer[0] == kCodeCR)    // CR was entered?
         {
-            // move any text after the insertion point into the head buffer
-            if ( ctxEdit.bcursor < kBCursorZero)
-            {
-                memcpy(ctxEdit.head + ctxEdit.cursor, ctxEdit.tail + ctxEdit.bcursor,
-                            kBCursorZero - ctxEdit.bcursor);
-
-                ctxEdit.cursor = strlen(ctxEdit.head);
-                ctxEdit.bcursor = kBCursorZero;
-            }
-            returnValue = true; 
-
+            // move text to all
+            fulltext( ctxEdit, ctxEdit.all);
+            returnValue = true;
             break; // end looop
         }
         else if ( inputBuffer[0] == kCodeEOL)    // Move to end of line.
@@ -462,7 +536,7 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 //--------------------------------------------------------------------------
 // editField()
 //
-// Public - main entry point
+// Public - main entry point - general data entry
 //
 // editing operation with the provided character string as input
 
@@ -476,25 +550,127 @@ bool spSerialField::editField(char *value, size_t lenValue, uint32_t timeout)
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
+    ctxEdit.validator = isTrue; // always true for text
 
     // copy in our initial value.
     ctxEdit.cursor = strlen(value);    
     if ( ctxEdit.cursor > 0 )
-    {
         strlcpy(ctxEdit.head, value, kEditBufferMax);
-        Serial.write(ctxEdit.head, ctxEdit.cursor);
-    }
+
     // Okay, setup, lets dispatch to the editloop
 
     if ( editLoop(ctxEdit, timeout) )
     {
         // Editing was successful - copy out entered value
-        strlcpy(value, ctxEdit.head, lenValue);
+        strlcpy(value, ctxEdit.all, lenValue);
         return true;
     }
 
     // editing wasn't successful.
     return false; 
 }
+//--------------------------------------------------------------------------
+bool spSerialField::editFieldInt( int32_t &value, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
 
+    resetContext(ctxEdit);
+    ctxEdit.validator = isInteger;
+
+    // jam the current value into context head
+    snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
+    ctxEdit.cursor = strlen(ctxEdit.head);
+
+    if ( editLoop(ctxEdit, timeout) )
+    {
+        char *p;
+        // Editing was successful - copy out entered value
+        value = strtol(ctxEdit.all, &p, 10);
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false; 
+
+}
+//--------------------------------------------------------------------------
+bool spSerialField::editFieldUInt( uint32_t &value, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+    ctxEdit.validator = isUnsignedInteger;
+
+    // jam the current value into context head
+
+    snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%u", value);
+    ctxEdit.cursor = strlen(ctxEdit.head);
+
+    if ( editLoop(ctxEdit, timeout) )
+    {
+        char *p;
+        // Editing was successful - copy out entered value
+        value = strtoul(ctxEdit.all, &p, 10);
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false; 
+
+}
+//--------------------------------------------------------------------------
+bool spSerialField::editFieldFloat( float &value, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+    ctxEdit.validator = isFloat;
+
+    // jam the current value into context head
+
+    snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%f", value);
+    ctxEdit.cursor = strlen(ctxEdit.head);
+
+    if ( editLoop(ctxEdit, timeout) )
+    {
+        char *p;
+        // Editing was successful - copy out entered value
+        value = strtof(ctxEdit.all, &p);
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false; 
+
+}
+
+//--------------------------------------------------------------------------
+bool spSerialField::editFieldDouble( double &value, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+    ctxEdit.validator = isDouble;
+
+    // jam the current value into context head
+
+    snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%f", value);
+    ctxEdit.cursor = strlen(ctxEdit.head);
+
+    if ( editLoop(ctxEdit, timeout) )
+    {
+        char *p;
+        // Editing was successful - copy out entered value
+        value = strtod(ctxEdit.all, &p);
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false; 
+
+}
 
