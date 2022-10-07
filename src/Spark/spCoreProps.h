@@ -801,6 +801,8 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 //    - have properties
 //    - name and descriptor
 //    - typed.
+// TODO:
+//   - Add instance ID counter
 
 class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
 {
@@ -811,6 +813,7 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     spObject()
     {
     }
+    virtual ~spObject(){}
 
     void setParent(spObject *parent)
     {
@@ -844,14 +847,30 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
         // TODO implement - finish
         return true;
     };
+    //---------------------------------------------------------------------------------    
     // Return the type ID of this
     virtual spTypeID getType(void)
     {
-        return 0;
+        return type();
     }
-    // TODO:
-    //   - Add type?
-    //   - Add instance ID counter
+    //---------------------------------------------------------------------------------
+    // A static type class for spObject
+    static spTypeID type(void)
+    {
+        static spTypeID _myTypeID = kspTypeIDNone;
+        if ( _myTypeID != kspTypeIDNone )
+            return _myTypeID;
+
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
+        // to create our ID. The macro gives us a unique name for 
+        // each class b/c it uses the template parameter.
+
+        // Hash the name, make that our type ID. 
+        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+
+        return _myTypeID;
+    }
+    
 };
 //####################################################################
 // Container update
@@ -970,8 +989,17 @@ template <class T> class spContainer : public spObject
     {
         return type();
     }
+    
+};
+using spObjectContainer = spContainer<spObject *>;
+
+//----------------------------------------------------------------------
+// Handy template to test if an object is of a specific type
+template <class T> 
+bool spIsType(spObject *pObj)
+{
+    return ( T::type() == pObj->getType() );
 };
 
-using spObjectContainer = spContainer<spObject *>;
 
 // End - spCoreProps.h
