@@ -99,6 +99,7 @@ bool spDevSCD30::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevSCD30::onInitialize(TwoWire &wirePort)
 {
 
+    SCD30::useStaleData(true); // Return stale data instead of zeros
     return SCD30::begin(wirePort);
 }
 
