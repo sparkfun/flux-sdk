@@ -12,18 +12,17 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
 {
 
   public:
+    spSettingsSerial() : _systemRoot{nullptr}
+    {
 
-  	spSettingsSerial() : _systemRoot{nullptr}{
+        setName("Serial System Setttings");
+        setDescription("Set system settings via the Serial Console");
+    }
 
-  		setName("Serial System Setttings");
-  		setDescription("Set system settings via the Serial Console");
-  	}
-
-
-  	void setSystemRoot(spObjectContainer * theRoot)
-  	{
-  		_systemRoot = theRoot;
-  	}
+    void setSystemRoot(spObjectContainer *theRoot)
+    {
+        _systemRoot = theRoot;
+    }
     // Draw Settings Page entres -- this is the entry pont for this menu
 
     bool drawPage(spObject *);
@@ -59,13 +58,11 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     uint8_t getMenuSelection(uint max, bool hasParent = true, uint timeout = 30);
 
   private:
-
-  	// was the entered value a "escape" value -- lev this page! 
+    // was the entered value a "escape" value -- lev this page!
     // note 27 == escape key
     inline bool isEscape(uint8_t ch)
     {
-        return (ch == 'x' || ch == 'X' || ch == 'b' || 
-                ch == 'B' || ch == 27 || ch == kReadBufferTimoutExpired);
+        return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == 27 || ch == kReadBufferTimoutExpired);
     }
 
     //-----------------------------------------------------------------------------
@@ -188,38 +185,38 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         // Dispatch the item to the next drawPage() call. This
         // overloaded method needs pNext to be of the correct type,
         // but all objects in the container are pointers to the base
-        // class. soo... 
-        // 
+        // class. soo...
+        //
         // Find the class type and "downcast it"
 
-        if ( spIsType<spObjectContainer>(pNext) )
+        if (spIsType<spObjectContainer>(pNext))
         {
-            drawPage( reinterpret_cast<spObjectContainer*>(pNext) );
+            drawPage(reinterpret_cast<spObjectContainer *>(pNext));
         }
-        else if ( spIsType<spDeviceContainer>(pNext) )
+        else if (spIsType<spDeviceContainer>(pNext))
         {
-            drawPage( reinterpret_cast<spDeviceContainer*>(pNext) );
+            drawPage(reinterpret_cast<spDeviceContainer *>(pNext));
         }
-        else if ( spIsType<spActionContainer>(pNext) )
+        else if (spIsType<spActionContainer>(pNext))
         {
-            drawPage( reinterpret_cast<spActionContainer*>(pNext) );            
+            drawPage(reinterpret_cast<spActionContainer *>(pNext));
         }
-        else if ( spIsType<spOperationContainer>(pNext) )
+        else if (spIsType<spOperationContainer>(pNext))
         {
-            drawPage( reinterpret_cast<spOperationContainer*>(pNext) );    
+            drawPage(reinterpret_cast<spOperationContainer *>(pNext));
         }
         else
-            drawPage(pNext);                    
+            drawPage(pNext);
 
         // return the current level
         return level;
     };
 
     void drawMenuEntry(uint item, spDescriptor *pDesc);
-    void drawMenuEntry(uint item, const char *);    
+    void drawMenuEntry(uint item, const char *);
     void drawPageHeader(spObject *, const char *szItem = nullptr);
     void drawPageFooter(spObject *);
     // root for the system
 
-    spObjectContainer * _systemRoot;
+    spObjectContainer *_systemRoot;
 };

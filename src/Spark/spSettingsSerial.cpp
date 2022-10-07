@@ -1,16 +1,16 @@
 
 
-#include "spSerialField.h"
 #include "spSettingsSerial.h"
+#include "spSerialField.h"
 #include "spUtils.h"
 #include <ctype.h>
 
 #define kOutputBufferSize 128
 
 //-----------------------------------------------------------------------------
-// System settings user experince - via the serial console
+// System settings user experience - via the serial console
 //
-// Allows the user to walk the system hiearchy and change property values
+// Allows the user to walk the system hierarchy and change property values
 // and enable/disable parameters.
 //
 // The entire thing is dynamic and based on the structure of the system
@@ -19,7 +19,6 @@
 //-----------------------------------------------------------------------------
 // Draw Page
 //-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 // drawPage()  - Generic Object edition.
@@ -38,7 +37,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 
         nMenuItems = drawMenu(pCurrent, 0);
         if (nMenuItems == 0)
-            Serial.printf("\tNo Entries\n\r");                        
+            Serial.printf("\tNo Entries\n\r");
         else if (nMenuItems < 0)
         {
             Serial.println("Error generating menu entries.");
@@ -68,7 +67,6 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     if (!pCurrent)
         return false;
 
-    
     // The data editor we're using - serial field
     spSerialField theDataEditor;
 
@@ -78,21 +76,21 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     drawPageHeader(pCurrent, pProp->name());
 
     // Editing Intro
-    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", 
-                    pProp->name(), sp_utils::spTypeName(pProp->type()));
+    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
+                  sp_utils::spTypeName(pProp->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
-    
+
     Serial.printf("\t%s = ", pProp->name());
-    
+
     // Call the property editValue() method with our editor
     bool bSuccess = pProp->editValue(theDataEditor);
 
     Serial.printf("\n\r\n\r");
     if (bSuccess)
-        Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());    
-    else 
-        Serial.printf("\t[%s is unchanged]\n\r", pProp->name());    
+        Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());
+    else
+        Serial.printf("\t[%s is unchanged]\n\r", pProp->name());
 
     delay(1000); // good UX here I think
 
@@ -117,7 +115,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         nMenuItems = drawMenu(pCurrent, 0);
 
         if (nMenuItems == 0)
-            Serial.printf("\tNo Entries\n\r");            
+            Serial.printf("\tNo Entries\n\r");
         else if (nMenuItems < 0)
         {
             Serial.println("Error generating menu entries.");
@@ -160,7 +158,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 
         snprintf(szBuffer, kOutputBufferSize, "Enable %s", pParam->name());
         drawMenuEntry(1, szBuffer);
-        snprintf(szBuffer, kOutputBufferSize, "Disable %s", pParam->name());        
+        snprintf(szBuffer, kOutputBufferSize, "Disable %s", pParam->name());
         drawMenuEntry(2, szBuffer);
 
         drawPageFooter(pCurrent);
@@ -171,7 +169,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
         if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
             break;
 
-        pParam->setEnabled( selected == 1 );
+        pParam->setEnabled(selected == 1);
     }
 
     return true;
@@ -220,7 +218,7 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
         strlcpy(szOutput, szBuffer, kOutputBufferSize);
 
         pCurrent = pCurrent->parent();
-    } 
+    }
 
     Serial.println();
     Serial.println();
@@ -255,7 +253,7 @@ void spSettingsSerial::drawMenuEntry(uint item, spDescriptor *pDesc)
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
 }
 //-----------------------------------------------------------------------------
-void spSettingsSerial::drawMenuEntry(uint item, const char * szTitle)
+void spSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
 {
 
     if (!szTitle)
@@ -519,9 +517,9 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint t
             // if it's a number, or an escape letter(set by this app) drop out of loop
             if (isEscape(chIn))
             {
-                Serial.print( (hasParent ? 'b' : 'x'));
-                //Serial.print("\u2588"); // kdb block
-                //Serial.print('\a');  // kdb bell
+                Serial.print((hasParent ? 'b' : 'x'));
+                // Serial.print("\u2588"); // kdb block
+                // Serial.print('\a');  // kdb bell
                 chIn = kReadBufferExit;
                 break;
             }
@@ -561,14 +559,15 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint t
 bool spSettingsSerial::loop(void)
 {
 
-	if ( _systemRoot && Serial.available()){
-		drawPage(_systemRoot);
-		Serial.printf("\n\r\n\rEnd Settings\n\r");
+    if (_systemRoot && Serial.available())
+    {
+        drawPage(_systemRoot);
+        Serial.printf("\n\r\n\rEnd Settings\n\r");
 
-		// clear buffer
-    	while (Serial.available() > 0)
-        	Serial.read();
-	}
+        // clear buffer
+        while (Serial.available() > 0)
+            Serial.read();
+    }
 
     return true;
 }

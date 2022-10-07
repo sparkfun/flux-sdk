@@ -21,8 +21,8 @@
 #include <vector>
 
 #include "spCore.h"
-#include "spUtils.h"
 #include "spDevI2C.h"
+#include "spUtils.h"
 
 // define a value that marks the end of a device address/id list
 
@@ -156,21 +156,21 @@ template <typename T> class spDeviceType : public spDevice
     // of an instance.
     //
     // The typeID is determined by hashing the name of the class.
-    // This way the type ID is consistant across invocations 
+    // This way the type ID is consistant across invocations
 
     static spTypeID type(void)
     {
         static spTypeID _myTypeID = kspTypeIDNone;
 
-        if ( _myTypeID != kspTypeIDNone )
+        if (_myTypeID != kspTypeIDNone)
             return _myTypeID;
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
-        // to create our ID. The macro gives us a unique name for 
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // to create our ID. The macro gives us a unique name for
         // each class b/c it uses the template parameter.
 
-        // Hash the name, make that our type ID. 
-        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+        // Hash the name, make that our type ID.
+        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }

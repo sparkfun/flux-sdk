@@ -71,9 +71,9 @@ class spFormatCSV : public spOutputFormat
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, float value)
     {
-    	logValue(tag, (double)value);
+        logValue(tag, (double)value);
     }
-	//-----------------------------------------------------------------
+    //-----------------------------------------------------------------
     void logValue(const std::string &tag, double value)
     {
         // header?
@@ -98,14 +98,13 @@ class spFormatCSV : public spOutputFormat
         if (!append_csv_value(value, _header_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
-	//-----------------------------------------------------------------
-    void logValue(const std::string &tag, const char * value)
+    //-----------------------------------------------------------------
+    void logValue(const std::string &tag, const char *value)
     {
         // header?
         if (_bWriteHeader)
             if (!append_to_header(tag))
                 spLog_W("CSV - internal header buffer size exceeded.");
-
 
         if (!append_csv_value(std::string(value), _header_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
@@ -163,7 +162,7 @@ class spFormatCSV : public spOutputFormat
         _section_name = nullptr;
     }
 
-	//-----------------------------------------------------------------
+    //-----------------------------------------------------------------
     // Call this method to force the header to print next iteration.
     //
     // Normally the header is printing only for the first run.
@@ -184,13 +183,12 @@ class spFormatCSV : public spOutputFormat
         // Since the header is normally printed very rarely,
         // we shrink it.
         //
-    	// For data buffer, it's since is consistant between calls,
-    	// so just clear it.
+        // For data buffer, it's since is consistant between calls,
+        // so just clear it.
 
         _header_buffer.clear();
         _header_buffer.shrink_to_fit();
         _data_buffer.clear();
-
     }
 
     bool append_csv_value(const std::string &value, std::string &buffer)
@@ -204,7 +202,7 @@ class spFormatCSV : public spOutputFormat
         return true;
     }
     //-----------------------------------------------------------------
-    bool append_to_header(const std::string& tag)
+    bool append_to_header(const std::string &tag)
     {
         if (tag.length() == 0)
             return true;
@@ -221,8 +219,6 @@ class spFormatCSV : public spOutputFormat
 
         return append_csv_value(szBuffer, _header_buffer);
     }
-
-    
 
     //-----------------------------------------------------------------
 

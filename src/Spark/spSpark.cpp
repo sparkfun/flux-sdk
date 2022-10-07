@@ -2,8 +2,8 @@
 
 #include <Arduino.h>
 
-#include "spSpark.h"
 #include "spSerial.h"
+#include "spSpark.h"
 #include "spStorage.h"
 
 // for logging - define output driver on the stack
@@ -18,7 +18,7 @@ spSpark &spark = spSpark::get();
 bool spSpark::start(bool bAutoLoad)
 {
 
-    // setup our logging system. 
+    // setup our logging system.
     _logDriver.setOutput(spSerial());
     spLog.setLogDriver(_logDriver);
 
@@ -60,7 +60,6 @@ bool spSpark::loop(void)
         rc2 = pAction->loop();
         rc = rc || rc2;
     }
-
 
     // i2c devices
     for (auto pDevice : Devices)

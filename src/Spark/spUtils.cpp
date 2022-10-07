@@ -5,29 +5,17 @@
 #include <math.h>
 #include <string.h>
 
-
-static const char* typeNames[] =
-{
-    "none",
-    "bool",
-    "int8",
-    "integer",
-    "unsigned int8",
-    "unsigned integer",
-    "float",
-    "double",
-    "string"
-};
+static const char *typeNames[] = {"none",  "bool",   "int8",  "integer", "unsigned int8", "unsigned integer",
+                                  "float", "double", "string"};
 
 //-------------------------------------------------------------------------
 // spTypeName()
 //
 // Return a human type give the framework type
-const char * sp_utils::spTypeName(spDataType_t type)
+const char *sp_utils::spTypeName(spDataType_t type)
 {
     return typeNames[type];
 }
-
 
 //-------------------------------------------------------------------------
 // dtostr()
@@ -128,7 +116,7 @@ size_t sp_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t pr
 // Internal hash function used to generate a unique ID based on a string
 //    From: http://www.cse.yorku.ca/~oz/hash.html
 
- uint32_t sp_utils::id_hash_string(const char *str)
+uint32_t sp_utils::id_hash_string(const char *str)
 {
 
     uint32_t hash = 5381;
@@ -137,8 +125,8 @@ size_t sp_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t pr
     while (c != 0)
     {
         c = *str++;
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c 
+        hash = ((hash << 5) + hash) + c; // hash * 33 + c
     }
 
-    return hash ; //& 0xFFFF; // NOTE - we're just using 16 bits
+    return hash; //& 0xFFFF; // NOTE - we're just using 16 bits
 }

@@ -48,7 +48,7 @@ class spDescriptor
 
 typedef enum
 {
-    spTypeNone=0,
+    spTypeNone = 0,
     spTypeBool,
     spTypeInt8,
     spTypeInt,
@@ -155,7 +155,7 @@ class spDataOut
     virtual int8_t getInt8() = 0;
     virtual int getInt() = 0;
     virtual uint8_t getUint8() = 0;
-    virtual uint getUint() = 0;    
+    virtual uint getUint() = 0;
     virtual float getFloat() = 0;
     virtual double getDouble() = 0;
     virtual std::string getString() = 0;
@@ -358,12 +358,12 @@ class spDataIn
 
     virtual void setBool(bool) = 0;
     virtual void setInt8(int8_t) = 0;
-    virtual void setInt(int ) = 0;
+    virtual void setInt(int) = 0;
     virtual void setUint8(uint8_t) = 0;
     virtual void setUint(uint) = 0;
     virtual void setFloat(float) = 0;
     virtual void setDouble(double) = 0;
-    virtual void setString(std::string&) = 0;
+    virtual void setString(std::string &) = 0;
 
     void set_value(bool v)
     {
@@ -393,7 +393,7 @@ class spDataIn
     {
         setDouble(v);
     }
-    void set_value(std::string & v)
+    void set_value(std::string &v)
     {
         setString(v);
     }
@@ -415,7 +415,7 @@ class spDataIn
     }
     int8_t to_int8(std::string const &data) const
     {
-        return (int8_t)std::stoi(data);        
+        return (int8_t)std::stoi(data);
     }
     uint to_uint(std::string const &data) const
     {
@@ -432,14 +432,13 @@ class spDataIn
     double to_double(std::string const &data) const
     {
         return std::stof(data);
-
     }
     bool to_bool(std::string const &data) const
     {
         // First, test for literal values
         if (data == "true")
             return true;
-        else if ( data == "false")
+        else if (data == "false")
             return false;
 
         // if we are here, we consider true any value set
@@ -458,7 +457,6 @@ template <typename T> class _spDataIn : public spDataIn
     };
     virtual void set(T const &value) = 0;
 
-
     void setBool(bool value)
     {
         set((T)value);
@@ -467,7 +465,7 @@ template <typename T> class _spDataIn : public spDataIn
     {
         set((T)value);
     }
-    void setInt(int value )
+    void setInt(int value)
     {
         set((T)value);
     }
@@ -487,38 +485,37 @@ template <typename T> class _spDataIn : public spDataIn
     {
         set((T)value);
     }
-    void setString(std::string& value)
+    void setString(std::string &value)
     {
-        //Convert string to native type..
-        switch ( this->type() )
+        // Convert string to native type..
+        switch (this->type())
         {
-            case spTypeBool:
-                set( to_bool(value));
-                break;
-            case spTypeInt:
-                set( to_int(value));
-                break;
-            case spTypeInt8:
-                set( to_int8(value));
-                break;
-            case spTypeUInt:
-                set( to_uint(value));
-                break;
-            case spTypeUInt8:
-                set( to_uint8(value));
-                break;
-            case spTypeFloat:
-                set( to_float(value));
-                break;
-            case spTypeDouble:
-                set( to_double(value));
-                break;
-            case spTypeString:
-                break;
-            default:
-                spLog_W("Unknown property type set");
-                break;
-
+        case spTypeBool:
+            set(to_bool(value));
+            break;
+        case spTypeInt:
+            set(to_int(value));
+            break;
+        case spTypeInt8:
+            set(to_int8(value));
+            break;
+        case spTypeUInt:
+            set(to_uint(value));
+            break;
+        case spTypeUInt8:
+            set(to_uint8(value));
+            break;
+        case spTypeFloat:
+            set(to_float(value));
+            break;
+        case spTypeDouble:
+            set(to_double(value));
+            break;
+        case spTypeString:
+            break;
+        default:
+            spLog_W("Unknown property type set");
+            break;
         }
     };
 };
@@ -540,16 +537,15 @@ typedef uint32_t spTypeID;
 class spDataEditor
 {
 
-public:
-    virtual bool editField(char *value, size_t lenValue, uint32_t timeout=60) = 0;
-    virtual bool editField(std::string &value, uint32_t timeout=60) = 0;
-    virtual bool editField( bool &value, uint32_t timeout=60) = 0;
-    virtual bool editField( int8_t &value, uint32_t timeout=60) = 0;
-    virtual bool editField( int32_t &value, uint32_t timeout=60) = 0;
-    virtual bool editField( uint8_t &value, uint32_t timeout=60) = 0;
-    virtual bool editField( uint32_t &value, uint32_t timeout=60) = 0;
-    virtual bool editField( float &value, uint32_t timeout=60) = 0;
-    virtual bool editField( double &value, uint32_t timeout=60) = 0;
+  public:
+    virtual bool editField(char *value, size_t lenValue, uint32_t timeout = 60) = 0;
+    virtual bool editField(std::string &value, uint32_t timeout = 60) = 0;
+    virtual bool editField(bool &value, uint32_t timeout = 60) = 0;
+    virtual bool editField(int8_t &value, uint32_t timeout = 60) = 0;
+    virtual bool editField(int32_t &value, uint32_t timeout = 60) = 0;
+    virtual bool editField(uint8_t &value, uint32_t timeout = 60) = 0;
+    virtual bool editField(uint32_t &value, uint32_t timeout = 60) = 0;
+    virtual bool editField(float &value, uint32_t timeout = 60) = 0;
+    virtual bool editField(double &value, uint32_t timeout = 60) = 0;
 };
 // End - spCoreTypes.h
-

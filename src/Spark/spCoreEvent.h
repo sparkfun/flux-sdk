@@ -80,7 +80,7 @@ typedef spSignal<uint8_t> spSignalUInt8;
 typedef spSignal<uint> spSignalUInt;
 typedef spSignal<float> spSignalFloat;
 typedef spSignal<double> spSignalDouble;
-typedef spSignal<const char*> spSignalString;
+typedef spSignal<const char *> spSignalString;
 
 // Signal - zero arg - aka void function callback type. Unable to template this, so
 // just brute force the impl.

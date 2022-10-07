@@ -56,11 +56,11 @@ class spSpark : public spObjectContainer
     //--------------------------------------------------------
     // get/find a device by type template.
     //
-    // Returns a list/vector off all things found based on 
+    // Returns a list/vector off all things found based on
     // the specified type
     //
     // This is returning a smart pointer to a vector of the type passed in.
-    // Once the smart pointer goes out of scope, it frees up the underlying 
+    // Once the smart pointer goes out of scope, it frees up the underlying
     // vector memory.
     //
     // example - getting all the buttons :
@@ -77,23 +77,23 @@ class spSpark : public spObjectContainer
     //  }
     //
 
-    template <class T> std::shared_ptr<spContainer<T*>> get()
+    template <class T> std::shared_ptr<spContainer<T *>> get()
     {
-        spContainer<T*> results;
+        spContainer<T *> results;
 
         spTypeID type = T::type();
 
-        T* theItem;
+        T *theItem;
         for (int i = 0; i < Devices.size(); i++)
         {
             if (type == Devices.at(i)->getType())
             {
-                theItem = (T*)Devices.at(i);
+                theItem = (T *)Devices.at(i);
                 results.push_back(theItem);
             }
         }
         // make a smart pointer
-        return std::make_shared<spContainer<T*>>(std::move(results));
+        return std::make_shared<spContainer<T *>>(std::move(results));
     }
 
     //--------------------------------------------------------
@@ -102,13 +102,13 @@ class spSpark : public spObjectContainer
     {
         spOperationContainer results;
 
-        spOperation* theItem;
+        spOperation *theItem;
         for (int i = 0; i < Devices.size(); i++)
         {
             if (type == Devices.at(i)->getType())
             {
-                theItem = (spOperation*)Devices.at(i);
-                results.push_back(theItem);                               
+                theItem = (spOperation *)Devices.at(i);
+                results.push_back(theItem);
             }
         }
         // make a smart pointer

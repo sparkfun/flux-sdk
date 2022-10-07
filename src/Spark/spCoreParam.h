@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "spCoreTypes.h"
 #include "spCoreProps.h"
+#include "spCoreTypes.h"
 #include "spUtils.h"
 
 //----------------------------------------------------------------------------------------
@@ -241,17 +241,20 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
 // Define by type
 template <class Object, bool (Object::*_getter)()> using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
 
-template <class Object, int8_t (Object::*_getter)()> using spParameterOutInt8 = _spParameterOut<int8_t, Object, _getter>;
+template <class Object, int8_t (Object::*_getter)()>
+using spParameterOutInt8 = _spParameterOut<int8_t, Object, _getter>;
 
 template <class Object, int (Object::*_getter)()> using spParameterOutInt = _spParameterOut<int, Object, _getter>;
 
-template <class Object, uint8_t (Object::*_getter)()> using spParameterOutUint8 = _spParameterOut<uint8_t, Object, _getter>;
+template <class Object, uint8_t (Object::*_getter)()>
+using spParameterOutUint8 = _spParameterOut<uint8_t, Object, _getter>;
 
 template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
 
 template <class Object, float (Object::*_getter)()> using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
 
-template <class Object, double (Object::*_getter)()> using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
+template <class Object, double (Object::*_getter)()>
+using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
 
 //----------------------------------------------------------------------------------------------------
 // spParameterOutString
@@ -499,7 +502,7 @@ class spOperation : public spObject, public _spParameterContainer
   public:
     virtual spTypeID getType(void)
     {
-        return (spTypeID)nullptr;
+        return (spTypeID) nullptr;
     }
 
     virtual bool loop(void)
@@ -523,28 +526,27 @@ using spActionContainer = spContainer<spAction *>;
 template <typename T> class spActionType : public spAction
 {
   public:
-
     // Typing system for actions
     //
     // Defines a type specific static method - so can be called outside
     // of an instance.
     //
     // The typeID is determined by hashing the name of the class.
-    // This way the type ID is consistant across invocations 
+    // This way the type ID is consistant across invocations
 
     static spTypeID type(void)
     {
         static spTypeID _myTypeID = kspTypeIDNone;
 
-        if ( _myTypeID != kspTypeIDNone )
+        if (_myTypeID != kspTypeIDNone)
             return _myTypeID;
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
-        // to create our ID. The macro gives us a unique name for 
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // to create our ID. The macro gives us a unique name for
         // each class b/c it uses the template parameter.
 
-        // Hash the name, make that our type ID. 
-        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+        // Hash the name, make that our type ID.
+        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
@@ -555,7 +557,5 @@ template <typename T> class spActionType : public spAction
         return type();
     }
 };
-
-
 
 // End - spCoreParam.h

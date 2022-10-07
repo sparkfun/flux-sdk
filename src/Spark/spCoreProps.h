@@ -8,13 +8,12 @@
 
 #pragma once
 
-
 #include <string>
 #include <vector>
 
 #include "spCoreTypes.h"
-#include "spUtils.h"
 #include "spStorage.h"
+#include "spUtils.h"
 
 //----------------------------------------------------------------------------------------
 // spProperty
@@ -27,13 +26,12 @@ class spProperty : public spPersist, public spDescriptor
 {
 
   public:
-
     virtual spDataType_t type(void) = 0;
 
     // Editor interface method - called to have the value of the property
     // displayed/set/managed in an editor
 
-    virtual bool editValue(spDataEditor&) = 0;
+    virtual bool editValue(spDataEditor &) = 0;
 
     //---------------------------------------------------------------------------------
     virtual size_t size(void)
@@ -47,7 +45,7 @@ class spProperty : public spPersist, public spDescriptor
         return 0; // number of bytes used to persist value
     };
 
-    // Expect subclasses will overide this 
+    // Expect subclasses will overide this
     virtual std::string getString()
     {
         std::string s = "";
@@ -91,7 +89,8 @@ class _spPropertyContainer
         return _properties;
     };
 
-    uint nProperties(void){
+    uint nProperties(void)
+    {
 
         return _properties.size();
     }
@@ -184,7 +183,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    bool editValue(spDataEditor& theEditor)
+    bool editValue(spDataEditor &theEditor)
     {
 
         T value = get();
@@ -196,7 +195,6 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 
         return bSuccess;
     }
-
 };
 
 //----------------------------------------------------------------------------------------
@@ -276,7 +274,7 @@ class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spData
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    bool editValue(spDataEditor& theEditor)
+    bool editValue(spDataEditor &theEditor)
     {
 
         std::string value = get();
@@ -790,7 +788,6 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     std::string data; // storage for the property
 };
 
-
 //----------------------------------------------------------------------------------------------------
 // spObject
 //
@@ -813,7 +810,9 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     spObject()
     {
     }
-    virtual ~spObject(){}
+    virtual ~spObject()
+    {
+    }
 
     void setParent(spObject *parent)
     {
@@ -847,7 +846,7 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
         // TODO implement - finish
         return true;
     };
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // Return the type ID of this
     virtual spTypeID getType(void)
     {
@@ -858,19 +857,18 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     static spTypeID type(void)
     {
         static spTypeID _myTypeID = kspTypeIDNone;
-        if ( _myTypeID != kspTypeIDNone )
+        if (_myTypeID != kspTypeIDNone)
             return _myTypeID;
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
-        // to create our ID. The macro gives us a unique name for 
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // to create our ID. The macro gives us a unique name for
         // each class b/c it uses the template parameter.
 
-        // Hash the name, make that our type ID. 
-        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+        // Hash the name, make that our type ID.
+        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
-    
 };
 //####################################################################
 // Container update
@@ -965,21 +963,21 @@ template <class T> class spContainer : public spObject
     // of an instance.
     //
     // The typeID is determined by hashing the name of the class.
-    // This way the type ID is consistant across invocations 
+    // This way the type ID is consistant across invocations
 
     static spTypeID type(void)
     {
         static spTypeID _myTypeID = kspTypeIDNone;
 
-        if ( _myTypeID != kspTypeIDNone )
+        if (_myTypeID != kspTypeIDNone)
             return _myTypeID;
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
-        // to create our ID. The macro gives us a unique name for 
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // to create our ID. The macro gives us a unique name for
         // each class b/c it uses the template parameter.
 
-        // Hash the name, make that our type ID. 
-        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+        // Hash the name, make that our type ID.
+        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
@@ -989,17 +987,14 @@ template <class T> class spContainer : public spObject
     {
         return type();
     }
-    
 };
 using spObjectContainer = spContainer<spObject *>;
 
 //----------------------------------------------------------------------
 // Handy template to test if an object is of a specific type
-template <class T> 
-bool spIsType(spObject *pObj)
+template <class T> bool spIsType(spObject *pObj)
 {
-    return ( T::type() == pObj->getType() );
+    return (T::type() == pObj->getType());
 };
-
 
 // End - spCoreProps.h

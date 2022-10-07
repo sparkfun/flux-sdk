@@ -75,7 +75,7 @@ int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, const char *fmt, va
 // ESP32 section
 #include <esp_log.h>
 
-const char * kESP32LogTag = "SP";
+const char *kESP32LogTag = "SP";
 
 uint spLoggingDrvESP32::getESPLevel(const spLogLevel_t level)
 {
@@ -100,7 +100,7 @@ uint spLoggingDrvESP32::getESPLevel(const spLogLevel_t level)
 
 void spLoggingDrvESP32::setLogLevel(const spLogLevel_t level)
 {
-    //esp_log_level_set(kESP32LogTag, (esp_log_level_t)getESPLevel(level));
+    // esp_log_level_set(kESP32LogTag, (esp_log_level_t)getESPLevel(level));
     esp_log_level_set("*", ESP_LOG_VERBOSE);
 }
 //-------------------------------------------------------------------------
@@ -112,7 +112,7 @@ void spLoggingDrvESP32::setLogLevel(const spLogLevel_t level)
 
 int spLoggingDrvESP32::logPrintf(const spLogLevel_t level, const char *fmt, va_list args)
 {
-    esp_log_writev( (esp_log_level_t)getESPLevel(level), kESP32LogTag, fmt, args);
+    esp_log_writev((esp_log_level_t)getESPLevel(level), kESP32LogTag, fmt, args);
 
     return 1;
 }
