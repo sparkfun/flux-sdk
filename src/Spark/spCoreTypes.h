@@ -520,6 +520,72 @@ template <typename T> class _spDataIn : public spDataIn
     };
 };
 
+class _spDataInString : public spDataIn
+{
+
+  public:
+    spDataType_t type(void)
+    {
+        return spTypeString;
+
+    };
+    virtual void set(const std::string &value) = 0;
+
+    virtual void set(const char *value)
+    {
+        std::string stmp = value;
+        set(value);
+    }
+
+    void setBool(bool value)
+    {
+        char szBuffer[16];
+        snprintf(szBuffer, sizeof(szBuffer), "%d", value ? 1 : 0);
+
+        set(szBuffer);
+    }
+    void setInt8(int8_t value)
+    {
+        char szBuffer[16];
+        snprintf(szBuffer, sizeof(szBuffer), "%d", value);        
+        set(szBuffer);
+    }
+    void setInt(int value)
+    {
+        char szBuffer[32];
+        snprintf(szBuffer, sizeof(szBuffer), "%d", value);        
+        set(szBuffer);
+    }
+    void setUint8(uint8_t value)
+    {
+        char szBuffer[16];
+        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
+        set(szBuffer);
+    }
+    void setUint(uint value)
+    {
+        char szBuffer[32];
+        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
+        set(szBuffer);
+    }
+    void setFloat(float value)
+    {
+        char szBuffer[32];
+        snprintf(szBuffer, sizeof(szBuffer), "%f", value);
+        set(szBuffer);
+    }
+    void setDouble(double value)
+    {
+        char szBuffer[32];
+        snprintf(szBuffer, sizeof(szBuffer), "%f", value);        
+        set(szBuffer);
+    }
+    void setString(std::string &value)
+    {
+        set(value);
+    };
+};
+
 //---------------------------------------------------------
 // Define simple type ID "types" - used for class IDs
 
