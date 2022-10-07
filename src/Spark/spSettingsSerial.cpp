@@ -197,6 +197,51 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 
     return true;
 }
+//-----------------------------------------------------------------------------
+// drawPage() - Input Parameter Editing edition
+//
+// The user has selected an input parameter. 
+//
+// If the parameter isn't void - get inputs from the user and call the 
+// parameter with the provided data. 
+
+bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
+{
+    if (!pCurrent)
+        return false;
+
+    // The data editor we're using - serial field
+    spSerialField theDataEditor;
+
+    // let's get a value for the parameter
+
+    // Header
+    drawPageHeader(pCurrent, pParam->name());
+
+    // Editing Intro
+    Serial.printf("\tEnter the value to pass into `%s`(<%s>)\n\r\n\r", pParam->name(),
+                  sp_utils::spTypeName(pParam->type()));
+
+    Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
+
+    Serial.printf("\t%s = ", pParam->name());
+
+    // Call the parameter editValue() method with our editor
+    bool bSuccess = pParam->editValue(theDataEditor);
+
+    Serial.printf("\n\r\n\r");
+    if (bSuccess)
+        Serial.printf("\t[`%s` was called with the provided value.]\n\r", pParam->name());
+    else
+        Serial.printf("\t[`%s` was not called]\n\r", pParam->name());
+
+    delay(1000); // good UX here I think
+
+    return true;
+}
+
+
+
 // Container typed wrappers that use the container template for all the work
 bool spSettingsSerial::drawPage(spObjectContainer *pCurrent)
 {

@@ -29,6 +29,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     bool drawPage(spObject *, spProperty *);
     bool drawPage(spOperation *);
     bool drawPage(spOperation *, spParameter *);
+    bool drawPage(spOperation *, spParameterIn *);
 
     bool drawPage(spObjectContainer *);
     bool drawPage(spOperationContainer *);
