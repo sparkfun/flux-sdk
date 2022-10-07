@@ -186,11 +186,11 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         auto pNext = pCurrent->at(item);
 
         // Dispatch the item to the next drawPage() call. This
-        // overloaded method nees pNext to be of the correct type,
+        // overloaded method needs pNext to be of the correct type,
         // but all objects in the container are pointers to the base
         // class. soo... 
         // 
-        // Find the class type and "upcast it"
+        // Find the class type and "downcast it"
 
         if ( spIsType<spObjectContainer>(pNext) )
         {
