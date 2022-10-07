@@ -54,11 +54,15 @@
 //                                           ^ cursor pos
 //      ||---- tail[] -----------------------| (head is empty)
 //
+//
 // ----------------------------------------------------------------------
-// Context values for the text entry session
+// Note: While this edit field exposes interfaces for different data types,
+// at the core, it all works in "string" space. 
+// ----------------------------------------------------------------------
+// Context Struct values for the text entry session (see header file for def)
 //
 // head - text before the cursor - values at:  0 to cursor
-//        Values added at the cusor.
+//        Values added at the cursor.
 //
 // tail - The text after the cursor -  values at:  bcursor to kEditBufferMax-1
 //        If the cursor is moved left, chars are moved from .head to .tail.
@@ -98,7 +102,8 @@ const char chRightArrow[] = {kCodeESC, kCodeESCExtend, kCodeArrowRight};
 #define kInputBufferSize 32
 
 //--------------------------------------------------------------------------
-// Helpful, and hopefully fast validator functions
+// Validators for editing operations
+//--------------------------------------------------------------------------
 
 static bool isInt8(char *value)
 {
@@ -112,7 +117,7 @@ static bool isInt8(char *value)
 
     return (*p == 0) && tmp <= std::numeric_limits<int8_t>::max() && tmp >= std::numeric_limits<int8_t>::min();
 }
-
+//--------------------------------------------------------------------------
 static bool isInt(char *value)
 {
     if (!value)
@@ -123,7 +128,7 @@ static bool isInt(char *value)
 
     return (*p == 0);
 }
-
+//--------------------------------------------------------------------------
 static bool isUInt8(char *value)
 {
     if (!value)
@@ -144,7 +149,7 @@ static bool isUInt8(char *value)
 
     return (*p == 0) && tmp <= std::numeric_limits<uint8_t>::max() && tmp >= std::numeric_limits<uint8_t>::min();
 }
-
+//--------------------------------------------------------------------------
 static bool isUInt(char *value)
 {
     if (!value)
@@ -165,7 +170,7 @@ static bool isUInt(char *value)
 
     return (*p == 0);
 }
-
+//--------------------------------------------------------------------------
 static bool isFloat(char *value)
 {
     if (!value)
@@ -176,6 +181,7 @@ static bool isFloat(char *value)
 
     return (*p == 0);
 }
+//--------------------------------------------------------------------------
 static bool isDouble(char *value)
 {
     if (!value)
@@ -186,6 +192,8 @@ static bool isDouble(char *value)
 
     return (*p == 0);
 }
+//--------------------------------------------------------------------------
+// Everything is awesome! Always true.
 static bool isTrue(char *value)
 {
     return true;
@@ -301,9 +309,9 @@ void spSerialField::processDELKey(FieldContext_t &ctxEdit)
 }
 
 //--------------------------------------------------------------------------
-// processKilltoEOL()
+// processKillToEOL()
 //
-// Kill to end of line - ^K
+// Kill to end of line - ^K - old emacs command?!
 
 void spSerialField::processKillToEOL(FieldContext_t &ctxEdit)
 {
@@ -400,6 +408,11 @@ void spSerialField::processStartOfLineKey(FieldContext_t &ctxEdit)
         memset(ctxEdit.head, '\0', kEditBufferMax);
     }
 }
+//--------------------------------------------------------------------------
+// fulltext()
+//
+// Returns the full text line in the provided buffer
+
 void spSerialField::fulltext(FieldContext_t &ctxEdit, char *buffer, size_t length)
 {
 
@@ -441,6 +454,7 @@ void spSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint
         ctxEdit.head[ctxEdit.cursor] = '\0';
 
         fulltext(ctxEdit, ctxEdit.all);
+        
         if (!ctxEdit.validator(ctxEdit.all))
         {
             Serial.write(kCodeBell);
@@ -463,7 +477,7 @@ void spSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint
 //
 // Return Value
 //    - true on success/new value
-//    - false on error, aboarted entry
+//    - false on error, aborted entry
 //
 //  timeout - is in secs
 //
@@ -474,7 +488,6 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
     uint nInput, nRead;
 
     // Loop until the user stops (CR/Enter or ESC key), or timeout
-
     bool returnValue = false;
 
     timeout = timeout * 1000; // secs to millis
@@ -582,14 +595,14 @@ bool spSerialField::editFieldCString(char *value, size_t lenValue, uint32_t time
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
-    ctxEdit.validator = isTrue; // always true for text
+    ctxEdit.validator = isTrue; // always true/always blue(SV) for text
 
     // copy in our initial value.
     ctxEdit.cursor = strlen(value);
     if (ctxEdit.cursor > 0)
         strlcpy(ctxEdit.head, value, kEditBufferMax);
 
-    // Okay, setup, lets dispatch to the editloop
+    // Okay, setup, lets dispatch to the edit loop
 
     if (editLoop(ctxEdit, timeout))
     {
@@ -604,7 +617,6 @@ bool spSerialField::editFieldCString(char *value, size_t lenValue, uint32_t time
 //--------------------------------------------------------------------------
 bool spSerialField::editFieldString(std::string &value, uint32_t timeout)
 {
-
     // setup context
     FieldContext_t ctxEdit;
 
@@ -616,7 +628,7 @@ bool spSerialField::editFieldString(std::string &value, uint32_t timeout)
     if (ctxEdit.cursor > 0)
         strlcpy(ctxEdit.head, value.c_str(), kEditBufferMax);
 
-    // Okay, setup, lets dispatch to the editloop
+    // Okay, setup, lets dispatch to the edit loop
 
     if (editLoop(ctxEdit, timeout))
     {
@@ -629,7 +641,9 @@ bool spSerialField::editFieldString(std::string &value, uint32_t timeout)
     // editing wasn't successful.
     return false;
 }
+
 //--------------------------------------------------------------------------
+// Bool editor - 
 bool spSerialField::editFieldBool(bool &value, uint32_t timeout)
 {
     // setup context

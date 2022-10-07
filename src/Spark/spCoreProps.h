@@ -45,7 +45,7 @@ class spProperty : public spPersist, public spDescriptor
         return 0; // number of bytes used to persist value
     };
 
-    // Expect subclasses will overide this
+    // Expect subclasses will override this
     virtual std::string getString()
     {
         std::string s = "";

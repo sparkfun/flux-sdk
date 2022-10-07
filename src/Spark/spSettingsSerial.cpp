@@ -15,7 +15,28 @@
 //
 // The entire thing is dynamic and based on the structure of the system
 //-----------------------------------------------------------------------------
-
+// How this works:
+//
+// The overall intent is to navigate the heirarchy of the application. To do this
+// the following steps take place.
+//   - A current object is pass in to the drawPage() method for the object type
+//   - The page is rendered, often calling the "drawMenu()" method for the 
+//     current object type.
+//        - Note, the drawMenu() calls cascade up to the objects base classes
+//   - Once the menu is drawn, getMenuSelection() is called to determine/wait for 
+//     the uses input.
+//   - Once the user selects an item, "selectMenu()" is called to determine 
+//     what was selected.
+//        -- this leverages an objects base class in a similar manner as drawMenu()
+//        -- selectMenu() will move the current menu page to the selected object.
+//   - Note: some pages are rendered differently, based on content.
+//        -- Property and Parameter pages are custom
+//
+//   Key Notes:
+//      - This system relies on method overloading to traverse the object heirarchy 
+//        of the framework
+//      - The major sets are drawPage() -> drawMenu() -> selectMenu()
+//
 //-----------------------------------------------------------------------------
 // Draw Page
 //-----------------------------------------------------------------------------
