@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "spCoreEvent.h"
 #include "spOutput.h"
 #include <Arduino.h>
 
