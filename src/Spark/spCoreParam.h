@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "spCoreTypes.h"
+#include "spCoreProps.h"
+#include "spUtils.h"
 
 //----------------------------------------------------------------------------------------
 // spParameter
@@ -509,12 +511,51 @@ class spOperation : public spObject, public _spParameterContainer
 using spOperationContainer = spContainer<spOperation *>;
 //-----------------------------------------
 // Spark Actions
-
+//
+// spAction - just to enable grouping of actions
 class spAction : public spOperation
 {
 };
-
+// Container for actions
 using spActionContainer = spContainer<spAction *>;
+
+// For subclasses
+template <typename T> class spActionType : public spAction
+{
+  public:
+
+    // Typing system for actions
+    //
+    // Defines a type specific static method - so can be called outside
+    // of an instance.
+    //
+    // The typeID is determined by hashing the name of the class.
+    // This way the type ID is consistant across invocations 
+
+    static spTypeID type(void)
+    {
+        static spTypeID _myTypeID = kspTypeIDNone;
+
+        if ( _myTypeID != kspTypeIDNone )
+            return _myTypeID;
+
+        // Use the name of this method via the __PRETTY_FUNCTION__ macro 
+        // to create our ID. The macro gives us a unique name for 
+        // each class b/c it uses the template parameter.
+
+        // Hash the name, make that our type ID. 
+        _myTypeID = sp_utils::id_hash_string( __PRETTY_FUNCTION__ );        
+
+        return _myTypeID;
+    }
+
+    // Return the type ID of this
+    spTypeID getType(void)
+    {
+        return type();
+    }
+};
+
 
 
 // End - spCoreParam.h
