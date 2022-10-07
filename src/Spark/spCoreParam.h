@@ -411,7 +411,8 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
+    
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -603,7 +604,102 @@ class spParameterInString : public spParameterIn, _spDataInString
     }
 };
 
+// Need a wedge class to make it easy to cast to a void outside of the tempate
 
+class spParameterInVoidType : public spParameterIn
+{
+public:
+    virtual void set(void)=0;
+};
+
+// VOID input parameter -- function call, no params
+template <class Object, void (Object::*_setter)()>
+class spParameterInVoid : public spParameterInVoidType
+{
+    Object *my_object; // Pointer to the containing object
+
+  public:
+    spParameterInVoid() : my_object(0)
+    {
+    }
+
+    spParameterInVoid(Object *me) : my_object(me)
+    {
+    }
+    //---------------------------------------------------------------------------------
+    spDataType_t type()
+    {
+        return spTypeNone;
+    };
+    //---------------------------------------------------------------------------------
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
+    // i.e.
+    //     property_obj(this);
+    //
+    // This allows the property to add itself to the containing objects list of
+    // properties.
+    //
+    // Also thie containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterIn: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+    }
+    void operator()(Object *obj, const char *name)
+    {
+        // set the name of the property on init
+        if (name)
+            setName(name);
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+    void operator()(Object *obj, const char *name, const char *desc)
+    {
+        // Description of the object
+        if (desc)
+            setDescription(desc);
+
+        // cascade to other version of method
+        (*this)(obj, name);
+    }
+
+    //---------------------------------------------------------------------------------
+    void set()
+    {
+        if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            return; 
+        }
+
+        (my_object->*_setter)();
+    }
+
+    //---------------------------------------------------------------------------------
+    // set -> parameter(value)
+    void operator()()
+    {
+        set();
+    };
+    //---------------------------------------------------------------------------------
+    // editValue()
+    //
+    // there is nothing to edit - this method just supports the interface
+    bool editValue(spDataEditor &theEditor)
+    {
+        return true;
+    };
+};
 // Handy macros to "register attributes (props/params)"
 
 // If the user doesn't supply a unique name or desc - use the object name/prop var name for the name
