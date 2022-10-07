@@ -19,23 +19,25 @@
 //
 // The overall intent is to navigate the heirarchy of the application. To do this
 // the following steps take place.
-//   - A current object is pass in to the drawPage() method for the object type
+//   - A current object is passed in to the drawPage() method for the object type
 //   - The page is rendered, often calling the "drawMenu()" method for the 
 //     current object type.
 //        - Note, the drawMenu() calls cascade up to the objects base classes
 //   - Once the menu is drawn, getMenuSelection() is called to determine/wait for 
-//     the uses input.
+//     the users input.
 //   - Once the user selects an item, "selectMenu()" is called to determine 
 //     what was selected.
 //        -- this leverages an objects base class in a similar manner as drawMenu()
-//        -- selectMenu() will move the current menu page to the selected object.
+//        -- selectMenu() will move the current menu page to the page for the 
+//           selected object.
 //   - Note: some pages are rendered differently, based on content.
 //        -- Property and Parameter pages are custom
 //
 //   Key Notes:
 //      - This system relies on method overloading to traverse the object heirarchy 
 //        of the framework
-//      - The major sets are drawPage() -> drawMenu() -> selectMenu()
+//      - The general sequence of method calls are:
+//              drawPage() -> drawMenu() -> selectMenu()-> drawPage() ...
 //
 //-----------------------------------------------------------------------------
 // Draw Page
@@ -216,7 +218,10 @@ bool spSettingsSerial::drawPage(spActionContainer *pCurrent)
     return drawPage<spAction *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-
+// drawPaeHeader()
+//
+// Generic header for all settings pages.
+//
 void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
 {
 
@@ -248,6 +253,10 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
     Serial.println();
 }
 //-----------------------------------------------------------------------------
+// drawPageFooter()
+//
+// Generic footer for most pages -- mostly writes out the exit/back menu entry
+//
 void spSettingsSerial::drawPageFooter(spObject *pCurrent)
 {
     Serial.println();
@@ -263,17 +272,20 @@ void spSettingsSerial::drawPageFooter(spObject *pCurrent)
 //-----------------------------------------------------------------------------
 // Draw Menu  routines
 //-----------------------------------------------------------------------------
-
+// drawMenuEntry()
+//
+// Draw the entry in the menu for the give item
+//
 void spSettingsSerial::drawMenuEntry(uint item, spDescriptor *pDesc)
 {
 
-    // TODO: Change in the future
     if (!pDesc)
         return;
 
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
 }
 //-----------------------------------------------------------------------------
+// drawMenuEntry()  -- non-object edition
 void spSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
 {
 
