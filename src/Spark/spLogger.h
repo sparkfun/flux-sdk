@@ -19,7 +19,7 @@
 #include "spSpark.h"
 
 // Define the QwiicLog class
-class spLogger : public spAction
+class spLogger : public spActionType<spLogger>
 {
 
   public:

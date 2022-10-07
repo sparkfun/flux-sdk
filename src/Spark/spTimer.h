@@ -5,7 +5,7 @@
 
 #include "spSpark.h"
 
-class spTimer : public spAction
+class spTimer : public spActionType<spTimer>
 {
 
     // for our timing
