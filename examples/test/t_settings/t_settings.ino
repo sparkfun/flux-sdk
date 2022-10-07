@@ -42,7 +42,8 @@ public:
         spRegister(in_bool, "in bool", "test input of a bool value");
         spRegister(in_int,  "in int", "test input of a int value");
         spRegister(in_string, "in string", "test input of a string value");
-        spRegister(in_float, "in float", "test input of a float value");;
+        spRegister(in_float, "in float", "test input of a float value");
+        spRegister(in_void, "in void", "test input parameter of type void");
     }
     
 
@@ -63,6 +64,9 @@ public:
     std::string get_str(void);
     void set_str(const std::string &);
 
+    // VOID
+    void set_void(void);
+
 
     // Output Parameters
     spParameterOutBool<test_params, &test_params::get_bool>   out_bool;
@@ -73,7 +77,9 @@ public:
     spParameterInBool<test_params, &test_params::set_bool>   in_bool;
     spParameterInInt<test_params, &test_params::set_int>     in_int;
     spParameterInFloat<test_params, &test_params::set_float> in_float;
-    spParameterInString<test_params, &test_params::set_str>  in_string;     
+    spParameterInString<test_params, &test_params::set_str>  in_string;  
+
+    spParameterInVoid<test_params, &test_params::set_void>   in_void;   
 };
 
 // Method implementation
@@ -113,6 +119,10 @@ std::string test_params::get_str(void){
 void test_params::set_str(const std::string &data){
     Serial.printf("\n\r\n\r\t[TEST: String set to: `%s`]\n\r", data.c_str());        
     _s_data=data;    
+}
+
+void test_params::set_void(void){
+    Serial.printf("\n\r\n\r\t[TEST: VOID set called]\n\r");
 }
 /////////////////////////////////////////////////////////////////////////
 // Spark Framework
@@ -158,6 +168,7 @@ void setup() {
 
     // our testing parameter object.
     spark.add(testParams);
+
     // What's connected
     spDeviceContainer  myDevices = spark.connectedDevices();
 
@@ -170,10 +181,9 @@ void setup() {
         
     }
 
-    
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
-    // Set the settigns system to start at root of the spark system.
+    // Set the settings system to start at root of the spark system.
     serialSettings.setSystemRoot(&spark);
 
     // Add serial settings to spark - the spark loop call will take care
