@@ -206,7 +206,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 // are differnet, so they require a unique implementation. I'm sure there's some
 // magic that could reduce the code duplication - but this isn't happening today ...
 //
-class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spDataOutString
+class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
 {
 
   public:
