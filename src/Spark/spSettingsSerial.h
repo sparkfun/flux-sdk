@@ -5,7 +5,7 @@
 #include "spCore.h"
 #include "spDevice.h"
 
-#define kReadBufferTimoutExpired 255
+#define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
 
 class spSettingsSerial : public spActionType<spSettingsSerial>
@@ -15,7 +15,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     spSettingsSerial() : _systemRoot{nullptr}
     {
 
-        setName("Serial System Setttings");
+        setName("Serial System Settings");
         setDescription("Set system settings via the Serial Console");
     }
 
@@ -23,7 +23,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     {
         _systemRoot = theRoot;
     }
-    // Draw Settings Page entres -- this is the entry pont for this menu
+    // Draw Settings Page entries -- this is the entry pont for this menu
 
     bool drawPage(spObject *);
     bool drawPage(spObject *, spProperty *);
@@ -39,7 +39,6 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     bool loop();
 
   protected:
-
     bool drawPageParamInVoid(spOperation *, spParameterIn *);
 
     // Draw menu entries
@@ -64,8 +63,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     uint8_t getMenuSelectionYN(uint timeout = 30);
 
   private:
-
-    uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = 30); 
+    uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = 30);
 
     //-----------------------------------------------------------------------------
     // drawPage()  - spContainer version
@@ -104,7 +102,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
             selected = getMenuSelection((uint)nMenuItems);
 
             // done?
-            if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+            if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
                 break;
 
             selectMenu<T>(pCurrent, selected);

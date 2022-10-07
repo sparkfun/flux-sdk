@@ -22,26 +22,25 @@
 // The overall intent is to navigate the heirarchy of the application. To do this
 // the following steps take place.
 //   - A current object is passed in to the drawPage() method for the object type
-//   - The page is rendered, often calling the "drawMenu()" method for the 
+//   - The page is rendered, often calling the "drawMenu()" method for the
 //     current object type.
 //        - Note, the drawMenu() calls cascade up to the objects base classes
-//   - Once the menu is drawn, getMenuSelection() is called to determine/wait for 
+//   - Once the menu is drawn, getMenuSelection() is called to determine/wait for
 //     the users input.
-//   - Once the user selects an item, "selectMenu()" is called to determine 
+//   - Once the user selects an item, "selectMenu()" is called to determine
 //     what was selected.
 //        -- this leverages an objects base class in a similar manner as drawMenu()
-//        -- selectMenu() will move the current menu page to the page for the 
+//        -- selectMenu() will move the current menu page to the page for the
 //           selected object.
 //   - Note: some pages are rendered differently, based on content.
 //        -- Property and Parameter pages are custom
 //
 //   Key Notes:
-//      - This system relies on method overloading to traverse the object heirarchy 
+//      - This system relies on method overloading to traverse the object heirarchy
 //        of the framework
 //      - The general sequence of method calls are:
 //              drawPage() -> drawMenu() -> selectMenu()-> drawPage() ...
 //
-
 
 //-----------------------------------------------------------------------------
 // Draw Page
@@ -77,9 +76,9 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
         selected = getMenuSelection((uint)nMenuItems);
 
         // done?
-        if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
         {
-            Serial.println( (pCurrent->parent() != nullptr ? "Back" : "Exit") );  // exit
+            Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
             break;
         }
 
@@ -158,9 +157,9 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         selected = getMenuSelection((uint)nMenuItems);
 
         // done?
-        if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
         {
-            Serial.println( (pCurrent->parent() != nullptr ? "Back" : "Exit") );  // exit
+            Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
             break;
         }
 
@@ -199,7 +198,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
         selected = getMenuSelection((uint)2);
 
         // done?
-        if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
             break;
 
         pParam->setEnabled(selected == 1);
@@ -210,9 +209,9 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 //-----------------------------------------------------------------------------
 // drawPage() - Input Parameter Editing edition
 //
-// The user has selected an input parameter. 
+// The user has selected an input parameter.
 //
-// Get inputs from the user and call the parameter with the provided data. 
+// Get inputs from the user and call the parameter with the provided data.
 
 bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 {
@@ -232,7 +231,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     // Header
     drawPageHeader(pCurrent, pParam->name());
 
-    // if the parameter is a void type (spTypeNone), 
+    // if the parameter is a void type (spTypeNone),
     // Editing Intro
     Serial.printf("\tEnter the value to pass into `%s`(<%s>)\n\r\n\r", pParam->name(),
                   sp_utils::spTypeName(pParam->type()));
@@ -261,10 +260,9 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 // The user has selected an input parameter of type Void
 //
 
-
 bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn *pParam)
 {
-    if (!pCurrent || !pParam || pParam->type() != spTypeNone )
+    if (!pCurrent || !pParam || pParam->type() != spTypeNone)
         return false;
 
     // let's get a value for the parameter
@@ -272,17 +270,17 @@ bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn 
     // Header
     drawPageHeader(pCurrent, pParam->name());
 
-    // if the parameter is a void type (spTypeNone), 
+    // if the parameter is a void type (spTypeNone),
     // Editing Intro
     Serial.printf("\tCall `%s`() [Y/n]? ", pParam->name());
 
     uint8_t selected = getMenuSelectionYN();
 
-    if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit )
+    if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
         return false;
 
     Serial.printf("\n\r\n\r");
-    if ( selected == 'y' )
+    if (selected == 'y')
     {
         reinterpret_cast<spParameterInVoidType *>(pParam)->set();
         Serial.printf("\t[`%s` was called]\n\r", pParam->name());
@@ -619,56 +617,57 @@ int spSettingsSerial::selectMenu(spActionContainer *pCurrent, uint level)
     return selectMenu<spAction *>(pCurrent, level);
 }
 
-
 //-----------------------------------------------------------------------------
 // Helpful navigation functions
 //
 // was the entered value a "escape" value -- lev this page!
 // note 27 == escape key
-#define kpCodeEscape    27
-#define kpCodeCR        13
+#define kpCodeEscape 27
+#define kpCodeCR 13
 
-static  bool isEscape(uint8_t ch)
+static bool isEscape(uint8_t ch)
 {
     return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == kpCodeEscape);
 }
 //-----------------------------------------------------------------------------
-static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn) {
+static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
+{
 
     uint value;
 
     // if it's a number, or an escape letter(set by this app) drop out of loop
-    if (isEscape(chIn)) 
+    if (isEscape(chIn))
         return kReadBufferExit;
 
-    if (isdigit(chIn)) {
+    if (isdigit(chIn))
+    {
         value = chIn - '0';
-        if (value > 0 && value <= maxEntry) 
-            return chIn - '0';        
+        if (value > 0 && value <= maxEntry)
+            return chIn - '0';
     }
 
-    return 0;  // no match.
+    return 0; // no match.
 }
 //-----------------------------------------------------------------------------
-static uint8_t menuEventYN(uint8_t chIn) {
-
+static uint8_t menuEventYN(uint8_t chIn)
+{
 
     switch (chIn)
     {
-        case kpCodeEscape:
-            return kReadBufferExit;
+    case kpCodeEscape:
+        return kReadBufferExit;
 
-        case kpCodeCR:
-        case 'y':
-        case 'Y':
-            return 'y';
+    case kpCodeCR:
+    case 'y':
+    case 'Y':
+        return 'y';
 
-        case 'n':
-        case 'N':
-            return 'n';
+    case 'n':
+    case 'N':
+        return 'n';
     }
 
-    return 0;  // no match.
+    return 0; // no match.
 }
 //-----------------------------------------------------------------------------
 
@@ -697,10 +696,10 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
         {
             chIn = Serial.read();
 
-            chIn = ( isYN ? menuEventYN(chIn) : menuEventNormal(maxEntry, chIn));
+            chIn = (isYN ? menuEventYN(chIn) : menuEventNormal(maxEntry, chIn));
 
             // match ? chIn != 0
-            if ( chIn )
+            if (chIn)
                 break;
         }
 
@@ -708,7 +707,7 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
         if ((millis() - startTime) > timeout)
         {
             Serial.println("No user input recieved.");
-            chIn = kReadBufferTimoutExpired;
+            chIn = kReadBufferTimeoutExpired;
             break;
         }
         delay(100);

@@ -44,14 +44,13 @@ class spParameter : public spDescriptor
 
 class spParameterIn : public spParameter
 {
-public:
+  public:
     virtual bool editValue(spDataEditor &) = 0;
 };
 class spParameterOut : public spParameter, public spDataOut
 {
-public:
-    virtual spDataType_t type(void)=0;
-
+  public:
+    virtual spDataType_t type(void) = 0;
 };
 // simple def - list of parameters
 using spParameterInList = std::vector<spParameterIn *>;
@@ -153,12 +152,12 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     // to register the parameter - set the containing object instance
     // Normally done in the containing objects constructor.
     // i.e.
-    //     parameter_objectthis);
+    //     parameter_object(this);
     //
     // This allows the parameter to add itself to the containing objects list of
     // parameter.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -197,7 +196,7 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");            
+            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return (T)0;
         }
         return (my_object->*_getter)();
@@ -292,12 +291,12 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     // to register the parameter - set the containing object instance
     // Normally done in the containing objects constructor.
     // i.e.
-    //     parameter_objectthis);
+    //     parameter_object(this);
     //
     // This allows the parameter to add itself to the containing objects list of
     // parameter.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -412,7 +411,7 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     // properties.
     //
     // Also the containing object is needed to call the getter/setter methods on that object
-    
+
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -452,7 +451,7 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
         if (!my_object)
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
-            return; 
+            return;
         }
 
         (my_object->*_setter)(value);
@@ -534,7 +533,7 @@ class spParameterInString : public spParameterIn, _spDataInString
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -574,7 +573,7 @@ class spParameterInString : public spParameterIn, _spDataInString
         if (!my_object)
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
-            return; 
+            return;
         }
 
         (my_object->*_setter)(value);
@@ -604,17 +603,16 @@ class spParameterInString : public spParameterIn, _spDataInString
     }
 };
 
-// Need a wedge class to make it easy to cast to a void outside of the tempate
+// Need a wedge class to make it easy to cast to a void outside of the template
 
 class spParameterInVoidType : public spParameterIn
 {
-public:
-    virtual void set(void)=0;
+  public:
+    virtual void set(void) = 0;
 };
 
 // VOID input parameter -- function call, no params
-template <class Object, void (Object::*_setter)()>
-class spParameterInVoid : public spParameterInVoidType
+template <class Object, void (Object::*_setter)()> class spParameterInVoid : public spParameterInVoidType
 {
     Object *my_object; // Pointer to the containing object
 
@@ -640,7 +638,7 @@ class spParameterInVoid : public spParameterInVoidType
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -679,7 +677,7 @@ class spParameterInVoid : public spParameterInVoidType
         if (!my_object)
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
-            return; 
+            return;
         }
 
         (my_object->*_setter)();
@@ -717,10 +715,7 @@ class spParameterInVoid : public spParameterInVoidType
 // User provided Name and description
 #define spRegisterDesc(_obj_name_, _name_, _desc_) _obj_name_(this, _name_, _desc_)
 
-
-
-
-// Define a object type that suppoarts parameter lists (input and output)
+// Define a object type that supports parameter lists (input and output)
 class spOperation : public spObject, public _spParameterContainer
 {
   public:

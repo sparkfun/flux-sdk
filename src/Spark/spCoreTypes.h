@@ -527,7 +527,6 @@ class _spDataInString : public spDataIn
     spDataType_t type(void)
     {
         return spTypeString;
-
     };
     virtual void set(const std::string &value) = 0;
 
@@ -547,13 +546,13 @@ class _spDataInString : public spDataIn
     void setInt8(int8_t value)
     {
         char szBuffer[16];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);        
+        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
         set(szBuffer);
     }
     void setInt(int value)
     {
         char szBuffer[32];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);        
+        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
         set(szBuffer);
     }
     void setUint8(uint8_t value)
@@ -577,7 +576,7 @@ class _spDataInString : public spDataIn
     void setDouble(double value)
     {
         char szBuffer[32];
-        snprintf(szBuffer, sizeof(szBuffer), "%f", value);        
+        snprintf(szBuffer, sizeof(szBuffer), "%f", value);
         set(szBuffer);
     }
     void setString(std::string &value)

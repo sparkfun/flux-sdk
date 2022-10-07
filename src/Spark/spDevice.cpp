@@ -94,7 +94,7 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
         }
     }
 
-    // Okay, we are done - clearout the builders list.
+    // Okay, we are done - clear out the builders list.
     _Builders.clear();
 
     return nDevs;
@@ -106,7 +106,7 @@ int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
 // Called when a non-autoload device is created.
 //
 // If a new device is created by the user outside of this factory, but that
-// device was "autoloaded", we prune the autoload device.
+// device was "auto loaded", we prune the autoload device.
 //
 // A device match = Device::type is the same and the address is the same.
 
@@ -120,7 +120,7 @@ void spDeviceFactory::purneAutoload(spDevice *theDevice, spDeviceContainer &devL
 
     while (itDevice != devList.end())
     {
-        // only check autoloads
+        // only check auto loads
         if ((*itDevice)->autoload())
         {
             if (theDevice->getType() == (*itDevice)->getType() && theDevice->address() == (*itDevice)->address())

@@ -152,7 +152,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
     }; // sometimes save size is different than size
 
     //---------------------------------------------------------------------------------
-    // Virutal functions to get and set the value - these are filled in
+    // Virtual functions to get and set the value - these are filled in
     // by the sub-class
 
     virtual T get(void) const = 0;
@@ -203,7 +203,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 // Strings are special ...
 //
 // There is some code duplication here - not happy about this - but strings
-// are differnet, so they require a unique implementation. I'm sure there's some
+// are different, so they require a unique implementation. I'm sure there's some
 // magic that could reduce the code duplication - but this isn't happening today ...
 //
 class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
@@ -230,7 +230,7 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
     };
 
     //---------------------------------------------------------------------------------
-    // Virutal functions to get and set the value - these are filled in
+    // Virtual functions to get and set the value - these are filled in
     // by the sub-class
 
     virtual std::string get(void) const = 0;
@@ -324,7 +324,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spPropertyContainer
@@ -480,10 +480,10 @@ class spPropertyRWString : public _spPropertyBaseString
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a spObject
         // Compile-time check
         static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyTypedRWString: type parameter of this class must derive from spPropertyContainer");
@@ -592,7 +592,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
     // properties.
     void operator()(Object *me)
     {
-        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a spObject
         // Compile-time check
         static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyTyped: type parameter of this class must derive from spPropertyContainer");
@@ -669,7 +669,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
         return get();
     };
 
-    //---------------------------------------------------------------------------------    0
+    //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
     _spPropertyTyped<Object, T> &operator=(T const &value)
     {
@@ -712,7 +712,7 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 
     void operator()(Object *me)
     {
-        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a spObject
         // Compile-time check
         static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyString: type parameter of this class must derive from spPropertyContainer");

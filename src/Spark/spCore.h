@@ -4,7 +4,7 @@
 
 // spCore.h
 //
-// Single inclde to bring in all the core defs needed in the frameworks
+// Single include to bring in all the core defs needed in the frameworks
 
 
 #include "spStorage.h"
