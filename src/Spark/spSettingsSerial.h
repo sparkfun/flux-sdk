@@ -8,7 +8,7 @@
 #define kReadBufferTimoutExpired 255
 #define kReadBufferExit 254
 
-class spSettingsSerial : public spAction
+class spSettingsSerial : public spActionType<spSettingsSerial>
 {
 
   public:
@@ -185,27 +185,31 @@ class spSettingsSerial : public spAction
 
         auto pNext = pCurrent->at(item);
 
-        // Call next page with this ...
+        // Dispatch the item to the next drawPage() call. This
+        // overloaded method nees pNext to be of the correct type,
+        // but all objects in the container are pointers to the base
+        // class. soo... 
+        // 
+        // Find the class type and "upcast it"
 
-        // This is a little hacky, but use the device runtime typeID to determine
-        // how to dispatch the item. This is needed b/c of how containers are built.
-
-        spTypeID typeID = pNext->getType();
-
-        if (typeID == spObjectContainer::type())
-            drawPage((spObjectContainer *)pNext);
-
-        else if (typeID == spDeviceContainer::type())
-            drawPage((spDeviceContainer *)pNext);
-
-        else if (typeID == spActionContainer::type())
-            drawPage((spActionContainer *)pNext);
-
-        else if (typeID == spOperationContainer::type())
-            drawPage((spOperationContainer *)pNext);
-
+        if ( spIsType<spObjectContainer>(pNext) )
+        {
+            drawPage( reinterpret_cast<spObjectContainer*>(pNext) );
+        }
+        else if ( spIsType<spDeviceContainer>(pNext) )
+        {
+            drawPage( reinterpret_cast<spDeviceContainer*>(pNext) );
+        }
+        else if ( spIsType<spActionContainer>(pNext) )
+        {
+            drawPage( reinterpret_cast<spActionContainer*>(pNext) );            
+        }
+        else if ( spIsType<spOperationContainer>(pNext) )
+        {
+            drawPage( reinterpret_cast<spOperationContainer*>(pNext) );    
+        }
         else
-            drawPage(pNext);
+            drawPage(pNext);                    
 
         // return the current level
         return level;
