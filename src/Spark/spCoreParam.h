@@ -190,10 +190,11 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     // get/set syntax
     T get() const
     {
-        assert(my_object);
         if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");            
             return (T)0;
-
+        }
         return (my_object->*_getter)();
     }
 
@@ -330,9 +331,11 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     // get/set syntax
     std::string get() const
     {
-        assert(my_object);
         if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return std::string("");
+        }
 
         return (my_object->*_getter)();
     }
@@ -437,9 +440,12 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     //---------------------------------------------------------------------------------
     void set(T const &value)
     {
-        assert(my_object);
+
         if (!my_object)
-            return; // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            return; 
+        }
 
         (my_object->*_setter)(value);
     }

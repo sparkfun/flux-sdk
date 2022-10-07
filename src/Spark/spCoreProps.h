@@ -361,18 +361,22 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     // get/set syntax
     T get() const
     {
-        assert(my_object);
         if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return (T)0;
+        }
 
         return (my_object->*_getter)();
     }
     //---------------------------------------------------------------------------------
     void set(T const &value)
     {
-        assert(my_object);
         if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return; // would normally throw an exception, but not very Arduino like!
+        }
 
         (my_object->*_setter)(value);
     }
@@ -520,9 +524,11 @@ class spPropertyRWString : public _spPropertyBaseString
     // get/set syntax
     std::string get() const
     {
-        assert(my_object);
         if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");            
             return "";
+        }
 
         return (my_object->*_getter)();
     }
@@ -530,9 +536,10 @@ class spPropertyRWString : public _spPropertyBaseString
     //---------------------------------------------------------------------------------
     void set(std::string const &value)
     {
-        assert(my_object);
-        if (!my_object)
+        if (!my_object){
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");            
             return;
+        }
 
         (my_object->*_setter)(value);
     }
