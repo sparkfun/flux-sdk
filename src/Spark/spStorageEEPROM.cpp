@@ -19,7 +19,7 @@
  *     EOF - end of storage - an zero'd out header block.
  */
 
-#include "spStorage.h"
+#include "spStorageEEPROM.h"
 #include "Arduino.h"
 #include <EEPROM.h>
 
@@ -38,13 +38,11 @@
 // handy macro
 #define BPOS(_block) _block->_position
 
-// There is only one block transaction open at a time, so we just allocate our block
-static spStorageBlock _theBlock = {};
 
 //-------------------------------------------------------------------------------
 // Constructor
 
-void spStorage_::initialize(void)
+void spStorageEEPROM::initialize(void)
 {
 
     // Verify that the values in the EEPROM are valid - setup for this
@@ -56,15 +54,17 @@ void spStorage_::initialize(void)
 
     if (!this->validStorage())
     {
-        spLog_E("EEPROM - Initializing");
+        spLog_I("EEPROM - Initializing");
         this->initStorage();
     }
+
+    _theBlock.setStorage(this);
 }
 //-------------------------------------------------------------------------------
-void spStorage_::initStorage(void)
+void spStorageEEPROM::initStorage(void)
 {
 
-    spBlockHeader header = {}; // zero out header block
+    spBlockHeaderEEPROM header = {}; // zero out header block
 
     uint16_t buffer = SPARK_STORAGE_MAGIC;
 
@@ -78,7 +78,7 @@ void spStorage_::initStorage(void)
 #endif
 }
 //-------------------------------------------------------------------------------
-bool spStorage_::validStorage(void)
+bool spStorageEEPROM::validStorage(void)
 {
 
     // Basically make sure the value of the first two bytes of EEPROM are
@@ -90,7 +90,7 @@ bool spStorage_::validStorage(void)
     return (cookie == SPARK_STORAGE_MAGIC);
 }
 //--------------------------------------------------------------------------------------
-uint16_t spStorage_::findBlock(uint16_t idTarget, spBlockHeader &outBlock)
+uint16_t spStorageEEPROM::findBlock(uint16_t idTarget, spBlockHeaderEEPROM &outBlock)
 {
 
     // is the storage *formated*
@@ -126,10 +126,10 @@ uint16_t spStorage_::findBlock(uint16_t idTarget, spBlockHeader &outBlock)
 // Removes a block from storage area. Basically overwrites the block with
 // the data blocks that follows it.
 //
-void spStorage_::deleteBlock(uint16_t idTarget)
+void spStorageEEPROM::deleteBlock(uint16_t idTarget)
 {
 
-    spBlockHeader destBlock, srcBlock;
+    spBlockHeaderEEPROM destBlock, srcBlock;
     uint16_t destPosition = findBlock(idTarget, destBlock); // find target block
 
     if (!destBlock.id || destBlock.id != idTarget) // not there?
@@ -143,15 +143,15 @@ void spStorage_::deleteBlock(uint16_t idTarget)
 
         destBlock = srcBlock;
         if (destBlock.id) // not at EOF
-            destBlock.next = destPosition + sizeof(spBlockHeader) + destBlock.size;
+            destBlock.next = destPosition + sizeof(spBlockHeaderEEPROM) + destBlock.size;
         write_bytes(destPosition, destBlock);
 
         // copy over the data
         if (destBlock.size)
         {
             char szBuffer[destBlock.size];
-            read_bytes(srcPosition + sizeof(spBlockHeader), destBlock.size, (char *)szBuffer);
-            write_bytes(destPosition + sizeof(spBlockHeader), destBlock.size, (char *)szBuffer);
+            read_bytes(srcPosition + sizeof(spBlockHeaderEEPROM), destBlock.size, (char *)szBuffer);
+            write_bytes(destPosition + sizeof(spBlockHeaderEEPROM), destBlock.size, (char *)szBuffer);
         }
         destPosition = destBlock.next;
         srcPosition = srcBlock.next;
@@ -167,11 +167,11 @@ void spStorage_::deleteBlock(uint16_t idTarget)
 //
 // Returns 0 on error, or offset position of the block on success.
 //
-uint16_t spStorage_::getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeader &outBlock)
+uint16_t spStorageEEPROM::getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeaderEEPROM &outBlock)
 {
 
     // Find the block or eof (empty block)
-    spBlockHeader currBlock;
+    spBlockHeaderEEPROM currBlock;
     uint16_t currPosition = findBlock(idTarget, currBlock);
 
     // Found the target block?
@@ -201,13 +201,13 @@ uint16_t spStorage_::getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHe
         // Set new block parameters/values
         outBlock.id = idTarget;
         outBlock.size = szBlock;
-        outBlock.next = currPosition + sizeof(spBlockHeader) + szBlock;
+        outBlock.next = currPosition + sizeof(spBlockHeaderEEPROM) + szBlock;
 
         // Allocate the block in the eeprom - write out with values
         write_bytes(currPosition, outBlock);
 
         // Set our eof empty block
-        memset(&currBlock, '\0', sizeof(spBlockHeader));
+        memset(&currBlock, '\0', sizeof(spBlockHeaderEEPROM));
         write_bytes(outBlock.next, currBlock);
 
 #ifdef ESP32
@@ -219,13 +219,13 @@ uint16_t spStorage_::getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHe
 }
 //-------------------------------------------------------------------------------
 // Internal
-template <typename T> void spStorage_::write_bytes(uint16_t startPos, T &data)
+template <typename T> void spStorageEEPROM::write_bytes(uint16_t startPos, T &data)
 {
 
     write_bytes(startPos, sizeof(T), (char *)&data);
 }
 //-------------------------------------------------------------------------------
-void spStorage_::write_bytes(uint16_t startPos, size_t sz, char *pBytes)
+void spStorageEEPROM::write_bytes(uint16_t startPos, size_t sz, char *pBytes)
 {
 
     if (!pBytes)
@@ -236,13 +236,13 @@ void spStorage_::write_bytes(uint16_t startPos, size_t sz, char *pBytes)
 }
 
 //-------------------------------------------------------------------------------
-template <typename T> void spStorage_::read_bytes(uint16_t startPos, T &data)
+template <typename T> void spStorageEEPROM::read_bytes(uint16_t startPos, T &data)
 {
 
     read_bytes(startPos, sizeof(T), (char *)&data);
 }
 //-------------------------------------------------------------------------------
-void spStorage_::read_bytes(uint16_t startPos, size_t sz, char *pBytes)
+void spStorageEEPROM::read_bytes(uint16_t startPos, size_t sz, char *pBytes)
 {
 
     if (!pBytes)
@@ -256,7 +256,7 @@ void spStorage_::read_bytes(uint16_t startPos, size_t sz, char *pBytes)
 // but start a block and write to it N times, in sequence.
 ////////////////////////////////////////////////////////////////////////////////////
 
-spStorageBlock *spStorage_::beginBlock(uint16_t blockID, size_t blockSZ)
+spStorageBlockEEPROM *spStorageEEPROM::beginBlock(uint16_t blockID, size_t blockSZ)
 {
 
     if (_theBlock._locked)
@@ -273,7 +273,7 @@ spStorageBlock *spStorage_::beginBlock(uint16_t blockID, size_t blockSZ)
         return nullptr;
     }
 
-    _theBlock._position += sizeof(spBlockHeader); // start of blob space for block
+    _theBlock._position += sizeof(spBlockHeaderEEPROM); // start of blob space for block
     _theBlock.header.id = blockID;
     _theBlock._locked = true;
 
@@ -281,7 +281,7 @@ spStorageBlock *spStorage_::beginBlock(uint16_t blockID, size_t blockSZ)
 }
 //-------------------------------------------------------------------------------
 // Done with the block
-void spStorage_::endBlock(spStorageBlock *dummy)
+void spStorageEEPROM::endBlock(spStorageBlockEEPROM *dummy)
 {
 
     _theBlock._locked = false;
@@ -291,11 +291,16 @@ void spStorage_::endBlock(spStorageBlock *dummy)
 #endif
 }
 
+// interface method
+void spStorageEEPROM::endBlock(spStorageBlock *dummy)
+{
+    endBlock((spStorageBlockEEPROM*)dummy);
+}
 // Block Public methods - these are called from a block
 //-------------------------------------------------------------------------------
 // I/O routines - simple
 
-bool spStorage_::writeBytes(spStorageBlock *pBlock, size_t sz, char *pBytes)
+bool spStorageEEPROM::writeBytes(spStorageBlockEEPROM *pBlock, size_t sz, char *pBytes)
 {
 
     if (!pBlock || !pBytes)
@@ -308,7 +313,7 @@ bool spStorage_::writeBytes(spStorageBlock *pBlock, size_t sz, char *pBytes)
     return true;
 }
 //-------------------------------------------------------------------------------
-bool spStorage_::readBytes(spStorageBlock *pBlock, size_t sz, char *pBytes)
+bool spStorageEEPROM::readBytes(spStorageBlockEEPROM *pBlock, size_t sz, char *pBytes)
 {
 
     if (!pBlock || !pBytes)
@@ -321,14 +326,23 @@ bool spStorage_::readBytes(spStorageBlock *pBlock, size_t sz, char *pBytes)
 }
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-bool spStorageBlock::writeBytes(size_t sz, char *buffer)
+bool spStorageBlockEEPROM::writeBytes(size_t sz, char *buffer)
 {
+    if ( !_storage )
+    {
+        spLog_E("spStorage - EEPROM. Block storage not initialized.");
+        return false;
+    }
 
-    return spStorage().writeBytes(this, sz, buffer);
+    return _storage->writeBytes(this, sz, buffer);
 }
 //------------------------------------------------------------------------------
-bool spStorageBlock::readBytes(size_t sz, char *buffer)
+bool spStorageBlockEEPROM::readBytes(size_t sz, char *buffer)
 {
-
-    return spStorage().readBytes(this, sz, buffer);
+    if ( !_storage )
+    {
+        spLog_E("spStorage - EEPROM. Block storage not initialized.");
+        return false;
+    }
+    return _storage->readBytes(this, sz, buffer);
 }

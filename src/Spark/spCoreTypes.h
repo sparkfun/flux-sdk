@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "spCoreLog.h"
 #include "spStorage.h"
 //----------------------------------------------------------------------------------------
 // spDescriptor
@@ -138,8 +139,8 @@ class spDataTyper
 struct spPersist
 {
 
-    virtual bool save(spStorageBlock *stBlk) = 0;
-    virtual bool restore(spStorageBlock *stBlk) = 0;
+    virtual bool save(spStorage *) = 0;
+    virtual bool restore(spStorage *) = 0;
 };
 //----------------------------------------------------------------------------------------
 // spDataOut

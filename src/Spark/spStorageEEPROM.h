@@ -9,8 +9,9 @@
 #include <Arduino.h>
 
 #include "spCoreLog.h"
+#include "spStorage.h"
 
-class spStorage_;
+class spStorageEEPROM;
 
 //------------------------------------------------------------------------------
 // Storage is "block" based - data blobs are stored with headers to form a block.
@@ -25,55 +26,68 @@ typedef struct
     uint16_t id;   // ID for this block
     uint16_t size; // Size in bytes of the blocks data segment
     uint16_t next; // Offset in bytes to the next block
-} spBlockHeader;
+} spBlockHeaderEEPROM;
 
 //------------------------------------------------------------------------------
 // Define our storage block object. This is used as a FP like object when a bock is
 // written out interatively...
 
-class spStorageBlock
+class spStorageBlockEEPROM : public spStorageBlock
 {
 
   public:
-    spStorageBlock() : _position(0), _locked(false){};
+    spStorageBlockEEPROM() : _position{0}, _locked{false}, _storage{nullptr} {};
 
     bool writeBytes(size_t sz, char *buffer);
     bool readBytes(size_t sz, char *buffer);
 
   private:
-    friend spStorage_; // storage class will adjust parameters of the block
+    friend spStorageEEPROM;
 
-    spBlockHeader header;
 
-    int _position = 0; // current position in the block's data blob
-    bool _locked = false;
+    void setStorage(spStorageEEPROM* theStorage)
+    {
+      _storage = theStorage;
+    }
+
+    spBlockHeaderEEPROM header;
+
+    int _position; // current position in the block's data blob
+    bool _locked;
+    spStorageEEPROM * _storage;  ; // storage class will adjust parameters of the block
 };
 
 //------------------------------------------------------------------------------
-class spStorage_
+class spStorageEEPROM : public spStorage
 {
 
   public:
     // this is a singleton
-    static spStorage_ &getInstance(void)
+    static spStorageEEPROM &get(void)
     {
-        static spStorage_ instance;
+        static spStorageEEPROM instance;
         return instance;
     }
 
     // public methods to manage a block
-    spStorageBlock *beginBlock(uint16_t idBlock, size_t sz);
+    spStorageBlockEEPROM *beginBlock(uint16_t idBlock, size_t sz);
+    spStorageBlockEEPROM *getBlock(uint16_t idBlock)
+    {
+      return beginBlock(idBlock, 0); 
+    }    
+
+    void endBlock(spStorageBlockEEPROM *);
     void endBlock(spStorageBlock *);
 
     // delete the copy and assignment constructors
-    spStorage_(spStorage_ const &) = delete;
-    void operator=(spStorage_ const &) = delete;
+    spStorageEEPROM(spStorageEEPROM const &) = delete;
+    void operator=(spStorageEEPROM const &) = delete;
 
   private:
-    friend spStorageBlock;
+    friend spStorageBlockEEPROM;
 
-    bool writeBytes(spStorageBlock *, size_t, char *);
-    bool readBytes(spStorageBlock *, size_t, char *);
+    bool writeBytes(spStorageBlockEEPROM *, size_t, char *);
+    bool readBytes(spStorageBlockEEPROM *, size_t, char *);
 
     bool validStorage(void);
     void initStorage(void);
@@ -85,18 +99,15 @@ class spStorage_
     template <typename T> void read_bytes(uint16_t startPos, T &pBytes);
 
     void initialize();
-    spStorage_()
+    spStorageEEPROM()
     {
         initialize();
     };
 
-    uint16_t getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeader &outBlock);
+    uint16_t getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeaderEEPROM &outBlock);
     void deleteBlock(uint16_t idTarget);
-    uint16_t findBlock(uint16_t idTarget, spBlockHeader &outBlock);
+    uint16_t findBlock(uint16_t idTarget, spBlockHeaderEEPROM &outBlock);
+
+    // The block used to interface with the system
+    spStorageBlockEEPROM _theBlock;
 };
-
-// Create an accessor for the Storage class
-
-typedef spStorage_ &spStorage;
-
-#define spStorage() spStorage_::getInstance()

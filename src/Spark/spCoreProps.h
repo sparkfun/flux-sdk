@@ -22,7 +22,7 @@
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty : public spPersist, public spDescriptor
+class spProperty : public spDescriptor
 {
 
   public:
@@ -53,8 +53,8 @@ class spProperty : public spPersist, public spDescriptor
     }
     //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
-    virtual bool save(spStorageBlock *stBlk) = 0;
-    virtual bool restore(spStorageBlock *stBlk) = 0;
+    virtual bool save(spStorageBlock *) = 0;
+    virtual bool restore(spStorageBlock *) = 0;
 };
 
 // simple def - list of spProperty objects (it's a vector)
@@ -102,8 +102,12 @@ class _spPropertyContainer
     bool saveProperties(spStorageBlock *stBlk)
     {
         bool rc = true;
+        bool status; 
         for (auto property : _properties)
-            rc = rc && property->save(stBlk);
+        {
+            status = property->save(stBlk);
+            rc = rc && status;
+        }
         return rc;
     };
 
@@ -111,9 +115,24 @@ class _spPropertyContainer
     bool restoreProperties(spStorageBlock *stBlk)
     {
         bool rc = true;
+        bool status;
+
         for (auto property : _properties)
-            rc = rc && property->restore(stBlk);
+        {
+            status = property->restore(stBlk);
+            rc = rc && status;
+        }
         return rc;
+    };
+
+    size_t propertySaveSize()
+    {
+        size_t totalSize =0;
+
+        for (auto property : _properties)
+            totalSize += property->save_size();
+
+        return totalSize;
     };
 
   private:
@@ -811,7 +830,23 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
 {
 
+private:
+
     spObject *_parent;
+
+    //---------------------------------------------------------------------------------
+    // TODO - Fix the ID methodology
+    //---------------------------------------------------------------------------------
+    uint16_t getID(void)
+    {
+        static uint16_t theID = 0;
+
+        // ID FOR NOW -- has the name of this object.
+        if ( !theID )
+            theID = sp_utils::id_hash_string(name());
+
+        return theID;
+    };
 
   public:
     spObject()
@@ -834,23 +869,45 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     {
         return _parent;
     }
+
+ 
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorageBlock *stBlk)
+    virtual bool save(spStorage *pStorage)
     {
+
+        size_t blockSize = propertySaveSize();
+
+        // nothing to save.
+        if ( !blockSize )
+            return true;
+
+        spStorageBlock * stBlk = pStorage->beginBlock( getID(), blockSize);
+        if ( !stBlk )
+            return false;
 
         if (!saveProperties(stBlk))
             return false;
-        // TODO implement - finish
+
+        pStorage->endBlock(stBlk);
 
         return true;
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorageBlock *stBlk)
+    virtual bool restore(spStorage *pStorage)
     {
+        // Do we have this block in storage?
+        spStorageBlock * stBlk = pStorage->getBlock( getID() );
+
+        if ( !stBlk )
+            return true;  // nothing to restore
+
+        // restore props
         if (!restoreProperties(stBlk))
             return false;
-        // TODO implement - finish
+
+        pStorage->endBlock(stBlk);
+
         return true;
     };
     //---------------------------------------------------------------------------------
@@ -994,6 +1051,24 @@ template <class T> class spContainer : public spObject
     {
         return type();
     }
+
+    //---------------------------------------------------------------------------------
+    virtual bool save(spStorage *pStorage)
+    {
+        for( auto pObj: _vector)
+            pObj->save(pStorage);
+
+        return true;
+    };
+
+    //---------------------------------------------------------------------------------
+    virtual bool restore(spStorage *pStorage)
+    {
+        for( auto pObj: _vector)
+            pObj->restore(pStorage);
+
+        return true;
+    };
 };
 using spObjectContainer = spContainer<spObject *>;
 
