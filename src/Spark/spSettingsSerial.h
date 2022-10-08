@@ -189,19 +189,19 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         //
         // Find the class type and "downcast it"
 
-        if (spIsType<spObjectContainer>(pNext))
+        if ( spIsType<spObjectContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spObjectContainer *>(pNext));
         }
-        else if (spIsType<spDeviceContainer>(pNext))
+        else if ( spIsType<spDeviceContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spDeviceContainer *>(pNext));
         }
-        else if (spIsType<spActionContainer>(pNext))
+        else if ( spIsType<spActionContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spActionContainer *>(pNext));
         }
-        else if (spIsType<spOperationContainer>(pNext))
+        else if ( spIsType<spOperationContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spOperationContainer *>(pNext));
         }

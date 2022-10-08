@@ -1,33 +1,22 @@
 /*
  * spStorage.h
  *
- * Class to encapsulate storage access to the devices EEProm
+ * Define our interfaces for state saving/storage
  */
 
 #pragma once
 
-#include <Arduino.h>
+#include <stddef.h>
+#include <cstdint>
 
-#include "spCoreLog.h"
-
-class spStorage_;
-
-//------------------------------------------------------------------------------
-// Storage is "block" based - data blobs are stored with headers to form a block.
+// Storage involves two interfaces
 //
-// The blocks are connected using a linked-list pattern - influence from how TIFF
-// files work. There is a header + data.
+//  - spStorage       - The main interface into the storage system being used. 
+//  - spStorageBlock  - Interface to the current block being written to
 //
-// Block header:
-
-typedef struct
-{
-    uint16_t id;   // ID for this block
-    uint16_t size; // Size in bytes of the blocks data segment
-    uint16_t next; // Offset in bytes to the next block
-} spBlockHeader;
-
 //------------------------------------------------------------------------------
+// spStorageBlock()
+//
 // Define our storage block object. This is used as a FP like object when a bock is
 // written out interatively...
 
@@ -35,68 +24,21 @@ class spStorageBlock
 {
 
   public:
-    spStorageBlock() : _position(0), _locked(false){};
-
-    bool writeBytes(size_t sz, char *buffer);
-    bool readBytes(size_t sz, char *buffer);
-
-  private:
-    friend spStorage_; // storage class will adjust parameters of the block
-
-    spBlockHeader header;
-
-    int _position = 0; // current position in the block's data blob
-    bool _locked = false;
+    virtual bool writeBytes(size_t sz, char *buffer) = 0;
+    virtual bool readBytes(size_t sz, char *buffer)  = 0;
 };
 
 //------------------------------------------------------------------------------
-class spStorage_
+// spStorage
+//
+// Interface for a storage system to persist state of a system
+
+class spStorage
 {
 
   public:
-    // this is a singleton
-    static spStorage_ &getInstance(void)
-    {
-        static spStorage_ instance;
-        return instance;
-    }
-
     // public methods to manage a block
-    spStorageBlock *beginBlock(uint16_t idBlock, size_t sz);
-    void endBlock(spStorageBlock *);
-
-    // delete the copy and assignment constructors
-    spStorage_(spStorage_ const &) = delete;
-    void operator=(spStorage_ const &) = delete;
-
-  private:
-    friend spStorageBlock;
-
-    bool writeBytes(spStorageBlock *, size_t, char *);
-    bool readBytes(spStorageBlock *, size_t, char *);
-
-    bool validStorage(void);
-    void initStorage(void);
-
-    void write_bytes(uint16_t startPos, size_t sz, char *pBytes);
-    template <typename T> void write_bytes(uint16_t startPos, T &data);
-
-    void read_bytes(uint16_t startPos, size_t sz, char *pBytes);
-    template <typename T> void read_bytes(uint16_t startPos, T &pBytes);
-
-    void initialize();
-    spStorage_()
-    {
-        initialize();
-    };
-
-    uint16_t getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeader &outBlock);
-    void deleteBlock(uint16_t idTarget);
-    uint16_t findBlock(uint16_t idTarget, spBlockHeader &outBlock);
+    virtual spStorageBlock *beginBlock(uint16_t idBlock, size_t sz) = 0;
+    virtual spStorageBlock *getBlock(uint16_t idBlock) = 0;    
+    virtual void endBlock(spStorageBlock *) = 0;
 };
-
-// Create an accessor for the Storage class
-
-typedef spStorage_ &spStorage;
-
-#define spStorage() spStorage_::getInstance()
