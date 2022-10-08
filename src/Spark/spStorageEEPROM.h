@@ -79,6 +79,8 @@ class spStorageEEPROM : public spStorage
     void endBlock(spStorageBlockEEPROM *);
     void endBlock(spStorageBlock *);
 
+    void resetStorage();
+
     // delete the copy and assignment constructors
     spStorageEEPROM(spStorageEEPROM const &) = delete;
     void operator=(spStorageEEPROM const &) = delete;
@@ -99,7 +101,7 @@ class spStorageEEPROM : public spStorage
     template <typename T> void read_bytes(uint16_t startPos, T &pBytes);
 
     void initialize();
-    spStorageEEPROM()
+    spStorageEEPROM() : _initialized{false}
     {
         initialize();
     };
@@ -110,4 +112,6 @@ class spStorageEEPROM : public spStorage
 
     // The block used to interface with the system
     spStorageBlockEEPROM _theBlock;
+
+    bool _initialized;
 };

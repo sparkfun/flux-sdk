@@ -38,12 +38,15 @@
 // handy macro
 #define BPOS(_block) _block->_position
 
-
 //-------------------------------------------------------------------------------
-// Constructor
+// Init routine
 
 void spStorageEEPROM::initialize(void)
 {
+
+
+    if ( _initialized )
+        return;
 
     // Verify that the values in the EEPROM are valid - setup for this
     // system.
@@ -52,14 +55,19 @@ void spStorageEEPROM::initialize(void)
     EEPROM.begin(200);
 #endif
 
+    _theBlock.setStorage(this);
+
+
     if (!this->validStorage())
     {
         spLog_I("EEPROM - Initializing");
         this->initStorage();
     }
 
-    _theBlock.setStorage(this);
+    _initialized = true;
+
 }
+
 //-------------------------------------------------------------------------------
 void spStorageEEPROM::initStorage(void)
 {
@@ -160,6 +168,18 @@ void spStorageEEPROM::deleteBlock(uint16_t idTarget)
     EEPROM.commit();
 #endif
 }
+
+//-------------------------------------------------------------------------------
+void spStorageEEPROM::resetStorage(void)
+{
+    // basically init the system.
+
+    if ( !_initialized )
+        initialize();
+
+    initStorage();
+}
+
 //--------------------------------------------------------------------------------------
 // getBlockHeader()
 //
@@ -259,6 +279,9 @@ void spStorageEEPROM::read_bytes(uint16_t startPos, size_t sz, char *pBytes)
 spStorageBlockEEPROM *spStorageEEPROM::beginBlock(uint16_t blockID, size_t blockSZ)
 {
 
+    if ( ! _initialized )
+        initialize();
+
     if (_theBlock._locked)
     {
         // block in use
@@ -283,7 +306,11 @@ spStorageBlockEEPROM *spStorageEEPROM::beginBlock(uint16_t blockID, size_t block
 // Done with the block
 void spStorageEEPROM::endBlock(spStorageBlockEEPROM *dummy)
 {
-
+    if ( ! _initialized )
+    {
+        spLog_E("EEPROM - Invalid sequence call - endBlock() before beginBlock()");
+        return;
+    }
     _theBlock._locked = false;
 
 #ifdef ESP32

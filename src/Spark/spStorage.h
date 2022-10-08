@@ -41,4 +41,6 @@ class spStorage
     virtual spStorageBlock *beginBlock(uint16_t idBlock, size_t sz) = 0;
     virtual spStorageBlock *getBlock(uint16_t idBlock) = 0;    
     virtual void endBlock(spStorageBlock *) = 0;
+
+    virtual void resetStorage() = 0;
 };
