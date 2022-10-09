@@ -9,6 +9,7 @@
 #include "spUtils.h"
 #include "spStorageESP32Pref.h"
 
+#include <nvs_flash.h>
 
 #define kESP32HashTagSize 16
 
@@ -501,8 +502,9 @@ void spStorageESP32Pref::endBlock(spStorageBlock2 *)
 
 void spStorageESP32Pref::resetStorage()
 {
-
-    _prefs.clear(); // really only works on current name space ...
+    // call low level ESP IDF functions to do this
+    nvs_flash_erase();
+    nvs_flash_init();
 }
 
 
