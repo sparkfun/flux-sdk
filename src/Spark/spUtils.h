@@ -19,26 +19,8 @@ size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 
 
 uint32_t id_hash_string(const char *str);
 
-// // Type strings in ordinary C++ syntax
-// template <typename T> char const *classname_helper()
-// {
-//     return __PRETTY_FUNCTION__ +
-//            sizeof(
-// #ifdef __clang__
-//                "const char* sp_utils::classname_helper() [T = "
-// #else
-//                "const char* sp_utils::classname_helper() [with T = "
-// #endif
-//                ) -
-//            1;
-// }
+bool id_hash_string_to_string(const char * instr, char *outstr, size_t len);
 
-// template <typename T> std::string getClassName()
-// {
-
-//     char const *const p = classname_helper<T>();
-//     return std::string(p, strlen(p) - sizeof(']'));
-// }
 
 template <typename T> spTypeID getClassTypeID()
 {
