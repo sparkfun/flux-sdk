@@ -139,8 +139,8 @@ class spDataTyper
 struct spPersist
 {
 
-    virtual bool save(spStorage *) = 0;
-    virtual bool restore(spStorage *) = 0;
+    virtual bool save(spStorage2 *) = 0;
+    virtual bool restore(spStorage2 *) = 0;
 };
 //----------------------------------------------------------------------------------------
 // spDataOut

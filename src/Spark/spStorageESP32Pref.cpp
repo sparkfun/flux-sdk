@@ -186,7 +186,7 @@ bool spStorageESP32Block::writeDouble(const char *tag, double value)
 }
 //------------------------------------------------------------------------
 // Write out a c string
-bool spStorageESP32Block::writeString(const char *tag, char *value)
+bool spStorageESP32Block::writeString(const char *tag, const char *value)
 {
     if ( !tag )
         return false;
@@ -211,7 +211,7 @@ bool spStorageESP32Block::writeString(const char *tag, char *value)
 // Read value section
 //------------------------------------------------------------------------
 
-bool spStorageESP32Block::readBool(const char *tag, bool defaultValue )
+bool spStorageESP32Block::readBool(const char *tag, bool &value, bool defaultValue )
 {  
     if ( !tag )
         return defaultValue;
@@ -230,10 +230,15 @@ bool spStorageESP32Block::readBool(const char *tag, bool defaultValue )
         return defaultValue;
     }
 
-    return _prefs->getBool(tag, defaultValue);
+    if ( !_prefs->isKey(tag))
+        return false;
+
+    value = _prefs->getBool(tag, defaultValue);
+
+    return true;
 }
 //------------------------------------------------------------------------
-int8_t spStorageESP32Block::readInt8(const char *tag, int8_t defaultValue)
+bool spStorageESP32Block::readInt8(const char *tag,  int8_t &value, int8_t defaultValue)
 {  
     if ( !tag )
         return defaultValue;
@@ -252,34 +257,16 @@ int8_t spStorageESP32Block::readInt8(const char *tag, int8_t defaultValue)
         return defaultValue;
     }
 
-    return _prefs->getChar(tag, defaultValue);
-}
+    if ( !_prefs->isKey(tag))
+        return false;
 
-//------------------------------------------------------------------------
-int32_t spStorageESP32Block::readInt32(const char *tag, int32_t defaultValue)
-{  
-    if ( !tag )
-        return defaultValue;
+    value =  _prefs->getChar(tag, defaultValue);
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
-    
-    if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
-        return defaultValue;
-    }
-
-    return _prefs->getInt(tag, defaultValue);
+    return true;
 }
 
 //------------------------------------------------------------------------
-uint8_t spStorageESP32Block::readUInt8(const char *tag, uint8_t defaultValue)
+bool spStorageESP32Block::readInt32(const char *tag, int32_t &value, int32_t defaultValue)
 {  
     if ( !tag )
         return defaultValue;
@@ -298,11 +285,16 @@ uint8_t spStorageESP32Block::readUInt8(const char *tag, uint8_t defaultValue)
         return defaultValue;
     }
 
-    return _prefs->getUChar(tag, defaultValue);
+    if ( !_prefs->isKey(tag))
+        return false;
+
+    value = _prefs->getInt(tag, defaultValue);
+
+    return true;
 }
 
 //------------------------------------------------------------------------
-uint32_t spStorageESP32Block::readUInt32(const char *tag, uint32_t defaultValue)
+bool spStorageESP32Block::readUInt8(const char *tag, uint8_t &value, uint8_t  defaultValue)
 {  
     if ( !tag )
         return defaultValue;
@@ -321,11 +313,16 @@ uint32_t spStorageESP32Block::readUInt32(const char *tag, uint32_t defaultValue)
         return defaultValue;
     }
 
-    return _prefs->getUInt(tag, defaultValue);
+    if ( !_prefs->isKey(tag))
+        return false;
+
+    value = _prefs->getUChar(tag, defaultValue);
+
+    return true;
 }
 
 //------------------------------------------------------------------------
-float spStorageESP32Block::readFloat(const char *tag, float defaultValue)
+bool spStorageESP32Block::readUInt32(const char *tag, uint32_t &value, uint32_t defaultValue)
 {  
     if ( !tag )
         return defaultValue;
@@ -344,11 +341,16 @@ float spStorageESP32Block::readFloat(const char *tag, float defaultValue)
         return defaultValue;
     }
 
-    return _prefs->getFloat(tag, defaultValue);
+    if ( !_prefs->isKey(tag))
+        return false;
+
+    value = _prefs->getUInt(tag, defaultValue);
+
+    return true;
 }
 
 //------------------------------------------------------------------------
-double spStorageESP32Block::readDouble(const char *tag, double defaultValue)
+bool spStorageESP32Block::readFloat(const char *tag, float &value, float defaultValue)
 {  
     if ( !tag )
         return defaultValue;
@@ -367,7 +369,40 @@ double spStorageESP32Block::readDouble(const char *tag, double defaultValue)
         return defaultValue;
     }
 
-    return _prefs->getDouble(tag, defaultValue);
+    if ( !_prefs->isKey(tag))
+        return false;
+
+    value = _prefs->getFloat(tag, defaultValue);
+
+    return true;
+}
+
+//------------------------------------------------------------------------
+bool spStorageESP32Block::readDouble(const char *tag, double &value, double defaultValue)
+{  
+    if ( !tag )
+        return defaultValue;
+
+    if ( !_prefs )
+    {
+        spLog_E(err_init);
+        return defaultValue;
+    }
+
+    char szHash[kESP32HashTagSize]={0};
+    
+    if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    {
+        spLog_E(err_tag);
+        return defaultValue;
+    }
+
+    if ( !_prefs->isKey(tag))
+        return false;
+
+    value =  _prefs->getDouble(tag, defaultValue);
+
+    return true;
 }
 
 //------------------------------------------------------------------------ 
@@ -389,9 +424,34 @@ size_t spStorageESP32Block::readString(const char *tag, char *data, size_t len)
         spLog_E(err_tag);
         return 0;
     }
+
+    if ( !_prefs->isKey(tag))
+        return false;
+
     return _prefs->getString(tag, data, len);
 }
-  
+
+bool spStorageESP32Block::valueExists(const char *tag)
+{
+     if ( !tag )
+        return false;
+
+    if ( !_prefs )
+    {
+        spLog_E(err_init);
+        return false;
+    }
+
+    char szHash[kESP32HashTagSize]={0};
+    
+    if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    {
+        spLog_E(err_tag);
+        return false;
+    }
+
+    return _prefs->isKey(tag);
+}
 //------------------------------------------------------------------------------
 // spStorage
 //

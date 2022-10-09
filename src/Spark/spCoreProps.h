@@ -15,6 +15,8 @@
 #include "spStorage.h"
 #include "spUtils.h"
 
+
+#define kMaxPropertyString 256
 //----------------------------------------------------------------------------------------
 // spProperty
 //
@@ -53,8 +55,8 @@ class spProperty : public spDescriptor
     }
     //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
-    virtual bool save(spStorageBlock *) = 0;
-    virtual bool restore(spStorageBlock *) = 0;
+    virtual bool save(spStorageBlock2 *) = 0;
+    virtual bool restore(spStorageBlock2 *) = 0;
 };
 
 // simple def - list of spProperty objects (it's a vector)
@@ -99,7 +101,7 @@ class _spPropertyContainer
     // expect this to be a "mix-in" class, we use a different interface
     // for the save/restore routines
 
-    bool saveProperties(spStorageBlock *stBlk)
+    bool saveProperties(spStorageBlock2 *stBlk)
     {
         bool rc = true;
         bool status; 
@@ -112,7 +114,7 @@ class _spPropertyContainer
     };
 
     //---------------------------------------------------------------------------------
-    bool restoreProperties(spStorageBlock *stBlk)
+    bool restoreProperties(spStorageBlock2 *stBlk)
     {
         bool rc = true;
         bool status;
@@ -179,18 +181,22 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock *stBlk)
+    bool save(spStorageBlock2 *stBlk)
     {
         T c = get();
-        return stBlk->writeBytes(save_size(), (char *)&c);
+        return stBlk->write(name(), c);
     };
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock *stBlk)
+    bool restore(spStorageBlock2 *stBlk)
     {
         T c;
-        return stBlk->readBytes(save_size(), (char *)&c);
-        set(c);
+
+        bool status = stBlk->read(name(), c);
+        if (status )
+            set(c);
+
+        return status;
     };
 
     // use this to route the call to our dataOut baseclass
@@ -265,29 +271,25 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
 
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock *stBlk)
+    bool save(spStorageBlock2 *stBlk)
     {
         // strings ... len, data
         std::string c = get();
-        uint8_t len = c.size(); // yes, this limits str len of a property to 256.
-        stBlk->writeBytes(sizeof(uint8_t), (char *)&len);
-        return stBlk->writeBytes(len, (char *)c.c_str());
+
+        return stBlk->writeString(name(), c.c_str()) == c.length();
     }
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock *stBlk)
+    bool restore(spStorageBlock2 *stBlk)
     {
+        char szBuffer[kMaxPropertyString];
 
-        uint8_t len = 0;
-        stBlk->readBytes(sizeof(uint8_t), (char *)&len);
-        char szBuffer[len + 1];
-        bool rc = stBlk->readBytes(len, (char *)szBuffer);
-        if (rc)
-        {
-            szBuffer[len] = '\0';
+        size_t len = stBlk->readString(name(), szBuffer, sizeof(szBuffer));
+
+        if ( len > 0)
             set(szBuffer);
-        }
-        return rc;
+
+        return true;
     };
     //---------------------------------------------------------------------------------
     // editValue()
@@ -834,20 +836,6 @@ private:
 
     spObject *_parent;
 
-    //---------------------------------------------------------------------------------
-    // TODO - Fix the ID methodology
-    //---------------------------------------------------------------------------------
-    uint16_t getID(void)
-    {
-        static uint16_t theID = 0;
-
-        // ID FOR NOW -- has the name of this object.
-        if ( !theID )
-            theID = sp_utils::id_hash_string(name());
-
-        return theID;
-    };
-
   public:
     spObject()
     {
@@ -872,7 +860,7 @@ private:
 
  
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorage *pStorage)
+    virtual bool save(spStorage2 *pStorage)
     {
 
         size_t blockSize = propertySaveSize();
@@ -881,7 +869,7 @@ private:
         if ( !blockSize )
             return true;
 
-        spStorageBlock * stBlk = pStorage->beginBlock( getID(), blockSize);
+        spStorageBlock2 * stBlk = pStorage->beginBlock( name() );
         if ( !stBlk )
             return false;
 
@@ -894,10 +882,10 @@ private:
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorage *pStorage)
+    virtual bool restore(spStorage2 *pStorage)
     {
         // Do we have this block in storage?
-        spStorageBlock * stBlk = pStorage->getBlock( getID() );
+        spStorageBlock2 * stBlk = pStorage->getBlock( name() );
 
         if ( !stBlk )
             return true;  // nothing to restore
@@ -1055,7 +1043,7 @@ template <class T> class spContainer : public spObject
     }
 
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorage *pStorage)
+    virtual bool save(spStorage2 *pStorage)
     {
         for( auto pObj: _vector)
             pObj->save(pStorage);
@@ -1064,7 +1052,7 @@ template <class T> class spContainer : public spObject
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorage *pStorage)
+    virtual bool restore(spStorage2 *pStorage)
     {
         for( auto pObj: _vector)
             pObj->restore(pStorage);
