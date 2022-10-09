@@ -755,17 +755,16 @@ template <typename T> class spActionType : public spAction
 
     static spTypeID type(void)
     {
-        static spTypeID _myTypeID = kspTypeIDNone;
+        static spTypeID _myTypeID = sp_utils::getClassTypeID<T>();
+        // if (_myTypeID != kspTypeIDNone)
+        //     return _myTypeID;
 
-        if (_myTypeID != kspTypeIDNone)
-            return _myTypeID;
+        // // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // // to create our ID. The macro gives us a unique name for
+        // // each class b/c it uses the template parameter.
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro
-        // to create our ID. The macro gives us a unique name for
-        // each class b/c it uses the template parameter.
-
-        // Hash the name, make that our type ID.
-        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
+        // // Hash the name, make that our type ID.
+        // _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
