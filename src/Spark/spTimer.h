@@ -20,8 +20,7 @@ class spTimer : public spActionType<spTimer>
         
         spark.add(this);
 
-        setName("Timer");
-        setDescription("A reoccurring timer");
+        setName("Timer", "A reoccurring timer");
     };
 
     // Our output event

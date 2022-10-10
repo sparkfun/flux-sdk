@@ -7,6 +7,7 @@
 
 #define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
+#define kReadBufferEscape 253
 
 class spSettingsSerial : public spActionType<spSettingsSerial>
 {
@@ -15,8 +16,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     spSettingsSerial() : _systemRoot{nullptr}
     {
 
-        setName("Serial System Settings");
-        setDescription("Set system settings via the Serial Console");
+        setName("Serial System Settings", "Set system settings via the Serial Console");
     }
 
     void setSystemRoot(spObjectContainer *theRoot)
@@ -35,6 +35,9 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     bool drawPage(spOperationContainer *);
     bool drawPage(spActionContainer *);
     bool drawPage(spDeviceContainer *);
+
+    // Our output event
+    spSignalVoid on_finished;
 
     bool loop();
 
@@ -76,7 +79,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
             return false;
 
         uint8_t selected = 0;
-
+        bool returnValue = false;
         int nMenuItems;
 
         while (true)
@@ -102,12 +105,22 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
             selected = getMenuSelection((uint)nMenuItems);
 
             // done?
-            if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+            if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+            {
+                Serial.println("Escape");
+                returnValue = false;
                 break;
+            }
+            else if (selected == kReadBufferExit)
+            {
+                Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
+                returnValue = true;
+                break;
+            }
 
             selectMenu<T>(pCurrent, selected);
         }
-        return true;
+        return returnValue;
     };
 
     //-----------------------------------------------------------------------------
@@ -189,19 +202,19 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         //
         // Find the class type and "downcast it"
 
-        if ( spIsType<spObjectContainer>(pNext) )
+        if (spIsType<spObjectContainer>(pNext))
         {
             drawPage(reinterpret_cast<spObjectContainer *>(pNext));
         }
-        else if ( spIsType<spDeviceContainer>(pNext) )
+        else if (spIsType<spDeviceContainer>(pNext))
         {
             drawPage(reinterpret_cast<spDeviceContainer *>(pNext));
         }
-        else if ( spIsType<spActionContainer>(pNext) )
+        else if (spIsType<spActionContainer>(pNext))
         {
             drawPage(reinterpret_cast<spActionContainer *>(pNext));
         }
-        else if ( spIsType<spOperationContainer>(pNext) )
+        else if (spIsType<spOperationContainer>(pNext))
         {
             drawPage(reinterpret_cast<spOperationContainer *>(pNext));
         }

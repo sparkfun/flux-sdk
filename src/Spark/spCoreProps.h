@@ -873,9 +873,22 @@ private:
 
     spObject *_parent;
 
+    //---------------------------------------------------------------------------------
+    static uint16_t getNextNameNumber(void)
+    {
+        static uint16_t _nextNumber=0;
+
+        _nextNumber++;
+        return _nextNumber;
+    }
+
   public:
     spObject()
     {
+        // setup a default name for this device.
+        char szBuffer[64];
+        snprintf(szBuffer, sizeof(szBuffer), "spObject%04u", getNextNameNumber() );
+        setName(szBuffer);
     }
     virtual ~spObject()
     {
@@ -895,7 +908,7 @@ private:
         return _parent;
     }
 
- 
+
     //---------------------------------------------------------------------------------
     virtual bool save(spStorage2 *pStorage)
     {
@@ -947,16 +960,6 @@ private:
     static spTypeID type(void)
     {
         static spTypeID _myTypeID = sp_utils::getClassTypeID<spObject>();
-        // static spTypeID _myTypeID = kspTypeIDNone;
-        // if (_myTypeID != kspTypeIDNone)
-        //     return _myTypeID;
-
-        // // Use the name of this method via the __PRETTY_FUNCTION__ macro
-        // // to create our ID. The macro gives us a unique name for
-        // // each class b/c it uses the template parameter.
-
-        // // Hash the name, make that our type ID.
-        // _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
@@ -1059,17 +1062,6 @@ template <class T> class spContainer : public spObject
     static spTypeID type(void)
     {
         static spTypeID _myTypeID = sp_utils::getClassTypeID<T>();
-        // static spTypeID _myTypeID = kspTypeIDNone;
-
-        // if (_myTypeID != kspTypeIDNone)
-        //     return _myTypeID;
-
-        // // Use the name of this method via the __PRETTY_FUNCTION__ macro
-        // // to create our ID. The macro gives us a unique name for
-        // // each class b/c it uses the template parameter.
-
-        // // Hash the name, make that our type ID.
-        // _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }

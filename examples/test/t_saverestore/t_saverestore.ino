@@ -9,13 +9,13 @@
 
 // Spark framework 
 #include <Spark.h>
-#include "Spark/spStorageESP32Pref.h"
+#include <Spark/spStorageESP32Pref.h>
 
 #include <math.h>
 
 // Define a class that uses the properties of the system
 
-class test_properties : public spAction
+class test_properties : public spActionType<test_properties>
 {
 
     bool    _b_data=false;
