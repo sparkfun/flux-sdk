@@ -9,6 +9,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+#include <string.h>
 
 #include "spCoreLog.h"
 #include "spStorage.h"
@@ -693,6 +694,112 @@ class _spDataInString : public spDataIn
     };
 };
 
+
+//---------------------------------------------------------
+// Testing data limits
+
+typedef enum 
+{
+    spDataLimitTypeRange,
+    spDataLimitTypeSet
+} spDataLimit_t;
+
+template <typename T>
+class spDataLimit 
+{
+public:
+    virtual bool isValid(T value) = 0;
+    virtual uint limitType(void)
+    {
+        return 0;
+    }
+};
+
+template <typename T>
+class spDataLimitRange : public spDataLimit<T> 
+{
+public:
+    spDataLimitRange( T min, T max )
+    {
+        _min =  min < max ? min : max;
+        _max =  max > min ? max : min;
+    };
+
+    bool isValid(T value)
+    {
+        return ( value >= _min && value <= _max);
+    }
+    uint limitType(void)
+    {
+        return spDataLimitTypeRange;
+    };
+
+private:
+    T _min;
+    T _max;
+};
+
+
+template <typename T>
+class spDataLimitSet : public spDataLimit<T>
+{
+public:
+    spDataLimitSet( T * values, size_t length)
+    {
+        if (!values || length == 0)
+            return;
+
+        for (int i=0 ; i < length; i++ )
+            _validValues.push_back(values[i]);
+    }
+
+    bool isValid(T value)
+    {
+        for ( auto item : _validValues)
+        {
+            if ( item == value )
+                return true;
+        }
+        return false;
+    }
+    uint limitType(void)
+    {
+        return spDataLimitTypeSet;
+    };    
+private:
+
+    std::vector<T> _validValues;
+};
+
+class spDataLimitSetString : public spDataLimit<char*>
+{
+public:
+    spDataLimitSetString( char ** values, size_t length)
+    {
+        if (!values || length == 0)
+            return;
+
+        for (int i=0 ; i < length; i++ )
+            _validValues.push_back(values[i]);
+    }
+
+    bool isValid(char * value)
+    {
+        for ( auto item : _validValues)
+        {
+            if ( strcmp(item, value ) == 0 )
+                return true;
+        }
+        return false;
+    }
+    uint limitType(void)
+    {
+        return spDataLimitTypeSet;
+    }; 
+private:
+
+    std::vector<char *> _validValues;
+};
 //---------------------------------------------------------
 // Define simple type ID "types" - used for class IDs
 

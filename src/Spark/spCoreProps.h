@@ -150,10 +150,25 @@ class _spPropertyContainer
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
+template <class T> 
+class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
 {
+  protected:
+
+    spDataLimit<T>  *_dataLimit;
 
   public:
+
+    _spPropertyBase() : _dataLimit(nullptr) {};
+    _spPropertyBase( T min, T max) 
+    {
+        _dataLimit = new spDataLimitRange<T>(min, max);
+    };
+
+    _spPropertyBase( T *values, size_t length)
+    {
+        _dataLimit = new spDataLimitSet<T>(values, length);
+    };
     //---------------------------------------------------------------------------------
     spDataType_t type()
     {
@@ -239,8 +254,15 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 //
 class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
 {
+protected:
+    spDataLimitSetString * _dataLimit;
 
   public:
+    _spPropertyBaseString( char **values, size_t length)
+    {
+        _dataLimit = new spDataLimitSetString(values, length);
+    };
+
     spDataType_t type()
     {
         return spTypeString;
@@ -345,6 +367,13 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     {
     }
 
+    _spPropertyTypedRW( T min, T max) :  _spPropertyBase<T>(min, max), my_object{0}
+    {
+    }
+
+    _spPropertyTypedRW( T **values, size_t len) :  _spPropertyBase<T>(values, len), my_object{0}
+    {
+    }
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
@@ -635,6 +664,16 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
 {
 
   public:
+
+    _spPropertyTyped()
+    {}
+    _spPropertyTyped( T min, T max) :  _spPropertyBase<T>(min, max)
+    {
+    }
+
+    _spPropertyTyped( T **values, size_t len) :  _spPropertyBase<T>(values, len)
+    {
+    }
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
     // i.e.
