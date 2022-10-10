@@ -54,6 +54,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
     if (!pCurrent)
         return false;
 
+    bool returnValue = false;
     uint8_t selected = 0;
     int nMenuItems;
 
@@ -76,9 +77,16 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
         selected = getMenuSelection((uint)nMenuItems);
 
         // done?
-        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+        {
+            Serial.println("Escape");
+            returnValue = false;
+            break;
+        } 
+        else if (selected == kReadBufferExit )
         {
             Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
+            returnValue = true;
             break;
         }
 
@@ -86,7 +94,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
         selectMenu(pCurrent, selected);
     }
 
-    return true;
+    return returnValue;
 }
 
 //-----------------------------------------------------------------------------
@@ -124,7 +132,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     delay(kMessageDelayTimeout); // good UX here I think
 
-    return true;
+    return bSuccess;
 }
 //-----------------------------------------------------------------------------
 // drawPage()  - Operation/Action edition
@@ -136,6 +144,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
 
     uint8_t selected = 0;
 
+    bool returnValue = false;
     int nMenuItems;
 
     while (true)
@@ -157,9 +166,16 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         selected = getMenuSelection((uint)nMenuItems);
 
         // done?
-        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+        {
+            Serial.println("Escape");
+            returnValue = false;
+            break;
+        } 
+        else if (selected == kReadBufferExit )
         {
             Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
+            returnValue = true;
             break;
         }
 
@@ -168,7 +184,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         selectMenu(pCurrent, selected);
     }
 
-    return true;
+    return returnValue;
 }
 //-----------------------------------------------------------------------------
 // drawPage() Parameter edition -- just enable/disable it
@@ -180,6 +196,8 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 
     uint8_t selected = 0;
     char szBuffer[kOutputBufferSize];
+
+    bool returnValue = false;
 
     while (true)
     {
@@ -198,13 +216,22 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
         selected = getMenuSelection((uint)2);
 
         // done?
-        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+        {
+            Serial.println("Escape");
+            returnValue = false;
             break;
+        } 
+        else if (selected == kReadBufferExit )
+        {
+            returnValue = true;
+            break;
+        }
 
         pParam->setEnabled(selected == 1);
     }
 
-    return true;
+    return returnValue;
 }
 //-----------------------------------------------------------------------------
 // drawPage() - Input Parameter Editing edition
@@ -251,7 +278,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 
     delay(kMessageDelayTimeout); // good UX here I think
 
-    return true;
+    return bSuccess;
 }
 
 //-----------------------------------------------------------------------------
@@ -290,7 +317,7 @@ bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn 
 
     delay(kMessageDelayTimeout); // good UX here I think
 
-    return true;
+    return selected == 'y';
 }
 
 // Container typed wrappers that use the container template for all the work
@@ -625,9 +652,9 @@ int spSettingsSerial::selectMenu(spActionContainer *pCurrent, uint level)
 #define kpCodeEscape 27
 #define kpCodeCR 13
 
-static bool isEscape(uint8_t ch)
+static bool isGoBack(uint8_t ch)
 {
-    return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == kpCodeEscape);
+    return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' );
 }
 //-----------------------------------------------------------------------------
 static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
@@ -636,7 +663,10 @@ static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
     uint value;
 
     // if it's a number, or an escape letter(set by this app) drop out of loop
-    if (isEscape(chIn))
+    if ( chIn == kpCodeEscape )
+        return kReadBufferEscape;
+
+    if (isGoBack(chIn))
         return kReadBufferExit;
 
     if (isdigit(chIn))
@@ -655,7 +685,7 @@ static uint8_t menuEventYN(uint8_t chIn)
     switch (chIn)
     {
     case kpCodeEscape:
-        return kReadBufferExit;
+        return kReadBufferEscape;
 
     case kpCodeCR:
     case 'y':
@@ -737,12 +767,17 @@ bool spSettingsSerial::loop(void)
 
     if (_systemRoot && Serial.available())
     {
-        drawPage(_systemRoot);
+        bool doSave = drawPage(_systemRoot);
         Serial.printf("\n\r\n\rEnd Settings\n\r");
 
         // clear buffer
         while (Serial.available() > 0)
             Serial.read();
+
+        // send out a done event if the changes were successful.
+
+        if ( doSave )
+            on_finished.emit();
     }
 
     return true;

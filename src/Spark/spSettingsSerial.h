@@ -7,6 +7,7 @@
 
 #define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
+#define kReadBufferEscape 253
 
 class spSettingsSerial : public spActionType<spSettingsSerial>
 {
@@ -34,6 +35,9 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     bool drawPage(spOperationContainer *);
     bool drawPage(spActionContainer *);
     bool drawPage(spDeviceContainer *);
+
+    // Our output event
+    spSignalVoid on_finished;
 
     bool loop();
 
@@ -75,7 +79,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
             return false;
 
         uint8_t selected = 0;
-
+        bool returnValue = false;
         int nMenuItems;
 
         while (true)
@@ -101,12 +105,22 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
             selected = getMenuSelection((uint)nMenuItems);
 
             // done?
-            if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+            if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+            {
+                Serial.println("Escape");
+                returnValue = false;
                 break;
+            } 
+            else if (selected == kReadBufferExit )
+            {
+                Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
+                returnValue = true;
+                break;
+            }
 
             selectMenu<T>(pCurrent, selected);
         }
-        return true;
+        return returnValue;
     };
 
     //-----------------------------------------------------------------------------

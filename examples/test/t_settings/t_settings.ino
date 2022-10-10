@@ -11,8 +11,9 @@
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
-// KDB TESTING
 #include <Spark/spSettingsSerial.h>
+#include <Spark/spSettingsSave.h>
+#include <Spark/spStorageESP32Pref.h>
 
 
 
@@ -31,8 +32,7 @@ public:
 
     test_params(){
 
-        setName("Parameter Test");
-        setDescription("Used to test input and output parameters");
+        setName("Parameter Test", "Used to test input and output parameters");
 
         spRegister(out_bool, "Output Bool", "Test an output bool parameter");
         spRegister(out_int, "MyInteger", "Testing Int output parameter");
@@ -146,7 +146,13 @@ spLogger  logger;
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(3000);    // Timer 
 
-spSettingsSerial serialSettings;
+spSettingsSerial    serialSettings;
+
+// Create a save settings action, passing in the ESP32 Pref object
+// as a storage destination
+
+spStorageESP32Pref  settingsStorage;
+spSettingsSave      saveSettings(settingsStorage);
 
 test_params testParams;
 //---------------------------------------------------------------------
@@ -161,6 +167,13 @@ void setup() {
     Serial.begin(115200);  
     while (!Serial);
     Serial.println("\n---- Startup Serial Settings Test ----");
+    
+
+    // Have settings save when editing is complete.
+    saveSettings.listenForSave(serialSettings.on_finished);
+
+    // Add the save system to the app
+    spark.add(saveSettings);
     
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
