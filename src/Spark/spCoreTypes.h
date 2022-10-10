@@ -29,6 +29,11 @@ class spDescriptor
     {
         _name = new_name;
     }
+    void setName(const char *new_name, const char *new_desc)
+    {
+        _name = new_name;
+        setDescription(new_desc);
+    }
     const char *name()
     {
         return _name.c_str();
