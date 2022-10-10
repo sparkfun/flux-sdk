@@ -13,7 +13,7 @@
 
 #define kESP32HashTagSize 16
 
-#define kESP32MinTagLen 5
+#define kESP32MinTagLen 4
 
 // handy helper
 static bool tag_is_valid (const char *tag)
