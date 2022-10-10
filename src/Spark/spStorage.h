@@ -56,8 +56,10 @@ class spStorageBlock2
   public:
     virtual bool writeBool(const char *tag, bool data) = 0;
     virtual bool writeInt8(const char *tag, int8_t data) = 0;
+    virtual bool writeInt16(const char *tag, int16_t data) = 0;    
     virtual bool writeInt32(const char *tag, int32_t data) = 0;
     virtual bool writeUInt8(const char *tag, uint8_t data) = 0;
+    virtual bool writeUInt16(const char *tag, uint16_t data) = 0;    
     virtual bool writeUInt32(const char *tag, uint32_t data) = 0;
     virtual bool writeFloat(const char *tag, float data) = 0;
     virtual bool writeDouble(const char *tag, double data) = 0;
@@ -72,6 +74,10 @@ class spStorageBlock2
     {
         return writeInt8(tag, data);
     }
+    bool write(const char *tag, int16_t data)
+    {
+        return writeInt16(tag, data);
+    }
     bool write(const char *tag, int32_t data)
     {
         return writeInt32(tag, data);
@@ -79,6 +85,10 @@ class spStorageBlock2
     bool write(const char *tag, uint8_t data)
     {
         return writeUInt8(tag, data);
+    }
+    bool write(const char *tag, uint16_t data)
+    {
+        return writeUInt16(tag, data);
     }
     bool write(const char *tag, uint32_t data)
     {
@@ -100,8 +110,10 @@ class spStorageBlock2
     virtual bool valueExists(const char *tag) = 0;
     virtual bool readBool(const char *tag,  bool &value, bool defaultValue = false) = 0;
     virtual bool readInt8(const char *tag, int8_t &value, int8_t defaultValue = 0) = 0;
+    virtual bool readInt16(const char *tag, int16_t &value, int16_t defaultValue = 0) = 0;    
     virtual bool readInt32(const char *tag, int32_t &value, int32_t defaultValue = 0) = 0;
     virtual bool readUInt8(const char *tag, uint8_t &value, uint8_t defaultValue = 0) = 0;
+    virtual bool readUInt16(const char *tag, uint16_t &value, uint16_t defaultValue = 0) = 0;    
     virtual bool readUInt32(const char *tag, uint32_t &value, uint32_t defaultValue = 0) = 0;
     virtual bool readFloat(const char *tag, float &value, float defaultValue = NAN) = 0;
     virtual bool readDouble(const char *tag, double &value, double defaultValue = NAN) = 0;
@@ -117,6 +129,10 @@ class spStorageBlock2
     {
         return readInt8(tag, value);
     };
+    bool read(const char *tag, int16_t &value)
+    {
+        return readInt16(tag, value);
+    };
     bool read(const char *tag, int32_t &value)
     {
         return readInt32(tag, value);
@@ -124,6 +140,10 @@ class spStorageBlock2
     bool read(const char *tag, uint8_t &value)
     {
         return readUInt8(tag, value);
+    };
+    bool read(const char *tag, uint16_t &value)
+    {
+        return readUInt16(tag, value);
     };
     bool read(const char *tag, uint32_t &value)
     {

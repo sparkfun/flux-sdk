@@ -461,6 +461,10 @@ using spPropertyRWBool = _spPropertyTypedRW<bool, Object, _getter, _setter>;
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
 using spPropertyRWInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter>;
 
+// int16
+template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
+using spPropertyRWInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter>;
+
 // int
 template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
 using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
@@ -468,6 +472,10 @@ using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
 using spPropertyRWUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter>;
+
+// unsigned int 16
+template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
+using spPropertyRWUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter>;
 
 // unsigned int
 template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
@@ -728,8 +736,10 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
 // Define typed properties
 template <class Object> using spPropertyBool = _spPropertyTyped<Object, bool>;
 template <class Object> using spPropertyInt8 = _spPropertyTyped<Object, int8_t>;
+template <class Object> using spPropertyInt16 = _spPropertyTyped<Object, int16_t>;
 template <class Object> using spPropertyInt = _spPropertyTyped<Object, int>;
 template <class Object> using spPropertyUint8 = _spPropertyTyped<Object, uint8_t>;
+template <class Object> using spPropertyUint16 = _spPropertyTyped<Object, uint16_t>;
 template <class Object> using spPropertyUint = _spPropertyTyped<Object, uint>;
 template <class Object> using spPropertyFloat = _spPropertyTyped<Object, float>;
 template <class Object> using spPropertyDouble = _spPropertyTyped<Object, double>;

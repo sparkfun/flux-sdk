@@ -60,6 +60,23 @@ bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
 
     return (_prefs->putChar(szHash, value) > 0);
 }
+
+//------------------------------------------------------------------------
+// write out an int16 value
+
+bool spStorageESP32Block::writeInt16(const char *tag, int16_t value)
+{
+    if (!tag_is_valid(tag) || !_prefs)
+        return false;
+
+    char szHash[kESP32HashTagSize];
+
+    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+        return false;
+
+    return (_prefs->putShort(szHash, value) > 0);
+}
+
 //------------------------------------------------------------------------
 // write out a int value
 
@@ -90,6 +107,23 @@ bool spStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
 
     return (_prefs->putUChar(szHash, value) > 0);
 }
+
+//------------------------------------------------------------------------
+// Unsigned int16  - aka ushort
+
+bool spStorageESP32Block::writeUInt16(const char *tag, uint16_t value)
+{
+    if (!tag_is_valid(tag) || !_prefs)
+        return false;
+
+    char szHash[kESP32HashTagSize];
+
+    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+        return false;
+
+    return (_prefs->putUShort(szHash, value) > 0);
+}
+
 //------------------------------------------------------------------------
 bool spStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 {
@@ -187,6 +221,26 @@ bool spStorageESP32Block::readInt8(const char *tag, int8_t &value, int8_t defaul
     return true;
 }
 
+
+//------------------------------------------------------------------------
+bool spStorageESP32Block::readInt16(const char *tag, int16_t &value, int16_t defaultValue)
+{
+    if (!tag_is_valid(tag) || !_prefs)
+        return defaultValue;
+
+    char szHash[kESP32HashTagSize];
+
+    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+        return defaultValue;
+
+    if (!_prefs->isKey(szHash))
+        return false;
+
+    value = _prefs->getShort(szHash, defaultValue);
+
+    return true;
+}
+
 //------------------------------------------------------------------------
 bool spStorageESP32Block::readInt32(const char *tag, int32_t &value, int32_t defaultValue)
 {
@@ -221,6 +275,25 @@ bool spStorageESP32Block::readUInt8(const char *tag, uint8_t &value, uint8_t def
         return false;
 
     value = _prefs->getUChar(szHash, defaultValue);
+
+    return true;
+}
+
+//------------------------------------------------------------------------
+bool spStorageESP32Block::readUInt16(const char *tag, uint16_t &value, uint16_t defaultValue)
+{
+    if (!tag_is_valid(tag) || !_prefs)
+        return defaultValue;
+
+    char szHash[kESP32HashTagSize];
+
+    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+        return defaultValue;
+
+    if (!_prefs->isKey(szHash))
+        return false;
+
+    value = _prefs->getUShort(szHash, defaultValue);
 
     return true;
 }
