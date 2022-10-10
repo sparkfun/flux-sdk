@@ -139,12 +139,12 @@ bool sp_utils::id_hash_string_to_string(const char * instr, char *outstr, size_t
         return false;
     }
 
-    // has the input string - returns 32 bits of hashness
+    // hash the input string - returns 32 bits of hash-ness
     uint32_t hash = id_hash_string(instr);
 
     // Now print this has into a string -- forms a unique tag
-    snprintf(outstr, len, "%u", hash);
-
+    snprintf(outstr, len, "%X", hash);
+    
     return true;
 
 }
