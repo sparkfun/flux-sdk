@@ -16,10 +16,14 @@
 class test_params : public spOperation
 {
 
-    bool   _b_data=false;
-    int    _i_data=0;
-    float  _f_data=0.;    
-    std::string _s_data="";
+    bool            _b_data=false;
+    int             _i_data=0;
+    int8_t          _i8_data=0;    
+    int16_t         _i16_data=0;
+    uint8_t          _ui8_data=0;        
+    uint16_t        _ui16_data=0;    
+    float           _f_data=0.;    
+    std::string     _s_data="";
 
 public:
 
@@ -27,13 +31,22 @@ public:
 
         spRegister(out_bool);
         spRegister(out_int, "MyInteger", "Testing Int output parameter");
+        spRegister(out_int8, "Int8 Out", "Testing Int8 output parameter");        
+        spRegister(out_int16, "Int16 Out", "Testing Int16 output parameter");                
+        spRegister(out_uint8, "UInt8 Out", "Testing UInt8 output parameter");                
+        spRegister(out_uint16, "UInt16 Out", "Testing UInt16 output parameter");                        
         spRegister(out_float, "Float Out");
         spRegister(out_string, "Out String", "Testing a String Output Parameter");        
 
-        spRegister(in_bool);
+        spRegister(in_bool, "BOOL IN");
+        spRegister(in_int8, "Int8 In");        
+        spRegister(in_int16, "Int16 In");            
         spRegister(in_int, "InInt", "Testing Integer Input Parameter");
-        spRegister(in_string);
+        spRegister(in_uint8, "UInt8 In");                
+        spRegister(in_uint16, "UInt16 In");                        
         spRegister(in_float);
+        spRegister(in_string);
+
     }
     
 
@@ -42,9 +55,25 @@ public:
     bool get_bool(void);
     void set_bool(const bool &b);
 
+    // int8 setter/getter
+    int8_t get_int8(void);
+    void set_int8(const int8_t &);
+
+    // int16 setter/getter
+    int16_t get_int16(void);
+    void set_int16(const int16_t &);
+
     // int setter/getter
     int get_int(void);
     void set_int(const int &);
+
+    // uint8 setter/getter
+    uint8_t get_uint8(void);
+    void set_uint8(const uint8_t &);
+
+    // uint16 setter/getter
+    uint16_t get_uint16(void);
+    void set_uint16(const uint16_t &);
 
     // float setter/getter
     float get_float(void);
@@ -56,15 +85,23 @@ public:
 
 
     // Output Parameters
-    spParameterOutBool<test_params, &test_params::get_bool>   out_bool;
-    spParameterOutInt<test_params, &test_params::get_int>     out_int;
-    spParameterOutFloat<test_params, &test_params::get_float> out_float;
-    spParameterOutString<test_params, &test_params::get_str>  out_string;
+    spParameterOutBool<test_params, &test_params::get_bool>         out_bool;
+    spParameterOutInt8<test_params, &test_params::get_int8>         out_int8;    
+    spParameterOutInt16<test_params, &test_params::get_int16>       out_int16;
+    spParameterOutInt<test_params, &test_params::get_int>           out_int;
+    spParameterOutUint8<test_params, &test_params::get_uint8>       out_uint8;        
+    spParameterOutUint16<test_params, &test_params::get_uint16>     out_uint16;        
+    spParameterOutFloat<test_params, &test_params::get_float>       out_float;
+    spParameterOutString<test_params, &test_params::get_str>        out_string;
 
-    spParameterInBool<test_params, &test_params::set_bool>   in_bool;
-    spParameterInInt<test_params, &test_params::set_int>     in_int;
-    spParameterInFloat<test_params, &test_params::set_float> in_float;
-    spParameterInString<test_params, &test_params::set_str>  in_string;     
+    spParameterInBool<test_params, &test_params::set_bool>          in_bool;
+    spParameterInInt8<test_params, &test_params::set_int8>        in_int8;
+    spParameterInInt16<test_params, &test_params::set_int16>        in_int16;    
+    spParameterInInt<test_params, &test_params::set_int>            in_int;
+    spParameterInUint8<test_params, &test_params::set_uint8>      in_uint8;        
+    spParameterInUint16<test_params, &test_params::set_uint16>      in_uint16;            
+    spParameterInFloat<test_params, &test_params::set_float>        in_float;
+    spParameterInString<test_params, &test_params::set_str>         in_string;     
 };
 
 // Method implementation
@@ -77,12 +114,44 @@ void test_params::set_bool(const bool &b){
         _b_data=b;
 };
 
+// int8 setter/getter
+int8_t test_params::get_int8(void){
+    return _i8_data;
+}
+void test_params::set_int8(const int8_t &data){
+    _i8_data=data;
+};
+
+// int16 setter/getter
+int16_t test_params::get_int16(void){
+    return _i16_data;
+}
+void test_params::set_int16(const int16_t &data){
+    _i16_data=data;
+};
+
 // int setter/getter
 int test_params::get_int(void){
     return _i_data;
 }
 void test_params::set_int(const int &data){
     _i_data=data;
+};
+
+// uint8 setter/getter
+uint8_t test_params::get_uint8(void){
+    return _ui8_data;
+}
+void test_params::set_uint8(const uint8_t &data){
+    _ui8_data=data;
+};
+
+// uint16 setter/getter
+uint16_t test_params::get_uint16(void){
+    return _ui16_data;
+}
+void test_params::set_uint16(const uint16_t &data){
+    _ui16_data=data;
 };
 
 // float setter/getter
@@ -130,6 +199,41 @@ void run_tests()
 
     //---------------------------------------------------------------------------------------------------
     Serial.println();
+    Serial.println("Int8 Tests:");
+    Serial.print("Input NAME: "); Serial.print(myTest.in_int8.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_int8.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_int8.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_int8.description());
+
+    int8_t i8_test = -23;
+
+    myTest.in_int8(i8_test);
+    Serial.print("   Test 1: "); Serial.println( (myTest.out_int8() == i8_test ? "PASS" : "FAIL"));
+
+    i8_test+=25;
+    myTest.in_int8.set(i8_test);
+    Serial.print("   Test 2: "); Serial.println( (myTest.out_int8.get() == i8_test ? "PASS" : "FAIL"));    
+
+
+    //---------------------------------------------------------------------------------------------------
+    Serial.println();
+    Serial.println("Int16 Tests:");
+    Serial.print("Input NAME: "); Serial.print(myTest.in_int16.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_int16.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_int16.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_int16.description());
+
+    int16_t i16_test = -13;
+
+    myTest.in_int16(i16_test);
+    Serial.print("   Test 1: "); Serial.println( (myTest.out_int16() == i16_test ? "PASS" : "FAIL"));
+
+    i16_test+=5;
+    myTest.in_int16.set(i16_test);
+    Serial.print("   Test 2: "); Serial.println( (myTest.out_int16.get() == i16_test ? "PASS" : "FAIL"));  
+
+    //---------------------------------------------------------------------------------------------------
+    Serial.println();
     Serial.println("Int Tests:");
     Serial.print("Input NAME: "); Serial.print(myTest.in_int.name()); 
         Serial.print("  DESC: "); Serial.println(myTest.in_int.description());
@@ -143,7 +247,44 @@ void run_tests()
 
     i_test+=5;
     myTest.in_int.set(i_test);
-    Serial.print("   Test 2: "); Serial.println( (myTest.out_int.get() == i_test ? "PASS" : "FAIL"));    
+    Serial.print("   Test 2: "); Serial.println( (myTest.out_int.get() == i_test ? "PASS" : "FAIL"));  
+
+
+    //---------------------------------------------------------------------------------------------------
+    Serial.println();
+    Serial.println("UInt8 Tests:");
+    Serial.print("Input NAME: "); Serial.print(myTest.in_uint8.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_uint8.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_uint8.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_uint8.description());
+
+    uint8_t ui8_test = 43;
+
+    myTest.in_uint8(ui8_test);
+    Serial.print("   Test 1: "); Serial.println( (myTest.out_uint8() == ui8_test ? "PASS" : "FAIL"));
+
+    ui8_test+=26;
+    myTest.in_uint8.set(ui8_test);
+    Serial.print("   Test 2: "); Serial.println( (myTest.out_uint8.get() == ui8_test ? "PASS" : "FAIL")); 
+
+    //---------------------------------------------------------------------------------------------------
+    Serial.println();
+    Serial.println("UInt16 Tests:");
+    Serial.print("Input NAME: "); Serial.print(myTest.in_uint16.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.in_uint16.description());
+    Serial.print("Output NAME: "); Serial.print(myTest.out_uint16.name()); 
+        Serial.print("  DESC: "); Serial.println(myTest.out_uint16.description());
+
+    uint16_t ui16_test = -13;
+
+    myTest.in_uint16(ui16_test);
+    Serial.print("   Test 1: "); Serial.println( (myTest.out_uint16() == ui16_test ? "PASS" : "FAIL"));
+
+    ui16_test+=56;
+    myTest.in_uint16.set(ui16_test);
+    Serial.print("   Test 2: "); Serial.println( (myTest.out_uint16.get() == ui16_test ? "PASS" : "FAIL")); 
+
+
 
     //---------------------------------------------------------------------------------------------------
     Serial.println();    
