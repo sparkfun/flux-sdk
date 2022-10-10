@@ -134,7 +134,10 @@ uint32_t sp_utils::id_hash_string(const char *str)
 bool sp_utils::id_hash_string_to_string(const char * instr, char *outstr, size_t len){
 
     if ( !instr || !outstr || !len)
+    {
+        spLog_E("String hash - invalid parameters");
         return false;
+    }
 
     // has the input string - returns 32 bits of hashness
     uint32_t hash = id_hash_string(instr);
