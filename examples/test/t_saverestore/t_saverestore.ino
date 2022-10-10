@@ -183,7 +183,7 @@ public:
 //
 // Simple demo - connect to devices directly.
 //
-// Uses parameter instrospection to print output values of the BME280
+// Uses parameter introspection to print output values of the BME280
 // 
 // For this demo, connect to a BME280 and a CCS811 (the env combo board)
 
@@ -359,7 +359,7 @@ void setup() {
 
     spark.restore(&myStorage);
 
-    Serial.println("Values restored - verify - everything should pass\n\r\n\r");    
+    Serial.println("\n\rValues restored - verify - everything should pass\n\r");    
 
     test_check();
     
