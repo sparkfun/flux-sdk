@@ -40,9 +40,6 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
     // Events
     // Our output event
     spSignalBool on_clicked;
