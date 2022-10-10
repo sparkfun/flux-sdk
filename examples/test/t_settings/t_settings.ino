@@ -19,7 +19,7 @@
 
 // Define an action class that uses parameters for testing
 
-class test_params : public spAction
+class test_params : public spActionType<test_params>
 {
 
     bool   _b_data=false;

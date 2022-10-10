@@ -15,7 +15,7 @@
 
 // Define a class that uses the properties of the system
 
-class test_properties : public spAction
+class test_properties : public spActionType<test_properties>
 {
 
     bool    _b_data=false;
