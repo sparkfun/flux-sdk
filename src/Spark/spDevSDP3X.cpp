@@ -90,7 +90,7 @@ bool spDevSDP3X::isConnected(spDevI2C &i2cDriver, uint8_t address)
     prodId |= ((uint32_t)serialNo[3]) << 8;
     prodId |= serialNo[4]; // store LSB in prodId
 
-    return ((crc == serialNo[17]) && ((prodId == SDP3x_product_id_SDP31) || (prodId == SDP3x_product_id_SDP31)));
+    return ((crc == serialNo[17]) && ((prodId == SDP3x_product_id_SDP31) || (prodId == SDP3x_product_id_SDP32)));
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()
@@ -103,13 +103,15 @@ bool spDevSDP3X::onInitialize(TwoWire &wirePort)
 {
 
     SDP3X::stopContinuousMeasurement(address(), wirePort); // Make sure continuous measurements are stopped or .begin will fail
-    return SDP3X::begin(address(), wirePort);
+    bool result = SDP3X::begin(address(), wirePort);
+    result &= (SDP3X::startContinuousMeasurement(_tempComp, _measAvg) == SDP3X_SUCCESS);
+    return result;
 }
 
 // GETTER methods for output params
 float spDevSDP3X::read_temperature_C()
 {
-    if (_temperature == -9999)
+    if (_temperature <= -9998)
     {
         SDP3X::readMeasurement(&_pressure, &_temperature);
     }
@@ -120,7 +122,7 @@ float spDevSDP3X::read_temperature_C()
 
 float spDevSDP3X::read_pressure()
 {
-    if (_pressure == -9999)
+    if (_pressure <= -9998)
     {
         SDP3X::readMeasurement(&_pressure, &_temperature);
     }
