@@ -49,6 +49,8 @@ private:
     uint read_CO2();
     float read_temperature_C();
     float read_humidity();
+
+    // methods used to get values for our RW properties
     uint get_measurement_interval();
     uint get_altitude_compensation();
     float get_temperature_offset();

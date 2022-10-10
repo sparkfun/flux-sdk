@@ -41,12 +41,12 @@ spDevNAU7802::spDevNAU7802()
 
     // Register Property
     spRegister(zeroOffset, "Zero Offset", "Zero Offset");
-    zeroOffset = 0;
     spRegister(calibrationFactor, "Calibration Factor", "Used to convert the scale ADU into units");
-    calibrationFactor = 1.0;
 
     // Register parameters
     spRegister(weight, "Weight", "Weight in units - as set by the calibrationFactor");
+    spRegister(calculateZeroOffset, "Calculate Zero Offset", "Perform a zero offset calibration. Sets the scale weight to zero");
+    spRegister(calculateCalibrationFactor, "Calculate Calibration Factor", "Perform a scale calibration. Sets the scale weight to this many units");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -85,41 +85,37 @@ float spDevNAU7802::read_weight()
     return NAU7802::getWeight(true); // Allow negative weights
 }
 
-uint32_t spDevNAU7802::read_zero_offset()
+// methods used to get values for our RW properties
+
+uint spDevNAU7802::get_zero_offset()
 {
     return NAU7802::getZeroOffset();
 }
 
-float spDevNAU7802::read_calibration_factor()
+float spDevNAU7802::get_calibration_factor()
 {
     return NAU7802::getCalibrationFactor();
 }
 
-void spDevNAU7802::calculate_zero_offset(const bool &dummy)
+void spDevNAU7802::set_zero_offset(uint offset)
 {
-    (void)dummy;
+    NAU7802::setZeroOffset(offset);
+}
 
+void spDevNAU7802::set_calibration_factor(float factor)
+{
+    NAU7802::setCalibrationFactor(factor);
+}
+
+// methods for our input parameters
+
+void spDevNAU7802::calculate_zero_offset()
+{
     NAU7802::calculateZeroOffset(); // Zero the scale - calculateZeroOffset(uint8_t averageAmount = 8)
-    zeroOffset = NAU7802::getZeroOffset();
 }
 
 void spDevNAU7802::calculate_calibration_factor(const float &weight_in_units)
 {
     NAU7802::calculateCalibrationFactor(weight_in_units); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount = 8)
-    calibrationFactor = NAU7802::getCalibrationFactor();
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevNAU7802::onPropertyUpdate(const char *propName)
-{
-
-    if (strcmp(propName, "zeroOffset") == 0) // New zero offset applied
-        NAU7802::setZeroOffset(zeroOffset);
-
-    if (strcmp(propName, "calibrationFactor") == 0) // New calibration factor applied
-        NAU7802::setCalibrationFactor(calibrationFactor);
-}

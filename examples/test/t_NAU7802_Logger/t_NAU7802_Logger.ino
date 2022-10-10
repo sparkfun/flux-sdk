@@ -141,21 +141,26 @@ void loop() {
     {
       char c = Serial.read(); // Read the character
 
-      auto devs = spark.get<spDevNAU7802>();
-
-      // TO DO: figure out how to call begin or front correctly...
-      // What I want to do is something like:
-      // auto dev = devs.begin(); // Select the first NAU7802
-      for ( auto dev : *devs ) // Cheat... Only works because - at the moment - there can only be one NAU7802 attached...
+      spDeviceContainer myDevices = spark.connectedDevices();
+      
+      for (int i = 0; i < myDevices.size(); i++)
       {
-        if ((c == 'z') || (c == 'Z')) // Zero the scale
+        spTypeID type = spDevNAU7802::type();
+        
+        if (type == myDevices.at(i)->getType())
         {
-          dev->calculateZeroOffset(true);
-        }
-  
-        if ((c == 'h') || (c == 'H')) // Calibrate to 100
-        {
-          dev->calculateCalibrationFactor(100.0);
+          spDevNAU7802 *theItem;
+          theItem = (spDevNAU7802 *)myDevices.at(i);
+              
+          if ((c == 'z') || (c == 'Z')) // Zero the scale
+          {
+            theItem->calculateZeroOffset();
+          }
+    
+          if ((c == 'h') || (c == 'H')) // Calibrate to 100
+          {
+            theItem->calculateCalibrationFactor(100.0);
+          }
         }
       }
     }

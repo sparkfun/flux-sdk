@@ -48,23 +48,26 @@ public:
 
 private:
     // methods used to get values for our output parameters
-    uint32_t read_zero_offset();
-    float read_calibration_factor();
     float read_weight();
+
+    // methods used to get values for our RW properties
+    uint get_zero_offset();
+    float get_calibration_factor();
+    void set_zero_offset(uint);
+    void set_calibration_factor(float);
+
     // methods used to set our input parameters
-    void calculate_zero_offset(const bool &dummy);
+    void calculate_zero_offset();
     void calculate_calibration_factor(const float &weight_in_units);
 
 public:
-    spPropertyUint<spDevNAU7802> zeroOffset;
-    spPropertyFloat<spDevNAU7802> calibrationFactor;
+    spPropertyRWUint<spDevNAU7802, &spDevNAU7802::get_zero_offset, &spDevNAU7802::set_zero_offset> zeroOffset;
+    spPropertyRWFloat<spDevNAU7802, &spDevNAU7802::get_calibration_factor, &spDevNAU7802::set_calibration_factor> calibrationFactor;
 
     // Define our input parameters - specify the get functions to call.
-    spParameterInBool<spDevNAU7802, &spDevNAU7802::calculate_zero_offset> calculateZeroOffset;
+    spParameterInVoid<spDevNAU7802, &spDevNAU7802::calculate_zero_offset> calculateZeroOffset;
     spParameterInFloat<spDevNAU7802, &spDevNAU7802::calculate_calibration_factor> calculateCalibrationFactor;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutUint<spDevNAU7802, &spDevNAU7802::read_zero_offset> zeroOffset_output;
-    spParameterOutFloat<spDevNAU7802, &spDevNAU7802::read_calibration_factor> calibrationFactor_output;
     spParameterOutFloat<spDevNAU7802, &spDevNAU7802::read_weight> weight;
 };
