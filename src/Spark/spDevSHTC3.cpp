@@ -50,7 +50,13 @@ bool spDevSHTC3::isConnected(spDevI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t readID[2] = { (uint8_t)(SHTC3_CMD_READ_ID >> 8) , (uint8_t)(SHTC3_CMD_READ_ID & 0xFF) };
+    uint8_t wake[2] = {(uint8_t)(SHTC3_CMD_WAKE >> 8), (uint8_t)(SHTC3_CMD_WAKE & 0xFF)};
+    if (!i2cDriver.write(address, wake, 2))
+        return false;
+
+    delay(1);
+
+    uint8_t readID[2] = {(uint8_t)(SHTC3_CMD_READ_ID >> 8), (uint8_t)(SHTC3_CMD_READ_ID & 0xFF)};
     if (!i2cDriver.write(address, readID, 2))
         return false;
 
@@ -125,5 +131,3 @@ float spDevSHTC3::read_temperature_F()
     _tempF = false;
     return (SHTC3::toDegF());
 }
-
-
