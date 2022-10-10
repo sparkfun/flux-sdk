@@ -7,6 +7,8 @@
 
 #define kOutputBufferSize 128
 
+// after set message timeout in ms
+#define kMessageDelayTimeout 1000
 //-----------------------------------------------------------------------------
 // System settings user experience - via the serial console
 //
@@ -19,24 +21,27 @@
 //
 // The overall intent is to navigate the heirarchy of the application. To do this
 // the following steps take place.
-//   - A current object is pass in to the drawPage() method for the object type
-//   - The page is rendered, often calling the "drawMenu()" method for the 
+//   - A current object is passed in to the drawPage() method for the object type
+//   - The page is rendered, often calling the "drawMenu()" method for the
 //     current object type.
 //        - Note, the drawMenu() calls cascade up to the objects base classes
-//   - Once the menu is drawn, getMenuSelection() is called to determine/wait for 
-//     the uses input.
-//   - Once the user selects an item, "selectMenu()" is called to determine 
+//   - Once the menu is drawn, getMenuSelection() is called to determine/wait for
+//     the users input.
+//   - Once the user selects an item, "selectMenu()" is called to determine
 //     what was selected.
 //        -- this leverages an objects base class in a similar manner as drawMenu()
-//        -- selectMenu() will move the current menu page to the selected object.
+//        -- selectMenu() will move the current menu page to the page for the
+//           selected object.
 //   - Note: some pages are rendered differently, based on content.
 //        -- Property and Parameter pages are custom
 //
 //   Key Notes:
-//      - This system relies on method overloading to traverse the object heirarchy 
+//      - This system relies on method overloading to traverse the object heirarchy
 //        of the framework
-//      - The major sets are drawPage() -> drawMenu() -> selectMenu()
+//      - The general sequence of method calls are:
+//              drawPage() -> drawMenu() -> selectMenu()-> drawPage() ...
 //
+
 //-----------------------------------------------------------------------------
 // Draw Page
 //-----------------------------------------------------------------------------
@@ -68,12 +73,16 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems, pCurrent->parent() != nullptr);
+        selected = getMenuSelection((uint)nMenuItems);
 
         // done?
-        if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+        {
+            Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
             break;
+        }
 
+        Serial.println(selected);
         selectMenu(pCurrent, selected);
     }
 
@@ -113,7 +122,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     else
         Serial.printf("\t[%s is unchanged]\n\r", pProp->name());
 
-    delay(1000); // good UX here I think
+    delay(kMessageDelayTimeout); // good UX here I think
 
     return true;
 }
@@ -145,14 +154,16 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         }
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems, pCurrent->parent() != nullptr);
+        selected = getMenuSelection((uint)nMenuItems);
 
         // done?
-        if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+        {
+            Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
             break;
-        // done?
-        if (isEscape(selected))
-            break;
+        }
+
+        Serial.println(selected);
 
         selectMenu(pCurrent, selected);
     }
@@ -164,7 +175,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
 
 bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 {
-    if (!pCurrent)
+    if (!pCurrent || !pParam)
         return false;
 
     uint8_t selected = 0;
@@ -187,7 +198,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
         selected = getMenuSelection((uint)2);
 
         // done?
-        if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
             break;
 
         pParam->setEnabled(selected == 1);
@@ -195,6 +206,93 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 
     return true;
 }
+//-----------------------------------------------------------------------------
+// drawPage() - Input Parameter Editing edition
+//
+// The user has selected an input parameter.
+//
+// Get inputs from the user and call the parameter with the provided data.
+
+bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
+{
+    if (!pCurrent || !pParam)
+        return false;
+
+    // Void type input parameter?
+
+    if (pParam->type() == spTypeNone)
+        return drawPageParamInVoid(pCurrent, pParam);
+
+    // The data editor we're using - serial field
+    spSerialField theDataEditor;
+
+    // let's get a value for the parameter
+
+    // Header
+    drawPageHeader(pCurrent, pParam->name());
+
+    // if the parameter is a void type (spTypeNone),
+    // Editing Intro
+    Serial.printf("\tEnter the value to pass into `%s`(<%s>)\n\r\n\r", pParam->name(),
+                  sp_utils::spTypeName(pParam->type()));
+
+    Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
+
+    Serial.printf("\t%s = ", pParam->name());
+
+    // Call the parameter editValue() method with our editor
+    bool bSuccess = pParam->editValue(theDataEditor);
+
+    Serial.printf("\n\r\n\r");
+    if (bSuccess)
+        Serial.printf("\t[`%s` was called with the provided value.]\n\r", pParam->name());
+    else
+        Serial.printf("\t[`%s` was not called]\n\r", pParam->name());
+
+    delay(kMessageDelayTimeout); // good UX here I think
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------
+// drawPage() - VOID Input Parameter Editing edition
+//
+// The user has selected an input parameter of type Void
+//
+
+bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn *pParam)
+{
+    if (!pCurrent || !pParam || pParam->type() != spTypeNone)
+        return false;
+
+    // let's get a value for the parameter
+
+    // Header
+    drawPageHeader(pCurrent, pParam->name());
+
+    // if the parameter is a void type (spTypeNone),
+    // Editing Intro
+    Serial.printf("\tCall `%s`() [Y/n]? ", pParam->name());
+
+    uint8_t selected = getMenuSelectionYN();
+
+    if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+        return false;
+
+    Serial.printf("\n\r\n\r");
+    if (selected == 'y')
+    {
+        reinterpret_cast<spParameterInVoidType *>(pParam)->set();
+        Serial.printf("\t[`%s` was called]\n\r", pParam->name());
+    }
+    else
+        Serial.printf("\t[`%s` was not called]\n\r", pParam->name());
+
+    delay(kMessageDelayTimeout); // good UX here I think
+
+    return true;
+}
+
 // Container typed wrappers that use the container template for all the work
 bool spSettingsSerial::drawPage(spObjectContainer *pCurrent)
 {
@@ -216,7 +314,10 @@ bool spSettingsSerial::drawPage(spActionContainer *pCurrent)
     return drawPage<spAction *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-
+// drawPaeHeader()
+//
+// Generic header for all settings pages.
+//
 void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
 {
 
@@ -248,6 +349,10 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
     Serial.println();
 }
 //-----------------------------------------------------------------------------
+// drawPageFooter()
+//
+// Generic footer for most pages -- mostly writes out the exit/back menu entry
+//
 void spSettingsSerial::drawPageFooter(spObject *pCurrent)
 {
     Serial.println();
@@ -263,17 +368,20 @@ void spSettingsSerial::drawPageFooter(spObject *pCurrent)
 //-----------------------------------------------------------------------------
 // Draw Menu  routines
 //-----------------------------------------------------------------------------
-
+// drawMenuEntry()
+//
+// Draw the entry in the menu for the give item
+//
 void spSettingsSerial::drawMenuEntry(uint item, spDescriptor *pDesc)
 {
 
-    // TODO: Change in the future
     if (!pDesc)
         return;
 
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
 }
 //-----------------------------------------------------------------------------
+// drawMenuEntry()  -- non-object edition
 void spSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
 {
 
@@ -508,8 +616,62 @@ int spSettingsSerial::selectMenu(spActionContainer *pCurrent, uint level)
 
     return selectMenu<spAction *>(pCurrent, level);
 }
+
 //-----------------------------------------------------------------------------
-uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint timeout)
+// Helpful navigation functions
+//
+// was the entered value a "escape" value -- lev this page!
+// note 27 == escape key
+#define kpCodeEscape 27
+#define kpCodeCR 13
+
+static bool isEscape(uint8_t ch)
+{
+    return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == kpCodeEscape);
+}
+//-----------------------------------------------------------------------------
+static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
+{
+
+    uint value;
+
+    // if it's a number, or an escape letter(set by this app) drop out of loop
+    if (isEscape(chIn))
+        return kReadBufferExit;
+
+    if (isdigit(chIn))
+    {
+        value = chIn - '0';
+        if (value > 0 && value <= maxEntry)
+            return chIn - '0';
+    }
+
+    return 0; // no match.
+}
+//-----------------------------------------------------------------------------
+static uint8_t menuEventYN(uint8_t chIn)
+{
+
+    switch (chIn)
+    {
+    case kpCodeEscape:
+        return kReadBufferExit;
+
+    case kpCodeCR:
+    case 'y':
+    case 'Y':
+        return 'y';
+
+    case 'n':
+    case 'N':
+        return 'n';
+    }
+
+    return 0; // no match.
+}
+//-----------------------------------------------------------------------------
+
+uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint timeout)
 {
 
     // TODO - abstract out serial calls.
@@ -527,42 +689,25 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint t
     unsigned long startTime = millis();
 
     uint8_t chIn;
-    uint value;
+
     while (true)
     {
         if (Serial.available() > 0)
         {
-
             chIn = Serial.read();
 
-            // if it's a number, or an escape letter(set by this app) drop out of loop
-            if (isEscape(chIn))
-            {
-                Serial.print((hasParent ? 'b' : 'x'));
-                // Serial.print("\u2588"); // kdb block
-                // Serial.print('\a');  // kdb bell
-                chIn = kReadBufferExit;
+            chIn = (isYN ? menuEventYN(chIn) : menuEventNormal(maxEntry, chIn));
+
+            // match ? chIn != 0
+            if (chIn)
                 break;
-            }
-
-            else if (isdigit(chIn))
-            {
-                value = chIn - '0';
-                if (value > 0 && value <= maxEntry)
-                {
-                    chIn -= '0';
-                    Serial.print(chIn);
-
-                    break;
-                }
-            }
         }
 
         // Timeout?
         if ((millis() - startTime) > timeout)
         {
             Serial.println("No user input recieved.");
-            chIn = kReadBufferTimoutExpired;
+            chIn = kReadBufferTimeoutExpired;
             break;
         }
         delay(100);
@@ -570,7 +715,17 @@ uint8_t spSettingsSerial::getMenuSelection(uint maxEntry, bool hasParent, uint t
     Serial.flush();
     return chIn;
 }
-
+//--------------------------------------------------------------------------
+// get the selected menu item
+uint8_t spSettingsSerial::getMenuSelection(uint max, uint timeout)
+{
+    return getMenuSelectionFunc(max, false, timeout);
+}
+//--------------------------------------------------------------------------
+uint8_t spSettingsSerial::getMenuSelectionYN(uint timeout)
+{
+    return getMenuSelectionFunc(0, true, timeout);
+}
 //--------------------------------------------------------------------------
 // Loop call
 //

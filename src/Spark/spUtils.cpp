@@ -130,3 +130,21 @@ uint32_t sp_utils::id_hash_string(const char *str)
 
     return hash; //& 0xFFFF; // NOTE - we're just using 16 bits
 }
+
+bool sp_utils::id_hash_string_to_string(const char * instr, char *outstr, size_t len){
+
+    if ( !instr || !outstr || !len)
+    {
+        spLog_E("String hash - invalid parameters");
+        return false;
+    }
+
+    // hash the input string - returns 32 bits of hash-ness
+    uint32_t hash = id_hash_string(instr);
+
+    // Now print this has into a string -- forms a unique tag
+    snprintf(outstr, len, "%X", hash);
+    
+    return true;
+
+}

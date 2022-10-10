@@ -15,6 +15,8 @@
 #include "spStorage.h"
 #include "spUtils.h"
 
+
+#define kMaxPropertyString 256
 //----------------------------------------------------------------------------------------
 // spProperty
 //
@@ -22,7 +24,7 @@
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty : public spPersist, public spDescriptor
+class spProperty : public spDescriptor
 {
 
   public:
@@ -53,8 +55,8 @@ class spProperty : public spPersist, public spDescriptor
     }
     //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
-    virtual bool save(spStorageBlock *stBlk) = 0;
-    virtual bool restore(spStorageBlock *stBlk) = 0;
+    virtual bool save(spStorageBlock2 *) = 0;
+    virtual bool restore(spStorageBlock2 *) = 0;
 };
 
 // simple def - list of spProperty objects (it's a vector)
@@ -99,21 +101,40 @@ class _spPropertyContainer
     // expect this to be a "mix-in" class, we use a different interface
     // for the save/restore routines
 
-    bool saveProperties(spStorageBlock *stBlk)
+    bool saveProperties(spStorageBlock2 *stBlk)
     {
         bool rc = true;
+        bool status; 
         for (auto property : _properties)
-            rc = rc && property->save(stBlk);
+        {
+            status = property->save(stBlk);
+            rc = rc && status;
+        }
         return rc;
     };
 
     //---------------------------------------------------------------------------------
-    bool restoreProperties(spStorageBlock *stBlk)
+    bool restoreProperties(spStorageBlock2 *stBlk)
     {
         bool rc = true;
+        bool status;
+
         for (auto property : _properties)
-            rc = rc && property->restore(stBlk);
+        {
+            status = property->restore(stBlk);
+            rc = rc && status;
+        }
         return rc;
+    };
+
+    size_t propertySaveSize()
+    {
+        size_t totalSize =0;
+
+        for (auto property : _properties)
+            totalSize += property->save_size();
+
+        return totalSize;
     };
 
   private:
@@ -152,7 +173,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
     }; // sometimes save size is different than size
 
     //---------------------------------------------------------------------------------
-    // Virutal functions to get and set the value - these are filled in
+    // Virtual functions to get and set the value - these are filled in
     // by the sub-class
 
     virtual T get(void) const = 0;
@@ -160,18 +181,28 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock *stBlk)
+    bool save(spStorageBlock2 *stBlk)
     {
         T c = get();
-        return stBlk->writeBytes(save_size(), (char *)&c);
+        bool status = stBlk->write(name(), c);
+
+        if( !status )
+            spLog_E("Error when saving property %s", name());
+
+        return status;
     };
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock *stBlk)
+    bool restore(spStorageBlock2 *stBlk)
     {
         T c;
-        return stBlk->readBytes(save_size(), (char *)&c);
-        set(c);
+
+        bool status = stBlk->read(name(), c);
+
+        if (status )
+            set(c);
+
+        return status;
     };
 
     // use this to route the call to our dataOut baseclass
@@ -203,10 +234,10 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 // Strings are special ...
 //
 // There is some code duplication here - not happy about this - but strings
-// are differnet, so they require a unique implementation. I'm sure there's some
+// are different, so they require a unique implementation. I'm sure there's some
 // magic that could reduce the code duplication - but this isn't happening today ...
 //
-class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spDataOutString
+class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
 {
 
   public:
@@ -230,7 +261,7 @@ class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spData
     };
 
     //---------------------------------------------------------------------------------
-    // Virutal functions to get and set the value - these are filled in
+    // Virtual functions to get and set the value - these are filled in
     // by the sub-class
 
     virtual std::string get(void) const = 0;
@@ -246,29 +277,28 @@ class _spPropertyBaseString : public spProperty, _spDataIn<std::string>, _spData
 
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock *stBlk)
+    bool save(spStorageBlock2 *stBlk)
     {
         // strings ... len, data
         std::string c = get();
-        uint8_t len = c.size(); // yes, this limits str len of a property to 256.
-        stBlk->writeBytes(sizeof(uint8_t), (char *)&len);
-        return stBlk->writeBytes(len, (char *)c.c_str());
+
+        bool status = stBlk->writeString(name(), c.c_str()) == c.length();
+        if( !status )
+            spLog_E("Error saving string for property: %s", name());
+        return status;
     }
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock *stBlk)
+    bool restore(spStorageBlock2 *stBlk)
     {
+        char szBuffer[kMaxPropertyString];
 
-        uint8_t len = 0;
-        stBlk->readBytes(sizeof(uint8_t), (char *)&len);
-        char szBuffer[len + 1];
-        bool rc = stBlk->readBytes(len, (char *)szBuffer);
-        if (rc)
-        {
-            szBuffer[len] = '\0';
+        size_t len = stBlk->readString(name(), szBuffer, sizeof(szBuffer));
+
+        if ( len > 0)
             set(szBuffer);
-        }
-        return rc;
+
+        return true;
     };
     //---------------------------------------------------------------------------------
     // editValue()
@@ -324,7 +354,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spPropertyContainer
@@ -361,18 +391,22 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     // get/set syntax
     T get() const
     {
-        assert(my_object);
         if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return (T)0;
+        }
 
         return (my_object->*_getter)();
     }
     //---------------------------------------------------------------------------------
     void set(T const &value)
     {
-        assert(my_object);
         if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return; // would normally throw an exception, but not very Arduino like!
+        }
 
         (my_object->*_setter)(value);
     }
@@ -476,10 +510,10 @@ class spPropertyRWString : public _spPropertyBaseString
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a spObject
         // Compile-time check
         static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyTypedRWString: type parameter of this class must derive from spPropertyContainer");
@@ -515,14 +549,30 @@ class spPropertyRWString : public _spPropertyBaseString
     {
         return get() == rhs;
     }
-
+    // String - needed to overload the equality operator
+    bool operator!=(const std::string &rhs)
+    {
+        return get() != rhs;
+    }
+    // String - needed to overload the equality operator
+    bool operator==( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) == 0;
+    }
+    // String - needed to overload the equality operator
+    bool operator!=( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) != 0;
+    }
     //---------------------------------------------------------------------------------
     // get/set syntax
     std::string get() const
     {
-        assert(my_object);
         if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");            
             return "";
+        }
 
         return (my_object->*_getter)();
     }
@@ -530,9 +580,10 @@ class spPropertyRWString : public _spPropertyBaseString
     //---------------------------------------------------------------------------------
     void set(std::string const &value)
     {
-        assert(my_object);
-        if (!my_object)
+        if (!my_object){
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");            
             return;
+        }
 
         (my_object->*_setter)(value);
     }
@@ -585,7 +636,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
     // properties.
     void operator()(Object *me)
     {
-        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a spObject
         // Compile-time check
         static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyTyped: type parameter of this class must derive from spPropertyContainer");
@@ -662,7 +713,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
         return get();
     };
 
-    //---------------------------------------------------------------------------------    0
+    //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
     _spPropertyTyped<Object, T> &operator=(T const &value)
     {
@@ -705,7 +756,7 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 
     void operator()(Object *me)
     {
-        // Make sure the container type has spPropContainer as it's baseclass or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a spObject
         // Compile-time check
         static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
                       "_spPropertyString: type parameter of this class must derive from spPropertyContainer");
@@ -753,7 +804,21 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     {
         return get() == rhs;
     }
-
+    // String - needed to overload the equality operator
+    bool operator!=(const std::string &rhs)
+    {
+        return get() != rhs;
+    }
+    // String - needed to overload the equality operator
+    bool operator==( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) == 0;
+    }
+    // String - needed to overload the equality operator
+    bool operator!=( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) != 0;
+    }
     //---------------------------------------------------------------------------------
     // function call syntax
     // get -> property()
@@ -804,6 +869,8 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
 {
 
+private:
+
     spObject *_parent;
 
   public:
@@ -827,24 +894,47 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     {
         return _parent;
     }
+
+ 
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorageBlock *stBlk)
+    virtual bool save(spStorage2 *pStorage)
     {
 
-        if (!saveProperties(stBlk))
+        spStorageBlock2 * stBlk = pStorage->beginBlock( name() );
+        if ( !stBlk )
             return false;
-        // TODO implement - finish
 
-        return true;
+        bool status = saveProperties(stBlk);
+        if (!status)
+            spLog_W("Error Saving a property for %s", name());
+
+
+        pStorage->endBlock(stBlk);
+
+        return status;
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorageBlock *stBlk)
+    virtual bool restore(spStorage2 *pStorage)
     {
-        if (!restoreProperties(stBlk))
-            return false;
-        // TODO implement - finish
-        return true;
+        // Do we have this block in storage?
+        spStorageBlock2 * stBlk = pStorage->getBlock( name() );
+
+
+        if ( !stBlk )
+        {
+            spLog_E("Object Restore - error getting storage block");
+            return true;  // nothing to restore
+        }
+
+        // restore props
+        bool status = restoreProperties(stBlk);
+        if (!status) 
+            spLog_W("Error restoring a property for %s", name());           
+
+        pStorage->endBlock(stBlk);
+
+        return status;
     };
     //---------------------------------------------------------------------------------
     // Return the type ID of this
@@ -856,16 +946,17 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     // A static type class for spObject
     static spTypeID type(void)
     {
-        static spTypeID _myTypeID = kspTypeIDNone;
-        if (_myTypeID != kspTypeIDNone)
-            return _myTypeID;
+        static spTypeID _myTypeID = sp_utils::getClassTypeID<spObject>();
+        // static spTypeID _myTypeID = kspTypeIDNone;
+        // if (_myTypeID != kspTypeIDNone)
+        //     return _myTypeID;
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro
-        // to create our ID. The macro gives us a unique name for
-        // each class b/c it uses the template parameter.
+        // // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // // to create our ID. The macro gives us a unique name for
+        // // each class b/c it uses the template parameter.
 
-        // Hash the name, make that our type ID.
-        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
+        // // Hash the name, make that our type ID.
+        // _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
@@ -967,17 +1058,18 @@ template <class T> class spContainer : public spObject
 
     static spTypeID type(void)
     {
-        static spTypeID _myTypeID = kspTypeIDNone;
+        static spTypeID _myTypeID = sp_utils::getClassTypeID<T>();
+        // static spTypeID _myTypeID = kspTypeIDNone;
 
-        if (_myTypeID != kspTypeIDNone)
-            return _myTypeID;
+        // if (_myTypeID != kspTypeIDNone)
+        //     return _myTypeID;
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro
-        // to create our ID. The macro gives us a unique name for
-        // each class b/c it uses the template parameter.
+        // // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // // to create our ID. The macro gives us a unique name for
+        // // each class b/c it uses the template parameter.
 
-        // Hash the name, make that our type ID.
-        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
+        // // Hash the name, make that our type ID.
+        // _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
@@ -987,6 +1079,24 @@ template <class T> class spContainer : public spObject
     {
         return type();
     }
+
+    //---------------------------------------------------------------------------------
+    virtual bool save(spStorage2 *pStorage)
+    {
+        for( auto pObj: _vector)
+        pObj->save(pStorage);
+     
+        return true;
+    };
+
+    //---------------------------------------------------------------------------------
+    virtual bool restore(spStorage2 *pStorage)
+    {
+        for( auto pObj: _vector)
+            pObj->restore(pStorage);
+
+        return true;
+    };
 };
 using spObjectContainer = spContainer<spObject *>;
 

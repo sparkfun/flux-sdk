@@ -17,7 +17,113 @@
 
 
 
+// Define an action class that uses parameters for testing
 
+class test_params : public spAction
+{
+
+    bool   _b_data=false;
+    int    _i_data=0;
+    float  _f_data=0.;    
+    std::string _s_data="";
+
+public:
+
+    test_params(){
+
+        setName("Parameter Test");
+        setDescription("Used to test input and output parameters");
+
+        spRegister(out_bool, "Output Bool", "Test an output bool parameter");
+        spRegister(out_int, "MyInteger", "Testing Int output parameter");
+        spRegister(out_float, "Float Out");
+        spRegister(out_string, "Out String", "Testing a String Output Parameter");        
+
+        spRegister(in_bool, "in bool", "test input of a bool value");
+        spRegister(in_int,  "in int", "test input of a int value");
+        spRegister(in_string, "in string", "test input of a string value");
+        spRegister(in_float, "in float", "test input of a float value");
+        spRegister(in_void, "in void", "test input parameter of type void");
+    }
+    
+
+
+    // boolean setter/getter
+    bool get_bool(void);
+    void set_bool(const bool &b);
+
+    // int setter/getter
+    int get_int(void);
+    void set_int(const int &);
+
+    // float setter/getter
+    float get_float(void);
+    void set_float(const float &);
+
+    // string setter/getter
+    std::string get_str(void);
+    void set_str(const std::string &);
+
+    // VOID
+    void set_void(void);
+
+
+    // Output Parameters
+    spParameterOutBool<test_params, &test_params::get_bool>   out_bool;
+    spParameterOutInt<test_params, &test_params::get_int>     out_int;
+    spParameterOutFloat<test_params, &test_params::get_float> out_float;
+    spParameterOutString<test_params, &test_params::get_str>  out_string;
+
+    spParameterInBool<test_params, &test_params::set_bool>   in_bool;
+    spParameterInInt<test_params, &test_params::set_int>     in_int;
+    spParameterInFloat<test_params, &test_params::set_float> in_float;
+    spParameterInString<test_params, &test_params::set_str>  in_string;  
+
+    spParameterInVoid<test_params, &test_params::set_void>   in_void;   
+};
+
+// Method implementation
+
+// boolean setter/getter
+bool test_params::get_bool(void){
+    return _b_data;
+}
+void test_params::set_bool(const bool &b){
+
+    Serial.printf("\n\r\n\r\t[TEST: Bool set to: %d]\n\r", b);
+    _b_data=b;
+};
+
+// int setter/getter
+int test_params::get_int(void){
+    return _i_data;
+}
+void test_params::set_int(const int &data){
+    Serial.printf("\n\r\n\r\t[TEST: Int set to: %d]\n\r", data);    
+    _i_data=data;
+};
+
+// float setter/getter
+float test_params::get_float(void){
+    return _f_data;
+}
+void test_params::set_float(const float &data){
+    Serial.printf("\n\r\n\r\t[TEST: Float set to: %f]\n\r", data);        
+    _f_data=data;
+};
+
+// str setter/getter
+std::string test_params::get_str(void){
+    return _s_data;
+}
+void test_params::set_str(const std::string &data){
+    Serial.printf("\n\r\n\r\t[TEST: String set to: `%s`]\n\r", data.c_str());        
+    _s_data=data;    
+}
+
+void test_params::set_void(void){
+    Serial.printf("\n\r\n\r\t[TEST: VOID set called]\n\r");
+}
 /////////////////////////////////////////////////////////////////////////
 // Spark Framework
 /////////////////////////////////////////////////////////////////////////
@@ -41,6 +147,8 @@ spLogger  logger;
 spTimer   timer(3000);    // Timer 
 
 spSettingsSerial serialSettings;
+
+test_params testParams;
 //---------------------------------------------------------------------
 // Arduino Setup
 //
@@ -58,7 +166,9 @@ void setup() {
     //               This should be done after all devices are added..for now...
     spark.start();  
 
-    
+    // our testing parameter object.
+    spark.add(testParams);
+
     // What's connected
     spDeviceContainer  myDevices = spark.connectedDevices();
 
@@ -71,10 +181,9 @@ void setup() {
         
     }
 
-    
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
-    // Set the settigns system to start at root of the spark system.
+    // Set the settings system to start at root of the spark system.
     serialSettings.setSystemRoot(&spark);
 
     // Add serial settings to spark - the spark loop call will take care

@@ -19,27 +19,19 @@ size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 
 
 uint32_t id_hash_string(const char *str);
 
-// Type strings in ordinary C++ syntax
-template <typename T> char const *classname_helper()
+bool id_hash_string_to_string(const char * instr, char *outstr, size_t len);
+
+
+template <typename T> spTypeID getClassTypeID()
 {
-    return __PRETTY_FUNCTION__ +
-           sizeof(
-#ifdef __clang__
-               "const char* sp_utils::classname_helper() [T = "
-#else
-               "const char* sp_utils::classname_helper() [with T = "
-#endif
-               ) -
-           1;
-}
+    // Use the name of this method via the __PRETTY_FUNCTION__ macro
+    // to create our ID. The macro gives us a unique name for
+    // each class b/c it uses the template parameter.
 
-template <typename T> std::string getClassName()
-{
-
-    char const *const p = classname_helper<T>();
-    return std::string(p, strlen(p) - sizeof(']'));
-}
-
+    // Hash the name, make that our type ID.
+    return id_hash_string(__PRETTY_FUNCTION__);
+    
+};
 } // namespace sp_utils
 
 /*

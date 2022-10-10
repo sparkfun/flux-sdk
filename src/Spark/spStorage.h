@@ -1,33 +1,23 @@
 /*
  * spStorage.h
  *
- * Class to encapsulate storage access to the devices EEProm
+ * Define our interfaces for state saving/storage
  */
 
 #pragma once
 
-#include <Arduino.h>
+#include <cstdint>
+#include <stddef.h>
+#include <math.h>
 
-#include "spCoreLog.h"
-
-class spStorage_;
-
-//------------------------------------------------------------------------------
-// Storage is "block" based - data blobs are stored with headers to form a block.
+// Storage involves two interfaces
 //
-// The blocks are connected using a linked-list pattern - influence from how TIFF
-// files work. There is a header + data.
+//  - spStorage       - The main interface into the storage system being used.
+//  - spStorageBlock  - Interface to the current block being written to
 //
-// Block header:
-
-typedef struct
-{
-    uint16_t id;   // ID for this block
-    uint16_t size; // Size in bytes of the blocks data segment
-    uint16_t next; // Offset in bytes to the next block
-} spBlockHeader;
-
 //------------------------------------------------------------------------------
+// spStorageBlock()
+//
 // Define our storage block object. This is used as a FP like object when a bock is
 // written out interatively...
 
@@ -35,68 +25,139 @@ class spStorageBlock
 {
 
   public:
-    spStorageBlock() : _position(0), _locked(false){};
-
-    bool writeBytes(size_t sz, char *buffer);
-    bool readBytes(size_t sz, char *buffer);
-
-  private:
-    friend spStorage_; // storage class will adjust parameters of the block
-
-    spBlockHeader header;
-
-    int _position = 0; // current position in the block's data blob
-    bool _locked = false;
+    virtual bool writeBytes(size_t sz, char *buffer) = 0;
+    virtual bool readBytes(size_t sz, char *buffer) = 0;
 };
 
 //------------------------------------------------------------------------------
-class spStorage_
+// spStorage
+//
+// Interface for a storage system to persist state of a system
+
+class spStorage
 {
 
   public:
-    // this is a singleton
-    static spStorage_ &getInstance(void)
-    {
-        static spStorage_ instance;
-        return instance;
-    }
-
     // public methods to manage a block
-    spStorageBlock *beginBlock(uint16_t idBlock, size_t sz);
-    void endBlock(spStorageBlock *);
+    virtual spStorageBlock *beginBlock(uint16_t idBlock, size_t sz) = 0;
+    virtual spStorageBlock *getBlock(uint16_t idBlock) = 0;
+    virtual void endBlock(spStorageBlock *) = 0;
 
-    // delete the copy and assignment constructors
-    spStorage_(spStorage_ const &) = delete;
-    void operator=(spStorage_ const &) = delete;
-
-  private:
-    friend spStorageBlock;
-
-    bool writeBytes(spStorageBlock *, size_t, char *);
-    bool readBytes(spStorageBlock *, size_t, char *);
-
-    bool validStorage(void);
-    void initStorage(void);
-
-    void write_bytes(uint16_t startPos, size_t sz, char *pBytes);
-    template <typename T> void write_bytes(uint16_t startPos, T &data);
-
-    void read_bytes(uint16_t startPos, size_t sz, char *pBytes);
-    template <typename T> void read_bytes(uint16_t startPos, T &pBytes);
-
-    void initialize();
-    spStorage_()
-    {
-        initialize();
-    };
-
-    uint16_t getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeader &outBlock);
-    void deleteBlock(uint16_t idTarget);
-    uint16_t findBlock(uint16_t idTarget, spBlockHeader &outBlock);
+    virtual void resetStorage() = 0;
 };
 
-// Create an accessor for the Storage class
+//------------------------------------------------------------------------------
+// Use tags to ID an item and move to use data types. Model after the
+// ESP32 preference library
 
-typedef spStorage_ &spStorage;
+class spStorageBlock2
+{
 
-#define spStorage() spStorage_::getInstance()
+  public:
+    virtual bool writeBool(const char *tag, bool data) = 0;
+    virtual bool writeInt8(const char *tag, int8_t data) = 0;
+    virtual bool writeInt32(const char *tag, int32_t data) = 0;
+    virtual bool writeUInt8(const char *tag, uint8_t data) = 0;
+    virtual bool writeUInt32(const char *tag, uint32_t data) = 0;
+    virtual bool writeFloat(const char *tag, float data) = 0;
+    virtual bool writeDouble(const char *tag, double data) = 0;
+    virtual bool writeString(const char *tag, const char *data) = 0;
+
+    // Overloaded versions
+    bool write(const char *tag, bool data)
+    {
+        return writeBool(tag, data);
+    }
+    bool write(const char *tag, int8_t data)
+    {
+        return writeInt8(tag, data);
+    }
+    bool write(const char *tag, int32_t data)
+    {
+        return writeInt32(tag, data);
+    }
+    bool write(const char *tag, uint8_t data)
+    {
+        return writeUInt8(tag, data);
+    }
+    bool write(const char *tag, uint32_t data)
+    {
+        return writeUInt32(tag, data);
+    }
+    bool write(const char *tag, float data)
+    {
+        return writeFloat(tag, data);
+    }
+    bool write(const char *tag, double data)
+    {
+        return writeDouble(tag, data);
+    }
+    bool write(const char *tag, const char * data)
+    {
+        return writeString(tag, data);
+    }
+
+    virtual bool valueExists(const char *tag) = 0;
+    virtual bool readBool(const char *tag,  bool &value, bool defaultValue = false) = 0;
+    virtual bool readInt8(const char *tag, int8_t &value, int8_t defaultValue = 0) = 0;
+    virtual bool readInt32(const char *tag, int32_t &value, int32_t defaultValue = 0) = 0;
+    virtual bool readUInt8(const char *tag, uint8_t &value, uint8_t defaultValue = 0) = 0;
+    virtual bool readUInt32(const char *tag, uint32_t &value, uint32_t defaultValue = 0) = 0;
+    virtual bool readFloat(const char *tag, float &value, float defaultValue = NAN) = 0;
+    virtual bool readDouble(const char *tag, double &value, double defaultValue = NAN) = 0;
+    virtual size_t readString(const char *tag, char *data, size_t len) = 0;
+
+    // overload reads
+
+    bool read(const char *tag, bool &value)
+    {
+        return readBool(tag, value);
+    };
+    bool read(const char *tag, int8_t &value)
+    {
+        return readInt8(tag, value);
+    };
+    bool read(const char *tag, int32_t &value)
+    {
+        return readInt32(tag, value);
+    };
+    bool read(const char *tag, uint8_t &value)
+    {
+        return readUInt8(tag, value);
+    };
+    bool read(const char *tag, uint32_t &value)
+    {
+        return readUInt32(tag, value);
+    };
+    bool read(const char *tag, float &value)
+    {
+        return readFloat(tag, value);
+    };
+    bool read(const char *tag, double &value)
+    {
+        return readDouble(tag, value);
+    };
+
+};
+
+//------------------------------------------------------------------------------
+// spStorage
+//
+// Interface for a storage system to persist state of a system
+
+class spStorage2
+{
+
+  public:
+    // public methods to manage a block
+    virtual spStorageBlock2 *beginBlock(const char *tag) = 0;
+
+    // NOTE: TODO - for eeprom version of this, the number of bytes written
+    // should be kept in the block, then when it's close, written to the block
+    // header -- note, you will need to delete all existing blocks when writing
+    // new ...
+    virtual spStorageBlock2 *getBlock(const char *tag) = 0;
+    virtual void endBlock(spStorageBlock2 *) = 0;
+
+    virtual void resetStorage() = 0;
+};

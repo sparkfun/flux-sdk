@@ -36,6 +36,7 @@ class spParameter : public spDescriptor
     {
         _isEnabled = enabled;
     };
+    virtual spDataType_t type(void) = 0;
 };
 
 // We want to bin parameters as input and output for storing different
@@ -43,9 +44,13 @@ class spParameter : public spDescriptor
 
 class spParameterIn : public spParameter
 {
+  public:
+    virtual bool editValue(spDataEditor &) = 0;
 };
 class spParameterOut : public spParameter, public spDataOut
 {
+  public:
+    virtual spDataType_t type(void) = 0;
 };
 // simple def - list of parameters
 using spParameterInList = std::vector<spParameterIn *>;
@@ -136,24 +141,23 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     _spParameterOut(Object *me) : my_object(me)
     {
     }
-
     //---------------------------------------------------------------------------------
-    // Type of property
-    spDataType_t type(void)
+    // return our data type
+    spDataType_t type()
     {
-        T c;
-        return spDataTyper::type(c);
+        return _spDataOut<T>::type();
     };
+
     //---------------------------------------------------------------------------------
     // to register the parameter - set the containing object instance
     // Normally done in the containing objects constructor.
     // i.e.
-    //     parameter_objectthis);
+    //     parameter_object(this);
     //
     // This allows the parameter to add itself to the containing objects list of
     // parameter.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -190,10 +194,11 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     // get/set syntax
     T get() const
     {
-        assert(my_object);
         if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return (T)0;
-
+        }
         return (my_object->*_getter)();
     }
 
@@ -277,23 +282,21 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     {
     }
 
-    //---------------------------------------------------------------------------------
-    // Type of property
+    // type
     spDataType_t type(void)
     {
-        std::string c;
-        return spDataTyper::type(c);
+        return _spDataOutString::type();
     };
     //---------------------------------------------------------------------------------
     // to register the parameter - set the containing object instance
     // Normally done in the containing objects constructor.
     // i.e.
-    //     parameter_objectthis);
+    //     parameter_object(this);
     //
     // This allows the parameter to add itself to the containing objects list of
     // parameter.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -330,9 +333,11 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     // get/set syntax
     std::string get() const
     {
-        assert(my_object);
         if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return std::string("");
+        }
 
         return (my_object->*_getter)();
     }
@@ -391,7 +396,11 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     _spParameterIn(Object *me) : my_object(me)
     {
     }
-
+    //---------------------------------------------------------------------------------
+    spDataType_t type()
+    {
+        return _spDataIn<T>::type();
+    };
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
@@ -401,7 +410,8 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     // This allows the property to add itself to the containing objects list of
     // properties.
     //
-    // Also thie containing object is needed to call the getter/setter methods on that object
+    // Also the containing object is needed to call the getter/setter methods on that object
+
     void operator()(Object *obj)
     {
         // my_object must be derived from _spParameterContainer
@@ -437,9 +447,12 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     //---------------------------------------------------------------------------------
     void set(T const &value)
     {
-        assert(my_object);
+
         if (!my_object)
-            return; // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            return;
+        }
 
         (my_object->*_setter)(value);
     }
@@ -450,6 +463,22 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     {
         set(value);
     };
+    //---------------------------------------------------------------------------------
+    // editValue()
+    //
+    // Send the property value to the passed in editor for -- well -- editing
+    bool editValue(spDataEditor &theEditor)
+    {
+
+        T value = 0;
+
+        bool bSuccess = theEditor.editField(value);
+
+        if (bSuccess) // success
+            set(value);
+
+        return bSuccess;
+    }
 };
 
 // Define by type
@@ -476,9 +505,199 @@ using spParameterInFloat = _spParameterIn<float, Object, _setter>;
 template <class Object, void (Object::*_setter)(double const &)>
 using spParameterInDouble = _spParameterIn<double, Object, _setter>;
 
+// strings are special.
 template <class Object, void (Object::*_setter)(std::string const &)>
-using spParameterInString = _spParameterIn<std::string, Object, _setter>;
+class spParameterInString : public spParameterIn, _spDataInString
+{
+    Object *my_object; // Pointer to the containing object
 
+  public:
+    spParameterInString() : my_object(0)
+    {
+    }
+
+    spParameterInString(Object *me) : my_object(me)
+    {
+    }
+    //---------------------------------------------------------------------------------
+    spDataType_t type()
+    {
+        return _spDataInString::type();
+    };
+    //---------------------------------------------------------------------------------
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
+    // i.e.
+    //     property_obj(this);
+    //
+    // This allows the property to add itself to the containing objects list of
+    // properties.
+    //
+    // Also the containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterIn: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+    }
+    void operator()(Object *obj, const char *name)
+    {
+        // set the name of the property on init
+        if (name)
+            setName(name);
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+    void operator()(Object *obj, const char *name, const char *desc)
+    {
+        // Description of the object
+        if (desc)
+            setDescription(desc);
+
+        // cascade to other version of method
+        (*this)(obj, name);
+    }
+
+    //---------------------------------------------------------------------------------
+    void set(std::string const &value)
+    {
+
+        if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            return;
+        }
+
+        (my_object->*_setter)(value);
+    }
+
+    //---------------------------------------------------------------------------------
+    // set -> parameter(value)
+    void operator()(std::string const &value)
+    {
+        set(value);
+    };
+    //---------------------------------------------------------------------------------
+    // editValue()
+    //
+    // Send the property value to the passed in editor for -- well -- editing
+    bool editValue(spDataEditor &theEditor)
+    {
+
+        std::string value = "";
+
+        bool bSuccess = theEditor.editField(value);
+
+        if (bSuccess) // success
+            set(value);
+
+        return bSuccess;
+    }
+};
+
+// Need a wedge class to make it easy to cast to a void outside of the template
+
+class spParameterInVoidType : public spParameterIn
+{
+  public:
+    virtual void set(void) = 0;
+};
+
+// VOID input parameter -- function call, no params
+template <class Object, void (Object::*_setter)()> class spParameterInVoid : public spParameterInVoidType
+{
+    Object *my_object; // Pointer to the containing object
+
+  public:
+    spParameterInVoid() : my_object(0)
+    {
+    }
+
+    spParameterInVoid(Object *me) : my_object(me)
+    {
+    }
+    //---------------------------------------------------------------------------------
+    spDataType_t type()
+    {
+        return spTypeNone;
+    };
+    //---------------------------------------------------------------------------------
+    // to register the property - set the containing object instance
+    // Normally done in the containing objects constructor.
+    // i.e.
+    //     property_obj(this);
+    //
+    // This allows the property to add itself to the containing objects list of
+    // properties.
+    //
+    // Also the containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterIn: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+    }
+    void operator()(Object *obj, const char *name)
+    {
+        // set the name of the property on init
+        if (name)
+            setName(name);
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+    void operator()(Object *obj, const char *name, const char *desc)
+    {
+        // Description of the object
+        if (desc)
+            setDescription(desc);
+
+        // cascade to other version of method
+        (*this)(obj, name);
+    }
+
+    //---------------------------------------------------------------------------------
+    void set()
+    {
+        if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            return;
+        }
+
+        (my_object->*_setter)();
+    }
+
+    //---------------------------------------------------------------------------------
+    // set -> parameter(value)
+    void operator()()
+    {
+        set();
+    };
+    //---------------------------------------------------------------------------------
+    // editValue()
+    //
+    // there is nothing to edit - this method just supports the interface
+    bool editValue(spDataEditor &theEditor)
+    {
+        return true;
+    };
+};
 // Handy macros to "register attributes (props/params)"
 
 // If the user doesn't supply a unique name or desc - use the object name/prop var name for the name
@@ -496,7 +715,7 @@ using spParameterInString = _spParameterIn<std::string, Object, _setter>;
 // User provided Name and description
 #define spRegisterDesc(_obj_name_, _name_, _desc_) _obj_name_(this, _name_, _desc_)
 
-// Define a object type that suppoarts parameter lists (input and output)
+// Define a object type that supports parameter lists (input and output)
 class spOperation : public spObject, public _spParameterContainer
 {
   public:
@@ -536,17 +755,16 @@ template <typename T> class spActionType : public spAction
 
     static spTypeID type(void)
     {
-        static spTypeID _myTypeID = kspTypeIDNone;
+        static spTypeID _myTypeID = sp_utils::getClassTypeID<T>();
+        // if (_myTypeID != kspTypeIDNone)
+        //     return _myTypeID;
 
-        if (_myTypeID != kspTypeIDNone)
-            return _myTypeID;
+        // // Use the name of this method via the __PRETTY_FUNCTION__ macro
+        // // to create our ID. The macro gives us a unique name for
+        // // each class b/c it uses the template parameter.
 
-        // Use the name of this method via the __PRETTY_FUNCTION__ macro
-        // to create our ID. The macro gives us a unique name for
-        // each class b/c it uses the template parameter.
-
-        // Hash the name, make that our type ID.
-        _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
+        // // Hash the name, make that our type ID.
+        // _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }

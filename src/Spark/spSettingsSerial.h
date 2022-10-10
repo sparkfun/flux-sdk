@@ -5,7 +5,7 @@
 #include "spCore.h"
 #include "spDevice.h"
 
-#define kReadBufferTimoutExpired 255
+#define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
 
 class spSettingsSerial : public spActionType<spSettingsSerial>
@@ -15,7 +15,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     spSettingsSerial() : _systemRoot{nullptr}
     {
 
-        setName("Serial System Setttings");
+        setName("Serial System Settings");
         setDescription("Set system settings via the Serial Console");
     }
 
@@ -23,12 +23,13 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     {
         _systemRoot = theRoot;
     }
-    // Draw Settings Page entres -- this is the entry pont for this menu
+    // Draw Settings Page entries -- this is the entry pont for this menu
 
     bool drawPage(spObject *);
     bool drawPage(spObject *, spProperty *);
     bool drawPage(spOperation *);
     bool drawPage(spOperation *, spParameter *);
+    bool drawPage(spOperation *, spParameterIn *);
 
     bool drawPage(spObjectContainer *);
     bool drawPage(spOperationContainer *);
@@ -38,6 +39,8 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     bool loop();
 
   protected:
+    bool drawPageParamInVoid(spOperation *, spParameterIn *);
+
     // Draw menu entries
     int drawMenu(spObject *, uint);
     int drawMenu(spOperation *, uint);
@@ -55,15 +58,12 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     int selectMenu(spDeviceContainer *, uint);
 
     // get the selected menu item
-    uint8_t getMenuSelection(uint max, bool hasParent = true, uint timeout = 30);
+    uint8_t getMenuSelection(uint max, uint timeout = 30);
+
+    uint8_t getMenuSelectionYN(uint timeout = 30);
 
   private:
-    // was the entered value a "escape" value -- lev this page!
-    // note 27 == escape key
-    inline bool isEscape(uint8_t ch)
-    {
-        return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' || ch == 27 || ch == kReadBufferTimoutExpired);
-    }
+    uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = 30);
 
     //-----------------------------------------------------------------------------
     // drawPage()  - spContainer version
@@ -99,10 +99,10 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
 
             // Get the menu item selected by the user
 
-            selected = getMenuSelection((uint)nMenuItems, pCurrent->parent() != nullptr);
+            selected = getMenuSelection((uint)nMenuItems);
 
             // done?
-            if (selected == kReadBufferTimoutExpired || selected == kReadBufferExit)
+            if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
                 break;
 
             selectMenu<T>(pCurrent, selected);
@@ -189,19 +189,19 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         //
         // Find the class type and "downcast it"
 
-        if (spIsType<spObjectContainer>(pNext))
+        if ( spIsType<spObjectContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spObjectContainer *>(pNext));
         }
-        else if (spIsType<spDeviceContainer>(pNext))
+        else if ( spIsType<spDeviceContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spDeviceContainer *>(pNext));
         }
-        else if (spIsType<spActionContainer>(pNext))
+        else if ( spIsType<spActionContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spActionContainer *>(pNext));
         }
-        else if (spIsType<spOperationContainer>(pNext))
+        else if ( spIsType<spOperationContainer>(pNext) )
         {
             drawPage(reinterpret_cast<spOperationContainer *>(pNext));
         }
