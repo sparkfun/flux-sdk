@@ -15,8 +15,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     spSettingsSerial() : _systemRoot{nullptr}
     {
 
-        setName("Serial System Settings");
-        setDescription("Set system settings via the Serial Console");
+        setName("Serial System Settings", "Set system settings via the Serial Console");
     }
 
     void setSystemRoot(spObjectContainer *theRoot)

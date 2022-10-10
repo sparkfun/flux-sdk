@@ -142,10 +142,8 @@ class spSpark : public spObjectContainer
 
         // setup some default heirarchy things ...
         this->setName("spark");
-        Devices.setName("Devices");
-        Devices.setDescription("The devices connected to this system.");
-        Actions.setName("Actions");
-        Actions.setDescription("The operations/actions registered with this system.");
+        Devices.setName("Devices", "The devices connected to this system.");
+        Actions.setName("Actions", "The operations/actions registered with this system.");
 
         // Our container has two children, the device and the actions container
         // Cast the devices and actions to objects to add. And had to use
