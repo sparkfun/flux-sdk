@@ -41,11 +41,8 @@ spDevSCD30::spDevSCD30()
 
     // Register Property
     spRegister(measurementInterval, "Measurement Interval", "Interval between measurements (s)");
-    measurementInterval = 2;
     spRegister(altitudeCompensation, "Altitude Compensation", "Used to convert the scale ADU into units");
-    altitudeCompensation = 0;
     spRegister(temperatureOffset, "Temperature Offset", "Used to convert the scale ADU into units");
-    temperatureOffset = 0.0;
 
     // Register parameters
     spRegister(co2PPM, "CO2 (PPM)", "CO2 (Parts Per Million)");
@@ -119,35 +116,36 @@ float spDevSCD30::read_humidity()
     return SCD30::getHumidity();
 }
 
-uint spDevSCD30::read_measurement_interval()
+//----------------------------------------------------------------------------------------------------------
+// RW Properties
+
+uint spDevSCD30::get_measurement_interval()
 {
     return SCD30::getMeasurementInterval();
 }
 
-uint spDevSCD30::read_altitude_compensation()
+uint spDevSCD30::get_altitude_compensation()
 {
     return SCD30::getAltitudeCompensation();
 }
 
-float spDevSCD30::read_temperature_offset()
+float spDevSCD30::get_temperature_offset()
 {
     return SCD30::getTemperatureOffset();
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevSCD30::onPropertyUpdate(const char *propName)
+void spDevSCD30::set_measurement_interval(uint interval)
 {
-
-    if (strcmp(propName, "measurementInterval") == 0)
-        SCD30::setMeasurementInterval(measurementInterval);
-
-    if (strcmp(propName, "altitudeCompensation") == 0)
-        SCD30::setAltitudeCompensation(altitudeCompensation);
-
-    if (strcmp(propName, "temperatureOffset") == 0)
-        SCD30::setTemperatureOffset(temperatureOffset);
+    SCD30::setMeasurementInterval(interval);
 }
+
+void spDevSCD30::set_altitude_compensation(uint compensation)
+{
+    SCD30::setAltitudeCompensation(compensation);
+}
+
+void spDevSCD30::set_temperature_offset(float offset)
+{
+    SCD30::setTemperatureOffset(offset);
+}
+
