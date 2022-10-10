@@ -38,7 +38,6 @@ bool spStorageESP32Block::writeBool(const char *tag, bool value)
         spLog_E(err_tag);
         return false;
     }
-
     return ( _prefs->putBool(szHash, value) > 0);
 }
 //------------------------------------------------------------------------
@@ -62,9 +61,7 @@ bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
         spLog_E(err_tag);
         return false;
     }
-
     return ( _prefs->putChar(szHash, value) > 0);
-
 
 }
 //------------------------------------------------------------------------
@@ -230,11 +227,11 @@ bool spStorageESP32Block::readBool(const char *tag, bool &value, bool defaultVal
         spLog_E(err_tag);
         return defaultValue;
     }
-
-    if ( !_prefs->isKey(tag))
+    
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    value = _prefs->getBool(tag, defaultValue);
+    value = _prefs->getBool(szHash, defaultValue);
 
     return true;
 }
@@ -258,10 +255,10 @@ bool spStorageESP32Block::readInt8(const char *tag,  int8_t &value, int8_t defau
         return defaultValue;
     }
 
-    if ( !_prefs->isKey(tag))
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    value =  _prefs->getChar(tag, defaultValue);
+    value =  _prefs->getChar(szHash, defaultValue);
 
     return true;
 }
@@ -286,10 +283,10 @@ bool spStorageESP32Block::readInt32(const char *tag, int32_t &value, int32_t def
         return defaultValue;
     }
 
-    if ( !_prefs->isKey(tag))
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    value = _prefs->getInt(tag, defaultValue);
+    value = _prefs->getInt(szHash, defaultValue);
 
     return true;
 }
@@ -314,10 +311,10 @@ bool spStorageESP32Block::readUInt8(const char *tag, uint8_t &value, uint8_t  de
         return defaultValue;
     }
 
-    if ( !_prefs->isKey(tag))
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    value = _prefs->getUChar(tag, defaultValue);
+    value = _prefs->getUChar(szHash, defaultValue);
 
     return true;
 }
@@ -342,10 +339,10 @@ bool spStorageESP32Block::readUInt32(const char *tag, uint32_t &value, uint32_t 
         return defaultValue;
     }
 
-    if ( !_prefs->isKey(tag))
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    value = _prefs->getUInt(tag, defaultValue);
+    value = _prefs->getUInt(szHash, defaultValue);
 
     return true;
 }
@@ -370,10 +367,10 @@ bool spStorageESP32Block::readFloat(const char *tag, float &value, float default
         return defaultValue;
     }
 
-    if ( !_prefs->isKey(tag))
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    value = _prefs->getFloat(tag, defaultValue);
+    value = _prefs->getFloat(szHash, defaultValue);
 
     return true;
 }
@@ -398,10 +395,10 @@ bool spStorageESP32Block::readDouble(const char *tag, double &value, double defa
         return defaultValue;
     }
 
-    if ( !_prefs->isKey(tag))
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    value =  _prefs->getDouble(tag, defaultValue);
+    value =  _prefs->getDouble(szHash, defaultValue);
 
     return true;
 }
@@ -426,10 +423,10 @@ size_t spStorageESP32Block::readString(const char *tag, char *data, size_t len)
         return 0;
     }
 
-    if ( !_prefs->isKey(tag))
+    if ( !_prefs->isKey(szHash))
         return false;
 
-    return _prefs->getString(tag, data, len);
+    return _prefs->getString(szHash, data, len);
 }
 
 bool spStorageESP32Block::valueExists(const char *tag)
@@ -466,11 +463,14 @@ spStorageESP32Pref::spStorageESP32Pref()
     // public methods to manage a block
 spStorageESP32Block *spStorageESP32Pref::beginBlock(const char *tag)
 {
-    if ( !tag )
+    if ( !tag || strlen(tag) < 4 )
+    {
+        spLog_E("ESP32  Storage - invalid tag name: %s\n\r", !tag ? "NULL" : tag);
         return nullptr;
+    }
 
     char szHash[kESP32HashTagSize]={0};
-    
+
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
     {
 
@@ -496,7 +496,6 @@ spStorageESP32Block *spStorageESP32Pref::getBlock(const char *tag)
 }
 void spStorageESP32Pref::endBlock(spStorageBlock2 *)
 {
-
     _prefs.end();
 }
 
