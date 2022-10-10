@@ -258,6 +258,9 @@ protected:
     spDataLimitSetString * _dataLimit;
 
   public:
+    _spPropertyBaseString()
+    {}
+    
     _spPropertyBaseString( char **values, size_t length)
     {
         _dataLimit = new spDataLimitSetString(values, length);
