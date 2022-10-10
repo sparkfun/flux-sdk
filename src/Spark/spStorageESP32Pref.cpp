@@ -13,8 +13,18 @@
 
 #define kESP32HashTagSize 16
 
-const static char *err_init = "Settings storage not initialized.";
-const static char *err_tag  = "Error creating storage tag.";
+#define kESP32MinTagLen 5
+
+// handly helper
+static bool tag_is_valid (const char *tag)
+{
+    if ( !tag || strlen(tag) <= kESP32MinTagLen )
+    {
+        spLog_E("ESP32  Storage - invalid tag length - minimum is %d: %s\n\r", kESP32MinTagLen, !tag ? "NULL" : tag);
+        return false;
+    }
+    return true;
+}
 //------------------------------------------------------------------------------
 // Use tags to ID an item and move to use data types. Model after the
 // ESP32 preference library
@@ -22,22 +32,14 @@ const static char *err_tag  = "Error creating storage tag.";
 // Write out a bool value
 bool spStorageESP32Block::writeBool(const char *tag, bool value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
+
     return ( _prefs->putBool(szHash, value) > 0);
 }
 //------------------------------------------------------------------------
@@ -45,22 +47,14 @@ bool spStorageESP32Block::writeBool(const char *tag, bool value)
 
 bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
+    char szHash[kESP32HashTagSize];
 
-    char szHash[kESP32HashTagSize]={0};
-    
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
+
     return ( _prefs->putChar(szHash, value) > 0);
 
 }
@@ -69,22 +63,13 @@ bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
 
 bool spStorageESP32Block::writeInt32(const char *tag, int32_t value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
 
     return ( _prefs->putInt(szHash, value) > 0);
 }
@@ -93,44 +78,26 @@ bool spStorageESP32Block::writeInt32(const char *tag, int32_t value)
 
 bool spStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
 
     return ( _prefs->putUChar(szHash, value) > 0);
 }
 //------------------------------------------------------------------------
 bool spStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
 
     return ( _prefs->putUInt(szHash, value) > 0);
 }
@@ -139,22 +106,13 @@ bool spStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 
 bool spStorageESP32Block::writeFloat(const char *tag, float value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
 
     return ( _prefs->putFloat(szHash, value) > 0);
 }
@@ -163,22 +121,13 @@ bool spStorageESP32Block::writeFloat(const char *tag, float value)
 
 bool spStorageESP32Block::writeDouble(const char *tag, double value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
 
     return ( _prefs->putDouble(szHash, value) > 0);
 }
@@ -186,22 +135,13 @@ bool spStorageESP32Block::writeDouble(const char *tag, double value)
 // Write out a c string
 bool spStorageESP32Block::writeString(const char *tag, const char *value)
 {
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return false;
-
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
 
     char szHash[kESP32HashTagSize]={0};
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
 
     return ( _prefs->putString(szHash, value) > 0);
 }
@@ -211,22 +151,13 @@ bool spStorageESP32Block::writeString(const char *tag, const char *value)
 
 bool spStorageESP32Block::readBool(const char *tag, bool &value, bool defaultValue )
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return defaultValue;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return defaultValue;
-    }
     
     if ( !_prefs->isKey(szHash))
         return false;
@@ -238,22 +169,13 @@ bool spStorageESP32Block::readBool(const char *tag, bool &value, bool defaultVal
 //------------------------------------------------------------------------
 bool spStorageESP32Block::readInt8(const char *tag,  int8_t &value, int8_t defaultValue)
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return defaultValue;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return defaultValue;
-    }
 
     if ( !_prefs->isKey(szHash))
         return false;
@@ -266,22 +188,13 @@ bool spStorageESP32Block::readInt8(const char *tag,  int8_t &value, int8_t defau
 //------------------------------------------------------------------------
 bool spStorageESP32Block::readInt32(const char *tag, int32_t &value, int32_t defaultValue)
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return defaultValue;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return defaultValue;
-    }
 
     if ( !_prefs->isKey(szHash))
         return false;
@@ -294,22 +207,13 @@ bool spStorageESP32Block::readInt32(const char *tag, int32_t &value, int32_t def
 //------------------------------------------------------------------------
 bool spStorageESP32Block::readUInt8(const char *tag, uint8_t &value, uint8_t  defaultValue)
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return defaultValue;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return defaultValue;
-    }
 
     if ( !_prefs->isKey(szHash))
         return false;
@@ -322,22 +226,13 @@ bool spStorageESP32Block::readUInt8(const char *tag, uint8_t &value, uint8_t  de
 //------------------------------------------------------------------------
 bool spStorageESP32Block::readUInt32(const char *tag, uint32_t &value, uint32_t defaultValue)
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return defaultValue;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return defaultValue;
-    }
 
     if ( !_prefs->isKey(szHash))
         return false;
@@ -350,22 +245,13 @@ bool spStorageESP32Block::readUInt32(const char *tag, uint32_t &value, uint32_t 
 //------------------------------------------------------------------------
 bool spStorageESP32Block::readFloat(const char *tag, float &value, float defaultValue)
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return defaultValue;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return defaultValue;
-    }
 
     if ( !_prefs->isKey(szHash))
         return false;
@@ -378,22 +264,13 @@ bool spStorageESP32Block::readFloat(const char *tag, float &value, float default
 //------------------------------------------------------------------------
 bool spStorageESP32Block::readDouble(const char *tag, double &value, double defaultValue)
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return defaultValue;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return defaultValue;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return defaultValue;
-    }
 
     if ( !_prefs->isKey(szHash))
         return false;
@@ -406,22 +283,13 @@ bool spStorageESP32Block::readDouble(const char *tag, double &value, double defa
 //------------------------------------------------------------------------ 
 size_t spStorageESP32Block::readString(const char *tag, char *data, size_t len)
 {  
-    if ( !tag )
+    if ( !tag_is_valid(tag) || !_prefs)
         return 0;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return 0;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return 0;
-    }
 
     if ( !_prefs->isKey(szHash))
         return false;
@@ -429,24 +297,16 @@ size_t spStorageESP32Block::readString(const char *tag, char *data, size_t len)
     return _prefs->getString(szHash, data, len);
 }
 
+//------------------------------------------------------------------------------
 bool spStorageESP32Block::valueExists(const char *tag)
 {
-     if ( !tag )
+     if ( !tag_is_valid(tag) || !_prefs)
         return false;
 
-    if ( !_prefs )
-    {
-        spLog_E(err_init);
-        return false;
-    }
-
-    char szHash[kESP32HashTagSize]={0};
+    char szHash[kESP32HashTagSize];
     
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-        spLog_E(err_tag);
         return false;
-    }
 
     return _prefs->isKey(tag);
 }
@@ -463,21 +323,13 @@ spStorageESP32Pref::spStorageESP32Pref()
     // public methods to manage a block
 spStorageESP32Block *spStorageESP32Pref::beginBlock(const char *tag)
 {
-    if ( !tag || strlen(tag) < 4 )
-    {
-        spLog_E("ESP32  Storage - invalid tag name: %s\n\r", !tag ? "NULL" : tag);
+    if ( !tag_is_valid(tag))
         return nullptr;
-    }
 
     char szHash[kESP32HashTagSize]={0};
 
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
-    {
-
-        spLog_E(err_tag);
-
         return nullptr;
-    }
 
     if ( ! _prefs.begin(szHash, false))
     {
