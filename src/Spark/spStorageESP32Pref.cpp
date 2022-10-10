@@ -15,7 +15,7 @@
 
 #define kESP32MinTagLen 5
 
-// handly helper
+// handy helper
 static bool tag_is_valid (const char *tag)
 {
     if ( !tag || strlen(tag) <= kESP32MinTagLen )
@@ -331,7 +331,7 @@ spStorageESP32Block *spStorageESP32Pref::beginBlock(const char *tag)
     if(!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return nullptr;
 
-    if ( ! _prefs.begin(szHash, false))
+    if ( !_prefs.begin(szHash, false))
     {
         spLog_E("Error creating settings storage");
         return nullptr;
@@ -353,7 +353,7 @@ void spStorageESP32Pref::endBlock(spStorageBlock2 *)
 
 void spStorageESP32Pref::resetStorage()
 {
-    // call low level ESP IDF functions to do this
+    // call low level ESP IDF functions to do this - as recommended by ESP32 docs ...
     nvs_flash_erase();
     nvs_flash_init();
 }
