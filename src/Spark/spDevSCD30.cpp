@@ -55,9 +55,6 @@ spDevSCD30::spDevSCD30()
 bool spDevSCD30::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
-    // Ping it twice. The first one often fails...
-    i2cDriver.ping(address);
-    delay(10);
     if (!i2cDriver.ping(address))
         return false;
 

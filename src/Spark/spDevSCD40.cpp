@@ -55,15 +55,21 @@ spDevSCD40::spDevSCD40()
 bool spDevSCD40::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
-    // Ping it twice. The first one often fails...
-    i2cDriver.ping(address);
-    delay(10);
     if (!i2cDriver.ping(address))
         return false;
 
+    // If periodic measurements are already running, getSerialNumber will fail...
+    // To be safe, let's stop period measurements before we do anything else
+    // Note that the sensor will only respond to other commands after waiting 500 ms after issuing
+    // the stop_periodic_measurement command.
+    uint8_t stopPeriodic[2] = { (uint8_t)(SCD4x_COMMAND_STOP_PERIODIC_MEASUREMENT >> 8) , (uint8_t)(SCD4x_COMMAND_STOP_PERIODIC_MEASUREMENT & 0xFF) };
+    if (!i2cDriver.write(address, stopPeriodic, 2))
+        return false;
+    delay(500);
+
     uint8_t serialNo[9]; // 3 * (Two bytes plus CRC)
     uint16_t serialNoReg = SCD4x_COMMAND_GET_SERIAL_NUMBER;
-    uint8_t serialNoRegBytes[2] = { (uint8_t)(serialNoReg >> 8), (uint8_t)(serialNoReg & 0xFF)}; // MSB first
+    uint8_t serialNoRegBytes[2] = {(uint8_t)(serialNoReg >> 8), (uint8_t)(serialNoReg & 0xFF)}; // MSB first
     if (!i2cDriver.write(address, serialNoRegBytes, 2))
         return false;
     delay(3);
@@ -79,7 +85,7 @@ bool spDevSCD40::isConnected(spDevI2C &i2cDriver, uint8_t address)
         for (uint8_t i = 0; i < 8; i++)
         {
             if ((crc & 0x80) != 0)
-                crc = (uint8_t)((crc << 1) ^ 0x31); //x^8+x^5+x^4+1 = 0x31
+                crc = (uint8_t)((crc << 1) ^ 0x31); // x^8+x^5+x^4+1 = 0x31
             else
                 crc <<= 1;
         }
@@ -183,4 +189,3 @@ void spDevSCD40::set_temperature_offset(float offset)
     SCD4x::setTemperatureOffset(offset);
     SCD4x::startPeriodicMeasurement();
 }
-
