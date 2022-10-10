@@ -745,6 +745,8 @@ using spActionContainer = spContainer<spAction *>;
 template <typename T> class spActionType : public spAction
 {
   public:
+
+    // ---------------------------------------------------------------
     // Typing system for actions
     //
     // Defines a type specific static method - so can be called outside
@@ -756,19 +758,11 @@ template <typename T> class spActionType : public spAction
     static spTypeID type(void)
     {
         static spTypeID _myTypeID = sp_utils::getClassTypeID<T>();
-        // if (_myTypeID != kspTypeIDNone)
-        //     return _myTypeID;
-
-        // // Use the name of this method via the __PRETTY_FUNCTION__ macro
-        // // to create our ID. The macro gives us a unique name for
-        // // each class b/c it uses the template parameter.
-
-        // // Hash the name, make that our type ID.
-        // _myTypeID = sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 
         return _myTypeID;
     }
 
+    // ---------------------------------------------------------------
     // Return the type ID of this
     spTypeID getType(void)
     {
