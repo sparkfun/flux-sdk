@@ -31,7 +31,7 @@ class spDescriptor
     }
     const char *name()
     {
-        return _name;
+        return _name.c_str();
     }
     void setDescription(const char *new_desc)
     {
@@ -39,12 +39,12 @@ class spDescriptor
     }
     const char *description()
     {
-        return _description;
+        return _description.c_str();
     }
 
   protected:
-    const char *_name;
-    const char *_description;
+    std::string _name;
+    std::string _description;
 };
 
 typedef enum
