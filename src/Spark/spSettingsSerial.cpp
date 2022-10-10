@@ -82,8 +82,8 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
             Serial.println("Escape");
             returnValue = false;
             break;
-        } 
-        else if (selected == kReadBufferExit )
+        }
+        else if (selected == kReadBufferExit)
         {
             Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
             returnValue = true;
@@ -171,8 +171,8 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
             Serial.println("Escape");
             returnValue = false;
             break;
-        } 
-        else if (selected == kReadBufferExit )
+        }
+        else if (selected == kReadBufferExit)
         {
             Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
             returnValue = true;
@@ -221,8 +221,8 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
             Serial.println("Escape");
             returnValue = false;
             break;
-        } 
-        else if (selected == kReadBufferExit )
+        }
+        else if (selected == kReadBufferExit)
         {
             returnValue = true;
             break;
@@ -654,7 +654,7 @@ int spSettingsSerial::selectMenu(spActionContainer *pCurrent, uint level)
 
 static bool isGoBack(uint8_t ch)
 {
-    return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B' );
+    return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B');
 }
 //-----------------------------------------------------------------------------
 static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
@@ -663,7 +663,7 @@ static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
     uint value;
 
     // if it's a number, or an escape letter(set by this app) drop out of loop
-    if ( chIn == kpCodeEscape )
+    if (chIn == kpCodeEscape)
         return kReadBufferEscape;
 
     if (isGoBack(chIn))
@@ -776,7 +776,7 @@ bool spSettingsSerial::loop(void)
 
         // send out a done event if the changes were successful.
 
-        if ( doSave )
+        if (doSave)
             on_finished.emit();
     }
 
