@@ -41,12 +41,12 @@ spDevSCD30::spDevSCD30()
 
     // Register Property
     spRegister(measurementInterval, "Measurement Interval", "Interval between measurements (s)");
-    spRegister(altitudeCompensation, "Altitude Compensation", "Used to convert the scale ADU into units");
-    spRegister(temperatureOffset, "Temperature Offset", "Used to convert the scale ADU into units");
+    spRegister(altitudeCompensation, "Altitude Compensation", "Define the sensor altitude in metres above sea level");
+    spRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
 
     // Register parameters
     spRegister(co2PPM, "CO2 (PPM)", "CO2 (Parts Per Million)");
-    spRegister(temperatureC, "Temperaature (C)", "Temperaature (C)");
+    spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
     spRegister(humidity, "Humidity (%RH)", "Humidity (%RH)");
 }
 
