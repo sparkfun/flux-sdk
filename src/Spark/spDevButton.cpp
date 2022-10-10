@@ -95,16 +95,7 @@ bool spDevButton::read_button_state()
 }
 
 //----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevButton::onPropertyUpdate(const char *propName)
-{
-
-    // Serial.print("PROPERTY UPDATE: ");Serial.println(propName);
-    // save();
-}
+// Loop
 
 bool spDevButton::loop(void)
 {

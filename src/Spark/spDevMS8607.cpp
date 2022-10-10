@@ -142,11 +142,3 @@ bool spDevMS8607::onInitialize(TwoWire &wirePort)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevMS8607::onPropertyUpdate(const char *propName)
-{
-}

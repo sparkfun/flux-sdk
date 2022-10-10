@@ -69,12 +69,3 @@ bool spDevLPS25HB::onInitialize(TwoWire &wirePort)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevLPS25HB::onPropertyUpdate(const char *propName)
-{
-}
-

@@ -40,9 +40,6 @@ class spDevADS122C04 : public spDeviceType<spDevADS122C04>, public SFE_ADS122C04
 
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
 private:
     float read_temperature_c();
     float read_temperature_f();

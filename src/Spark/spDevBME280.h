@@ -1,6 +1,6 @@
 /*
  *
- * QwiicDevBME280.h
+ *  spDevBME280.h
  *
  *  Device object for the BME280 Qwiic device.
  *

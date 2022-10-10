@@ -38,9 +38,6 @@ class spDevAHT20 : public spDeviceType<spDevAHT20>, public AHT20
 
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
 private:
     float read_temperature_c();
     float read_humidity();

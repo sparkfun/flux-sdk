@@ -115,13 +115,3 @@ bool spDevADS122C04::onInitialize(TwoWire &wirePort)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevADS122C04::onPropertyUpdate(const char *propName)
-{
-    SFE_ADS122C04::configureADCmode(wireMode, sampleRate);
-}
-

@@ -64,12 +64,3 @@ bool spDevAHT20::onInitialize(TwoWire &wirePort)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevAHT20::onPropertyUpdate(const char *propName)
-{
-}
-
