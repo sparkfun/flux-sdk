@@ -97,7 +97,7 @@ class spStorageBlock2
         return writeString(tag, data);
     }
 
-    virtual bool valueExists(const char tag);
+    virtual bool valueExists(const char *tag) = 0;
     virtual bool readBool(const char *tag,  bool &value, bool defaultValue = false) = 0;
     virtual bool readInt8(const char *tag, int8_t &value, int8_t defaultValue = 0) = 0;
     virtual bool readInt32(const char *tag, int32_t &value, int32_t defaultValue = 0) = 0;
