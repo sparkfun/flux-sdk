@@ -184,7 +184,12 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
     bool save(spStorageBlock2 *stBlk)
     {
         T c = get();
-        return stBlk->write(name(), c);
+        bool status = stBlk->write(name(), c);
+
+        if( !status )
+            spLog_E("Error when saving property %s", name());
+
+        return status;
     };
 
     //---------------------------------------------------------------------------------
@@ -193,6 +198,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
         T c;
 
         bool status = stBlk->read(name(), c);
+
         if (status )
             set(c);
 
@@ -276,7 +282,10 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
         // strings ... len, data
         std::string c = get();
 
-        return stBlk->writeString(name(), c.c_str()) == c.length();
+        bool status = stBlk->writeString(name(), c.c_str()) == c.length();
+        if( !status )
+            spLog_E("Error saving string for property: %s", name());
+        return status;
     }
 
     //---------------------------------------------------------------------------------
@@ -540,7 +549,21 @@ class spPropertyRWString : public _spPropertyBaseString
     {
         return get() == rhs;
     }
-
+    // String - needed to overload the equality operator
+    bool operator!=(const std::string &rhs)
+    {
+        return get() != rhs;
+    }
+    // String - needed to overload the equality operator
+    bool operator==( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) == 0;
+    }
+    // String - needed to overload the equality operator
+    bool operator!=( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) != 0;
+    }
     //---------------------------------------------------------------------------------
     // get/set syntax
     std::string get() const
@@ -781,7 +804,21 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     {
         return get() == rhs;
     }
-
+    // String - needed to overload the equality operator
+    bool operator!=(const std::string &rhs)
+    {
+        return get() != rhs;
+    }
+    // String - needed to overload the equality operator
+    bool operator==( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) == 0;
+    }
+    // String - needed to overload the equality operator
+    bool operator!=( const char * rhs)
+    {
+        return strcmp(get().c_str(), rhs) != 0;
+    }
     //---------------------------------------------------------------------------------
     // function call syntax
     // get -> property()
@@ -863,22 +900,18 @@ private:
     virtual bool save(spStorage2 *pStorage)
     {
 
-        size_t blockSize = propertySaveSize();
-
-        // nothing to save.
-        if ( !blockSize )
-            return true;
-
         spStorageBlock2 * stBlk = pStorage->beginBlock( name() );
         if ( !stBlk )
             return false;
 
-        if (!saveProperties(stBlk))
-            return false;
+        bool status = saveProperties(stBlk);
+        if (!status)
+            spLog_W("Error Saving a property for %s", name());
+
 
         pStorage->endBlock(stBlk);
 
-        return true;
+        return status;
     };
 
     //---------------------------------------------------------------------------------
@@ -887,16 +920,21 @@ private:
         // Do we have this block in storage?
         spStorageBlock2 * stBlk = pStorage->getBlock( name() );
 
+
         if ( !stBlk )
+        {
+            spLog_E("Object Restore - error getting storage block");
             return true;  // nothing to restore
+        }
 
         // restore props
-        if (!restoreProperties(stBlk))
-            return false;
+        bool status = restoreProperties(stBlk);
+        if (!status) 
+            spLog_W("Error restoring a property for %s", name());           
 
         pStorage->endBlock(stBlk);
 
-        return true;
+        return status;
     };
     //---------------------------------------------------------------------------------
     // Return the type ID of this
@@ -1046,8 +1084,8 @@ template <class T> class spContainer : public spObject
     virtual bool save(spStorage2 *pStorage)
     {
         for( auto pObj: _vector)
-            pObj->save(pStorage);
-
+        pObj->save(pStorage);
+     
         return true;
     };
 
