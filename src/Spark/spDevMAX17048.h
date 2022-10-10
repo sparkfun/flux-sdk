@@ -38,9 +38,6 @@ class spDevMAX17048 : public spDeviceType<spDevMAX17048>, public SFE_MAX1704X
 
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
 private:
     float read_voltage();
     float read_state_of_charge();

@@ -38,9 +38,6 @@ class spDevMicroPressure : public spDeviceType<spDevMicroPressure>, public Spark
 
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
 private:
     float read_pressure_PSI();
     float read_pressure_Pa();

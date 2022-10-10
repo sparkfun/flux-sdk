@@ -109,16 +109,7 @@ int spDevTwist::get_twist_count()
 }
 
 //----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevTwist::onPropertyUpdate(const char *propName)
-{
-
-    // Serial.print("PROPERTY UPDATE: ");Serial.println(propName);
-    // save();
-}
+// Loop
 
 bool spDevTwist::loop(void)
 {

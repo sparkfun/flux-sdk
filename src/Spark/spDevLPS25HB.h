@@ -38,9 +38,6 @@ class spDevLPS25HB : public spDeviceType<spDevLPS25HB>, public LPS25HB
 
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
 private:
     float read_temperature_c();
     float read_pressure_hpa();

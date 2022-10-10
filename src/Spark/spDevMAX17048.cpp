@@ -109,11 +109,3 @@ bool spDevMAX17048::onInitialize(TwoWire &wirePort)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevMAX17048::onPropertyUpdate(const char *propName)
-{
-}

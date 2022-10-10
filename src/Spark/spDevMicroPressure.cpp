@@ -97,12 +97,3 @@ bool spDevMicroPressure::onInitialize(TwoWire &wirePort)
     return result;
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onPropertyUpdate()
-//
-// Called when the value of a managed property was updated.
-//
-void spDevMicroPressure::onPropertyUpdate(const char *propName)
-{
-}
-

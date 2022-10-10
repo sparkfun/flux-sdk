@@ -38,9 +38,6 @@ class spDevMS5637 : public spDeviceType<spDevMS5637>, public MS5637
 
     bool onInitialize(TwoWire &);
 
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
 private:
     float read_pressure_mbar();
     float read_temperature_C();
