@@ -160,7 +160,7 @@ template <typename T> class spDeviceType : public spDevice
 
     static spTypeID type(void)
     {
-        static spTypeID _myTypeID = sp_utils::getClassTypeID<T>();
+        static spTypeID _myTypeID = spGetClassTypeID<T>();
 
         return _myTypeID;
     }
