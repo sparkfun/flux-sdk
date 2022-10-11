@@ -118,6 +118,19 @@ static bool isInt8(char *value)
     return (*p == 0) && tmp <= std::numeric_limits<int8_t>::max() && tmp >= std::numeric_limits<int8_t>::min();
 }
 //--------------------------------------------------------------------------
+static bool isInt16(char *value)
+{
+    if (!value)
+        return false;
+
+    char *p;
+    int32_t tmp = strtol(value, &p, 10);
+
+    // Did the value convert correctly and fall between max and min for the type
+
+    return (*p == 0) && tmp <= std::numeric_limits<int16_t>::max() && tmp >= std::numeric_limits<int16_t>::min();
+}
+//--------------------------------------------------------------------------
 static bool isInt(char *value)
 {
     if (!value)
@@ -149,6 +162,29 @@ static bool isUInt8(char *value)
 
     return (*p == 0) && tmp <= std::numeric_limits<uint8_t>::max() && tmp >= std::numeric_limits<uint8_t>::min();
 }
+
+//--------------------------------------------------------------------------
+static bool isUInt16(char *value)
+{
+    if (!value)
+        return false;
+
+    // check for a negative number
+    char *p = value;
+
+    // skip white space
+    while (*p && isspace(*p))
+        p++;
+
+    // no negative numbers
+    if (*p == '-')
+        return false;
+
+    uint32_t tmp = strtoul(value, &p, 10);
+
+    return (*p == 0) && tmp <= std::numeric_limits<uint16_t>::max() && tmp >= std::numeric_limits<uint16_t>::min();
+}
+
 //--------------------------------------------------------------------------
 static bool isUInt(char *value)
 {
@@ -705,6 +741,32 @@ bool spSerialField::editFieldInt8(int8_t &value, uint32_t timeout)
     // editing wasn't successful.
     return false;
 }
+
+//--------------------------------------------------------------------------
+bool spSerialField::editFieldInt16(int16_t &value, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+    ctxEdit.validator = isInt16;
+
+    // jam the current value into context head
+    snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
+    ctxEdit.cursor = strlen(ctxEdit.head);
+
+    if (editLoop(ctxEdit, timeout))
+    {
+        char *p;
+        // Editing was successful - copy out entered value
+        value = (int16_t)strtol(ctxEdit.all, &p, 10);
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false;
+}
+
 //--------------------------------------------------------------------------
 bool spSerialField::editFieldInt(int32_t &value, uint32_t timeout)
 {
@@ -749,6 +811,33 @@ bool spSerialField::editFieldUInt8(uint8_t &value, uint32_t timeout)
         char *p;
         // Editing was successful - copy out entered value
         value = (uint8_t)strtoul(ctxEdit.all, &p, 10);
+        return true;
+    }
+
+    // editing wasn't successful.
+    return false;
+}
+
+
+//--------------------------------------------------------------------------
+bool spSerialField::editFieldUInt16(uint16_t &value, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+    ctxEdit.validator = isUInt16;
+
+    // jam the current value into context head
+
+    snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%u", value);
+    ctxEdit.cursor = strlen(ctxEdit.head);
+
+    if (editLoop(ctxEdit, timeout))
+    {
+        char *p;
+        // Editing was successful - copy out entered value
+        value = (uint16_t)strtoul(ctxEdit.all, &p, 10);
         return true;
     }
 

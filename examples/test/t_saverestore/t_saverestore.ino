@@ -20,8 +20,10 @@ class test_properties : public spActionType<test_properties>
 
     bool    _b_data=false;
     int8_t  _i8_data = 0;
+    int16_t  _i16_data = 0;    
     int     _i_data=0;
     uint8_t _ui8_data=0;
+    uint16_t _ui16_data=0;    
     uint32_t _ui_data=0;
     float  _f_data=0.; 
     double _d_data=0;   
@@ -33,8 +35,10 @@ public:
 
         spRegister(prop_bool, "bool_prop", "Testting bool property");
         spRegister(prop_int8, "int8_prop", "Testing int8 property");        
+        spRegister(prop_int16, "int16_prop", "Testing int16 property");                
         spRegister(prop_int, "int32_prop", "Testing int32 property");
         spRegister(prop_uint8, "uint8_prop", "Testing uint8 property");        
+        spRegister(prop_uint16, "uint16_prop", "Testing uint16 property");                
         spRegister(prop_uint, "uint32_prop", "Testing uint32 property");        
         spRegister(prop_float, "float_prop", "Testing Float property");
         spRegister(prop_double, "double_prop", "Testing a double property");        
@@ -42,8 +46,10 @@ public:
 
         spRegister(rw_prop_bool, "rw_bool", "Testing RW bool property");
         spRegister(rw_prop_int8, "rw_int8", "Testing RW integer8 property");
+        spRegister(rw_prop_int16, "rw_int16", "Testing RW integer16 property");        
         spRegister(rw_prop_int, "rw_int", "Testing RW integer property");        
         spRegister(rw_prop_uint8, "rw_uint8", "Testing RW uinteger8 property");
+        spRegister(rw_prop_uint16, "rw_uint16", "Testing RW uinteger16 property");        
         spRegister(rw_prop_uint, "rw_uint", "Testing RW uinteger property");                
         spRegister(rw_prop_float, "rw_float", "Testing RW float property");         
         spRegister(rw_prop_double, "rw_double", "Testing RW double property");        
@@ -75,6 +81,18 @@ public:
         _i8_data=data;
 
     };
+
+    // int16 setter/getter
+    int16_t get_int16(void){
+
+        return _i16_data;
+    }
+    void set_int16( int16_t data){
+
+        _i16_data=data;
+
+    };
+
     // int setter/getter
     int get_int(void){
 
@@ -94,8 +112,19 @@ public:
     void set_uint8( uint8_t data){
 
         _ui8_data=data;
+    };
+
+    // uint16 setter/getter
+    uint16_t get_uint16(void){
+
+        return _ui16_data;
+    }
+    void set_uint16( uint16_t data){
+
+        _ui16_data=data;
 
     };
+
     // uint setter/getter
     uint get_uint(void){
 
@@ -135,8 +164,10 @@ public:
     // Define standard properties 
     spPropertyBool<test_properties>     prop_bool;
     spPropertyInt8<test_properties>     prop_int8;
+    spPropertyInt16<test_properties>     prop_int16;    
     spPropertyInt<test_properties>      prop_int;    
     spPropertyUint8<test_properties>    prop_uint8;
+    spPropertyUint16<test_properties>    prop_uint16;    
     spPropertyUint<test_properties>     prop_uint;        
     spPropertyFloat<test_properties>    prop_float;
     spPropertyDouble<test_properties>    prop_double;    
@@ -146,9 +177,11 @@ public:
     spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
 
     spPropertyRWInt8<test_properties, &test_properties::get_int8, &test_properties::set_int8> rw_prop_int8;    
+    spPropertyRWInt16<test_properties, &test_properties::get_int16, &test_properties::set_int16> rw_prop_int16;        
     spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;        
 
     spPropertyRWUint8<test_properties, &test_properties::get_uint8, &test_properties::set_uint8> rw_prop_uint8;    
+    spPropertyRWUint16<test_properties, &test_properties::get_uint16, &test_properties::set_uint16> rw_prop_uint16;        
     spPropertyRWUint<test_properties, &test_properties::get_uint, &test_properties::set_uint> rw_prop_uint;        
     
     spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float;        
@@ -162,18 +195,22 @@ public:
 
 #define kTest0_Bool     false
 #define kTest0_Int8     -21
+#define kTest0_Int16   -9812
 #define kTest0_Int      1434
 #define kTest0_Uint8    222
-#define kTest0_Uint     3212
+#define kTest0_Uint16   923
+#define kTest0_Uint     93212
 #define kTest0_Float    3.141592
 #define kTest0_Double   925.1313
 #define kTest0_String  "This is a STRING"
 
 #define kTest1_Bool     true
 #define kTest1_Int8     -33
+#define kTest1_Int16    -7079
 #define kTest1_Int      32111
 #define kTest1_Uint8    12
-#define kTest1_Uint     4521
+#define kTest1_Uint16   7983
+#define kTest1_Uint     45821
 #define kTest1_Float    32.3289
 #define kTest1_Double   99.9981
 #define kTest1_String  "a different string"
@@ -194,8 +231,10 @@ void test_setup()
 
     myTest.prop_bool = kTest0_Bool;
     myTest.prop_int8 = kTest0_Int8;
+    myTest.prop_int16 = kTest0_Int16;    
     myTest.prop_int = kTest0_Int;
     myTest.prop_uint8 = kTest0_Uint8;
+    myTest.prop_uint16 = kTest0_Uint16;    
     myTest.prop_uint = kTest0_Uint;
     myTest.prop_float = kTest0_Float;
     myTest.prop_double = kTest0_Double;
@@ -203,8 +242,10 @@ void test_setup()
 
     myTest.rw_prop_bool = kTest1_Bool;
     myTest.rw_prop_int8 = kTest1_Int8;
+    myTest.rw_prop_int16 = kTest1_Int16;    
     myTest.rw_prop_int = kTest1_Int;
     myTest.rw_prop_uint8 = kTest1_Uint8;
+    myTest.rw_prop_uint16 = kTest1_Uint16;    
     myTest.rw_prop_uint = kTest1_Uint;
     myTest.rw_prop_float = kTest1_Float;
     myTest.rw_prop_double = kTest1_Double;
@@ -217,8 +258,10 @@ void test_change()
 
     myTest.prop_bool = kTest1_Bool;
     myTest.prop_int8 = kTest1_Int8;
+    myTest.prop_int16 = kTest1_Int16;    
     myTest.prop_int = kTest1_Int;
     myTest.prop_uint8 = kTest1_Uint8;
+    myTest.prop_uint16 = kTest1_Uint16;    
     myTest.prop_uint = kTest1_Uint;
     myTest.prop_float = kTest1_Float;
     myTest.prop_double = kTest1_Double;
@@ -226,8 +269,10 @@ void test_change()
 
     myTest.rw_prop_bool = kTest0_Bool;
     myTest.rw_prop_int8 = kTest0_Int8;
+    myTest.rw_prop_int16 = kTest0_Int16;    
     myTest.rw_prop_int = kTest0_Int;
     myTest.rw_prop_uint8 = kTest0_Uint8;
+    myTest.rw_prop_uint16 = kTest0_Uint16;    
     myTest.rw_prop_uint = kTest0_Uint;
     myTest.rw_prop_float = kTest0_Float;
     myTest.rw_prop_double = kTest0_Double;
@@ -247,6 +292,11 @@ void test_check()
     else
         Serial.printf("\tProperty type int8 restore success\n\r");
 
+    if (myTest.prop_int16 != kTest0_Int16)
+        Serial.printf("\tError - property type int16 restore fail\n\r");
+    else
+        Serial.printf("\tProperty type int16 restore success\n\r");
+
     if (myTest.prop_int != kTest0_Int )
         Serial.printf("\tError - property type int restore fail\n\r");
     else
@@ -256,6 +306,11 @@ void test_check()
         Serial.printf("\tError - property type uint8 restore fail\n\r");
     else
         Serial.printf("\tProperty type uint8 restore success\n\r");
+
+    if (myTest.prop_uint16 != kTest0_Uint16 )
+        Serial.printf("\tError - property type uint16 restore fail\n\r");
+    else
+        Serial.printf("\tProperty type uint16 restore success\n\r");
 
     if (myTest.prop_uint != kTest0_Uint)
         Serial.printf("\tError - property type uint restore fail\n\r");
@@ -290,6 +345,11 @@ void test_check()
     else
         Serial.printf("\tRW Property type int8 restore success\n\r");
 
+    if (myTest.rw_prop_int16 != kTest1_Int16)
+        Serial.printf("\tError - RW property type int16 restore fail\n\r");
+    else
+        Serial.printf("\tRW Property type int16 restore success\n\r");
+
     if (myTest.rw_prop_int != kTest1_Int )
         Serial.printf("\tError - RW property type int restore fail\n\r");
     else
@@ -299,6 +359,11 @@ void test_check()
         Serial.printf("\tError - RW property type uint8 restore fail\n\r");
     else
         Serial.printf("\tRW Property type uint8 restore success\n\r");
+
+    if (myTest.rw_prop_uint16 != kTest1_Uint16 )
+        Serial.printf("\tError - RW property type uint16 restore fail\n\r");
+    else
+        Serial.printf("\tRW Property type uint16 restore success\n\r");
 
     if (myTest.rw_prop_uint != kTest1_Uint)
         Serial.printf("\tError - RW property type uint restore fail\n\r");

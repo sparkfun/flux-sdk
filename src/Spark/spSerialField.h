@@ -30,6 +30,10 @@ class spSerialField : public spDataEditor
     {
         return editFieldInt8(value, timeout);
     }
+    bool editField(int16_t &value, uint32_t timeout = 60)
+    {
+        return editFieldInt16(value, timeout);
+    }
 
     bool editField(int32_t &value, uint32_t timeout = 60)
     {
@@ -39,6 +43,11 @@ class spSerialField : public spDataEditor
     bool editField(uint8_t &value, uint32_t timeout = 60)
     {
         return editFieldUInt8(value, timeout);
+    }
+
+    bool editField(uint16_t &value, uint32_t timeout = 60)
+    {
+        return editFieldUInt16(value, timeout);
     }
 
     bool editField(uint32_t &value, uint32_t timeout = 60)
@@ -58,8 +67,10 @@ class spSerialField : public spDataEditor
 
     bool editFieldBool(bool &value, uint32_t timeout = 60);
     bool editFieldInt8(int8_t &value, uint32_t timeout = 60);
+    bool editFieldInt16(int16_t &value, uint32_t timeout = 60);    
     bool editFieldInt(int32_t &value, uint32_t timeout = 60);
     bool editFieldUInt8(uint8_t &value, uint32_t timeout = 60);
+    bool editFieldUInt16(uint16_t &value, uint32_t timeout = 60);    
     bool editFieldUInt(uint32_t &value, uint32_t timeout = 60);
     bool editFieldFloat(float &value, uint32_t timeout = 60);
     bool editFieldDouble(double &value, uint32_t timeout = 60);

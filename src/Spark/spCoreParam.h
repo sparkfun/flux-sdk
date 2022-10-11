@@ -217,6 +217,10 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     {
         return _spDataOut<T>::getInt8();
     };
+    int16_t getInt16()
+    {
+        return _spDataOut<T>::getInt16();
+    };
     int getInt()
     {
         return _spDataOut<T>::getInt();
@@ -224,6 +228,10 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
     uint8_t getUint8()
     {
         return _spDataOut<T>::getUint8();
+    };
+    uint16_t getUint16()
+    {
+        return _spDataOut<T>::getUint16();
     };
     uint getUint()
     {
@@ -244,19 +252,29 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOut
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)()> using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
+template <class Object, bool (Object::*_getter)()> 
+using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
 
 template <class Object, int8_t (Object::*_getter)()>
 using spParameterOutInt8 = _spParameterOut<int8_t, Object, _getter>;
 
-template <class Object, int (Object::*_getter)()> using spParameterOutInt = _spParameterOut<int, Object, _getter>;
+template <class Object, int16_t (Object::*_getter)()>
+using spParameterOutInt16 = _spParameterOut<int16_t, Object, _getter>;
+
+template <class Object, int (Object::*_getter)()> 
+using spParameterOutInt = _spParameterOut<int, Object, _getter>;
 
 template <class Object, uint8_t (Object::*_getter)()>
 using spParameterOutUint8 = _spParameterOut<uint8_t, Object, _getter>;
 
-template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
+template <class Object, uint16_t (Object::*_getter)()>
+using spParameterOutUint16 = _spParameterOut<uint16_t, Object, _getter>;
 
-template <class Object, float (Object::*_getter)()> using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
+template <class Object, uint (Object::*_getter)()> 
+using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
+
+template <class Object, float (Object::*_getter)()> 
+using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
 
 template <class Object, double (Object::*_getter)()>
 using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
@@ -357,6 +375,10 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     {
         return _spDataOutString::getInt8();
     };
+    int16_t getInt16()
+    {
+        return _spDataOutString::getInt16();
+    };
     int getInt()
     {
         return _spDataOutString::getInt();
@@ -364,6 +386,10 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
     uint8_t getUint8()
     {
         return _spDataOutString::getUint8();
+    };
+    uint16_t getUint16()
+    {
+        return _spDataOutString::getUint16();
     };
     uint getUint()
     {
@@ -490,11 +516,17 @@ using spParameterInBool = _spParameterIn<bool, Object, _setter>;
 template <class Object, void (Object::*_setter)(int8_t const &)>
 using spParameterInInt8 = _spParameterIn<int8_t, Object, _setter>;
 
+template <class Object, void (Object::*_setter)(int16_t const &)>
+using spParameterInInt16 = _spParameterIn<int16_t, Object, _setter>;
+
 template <class Object, void (Object::*_setter)(int const &)>
 using spParameterInInt = _spParameterIn<int, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint8_t const &)>
 using spParameterInUint8 = _spParameterIn<uint8_t, Object, _setter>;
+
+template <class Object, void (Object::*_setter)(uint16_t const &)>
+using spParameterInUint16 = _spParameterIn<uint16_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint const &)>
 using spParameterInUint = _spParameterIn<uint, Object, _setter>;
