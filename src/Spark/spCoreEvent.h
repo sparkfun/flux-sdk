@@ -44,7 +44,7 @@ template <typename ArgT> class spSignal
         connect([=](ArgT var) { // users a lambda for the callback
             (*func)(uValue, var);
         });
-    }
+    }   
 
     template <typename T, typename U> void call(T *inst, void (T::*func)(U uVal, ArgT var), U uValue)
     {
@@ -75,8 +75,10 @@ template <typename ArgT> class spSignal
 
 typedef spSignal<bool> spSignalBool;
 typedef spSignal<int8_t> spSignalInt8;
+typedef spSignal<int16_t> spSignalInt16;
 typedef spSignal<int> spSignalInt;
 typedef spSignal<uint8_t> spSignalUInt8;
+typedef spSignal<uint16_t> spSignalUInt16;
 typedef spSignal<uint> spSignalUInt;
 typedef spSignal<float> spSignalFloat;
 typedef spSignal<double> spSignalDouble;
