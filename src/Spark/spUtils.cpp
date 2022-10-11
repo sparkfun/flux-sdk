@@ -5,18 +5,7 @@
 #include <math.h>
 #include <string.h>
 
-static const char *typeNames[] = {"none",  "bool",   "int8",  "integer", "unsigned int8", "unsigned integer",
-                                  "float", "double", "string"};
-
-//-------------------------------------------------------------------------
-// spTypeName()
-//
-// Return a human type give the framework type
-const char *sp_utils::spTypeName(spDataType_t type)
-{
-    return typeNames[type];
-}
-
+#include "spCoreLog.h"
 //-------------------------------------------------------------------------
 // dtostr()
 //
@@ -130,7 +119,8 @@ uint32_t sp_utils::id_hash_string(const char *str)
 
     return hash; //& 0xFFFF; // NOTE - we're just using 16 bits
 }
-
+//-------------------------------------------------------------------
+// returns a string version of the hash. 
 bool sp_utils::id_hash_string_to_string(const char * instr, char *outstr, size_t len){
 
     if ( !instr || !outstr || !len)
@@ -147,4 +137,85 @@ bool sp_utils::id_hash_string_to_string(const char * instr, char *outstr, size_t
     
     return true;
 
+}
+//-------------------------------------------------------------------
+std::string & sp_utils::to_string(std::string &data)
+{
+    return data;
+}
+//-------------------------------------------------------------------
+const std::string & sp_utils::to_string(std::string const &data)
+{
+    return data;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(int const data)
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%d", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(int8_t const data)
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%d", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(int16_t const data)
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%d", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(uint const data)
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%u", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(uint8_t const data)
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%u", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(uint16_t const data)
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%u", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(float const data)
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%f", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(double const data) 
+{
+    char szBuffer[20];
+    snprintf(szBuffer, sizeof(szBuffer), "%f", data);
+    std::string stmp = szBuffer;
+    return stmp;
+}
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(bool const data) 
+{
+    std::string stmp;
+    stmp = data ? "true" : "false";
+    return stmp;
 }

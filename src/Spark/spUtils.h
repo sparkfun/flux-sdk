@@ -7,13 +7,11 @@
 #include <string.h>
 #include <string>
 
-#include "spCoreTypes.h"
+
 // use a utils namespace
 
 namespace sp_utils
 {
-
-const char *spTypeName(spDataType_t type);
 
 size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 3);
 
@@ -22,16 +20,24 @@ uint32_t id_hash_string(const char *str);
 bool id_hash_string_to_string(const char * instr, char *outstr, size_t len);
 
 
-template <typename T> spTypeID getClassTypeID()
-{
-    // Use the name of this method via the __PRETTY_FUNCTION__ macro
-    // to create our ID. The macro gives us a unique name for
-    // each class b/c it uses the template parameter.
 
-    // Hash the name, make that our type ID.
-    return id_hash_string(__PRETTY_FUNCTION__);
-    
-};
+//-------------------------------------------------------------------
+std::string &to_string(std::string &data);
+const std::string &to_string(std::string const &data);
+std::string to_string(int const data);
+std::string to_string(int8_t const data);
+std::string to_string(int16_t const data);
+std::string to_string(uint const data);
+std::string to_string(uint8_t const data);
+std::string to_string(uint16_t const data);
+std::string to_string(float const data);
+std::string to_string(double const data);
+std::string to_string(bool const data);
+
+
+
+
+
 } // namespace sp_utils
 
 /*
