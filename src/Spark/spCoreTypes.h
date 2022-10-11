@@ -13,6 +13,7 @@
 
 #include "spCoreLog.h"
 #include "spStorage.h"
+#include "spUtils.h"
 //----------------------------------------------------------------------------------------
 // spDescriptor
 //
@@ -159,6 +160,7 @@ class spDataTyper
         return type(&t);
     };
 };
+const char *spGetTypeName(spDataType_t type);
 
 struct spPersist
 {
@@ -227,79 +229,6 @@ class spDataOut
     {
         return getString();
     }
-
-    std::string &to_string(std::string &data) const
-    {
-        return data;
-    }
-
-    const std::string &to_string(std::string const &data) const
-    {
-        return data;
-    }
-
-    std::string to_string(int const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(int8_t const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(int16_t const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(uint const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%u", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(uint8_t const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%u", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(uint16_t const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%u", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(float const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%f", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(double const data) const
-    {
-        char szBuffer[20];
-        snprintf(szBuffer, sizeof(szBuffer), "%f", data);
-        std::string stmp = szBuffer;
-        return stmp;
-    }
-    std::string to_string(bool const data) const
-    {
-        std::string stmp;
-        stmp = data ? "true" : "false";
-        return stmp;
-    }
 };
 
 template <typename T> class _spDataOut : public spDataOut
@@ -354,7 +283,7 @@ template <typename T> class _spDataOut : public spDataOut
     std::string getString()
     {
         T c = get();
-        return to_string(c);
+        return sp_utils::to_string(c);
     }
 
     typedef T value_type; // might be handy in future
@@ -473,60 +402,7 @@ class spDataIn
         setString(v);
     }
 
-    // TODO: Move the conversion routines to utils?
-    std::string &to_string(std::string &data) const
-    {
-        return data;
-    }
-
-    const std::string &to_string(std::string const &data) const
-    {
-        return data;
-    }
-
-    int to_int(std::string const &data) const
-    {
-        return std::stoi(data);
-    }
-    int8_t to_int8(std::string const &data) const
-    {
-        return (int8_t)std::stoi(data);
-    }
-    int16_t to_int16(std::string const &data) const
-    {
-        return (int16_t)std::stoi(data);
-    }
-    uint to_uint(std::string const &data) const
-    {
-        return std::stoul(data);
-    }
-    uint8_t to_uint8(std::string const &data) const
-    {
-        return (uint8_t)std::stoul(data);
-    }
-    uint16_t to_uint16(std::string const &data) const
-    {
-        return (uint16_t)std::stoul(data);
-    }
-    float to_float(std::string const &data) const
-    {
-        return std::stof(data);
-    }
-    double to_double(std::string const &data) const
-    {
-        return std::stof(data);
-    }
-    bool to_bool(std::string const &data) const
-    {
-        // First, test for literal values
-        if (data == "true")
-            return true;
-        else if (data == "false")
-            return false;
-
-        // if we are here, we consider true any value set
-        return data.length() > 0;
-    }
+    
 };
 
 template <typename T> class _spDataIn : public spDataIn
@@ -582,31 +458,31 @@ template <typename T> class _spDataIn : public spDataIn
         switch (this->type())
         {
         case spTypeBool:
-            set(to_bool(value));
+            set(value.length() > 0 ? (value != "false") : false);
             break;
         case spTypeInt:
-            set(to_int(value));
+            set(std::stoi(value));
             break;
         case spTypeInt8:
-            set(to_int8(value));
+            set((int8_t)std::stoi(value));
             break;
         case spTypeInt16:
-            set(to_int16(value));
+            set((int16_t)std::stoi(value));
             break;
         case spTypeUInt:
-            set(to_uint(value));
+            set(std::stoul(value));
             break;
         case spTypeUInt8:
-            set(to_uint8(value));
+            set((uint8_t)std::stoul(value));
             break;
         case spTypeUInt16:
-            set(to_uint16(value));
+            set((uint16_t)std::stoul(value));
             break;
         case spTypeFloat:
-            set(to_float(value));
+            set(std::stof(value));
             break;
         case spTypeDouble:
-            set(to_double(value));
+            set(std::stof(value));
             break;
         case spTypeString:
             break;
@@ -805,6 +681,18 @@ private:
 
 typedef uint32_t spTypeID;
 #define kspTypeIDNone 0
+
+
+template <typename T> spTypeID spGetClassTypeID()
+{
+    // Use the name of this method via the __PRETTY_FUNCTION__ macro
+    // to create our ID. The macro gives us a unique name for
+    // each class b/c it uses the template parameter.
+
+    // Hash the name, make that our type ID.
+    return sp_utils::id_hash_string(__PRETTY_FUNCTION__);
+    
+};
 
 //----------------------------------------------------------------------
 // spDataEditor()
