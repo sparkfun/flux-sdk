@@ -55,11 +55,19 @@ bool spDevVEML7700::isConnected(spDevI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
+    // The VEML7700 does not have an ID register
+    // The best we can do is read the config register and check that bits 15-13, 10 and 3-2 are zero
+    // But the VEML6075 will also pass this test...
     uint16_t configReg;
-    if (!i2cDriver.readRegister16(address, 0, &configReg, true)) // Little Endian
-        return false;
+    bool couldBe7700 = i2cDriver.readRegister16(address, 0, &configReg, true); // Little Endian
+    couldBe7700 &= ((configReg & 0b1110010000001100) == 0);
 
-    return ((configReg & 0b1110010000001100) == 0); // Check bits 15-13, 10 and 3-2 are zero
+    // Check if this is a VEML6075
+    uint16_t veml6075DeviceID = 0;
+    bool identify6075 = i2cDriver.readRegister16(address, 0x0C, &veml6075DeviceID, true); // Little Endian
+    identify6075 &= (veml6075DeviceID == 0x0026); // VEML6075_DEVICE_ID
+
+    return ((couldBe7700) && (!identify6075)); 
 }
 
 //----------------------------------------------------------------------------------------------------------
