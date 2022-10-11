@@ -115,7 +115,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     // Editing Intro
     Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
-                  sp_utils::spTypeName(pProp->type()));
+                  spGetTypeName(pProp->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
@@ -261,7 +261,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     // if the parameter is a void type (spTypeNone),
     // Editing Intro
     Serial.printf("\tEnter the value to pass into `%s`(<%s>)\n\r\n\r", pParam->name(),
-                  sp_utils::spTypeName(pParam->type()));
+                  spGetTypeName(pParam->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
