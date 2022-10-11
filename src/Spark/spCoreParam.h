@@ -789,7 +789,7 @@ template <typename T> class spActionType : public spAction
 
     static spTypeID type(void)
     {
-        static spTypeID _myTypeID = sp_utils::getClassTypeID<T>();
+        static spTypeID _myTypeID = spGetClassTypeID<T>();
 
         return _myTypeID;
     }
