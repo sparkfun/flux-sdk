@@ -97,12 +97,12 @@ int spDevSGP40::read_voc()
 }
 
 // methods for input params
-void spDevSGP40::set_rh(const float &rh)
+void spDevSGP40::write_rh(const float &rh)
 {
     _RH = rh;
 }
 
-void spDevSGP40::set_temperature(const float &temperature)
+void spDevSGP40::write_temperature(const float &temperature)
 {
     _temperature = temperature;
 }

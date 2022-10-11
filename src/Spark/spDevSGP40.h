@@ -48,15 +48,15 @@ private:
     // methods used to get values for our output parameters
     int read_voc();
 
-    void set_rh(const float &rh);
-    void set_temperature(const float &temperature);
+    void write_rh(const float &rh);
+    void write_temperature(const float &temperature);
     float _RH = 50.0;
     float _temperature = 25.0;
 
 public:
     // Define our input parameters
-    spParameterInFloat<spDevSGP40, &spDevSGP40::set_rh> rh;
-    spParameterInFloat<spDevSGP40, &spDevSGP40::set_temperature> temperature;
+    spParameterInFloat<spDevSGP40, &spDevSGP40::write_rh> rh;
+    spParameterInFloat<spDevSGP40, &spDevSGP40::write_temperature> temperature;
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutInt<spDevSGP40, &spDevSGP40::read_voc> vocIndex;    
