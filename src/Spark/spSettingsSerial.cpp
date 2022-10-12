@@ -114,15 +114,14 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     spDataLimit *propLimit = pProp->dataLimit();   
 	spEditResult_t result;
     
-    
-    	// Header
-    	drawPageHeader(pCurrent, pProp->name());
+    // Header
+    drawPageHeader(pCurrent, pProp->name());
 
-    	// Editing Intro
-    	Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
+    // Editing Intro
+    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
                   spGetTypeName(pProp->type()));
 
-    	Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
+    Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
     while (true)
     {
