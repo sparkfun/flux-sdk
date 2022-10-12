@@ -19,7 +19,7 @@
 // spStorageBlock()
 //
 // Define our storage block object. This is used as a FP like object when a bock is
-// written out interatively...
+// written out interactively...
 
 class spStorageBlock
 {

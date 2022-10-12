@@ -37,12 +37,12 @@
 // New devices create an object that subclasses from this object.
 //
 // The device object defines the interface and underlying logic that
-// integracts the device into the overall system, and simplifies the r
+// integrates the device into the overall system, and simplifies the r
 // implementation requirements for each new device.
 //
 // Key capabilities provided:
 //
-//      - object state peristance/seralization
+//      - object state persistance/serialization
 //      - Managed properties -
 //      - System data collection from the device
 //      - Works with the device Factory/Builder pattern.
@@ -120,7 +120,7 @@ class spDevice : public spOperation
 // using spDeviceContainer = _spOperationContainer<_spDevice>;
 using spDeviceContainer = spContainer<spDevice *>;
 
-// Macro used to simplfy device setup
+// Macro used to simplify device setup
 #define spSetupDeviceIdent(_name_) this->setName(_name_);
 
 //------------------------------------------------------------------------
@@ -199,20 +199,17 @@ template <typename T> class spDeviceType : public spDevice
 //    class is defined.
 //
 //    Builder objects include a registration call to the overall Factory class (which is a
-//    singleton) in their constructor. At system startup, global objects are instatiated,
+//    singleton) in their constructor. At system startup, global objects are instantiated,
 //    which causes the builder object to register itself with the device factory class. Later,
 //    the factory is used to discover and instantiate device classes using the registered
 //    builder classes.
 //
-//    Key Point: Using this pattern, just adding the implentation files of a new device driver
-//               enables this device for the system. No system updates or code modificatiosn
+//    Key Point: Using this pattern, just adding the implementation files of a new device driver
+//               enables this device for the system. No system updates or code modifications
 //               required.
 //
 //    Note: This pattern does leave stale *global* builder objects in the system - but they are
 //          small (10's of B).
-//
-//    On system startup, this global object This global class calls the device Factory object On system startup, this
-// Define the spDeviceFactory class
 //
 
 // it's c++ - you have to do this
@@ -275,7 +272,7 @@ class spDeviceBuilder
 // Define a class template used to register a device, then use this template to
 // have a device create a builder for it's specific device class.
 //
-// The trick is the macro QwiicRegisterDevice, which setups up a static object
+// The trick is the macro spRegisterDevice, which sets up a static object
 // of the builder class. This object is created at startup (when *globals* are inst),
 // and the constructor of the class registers the builder in the factory class.
 //
