@@ -98,16 +98,16 @@ public:
     spPropertyBool<test_properties>     prop_bool;
 
     // int property, that we'll add a range limit to. 
-    spPropertyInt<test_properties>      prop_int;
+    spPropertyInt<test_properties>      prop_int={33};
     spDataLimitRangeInt  int_limit = {33, 44};   // define the limit, set it in the constructor
 
     spPropertyFloat<test_properties>    prop_float;
-    spPropertyString<test_properties>   prop_str;
+    spPropertyString<test_properties>   prop_str = {"starter string"};
 
     // Define RW (getter/setter) Properties
     spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
     
-    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;    
+    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int = {111};    
     // Add a list of available values for this property. These are name (human readable), value pairs
     spDataLimitSetInt rw_init_limit = {
         {"Value One", 111},
@@ -119,7 +119,7 @@ public:
     spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float; 
     spDataLimitRangeFloat float_limit = {-100, 100, 22}; // only needs 2 values, but making sure system accepts 3 - skips #3
 
-    spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;   
+    spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str = {"rw string initial value"};   
 
 
 
