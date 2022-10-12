@@ -590,20 +590,6 @@ public:
         setRange( min, max);
     }
 
-    // Used for a static init list used during definition of the object.
-    spDataLimitRange( std::initializer_list<T> list)
-    {
-        if (list.size() < 2)
-            throw std::length_error("invalid number of arguments");
-
-        auto iter = list.begin();
-
-        _min = *iter++;
-        _max = *iter;
-
-        setRange(_min, _max);
-    }
-
     void setRange(T min, T max)
     {
         if (min < max )
