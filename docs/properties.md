@@ -74,6 +74,22 @@ public:
 }
 ```
 
+#### Setting an Initial Value
+
+The initial value for a property can be set in it's declaration statement by assigning the desired value to the declared variable. The value is set using a standard C++ initialization list syntax - aka `{}` braces.
+
+In the above example, setting an initial value of 42 to *my_property* looks like:
+
+```C++
+class MyClass : public spObject
+{
+public:
+   // Define my property
+   spPropertyInt<MyClass>  my_property = {42};
+
+}
+```
+
 #### Runtime Registration
 
 When an instance of the object that contains the property is created, the property is registered with that object using the ```spRegister()``` function. This step connects the object instance with the property. 
@@ -175,6 +191,7 @@ Note
 > * By convention declaring the getters and setters as private. This can be optional
 > * The getter and setter methods must be declared before defining the property
 > * The use of `set_` and `get_` prefixes on the setter and getter methods help identify the methods as supporting a property.
+> * If an initial value is set for a RW property it it's declaration statement, the *setter* method called with the initial value when the property is registered via *spRegister()*.
 
 
 #### Runtime Registration
@@ -202,4 +219,4 @@ MyClass2()
     spRegister(my_rwproperty);
 }
 ```
- 
+Note: If an initial value was set for the property, the value is passed to the *setter* method as part of the registration process.
