@@ -200,7 +200,7 @@ std::string sp_utils::to_string(uint16_t const data)
 std::string sp_utils::to_string(float const data)
 {
     char szBuffer[20];
-    snprintf(szBuffer, sizeof(szBuffer), "%f", data);
+    snprintf(szBuffer, sizeof(szBuffer), "%.3f", data);
     std::string stmp = szBuffer;
     return stmp;
 }
@@ -208,7 +208,7 @@ std::string sp_utils::to_string(float const data)
 std::string sp_utils::to_string(double const data) 
 {
     char szBuffer[20];
-    snprintf(szBuffer, sizeof(szBuffer), "%f", data);
+    snprintf(szBuffer, sizeof(szBuffer), "%.4f", data);
     std::string stmp = szBuffer;
     return stmp;
 }
