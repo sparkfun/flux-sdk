@@ -16,7 +16,102 @@
 #include <Spark/spStorageESP32Pref.h>
 
 
+class test_properties : public spActionType<test_properties>
+{
 
+    bool   _b_data=false;
+    int    _i_data=0;
+    float  _f_data=0.;    
+    std::string _s_data="";
+
+public:
+
+    test_properties(){
+
+        setName("Test Properties", "Property testing object");
+
+        spRegister(prop_bool);
+        
+        spRegister(prop_int, "MyInteger", "Testing integer property - with a range limit");
+        prop_int.setDataLimit(int_limit);
+
+        spRegister(prop_float, "FloatValue");
+        spRegister(prop_str, "stringProp", "Testing a StringProperty");        
+
+        spRegister(rw_prop_bool);
+        spRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property");
+        spRegister(rw_prop_str);
+        
+        spRegister(rw_prop_float, "RW Float", "Float property with a range limit");
+        rw_prop_float.setDataLimit(float_limit);
+    }
+    
+
+
+    // boolean setter/getter
+    bool get_bool(void){
+
+        return _b_data;
+    }
+    void set_bool( bool b){
+
+        _b_data=b;
+
+    };
+
+    // int setter/getter
+    int get_int(void){
+
+        return _i_data;
+    }
+    void set_int( int data){
+
+        _i_data=data;
+
+    };
+
+    // float setter/getter
+    float get_float(void){
+
+        return _f_data;
+    }
+    void set_float( float data){
+
+        _f_data=data;
+    };
+
+    // int setter/getter
+    std::string get_str(void){
+
+        return _s_data;
+    }
+    void set_str(std::string data){
+
+        _s_data=data;
+
+    };
+    // Define standard properties 
+    spPropertyBool<test_properties>     prop_bool;
+
+    // int property, that we'll add a range limit to. 
+    spPropertyInt<test_properties>      prop_int;
+    spDataLimitRangeInt  int_limit = {33, 44};   // define the limit, set it in the constructor
+
+    spPropertyFloat<test_properties>    prop_float;
+    spPropertyString<test_properties>   prop_str;
+
+    // Define RW (getter/setter) Properties
+    spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
+    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;    
+    
+    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float; 
+    spDataLimitRangeFloat float_limit = {-100, 100, 22};
+
+    spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;   
+
+
+
+};
 
 // Define an action class that uses parameters for testing
 
@@ -155,6 +250,7 @@ spStorageESP32Pref  settingsStorage;
 spSettingsSave      saveSettings(settingsStorage);
 
 test_params testParams;
+test_properties testProps;
 //---------------------------------------------------------------------
 // Arduino Setup
 //
@@ -179,8 +275,10 @@ void setup() {
     //               This should be done after all devices are added..for now...
     spark.start();  
 
-    // our testing parameter object.
+    // our testing parameter and property objects.
     spark.add(testParams);
+
+    spark.add(testProps);
 
     // What's connected
     spDeviceContainer  myDevices = spark.connectedDevices();
