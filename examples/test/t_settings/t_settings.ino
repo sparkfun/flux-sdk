@@ -105,7 +105,7 @@ public:
     spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;    
     
     spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float; 
-    spDataLimitRangeFloat float_limit = {-100, 100, 22}; // only nees 2 values, but making sure system accepts 3 - skips #3
+    spDataLimitRangeFloat float_limit = {-100, 100, 22}; // only needs 2 values, but making sure system accepts 3 - skips #3
 
     spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;   
 
@@ -276,8 +276,7 @@ void setup() {
     // Add the save system to the app
     spark.add(saveSettings);
     
-    // Start Spark - Init system: auto detects devices and restores settings from EEPROM
-    //               This should be done after all devices are added..for now...
+    // Start Spark 
     spark.start();  
 
     // our testing parameter and property objects.
