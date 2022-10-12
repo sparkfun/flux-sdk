@@ -922,3 +922,8 @@ bool spSerialField::editFieldDouble(double &value, uint32_t timeout)
     // editing wasn't successful.
     return false;
 }
+
+void spSerialField::beep()
+{
+    Serial.write(kCodeBell); // bell;
+}

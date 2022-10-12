@@ -76,7 +76,8 @@ class spSerialField : public spDataEditor
     bool editFieldDouble(double &value, uint32_t timeout = 60);
     bool editFieldString(std::string &value, uint32_t timeout = 60);
     bool editFieldCString(char *value, size_t lenValue, uint32_t timeout = 60);
-
+    void beep();
+    
   private:
     static constexpr uint16_t kEditBufferMax = 256;
     typedef struct
@@ -100,4 +101,6 @@ class spSerialField : public spDataEditor
     void processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length);
     bool editLoop(FieldContext_t &ctxEdit, uint32_t timeout = 10);
     void fulltext(FieldContext_t &ctxEdit, char *buffer, size_t length = kEditBufferMax);
+
+
 };
