@@ -5,7 +5,7 @@
 // Messaging/logging system for the framework
 #include <stdarg.h>
 #include "spOutput.h"
-
+#include <WString.h>
 // Lets enable logging
 #define SP_LOGGING_ENABLED
 
@@ -38,22 +38,22 @@ public:
 };
 
 #ifdef THIS_IS_NOT_WORKING_ON_ESP32
-// ----------------------------------------------------------------------------
-// spLoggingDrvESP32  - 
-//
-// Sends log output to the ESP32 native, IDF system 
+// // ----------------------------------------------------------------------------
+// // spLoggingDrvESP32  - 
+// //
+// // Sends log output to the ESP32 native, IDF system 
 
-class spLoggingDrvESP32 : public spLoggingDriver
-{
-public:
-    spLoggingDrvESP32(){}
+// class spLoggingDrvESP32 : public spLoggingDriver
+// {
+// public:
+//     spLoggingDrvESP32(){}
 
-    int logPrintf(const spLogLevel_t level, const char *fmt, va_list args);
+//     int logPrintf(const spLogLevel_t level, const char *fmt, va_list args);
 
-    void setLogLevel(spLogLevel_t level);
-private:
-   uint getESPLevel(const spLogLevel_t level);
-};
+//     void setLogLevel(spLogLevel_t level);
+// private:
+//    uint getESPLevel(const spLogLevel_t level);
+// };
 #endif
 // ----------------------------------------------------------------------------
 // spLoggingDrvDefault  - our Default driver for log output
@@ -115,6 +115,20 @@ public:
         _pLogDriver->setLogLevel(_logLevel);        
     }
 
+    //-------------------------------------------------------------------------
+    // generic log interface
+    int logPrintf(const spLogLevel_t level, const __FlashStringHelper *fmt, ...)
+    {
+        int retval = 0;
+        if ( _pLogDriver && level <= _logLevel && level != spLogNone)
+        {
+            va_list ap;
+            va_start(ap, fmt);
+            retval =  _pLogDriver->logPrintf(level, reinterpret_cast<const char *>(fmt), ap);
+            va_end(ap);
+        }
+        return retval;
+    }
     //-------------------------------------------------------------------------
     // generic log interface
     int logPrintf(const spLogLevel_t level, const char *fmt, ...)
