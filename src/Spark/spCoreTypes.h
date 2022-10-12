@@ -511,58 +511,39 @@ class _spDataInString : public spDataIn
 
     void setBool(bool value)
     {
-        char szBuffer[16];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value ? 1 : 0);
-
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setInt8(int8_t value)
     {
-        char szBuffer[16];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setInt16(int16_t value)
     {
-        char szBuffer[16];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setInt(int value)
     {
-        char szBuffer[32];
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setUint8(uint8_t value)
     {
-        char szBuffer[16];
-        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setUint16(uint16_t value)
     {
-        char szBuffer[16];
-        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setUint(uint value)
     {
-        char szBuffer[32];
-        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setFloat(float value)
     {
-        char szBuffer[32];
-        snprintf(szBuffer, sizeof(szBuffer), "%f", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));
     }
     void setDouble(double value)
     {
-        char szBuffer[32];
-        snprintf(szBuffer, sizeof(szBuffer), "%f", value);
-        set(szBuffer);
+        set(sp_utils::to_string(value));   
     }
     void setString(std::string &value)
     {
