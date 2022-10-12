@@ -117,7 +117,7 @@ public:
         {"Value Five", 555}                       
     };
     spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float; 
-    spDataLimitRangeFloat float_limit = {-100, 100, 22}; // only needs 2 values, but making sure system accepts 3 - skips #3
+    spDataLimitRangeFloat float_limit = {-100, 100}; // limit the range from -100, 100
 
     spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str = {"rw string initial value"};   
 
