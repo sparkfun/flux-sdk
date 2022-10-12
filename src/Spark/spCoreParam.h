@@ -45,7 +45,7 @@ class spParameter : public spDescriptor
 class spParameterIn : public spParameter
 {
   public:
-    virtual bool editValue(spDataEditor &) = 0;
+    virtual spEditResult_t editValue(spDataEditor &) = 0;
 };
 class spParameterOut : public spParameter, public spDataOut
 {
@@ -493,7 +493,7 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    bool editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(spDataEditor &theEditor)
     {
 
         T value = 0;
@@ -503,7 +503,7 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
         if (bSuccess) // success
             set(value);
 
-        return bSuccess;
+        return bSuccess ? spEditSuccess : spEditFailure;
     }
 };
 
@@ -621,7 +621,7 @@ class spParameterInString : public spParameterIn, _spDataInString
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    bool editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(spDataEditor &theEditor)
     {
 
         std::string value = "";
@@ -631,7 +631,7 @@ class spParameterInString : public spParameterIn, _spDataInString
         if (bSuccess) // success
             set(value);
 
-        return bSuccess;
+        return bSuccess ? spEditSuccess : spEditFailure;
     }
 };
 
@@ -725,9 +725,9 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     // editValue()
     //
     // there is nothing to edit - this method just supports the interface
-    bool editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(spDataEditor &theEditor)
     {
-        return true;
+        return spEditSuccess;
     };
 };
 // Handy macros to "register attributes (props/params)"
