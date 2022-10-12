@@ -275,6 +275,9 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     spSerialField theDataEditor;
 
     // let's get a value for the parameter
+    // Any value limits set? - use in prompt loop
+    spDataLimit *propLimit = pParam->dataLimit();   
+    spEditResult_t result;
 
     // Header
     drawPageHeader(pCurrent, pParam->name());
@@ -286,12 +289,28 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
-    Serial.printf("\t%s = ", pParam->name());
+    while (true)
+    {
+        if ( propLimit &&  propLimit->type() == spDataLimitTypeRange )
+            Serial.printf("\tRange for %s is %s\n\r", pParam->name(), propLimit->to_string().c_str());
 
-    // Call the parameter editValue() method with our editor
-    spEditResult_t result = pParam->editValue(theDataEditor);
+        // prompt
+        Serial.printf("\t%s = ", pParam->name());
 
-    Serial.printf("\n\r\n\r");
+        // Call the property editValue() method with our editor
+        result = pParam->editValue(theDataEditor);
+
+        Serial.printf("\n\r\n\r");
+
+        if (result == spEditOutOfRange)
+        {
+            Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", propLimit->to_string().c_str());
+            theDataEditor.beep();
+            delay(kMessageDelayTimeout/3);
+        }
+        else 
+            break;
+    }
 
     if (result == spEditSuccess)
         Serial.printf("\t[`%s` was called with the provided value.]\n\r", pParam->name());
@@ -758,7 +777,7 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
         // Timeout?
         if ((millis() - startTime) > timeout)
         {
-            Serial.println("No user input recieved.");
+            Serial.println("No user input received.");
             chIn = kReadBufferTimeoutExpired;
             break;
         }

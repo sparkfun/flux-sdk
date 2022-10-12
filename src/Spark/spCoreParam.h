@@ -46,6 +46,7 @@ class spParameterIn : public spParameter
 {
   public:
     virtual spEditResult_t editValue(spDataEditor &) = 0;
+    virtual spDataLimit * dataLimit(void) = 0;
 };
 class spParameterOut : public spParameter, public spDataOut
 {
@@ -501,10 +502,29 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
         bool bSuccess = theEditor.editField(value);
 
         if (bSuccess) // success
+        {
+            //do we have a dataLimit set, and if so are we in limits?
+            if ( _dataLimit && !_dataLimit->isValid(value))
+                return spEditOutOfRange;
             set(value);
+        }
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
+
+    // Data Limit things
+    void setDataLimit( spDataLimitType<T> &dataLimit)
+    {
+        _dataLimit = &dataLimit;
+    }
+    spDataLimit * dataLimit(void)
+    {
+        return _dataLimit;
+    }
+
+protected:
+
+    spDataLimitType<T>  *_dataLimit;
 };
 
 // Define by type
@@ -633,6 +653,10 @@ class spParameterInString : public spParameterIn, _spDataInString
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
+    spDataLimit * dataLimit(void)
+    {
+        return nullptr;
+    }
 };
 
 // Need a wedge class to make it easy to cast to a void outside of the template
@@ -728,6 +752,10 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     spEditResult_t editValue(spDataEditor &theEditor)
     {
         return spEditSuccess;
+    };
+    spDataLimit * dataLimit(void)
+    {
+        return nullptr;
     };
 };
 // Handy macros to "register attributes (props/params)"

@@ -135,7 +135,10 @@ public:
         spRegister(out_string, "Out String", "Testing a String Output Parameter");        
 
         spRegister(in_bool, "in bool", "test input of a bool value");
-        spRegister(in_int,  "in int", "test input of a int value");
+        
+        spRegister(in_int,  "in int", "test input of a int value with a range limit");
+        in_int.setDataLimit(int_limit);
+
         spRegister(in_string, "in string", "test input of a string value");
         spRegister(in_float, "in float", "test input of a float value");
         spRegister(in_void, "in void", "test input parameter of type void");
@@ -171,6 +174,8 @@ public:
 
     spParameterInBool<test_params, &test_params::set_bool>   in_bool;
     spParameterInInt<test_params, &test_params::set_int>     in_int;
+    spDataLimitRangeInt  int_limit = {0, 144};   // define the limit, set it in the constructor
+
     spParameterInFloat<test_params, &test_params::set_float> in_float;
     spParameterInString<test_params, &test_params::set_str>  in_string;  
 
