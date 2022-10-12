@@ -125,8 +125,13 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     while (true)
     {
-    	if ( propLimit &&  propLimit->type() == spDataLimitTypeRange )
-	    	Serial.printf("\tRange for %s is %s\n\r", pProp->name(), propLimit->to_string().c_str());
+    	if ( propLimit)
+        {
+            if (propLimit->type() == spDataLimitTypeRange )
+	    	    Serial.printf("\tRange for %s is %s\n\r", pProp->name(), propLimit->to_string().c_str());
+            else if (propLimit->type() == spDataLimitTypeSet)
+                Serial.printf("\tSet for %s is %s\n\r", pProp->name(), propLimit->to_string().c_str());
+        }
 
     	// prompt
     	Serial.printf("\t%s = ", pProp->name());
