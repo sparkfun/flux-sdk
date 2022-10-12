@@ -557,48 +557,110 @@ class _spDataInString : public spDataIn
 
 typedef enum 
 {
+    spDataLimitTypeNone = 0,
     spDataLimitTypeRange,
     spDataLimitTypeSet
 } spDataLimit_t;
 
-template <typename T>
 class spDataLimit 
 {
 public:
-    virtual bool isValid(T value) = 0;
-    virtual uint limitType(void)
+    virtual spDataLimit_t type(void)
     {
-        return 0;
+        return spDataLimitTypeNone;
     }
+    virtual std::string to_string(void) = 0;
 };
 
 template <typename T>
-class spDataLimitRange : public spDataLimit<T> 
+class spDataLimitType : public spDataLimit
 {
 public:
+    virtual bool isValid(T value) = 0;
+};
+
+template <typename T>
+class spDataLimitRange : public spDataLimitType<T> 
+{
+public:
+    spDataLimitRange() : _isSet{false} {}
     spDataLimitRange( T min, T max )
     {
-        _min =  min < max ? min : max;
-        _max =  max > min ? max : min;
+        setRange( min, max);
+    }
+
+    // Used for a static init list used during definition of the object.
+    spDataLimitRange( std::initializer_list<T> list)
+    {
+        if (list.size() < 2)
+            throw std::length_error("invalid number of arguments");
+
+        auto iter = list.begin();
+
+        _min = *iter++;
+        _max = *iter;
+
+        setRange(_min, _max);
+    }
+
+    void setRange(T min, T max)
+    {
+        if (min < max )
+        {
+            _min = min;
+            _max = max;
+        }
+        else
+        {
+            _min = max;
+            _max = min;
+        }
+
+        _isSet=true;
     };
+
 
     bool isValid(T value)
     {
+        if ( !_isSet )
+            return false;
+
         return ( value >= _min && value <= _max);
     }
-    uint limitType(void)
+    spDataLimit_t type(void)
     {
         return spDataLimitTypeRange;
     };
 
+    std::string to_string(void)
+    {
+
+        if ( !_isSet )
+            return " <No Limit Set>";
+        char szBuffer[64];
+        snprintf(szBuffer, sizeof(szBuffer), "[%s to %s]", 
+                sp_utils::to_string(_min).c_str(), sp_utils::to_string(_max).c_str());
+
+        return std::string(szBuffer);
+    }
+
 private:
     T _min;
     T _max;
+    bool _isSet;
 };
 
+using spDataLimitRangeInt8 = spDataLimitRange<int8_t>;
+using spDataLimitRangeInt16 = spDataLimitRange<int16_t>;
+using spDataLimitRangeInt = spDataLimitRange<int>;
+using spDataLimitRangeUint8 = spDataLimitRange<uint8_t>;
+using spDataLimitRangeUint16 = spDataLimitRange<uint16_t>;
+using spDataLimitRangeUnt = spDataLimitRange<uint>;
+using spDataLimitRangeFloat = spDataLimitRange<float>;
+using spDataLimitRangedboule = spDataLimitRange<double>;
 
 template <typename T>
-class spDataLimitSet : public spDataLimit<T>
+class spDataLimitSet : public spDataLimitType<T>
 {
 public:
     spDataLimitSet( T * values, size_t length)
@@ -619,7 +681,7 @@ public:
         }
         return false;
     }
-    uint limitType(void)
+    spDataLimit_t type(void)
     {
         return spDataLimitTypeSet;
     };    
@@ -628,7 +690,7 @@ private:
     std::vector<T> _validValues;
 };
 
-class spDataLimitSetString : public spDataLimit<char*>
+class spDataLimitSetString : public spDataLimitType<char*>
 {
 public:
     spDataLimitSetString( char ** values, size_t length)
@@ -649,7 +711,7 @@ public:
         }
         return false;
     }
-    uint limitType(void)
+    spDataLimit_t type(void)
     {
         return spDataLimitTypeSet;
     }; 
@@ -698,5 +760,6 @@ class spDataEditor
     virtual bool editField(uint32_t &value, uint32_t timeout = 60) = 0;
     virtual bool editField(float &value, uint32_t timeout = 60) = 0;
     virtual bool editField(double &value, uint32_t timeout = 60) = 0;
+    virtual void beep() = 0;
 };
 // End - spCoreTypes.h
