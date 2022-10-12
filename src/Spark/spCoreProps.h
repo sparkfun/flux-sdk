@@ -17,6 +17,13 @@
 
 
 #define kMaxPropertyString 256
+
+typedef enum 
+{
+    spEditSuccess = 0,
+    spEditFailure,
+    spEditOutOfRange
+} spEditResult_t;
 //----------------------------------------------------------------------------------------
 // spProperty
 //
@@ -33,7 +40,8 @@ class spProperty : public spDescriptor
     // Editor interface method - called to have the value of the property
     // displayed/set/managed in an editor
 
-    virtual bool editValue(spDataEditor &) = 0;
+    virtual spEditResult_t editValue(spDataEditor &) = 0;
+    virtual spDataLimit * dataLimit(void)=0;
 
     //---------------------------------------------------------------------------------
     virtual size_t size(void)
@@ -153,22 +161,11 @@ class _spPropertyContainer
 template <class T> 
 class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
 {
-  protected:
-
-    spDataLimit<T>  *_dataLimit;
-
+  
   public:
 
     _spPropertyBase() : _dataLimit(nullptr) {};
-    _spPropertyBase( T min, T max) 
-    {
-        _dataLimit = new spDataLimitRange<T>(min, max);
-    };
-
-    _spPropertyBase( T *values, size_t length)
-    {
-        _dataLimit = new spDataLimitSet<T>(values, length);
-    };
+    
     //---------------------------------------------------------------------------------
     spDataType_t type()
     {
@@ -229,7 +226,7 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    bool editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(spDataEditor &theEditor)
     {
 
         T value = get();
@@ -237,10 +234,30 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         bool bSuccess = theEditor.editField(value);
 
         if (bSuccess) // success
-            set(value);
+        {
+            //do we have a dataLimit set, and if so are we in limits?
+            if ( _dataLimit && !_dataLimit->isValid(value))
+                return spEditOutOfRange;
 
-        return bSuccess;
+            set(value);
+        }
+
+        return bSuccess ? spEditSuccess : spEditFailure;
     }
+
+    // Data Limit things
+    void setDataLimit( spDataLimitType<T> &dataLimit)
+    {
+        _dataLimit = &dataLimit;
+    }
+    spDataLimit * dataLimit(void)
+    {
+        return _dataLimit;
+    }
+
+protected:
+
+    spDataLimitType<T>  *_dataLimit;
 };
 
 //----------------------------------------------------------------------------------------
@@ -258,13 +275,6 @@ protected:
     spDataLimitSetString * _dataLimit;
 
   public:
-    _spPropertyBaseString()
-    {}
-    
-    _spPropertyBaseString( char **values, size_t length)
-    {
-        _dataLimit = new spDataLimitSetString(values, length);
-    };
 
     spDataType_t type()
     {
@@ -329,7 +339,7 @@ protected:
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    bool editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(spDataEditor &theEditor)
     {
 
         std::string value = get();
@@ -339,7 +349,12 @@ protected:
         if (bSuccess) // success
             set(value);
 
-        return bSuccess;
+        return bSuccess ? spEditSuccess : spEditFailure;;
+    }
+
+    spDataLimit * dataLimit(void)
+    {
+        return nullptr;
     }
 };
 
