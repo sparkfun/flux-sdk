@@ -110,29 +110,51 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     // let's edit the property value
 
-    // Header
-    drawPageHeader(pCurrent, pProp->name());
+	// Any value limits set? - use in prompt loop
+    spDataLimit *propLimit = pProp->dataLimit();   
+	spEditResult_t result;
+    
+    
+    	// Header
+    	drawPageHeader(pCurrent, pProp->name());
 
-    // Editing Intro
-    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
+    	// Editing Intro
+    	Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
                   spGetTypeName(pProp->type()));
 
-    Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
+    	Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
-    Serial.printf("\t%s = ", pProp->name());
+    while (true)
+    {
+    	if ( propLimit &&  propLimit->type() == spDataLimitTypeRange )
+	    	Serial.printf("\tRange for %s is %s\n\r", pProp->name(), propLimit->to_string().c_str());
 
-    // Call the property editValue() method with our editor
-    bool bSuccess = pProp->editValue(theDataEditor);
+    	// prompt
+    	Serial.printf("\t%s = ", pProp->name());
 
-    Serial.printf("\n\r\n\r");
-    if (bSuccess)
+    	// Call the property editValue() method with our editor
+    	result = pProp->editValue(theDataEditor);
+
+    	Serial.printf("\n\r\n\r");
+
+    	if (result == spEditOutOfRange)
+    	{
+        	Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", propLimit->to_string().c_str());
+        	theDataEditor.beep();
+        	delay(kMessageDelayTimeout/3);
+    	}
+       	else 
+       		break;
+    }
+       		 	
+    if (result == spEditSuccess)
         Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());
     else
         Serial.printf("\t[%s is unchanged]\n\r", pProp->name());
 
     delay(kMessageDelayTimeout); // good UX here I think
 
-    return bSuccess;
+    return result == spEditSuccess;
 }
 //-----------------------------------------------------------------------------
 // drawPage()  - Operation/Action edition
@@ -268,17 +290,18 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     Serial.printf("\t%s = ", pParam->name());
 
     // Call the parameter editValue() method with our editor
-    bool bSuccess = pParam->editValue(theDataEditor);
+    spEditResult_t result = pParam->editValue(theDataEditor);
 
     Serial.printf("\n\r\n\r");
-    if (bSuccess)
+
+    if (result == spEditSuccess)
         Serial.printf("\t[`%s` was called with the provided value.]\n\r", pParam->name());
     else
         Serial.printf("\t[`%s` was not called]\n\r", pParam->name());
 
     delay(kMessageDelayTimeout); // good UX here I think
 
-    return bSuccess;
+    return result == spEditSuccess;
 }
 
 //-----------------------------------------------------------------------------
