@@ -8,7 +8,7 @@
 #define kOutputBufferSize 128
 
 // after set message timeout in ms
-#define kMessageDelayTimeout 1000
+#define kMessageDelayTimeout 700
 //-----------------------------------------------------------------------------
 // System settings user experience - via the serial console
 //
@@ -184,12 +184,13 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp, spDataLim
     uint8_t selected = 0;
     int nMenuItems;
 
-    const spDataLimitList limitTags = propLimit->limits();
+    spDataLimitList limitTags = propLimit->limits();
 
     while (true)
     {
         drawPageHeader(pCurrent);
 
+        Serial.printf("Current Value of `%s` =  %s\n\r\n\r", pProp->name(), pProp->to_string().c_str());
         Serial.printf("Select from the following values:\n\r\n\r");
 
         nMenuItems = 0;
@@ -197,7 +198,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp, spDataLim
         for (auto item : limitTags )
         {
             nMenuItems++;
-            drawMenuEntry(nMenuItems, (item.name + " - " + item.data.to_string()).c_str());
+            drawMenuEntry(nMenuItems, (item.name + " = " + item.data.to_string()).c_str());
         }
 
         if (nMenuItems == 0)
@@ -229,7 +230,16 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp, spDataLim
 
         Serial.println(selected);
 
-        Serial.printf("\tTESTING: Set Value tag is: =%s\n\r", limitTags.at(selected-1).name.c_str());
+        bool result = pProp->setValue(limitTags.at(selected-1).data);
+
+        if (result)
+            Serial.printf("\t[The value of %s was updated to %s = %s ]\n\r", pProp->name(), 
+                        limitTags.at(selected-1).name.c_str(), limitTags.at(selected-1).data.to_string().c_str());
+        else
+            Serial.printf("\t[%s is unchanged]\n\r", pProp->name());
+
+        delay(kMessageDelayTimeout); // good UX here I think
+
         break;
     }
 
