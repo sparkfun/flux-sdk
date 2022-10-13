@@ -30,7 +30,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     bool drawPage(spOperation *);
     bool drawPage(spOperation *, spParameter *);
     bool drawPage(spOperation *, spParameterIn *);
-
+    bool drawPage(spObject *, spProperty *, spDataLimit * );
     bool drawPage(spObjectContainer *);
     bool drawPage(spOperationContainer *);
     bool drawPage(spActionContainer *);
@@ -51,7 +51,8 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     int drawMenu(spOperationContainer *, uint);
     int drawMenu(spActionContainer *, uint);
     int drawMenu(spDeviceContainer *, uint);
-
+    int drawMenu(std::vector<std::string> &, uint );
+    
     // Select menu entries
     int selectMenu(spObject *, uint);
     int selectMenu(spOperation *, uint);

@@ -571,6 +571,7 @@ public:
         return spDataLimitTypeNone;
     }
     virtual std::string to_string(void) = 0;
+    virtual std::vector<std::string> limits(void) = 0;
 };
 
 template <typename T>
@@ -630,6 +631,11 @@ public:
 
         return std::string(szBuffer);
     }
+    std::vector<std::string> limits(void )
+    {
+        std::vector<std::string> tmp = {sp_utils::to_string(_min).c_str(), sp_utils::to_string(_max).c_str()};
+        return tmp;
+    };
 
 private:
     T _min;
@@ -646,97 +652,143 @@ using spDataLimitRangeUnt = spDataLimitRange<uint>;
 using spDataLimitRangeFloat = spDataLimitRange<float>;
 using spDataLimitRangeDouble = spDataLimitRange<double>;
 
+
 //----------------------------------------------------------------------------
-// spDataLimitSet<T> type
+// spDataLimitSetType
 //
 // Used to contain a set of valid values. The values are stored as Name, Value pairs, 
 // where Name is a human readable string for display/UX
 //
-// Data can be passed in as a std::map, or added as single sets of items.
-template <typename T>
-class spDataLimitSet : public spDataLimitType<T>
+// This is the base class for this type of limit
+class spDataLimitSet : public spDataLimit
 {
+protected:
+
+    // Vector of tags names
+    std::vector<std::string>   _tags;   
+
 public:
-    spDataLimitSet()
-    {
-    }
-    spDataLimitSet( std::map<std::string, T> &initMap)
-    {
-        setSet(initMap);
-    }
-    spDataLimitSet( std::initializer_list<std::pair<const std::string, T>> list)
-    {
-        if (list.size() < 1)
-            throw std::length_error("invalid number of arguments");
-        _validValues.insert(list);
-    }
-
-    bool isValid(T value)
-    {
-        for ( auto item : _validValues)
-        {
-            if ( item.second == value )
-                return true;
-        }
-        return false;
-    }
-    void addItem(std::string &name, T value){
-
-        _validValues[name] = value;
-    }
-    void setSet(std::map<std::string, T> &initMap)
-    {
-        _validValues.erase();
-        _validValues = initMap;
-    }
-    spDataLimit_t type(void)
-    {
-        return spDataLimitTypeSet;
-    };    
     std::string to_string(void)
     {
         std::string values = "[";
-        for (auto item : _validValues)
-            values += item.first + ',';
+        for (auto item : _tags)
+            values += item + ',';
 
         values += "]";
         return values;
     };
-protected:
-
-    std::map<std::string, T> _validValues;
+    std::vector<std::string> limits(void)
+    {
+        return _tags;
+    }
+    std::string &at(size_t pos)
+    {
+        return _tags.at(pos);
+    }
+    auto size() -> decltype(_tags.size())
+    {
+        return _tags.size();
+    }
+    auto cbegin() -> decltype(_tags.cbegin())
+    {
+        return _tags.cbegin();
+    }
+    auto cend() -> decltype(_tags.cend())
+    {
+        return _tags.cend();
+    }
+    auto begin() -> decltype(_tags.begin())
+    {
+        return _tags.begin();
+    }
+    auto end() -> decltype(_tags.end())
+    {
+        return _tags.end();
+    }
+    auto rbegin() -> decltype(_tags.rbegin())
+    {
+        return _tags.rbegin();
+    }
+    auto rend() -> decltype(_tags.rend())
+    {
+        return _tags.rend();
+    }
+    auto empty() -> decltype(_tags.empty())
+    {
+        return _tags.empty();
+    }
 };
 
-using spDataLimitSetInt8 = spDataLimitSet<int8_t>;
-using spDataLimitSetInt16 = spDataLimitSet<int16_t>;
-using spDataLimitSetInt = spDataLimitSet<int>;
-using spDataLimitSetUint8 = spDataLimitSet<uint8_t>;
-using spDataLimitSetUint16 = spDataLimitSet<uint16_t>;
-using spDataLimitSetUnt = spDataLimitSet<uint>;
-using spDataLimitSetFloat = spDataLimitSet<float>;
-using spDataLimitSetDouble = spDataLimitSet<double>;
-
-class spDataLimitSetString : public spDataLimitSet<char*>
+template <typename T>
+class spDataLimitSetType :  public spDataLimitSet, public spDataLimitType<T>
 {
 public:
+    spDataLimitSetType()
+    {
+    }
+    
+    spDataLimitSetType( std::initializer_list<std::pair<const std::string, T>> list)
+    {
+        if (list.size() < 1)
+            throw std::length_error("invalid number of arguments");
 
-    bool isValid(char * value)
-    {
-        if ( !value )
-            return false;
-        std::string tmp = value;
-        return isValid( tmp );
-    }    
-    bool isValid(std::string & value)
-    {
-        for ( auto item : _validValues)
+        for (auto item : list)
         {
-            if ( item.second == value)
+            spDataLimitSetType::_tags.push_back(item.first);
+            _values.push_back(item.second);
+        }
+    }
+
+    bool isValid(T value)
+    {
+        for ( auto item : _values)
+        {
+            if ( item == value )
                 return true;
         }
         return false;
-    } 
+    }
+    void addItem(std::string &name, T value)
+    {
+        spDataLimitSet::_tags.push_back(name); 
+        _values.push_back(value);
+    }
+    spDataLimit_t type(void)
+    {
+        return spDataLimitTypeSet;
+    };  
+    std::string to_string()
+    {
+        return spDataLimitSet::to_string();
+    };  
+    std::vector<std::string> limits()
+    {
+        // Create a list of values/limits that include names and values
+        std::vector<std::string> limits;
+        char szBuffer[128];
+        for (int i=0; i < _values.size(); i++)
+        {
+            snprintf(szBuffer, sizeof(szBuffer), "%s = [ %s ]", spDataLimitSet::at(i).c_str(), sp_utils::to_string(_values.at(i)).c_str());
+            limits.push_back(szBuffer);   
+        }
+        return limits;
+    }; 
+
+protected:
+
+    std::vector<T> _values;
 };
+
+using spDataLimitSetInt8 = spDataLimitSetType<int8_t>;
+using spDataLimitSetInt16 = spDataLimitSetType<int16_t>;
+using spDataLimitSetInt = spDataLimitSetType<int>;
+using spDataLimitSetUint8 = spDataLimitSetType<uint8_t>;
+using spDataLimitSetUint16 = spDataLimitSetType<uint16_t>;
+using spDataLimitSetUnt = spDataLimitSetType<uint>;
+using spDataLimitSetFloat = spDataLimitSetType<float>;
+using spDataLimitSetDouble = spDataLimitSetType<double>;
+using spDataLimitSetString = spDataLimitSetType<std::string>;
+
 //---------------------------------------------------------
 // Define simple type ID "types" - used for class IDs
 

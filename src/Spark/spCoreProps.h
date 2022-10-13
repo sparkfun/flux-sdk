@@ -217,7 +217,7 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         return status;
     };
 
-    // use this to route the call to our dataOut baseclass
+    // use this to route the call to our dataOut base class
     virtual std::string getString(void)
     {
         return _spDataOut<T>::getString();
@@ -272,7 +272,7 @@ protected:
 class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
 {
 protected:
-    spDataLimitSetString * _dataLimit;
+    spDataLimitType<std::string> * _dataLimit;
 
   public:
 
@@ -354,10 +354,14 @@ protected:
 
         return bSuccess ? spEditSuccess : spEditFailure;;
     }
-
+    // Data Limit things
+    void setDataLimit( spDataLimitType<std::string> &dataLimit)
+    {
+        _dataLimit = &dataLimit;
+    }
     spDataLimit * dataLimit(void)
     {
-        return nullptr;
+        return _dataLimit;
     }
 };
 

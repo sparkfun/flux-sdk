@@ -105,13 +105,30 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     if (!pCurrent)
         return false;
 
+    // Any value limits set? - use in prompt loop
+    bool bHasLimits = false;
+    char limitRange[64] = {'\0'};
+
+    spDataLimit *propLimit = pProp->dataLimit();   
+    if (propLimit )
+    {
+        // limits sets are handled in another routine
+        if ( propLimit->type() == spDataLimitTypeSet)
+            return drawPage(pCurrent, pProp, propLimit );
+
+        if ( propLimit->type() == spDataLimitTypeRange)
+        {
+            bHasLimits=true;
+            std::vector<std::string> limitTags = propLimit->limits();
+            if(limitTags.size() > 1)
+                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).c_str(), limitTags.at(1).c_str());
+        }
+    }
+    
     // The data editor we're using - serial field
     spSerialField theDataEditor;
 
     // let's edit the property value
-
-	// Any value limits set? - use in prompt loop
-    spDataLimit *propLimit = pProp->dataLimit();   
 	spEditResult_t result;
     
     // Header
@@ -125,13 +142,8 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     while (true)
     {
-    	if ( propLimit)
-        {
-            if (propLimit->type() == spDataLimitTypeRange )
-	    	    Serial.printf("\tRange for %s is %s\n\r", pProp->name(), propLimit->to_string().c_str());
-            else if (propLimit->type() == spDataLimitTypeSet)
-                Serial.printf("\tSet for %s is %s\n\r", pProp->name(), propLimit->to_string().c_str());
-        }
+    	if (bHasLimits && strlen(limitRange) > 0 )
+    	    Serial.printf("\tRange for %s is %s\n\r", pProp->name(), limitRange);
 
     	// prompt
     	Serial.printf("\t%s = ", pProp->name());
@@ -160,6 +172,62 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     return result == spEditSuccess;
 }
+//-----------------------------------------------------------------------------
+// drawPage()  - property with a limit edition
+
+bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp, spDataLimit *propLimit )
+{
+    if (!pCurrent || !pProp || !propLimit)
+        return false;
+
+    bool returnValue = false;
+    uint8_t selected = 0;
+    int nMenuItems;
+
+    std::vector<std::string> limitTags = propLimit->limits();
+
+    while (true)
+    {
+        drawPageHeader(pCurrent);
+
+        Serial.printf("Select from the following values:\n\r\n\r");
+        nMenuItems = drawMenu(limitTags, 0);
+        if (nMenuItems == 0)
+            Serial.printf("\tNo Entries\n\r");
+        else if (nMenuItems < 0)
+        {
+            Serial.println("Error generating menu entries.");
+            spLog_E("Error generating menu entries");
+            return false;
+        }
+
+        drawPageFooter(pCurrent);
+
+        selected = getMenuSelection((uint)nMenuItems);
+
+        // done?
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+        {
+            Serial.println("Escape");
+            returnValue = false;
+            break;
+        }
+        else if (selected == kReadBufferExit)
+        {
+            Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
+            returnValue = true;
+            break;
+        }
+
+        Serial.println(selected);
+
+        Serial.printf("\tTESTING: Set Value tag is: =%s\n\r", limitTags.at(selected-1).c_str());
+        break;
+    }
+
+    return returnValue;
+}
+
 //-----------------------------------------------------------------------------
 // drawPage()  - Operation/Action edition
 
@@ -523,6 +591,24 @@ int spSettingsSerial::selectMenu(spObject *pCurrent, uint level)
 
     // Call a new page
     drawPage(pCurrent, theProp);
+
+    // return the current level
+    return level;
+}
+
+
+
+int spSettingsSerial::drawMenu(std::vector<std::string> &entries, uint level)
+{
+    if (entries.size() == 0)
+        return level;
+
+    
+    for (auto item : entries )
+    {
+        level++;
+        drawMenuEntry(level, item.c_str());
+    }
 
     // return the current level
     return level;
