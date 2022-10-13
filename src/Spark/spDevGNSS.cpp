@@ -166,7 +166,7 @@ std::string spDevGNSS::read_iso8601()
     char szBuffer[32] = {'\0'};
     snprintf(szBuffer, sizeof(szBuffer), "%04d-%02d-%02dT%02d:%02d:%02dZ", y, M, d, h, m, s);
 
-    theString = sp_utils::to_string(szBuffer);
+    std::string theString = szBuffer;
 
     return theString;
 }
@@ -180,7 +180,7 @@ std::string spDevGNSS::read_yyyy_mm_dd()
     char szBuffer[24] = {'\0'};
     snprintf(szBuffer, sizeof(szBuffer), "%04d/%02d/%02d", y, M, d);
 
-    theString = sp_utils::to_string(szBuffer);
+    std::string theString = szBuffer;
 
     return theString;
 }
@@ -194,7 +194,7 @@ std::string spDevGNSS::read_yyyy_dd_mm()
     char szBuffer[24] = {'\0'};
     snprintf(szBuffer, sizeof(szBuffer), "%04d/%02d/%02d", y, d, M);
 
-    theString = sp_utils::to_string(szBuffer);
+    std::string theString = szBuffer;
 
     return theString;
 }
@@ -208,7 +208,7 @@ std::string spDevGNSS::read_dd_mm_yyyy()
     char szBuffer[24] = {'\0'};
     snprintf(szBuffer, sizeof(szBuffer), "%02d/%02d/%04d", d, M, y);
 
-    theString = sp_utils::to_string(szBuffer);
+    std::string theString = szBuffer;
 
     return theString;
 }
@@ -222,7 +222,7 @@ std::string spDevGNSS::read_hh_mm_ss()
     char szBuffer[24] = {'\0'};
     snprintf(szBuffer, sizeof(szBuffer), "%02d:%02d:%02d", h, m, s);
 
-    theString = sp_utils::to_string(szBuffer);
+    std::string theString = szBuffer;
 
     return theString;
 }
@@ -258,7 +258,7 @@ std::string spDevGNSS::read_fix_string()
         break;
     }
 
-    theString = sp_utils::to_string(szBuffer);
+    std::string theString = szBuffer;
 
     return theString;
 }
@@ -285,7 +285,7 @@ std::string spDevGNSS::read_carrier_soln_string()
         break;
     }
 
-    theString = sp_utils::to_string(szBuffer);
+    std::string theString = szBuffer;
 
     return theString;
 }

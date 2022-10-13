@@ -77,8 +77,6 @@ private:
     uint get_measurement_rate();
     void set_measurement_rate(uint);
 
-    std::string theString = "";
-
 public:
     // Define our read-write properties
     spPropertyRWUint<spDevGNSS, &spDevGNSS::get_measurement_rate, &spDevGNSS::set_measurement_rate> measurementRate;
