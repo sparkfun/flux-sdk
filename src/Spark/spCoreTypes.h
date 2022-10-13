@@ -140,6 +140,19 @@ public:
         type = spTypeString;
         value.str = v;
     };
+    // gets
+    bool        get(bool v) {return value.b;}
+    int8_t      get(int8_t v) {return value.i8;}
+    int16_t     get(int16_t v) {return value.i16;}
+    int         get(int  v) {return value.i32;}
+    uint8_t     get(uint8_t v) {return value.ui8;}
+    uint16_t    get(uint16_t v) {return value.ui16;}
+    uint        get(uint  v) {return value.ui32;}    
+    float       get(float  v) {return value.f;}    
+    double      get(double  v) {return value.d;}        
+    char *      get(char *) {return (char*) value.str;}            
+    
+
     // is equal?
     bool isEqual(bool v)
     {
@@ -209,7 +222,7 @@ public:
                 break;
         }
         return std::string("");
-    }
+    };
 };
 
 class spDataTyper
@@ -722,7 +735,7 @@ public:
     }
     spDataLimitList  _dataLimits;
 
-    const spDataLimitList & limits(void)
+     spDataLimitList & limits(void)
     {
         return _dataLimits;
     }
