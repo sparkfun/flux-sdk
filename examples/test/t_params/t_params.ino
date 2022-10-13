@@ -173,7 +173,7 @@ void test_params::set_str(const std::string &data){
 //
 // Simple demo - connect to devices directly.
 //
-// Uses parameter instrospection to print output values of the BME280
+// Uses parameter introspection to print output values of the BME280
 // 
 // For this demo, connect to a BME280 and a CCS811 (the env combo board)
 
