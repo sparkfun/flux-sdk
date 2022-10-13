@@ -35,10 +35,10 @@ void spLogger::logSection(const char *section_name, spParameterOutList &paramLis
             writeValue(param->name(), param->getUint());
             break;
         case spTypeFloat:
-            writeValue(param->name(), param->getFloat());
+            writeValue(param->name(), param->getFloat(), param->precision());
             break;
         case spTypeDouble:
-            writeValue(param->name(), param->getDouble());
+            writeValue(param->name(), param->getDouble(), param->precision());
             break;
         case spTypeString:
             writeValue(param->name(), param->getString());

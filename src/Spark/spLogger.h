@@ -206,7 +206,11 @@ class spLogger : public spActionType<spLogger>
         for (auto theFormatter : _Formatters)
             theFormatter->logValue(tag, value);
     }
-
+    template <typename T> void writeValue(const std::string &tag, T value, uint16_t precision)
+    {
+        for (auto theFormatter : _Formatters)
+            theFormatter->logValue(tag, value, precision);
+    }
     void logSection(const char *section_name, spParameterOutList &params);
 
     void logSection(const std::string &name, spParameterOutList &params)

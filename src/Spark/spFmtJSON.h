@@ -63,15 +63,16 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
-    //-----------------------------------------------------------------
-    void logValue(const std::string &tag, float value)
+    
+    void logValue(const std::string &tag, float value, uint16_t precision=3)
     {
+        // no control for precision with the JSON lib, so just pass up
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
-
+    
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, double value)
+    void logValue(const std::string &tag, double value, uint16_t precision=3)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;

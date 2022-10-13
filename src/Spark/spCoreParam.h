@@ -52,6 +52,11 @@ class spParameterOut : public spParameter, public spDataOut
 {
   public:
     virtual spDataType_t type(void) = 0;
+    // Some types need precision - just make it generic
+    virtual uint16_t precision(void)
+    {
+        return 0;
+    };
 };
 // simple def - list of parameters
 using spParameterInList = std::vector<spParameterIn *>;
@@ -275,11 +280,38 @@ template <class Object, uint (Object::*_getter)()>
 using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
 
 template <class Object, float (Object::*_getter)()> 
-using spParameterOutFloat = _spParameterOut<float, Object, _getter>;
+class spParameterOutFloat : public _spParameterOut<float, Object, _getter>
+{
+public: 
+    spParameterOutFloat() : _precision(3){}
+    void setPrecision(uint16_t prec)
+    {
+        _precision = prec;
+    }
+    uint16_t precision(void)
+    {
+        return _precision;
+    }
+private:
+    uint16_t _precision;
+};
 
 template <class Object, double (Object::*_getter)()>
-using spParameterOutDouble = _spParameterOut<double, Object, _getter>;
-
+class spParameterOutDouble : public _spParameterOut<double, Object, _getter>
+{
+public: 
+    spParameterOutDouble() : _precision(3){}
+    void setPrecision(uint16_t prec)
+    {
+        _precision = prec;
+    }
+    uint16_t precision(void)
+    {
+        return _precision;
+    }
+private:
+    uint16_t _precision;
+};
 //----------------------------------------------------------------------------------------------------
 // spParameterOutString
 //

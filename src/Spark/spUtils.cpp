@@ -35,7 +35,7 @@ size_t sp_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t pr
         return 3;
     }
 
-    // keep track of chars in outupt buffer we use that are not digits
+    // keep track of chars in output buffer we use that are not digits
     size_t n_used = 1; // null char needed
 
     char *pCurr = szBuffer;
