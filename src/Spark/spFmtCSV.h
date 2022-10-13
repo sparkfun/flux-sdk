@@ -126,12 +126,12 @@ class spFormatCSV : public spOutputFormat
     }
 
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, float value)
+    void logValue(const std::string &tag, float value, uint16_t precision)
     {
-        logValue(tag, (double)value);
+        logValue(tag, (double)value, precision);
     }
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, double value)
+    void logValue(const std::string &tag, double value, uint16_t precision)
     {
         // header?
         if (_bWriteHeader)
@@ -139,7 +139,7 @@ class spFormatCSV : public spOutputFormat
                 spLog_W("CSV - internal header buffer size exceeded.");
 
         char szBuffer[32] = {'\0'};
-        (void)sp_utils::dtostr(value, szBuffer, sizeof(szBuffer));
+        (void)sp_utils::dtostr(value, szBuffer, sizeof(szBuffer), precision);
 
         if (!append_csv_value(szBuffer, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
