@@ -119,9 +119,9 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
         if ( propLimit->type() == spDataLimitTypeRange)
         {
             bHasLimits=true;
-            std::vector<std::string> limitTags = propLimit->limits();
+            const spDataLimitList limitTags = propLimit->limits();
             if(limitTags.size() > 1)
-                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).c_str(), limitTags.at(1).c_str());
+                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(), limitTags.at(1).name.c_str());
         }
     }
     
@@ -155,7 +155,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     	if (result == spEditOutOfRange)
     	{
-        	Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", propLimit->to_string().c_str());
+        	Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", limitRange);
         	theDataEditor.beep();
         	delay(kMessageDelayTimeout/3);
     	}
@@ -184,14 +184,22 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp, spDataLim
     uint8_t selected = 0;
     int nMenuItems;
 
-    std::vector<std::string> limitTags = propLimit->limits();
+    const spDataLimitList limitTags = propLimit->limits();
 
     while (true)
     {
         drawPageHeader(pCurrent);
 
         Serial.printf("Select from the following values:\n\r\n\r");
-        nMenuItems = drawMenu(limitTags, 0);
+
+        nMenuItems = 0;
+    
+        for (auto item : limitTags )
+        {
+            nMenuItems++;
+            drawMenuEntry(nMenuItems, (item.name + " - " + item.data.to_string()).c_str());
+        }
+
         if (nMenuItems == 0)
             Serial.printf("\tNo Entries\n\r");
         else if (nMenuItems < 0)
@@ -221,7 +229,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp, spDataLim
 
         Serial.println(selected);
 
-        Serial.printf("\tTESTING: Set Value tag is: =%s\n\r", limitTags.at(selected-1).c_str());
+        Serial.printf("\tTESTING: Set Value tag is: =%s\n\r", limitTags.at(selected-1).name.c_str());
         break;
     }
 
@@ -344,12 +352,28 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     if (pParam->type() == spTypeNone)
         return drawPageParamInVoid(pCurrent, pParam);
 
+    // Any value limits set? - use in prompt loop
+    bool bHasLimits = false;
+    char limitRange[64] = {'\0'};
+
+    spDataLimit *propLimit = pParam->dataLimit();   
+    if (propLimit )
+    {
+        // limits sets are handled in another routine
+        //if ( propLimit->type() == spDataLimitTypeSet)
+       //    return drawPage(pCurrent, pProp, propLimit );
+
+        if ( propLimit->type() == spDataLimitTypeRange)
+        {
+            bHasLimits=true;
+            const spDataLimitList limitTags = propLimit->limits();
+            if(limitTags.size() > 1)
+                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(), limitTags.at(1).name.c_str());
+        }
+    }
     // The data editor we're using - serial field
     spSerialField theDataEditor;
-
-    // let's get a value for the parameter
-    // Any value limits set? - use in prompt loop
-    spDataLimit *propLimit = pParam->dataLimit();   
+   
     spEditResult_t result;
 
     // Header
@@ -364,8 +388,8 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 
     while (true)
     {
-        if ( propLimit &&  propLimit->type() == spDataLimitTypeRange )
-            Serial.printf("\tRange for %s is %s\n\r", pParam->name(), propLimit->to_string().c_str());
+        if (bHasLimits && strlen(limitRange) > 0 )
+    	    Serial.printf("\tRange for %s is %s\n\r", pParam->name(), limitRange);
 
         // prompt
         Serial.printf("\t%s = ", pParam->name());
@@ -377,7 +401,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 
         if (result == spEditOutOfRange)
         {
-            Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", propLimit->to_string().c_str());
+            Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", limitRange);
             theDataEditor.beep();
             delay(kMessageDelayTimeout/3);
         }
