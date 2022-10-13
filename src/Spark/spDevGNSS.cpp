@@ -44,7 +44,9 @@ spDevGNSS::spDevGNSS()
     spRegister(min, "Minute", "Minute");
     spRegister(sec, "Second", "Second");
     spRegister(latitude, "Latitude (deg)", "Latitude in degrees");
+    latitude.setPrecision(7);
     spRegister(longitude, "Longitude (deg)", "Longitude in degrees");
+    longitude.setPrecision(7);
     spRegister(altitude, "Altitude (m)", "Altitude above geoid in metres");
     spRegister(altitudeMSL, "Altitude MSL (m)", "Altitude above Mean Sea Level in metres");
     spRegister(SIV, "SIV", "Satellites In View");
