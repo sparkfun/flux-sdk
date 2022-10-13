@@ -54,13 +54,13 @@ spDevGNSS::spDevGNSS()
     spRegister(heading, "Heading (deg)", "Heading / course in degrees");
     spRegister(PDOP, "PDOP", "Position Dilution Of Precision");
     spRegister(TOW, "TOW (ms)", "Time Of Week in milliseconds");
-    // spRegister(iso8601, "ISO8601", "Date and time in ISO 8601 format");
-    // spRegister(YYYYMMDD, "YYYYMMDD", "Year/Month/Date");
-    // spRegister(YYYYDDMM, "YYYYDDMM", "Year/Date/Month");
-    // spRegister(DDMMYYYY, "DDMMYYYY", "Date/Month/Year");
-    // spRegister(HHMMSS, "HHMMSS", "Hour:Minute:Second");
-    // spRegister(fixTypeStr, "Fix Type (String)", "Fix type in string format");
-    // spRegister(carrierSolutionStr, "Carrier Solution (String)", "Carrier solution in string format");
+    spRegister(iso8601, "ISO8601", "Date and time in ISO 8601 format");
+    spRegister(YYYYMMDD, "YYYYMMDD", "Year/Month/Date");
+    spRegister(YYYYDDMM, "YYYYDDMM", "Year/Date/Month");
+    spRegister(DDMMYYYY, "DDMMYYYY", "Date/Month/Year");
+    spRegister(HHMMSS, "HHMMSS", "Hour:Minute:Second");
+    spRegister(fixTypeStr, "Fix Type (String)", "Fix type in string format");
+    spRegister(carrierSolutionStr, "Carrier Solution (String)", "Carrier solution in string format");
 
     // Register read-write properties
     spRegister(measurementRate, "Measurement Rate (ms)", "Set the measurement interval in milliseconds");
