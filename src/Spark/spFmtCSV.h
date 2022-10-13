@@ -152,7 +152,7 @@ class spFormatCSV : public spOutputFormat
             if (!append_to_header(tag))
                 spLog_W("CSV - internal header buffer size exceeded.");
 
-        if (!append_csv_value(value, _header_buffer))
+        if (!append_csv_value(value, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
     //-----------------------------------------------------------------
@@ -163,7 +163,7 @@ class spFormatCSV : public spOutputFormat
             if (!append_to_header(tag))
                 spLog_W("CSV - internal header buffer size exceeded.");
 
-        if (!append_csv_value(std::string(value), _header_buffer))
+        if (!append_csv_value(std::string(value), _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
     //-----------------------------------------------------------------
@@ -255,7 +255,7 @@ class spFormatCSV : public spOutputFormat
             buffer += ',';
 
         buffer += value;
-
+        
         return true;
     }
     //-----------------------------------------------------------------
