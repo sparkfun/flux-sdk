@@ -37,8 +37,8 @@ class spOutputFormat
     virtual void logValue(const std::string &tag, bool value) = 0;
     virtual void logValue(const std::string &tag, int value) = 0;
     virtual void logValue(const std::string &tag, uint value) = 0;
-    virtual void logValue(const std::string &tag, float value) = 0;
-    virtual void logValue(const std::string &tag, double value) = 0;
+    virtual void logValue(const std::string &tag, float value, uint16_t precision=3) = 0;
+    virtual void logValue(const std::string &tag, double value, uint16_t precision=3) = 0;
     virtual void logValue(const std::string &tag, const char *value) = 0;
     virtual void logValue(const std::string &tag, std::string &value)
     {
