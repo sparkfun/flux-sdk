@@ -51,8 +51,8 @@ spDevBME280::spDevBME280()
     // Register parameters
     spRegister(humidity, "Humidity", "The sensed humidity value");
     // spRegister(temperature);
-    spRegister(temperatureF, "TemperatureF", "The sensed Temerature in degrees Fahrenheit");
-    spRegister(temperatureC, "TemperatureC", "The sensed Temerature in degrees Celsius");
+    spRegister(temperatureF, "TemperatureF", "The sensed Temperature in degrees Fahrenheit");
+    spRegister(temperatureC, "TemperatureC", "The sensed Temperature in degrees Celsius");
     spRegister(pressure, "Pressure", "The sensed pressure");
     // spRegister(altitude);
     spRegister(altitudeM, "AltitudeM", "The sensed altitude in meters");
