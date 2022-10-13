@@ -9,6 +9,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+#include <map>
 #include <string.h>
 
 #include "spCoreLog.h"
@@ -589,20 +590,6 @@ public:
         setRange( min, max);
     }
 
-    // Used for a static init list used during definition of the object.
-    spDataLimitRange( std::initializer_list<T> list)
-    {
-        if (list.size() < 2)
-            throw std::length_error("invalid number of arguments");
-
-        auto iter = list.begin();
-
-        _min = *iter++;
-        _max = *iter;
-
-        setRange(_min, _max);
-    }
-
     void setRange(T min, T max)
     {
         if (min < max )
@@ -657,67 +644,98 @@ using spDataLimitRangeUint8 = spDataLimitRange<uint8_t>;
 using spDataLimitRangeUint16 = spDataLimitRange<uint16_t>;
 using spDataLimitRangeUnt = spDataLimitRange<uint>;
 using spDataLimitRangeFloat = spDataLimitRange<float>;
-using spDataLimitRangedboule = spDataLimitRange<double>;
+using spDataLimitRangeDouble = spDataLimitRange<double>;
 
+//----------------------------------------------------------------------------
+// spDataLimitSet<T> type
+//
+// Used to contain a set of valid values. The values are stored as Name, Value pairs, 
+// where Name is a human readable string for display/UX
+//
+// Data can be passed in as a std::map, or added as single sets of items.
 template <typename T>
 class spDataLimitSet : public spDataLimitType<T>
 {
 public:
-    spDataLimitSet( T * values, size_t length)
+    spDataLimitSet()
     {
-        if (!values || length == 0)
-            return;
-
-        for (int i=0 ; i < length; i++ )
-            _validValues.push_back(values[i]);
+    }
+    spDataLimitSet( std::map<std::string, T> &initMap)
+    {
+        setSet(initMap);
+    }
+    spDataLimitSet( std::initializer_list<std::pair<const std::string, T>> list)
+    {
+        if (list.size() < 1)
+            throw std::length_error("invalid number of arguments");
+        _validValues.insert(list);
     }
 
     bool isValid(T value)
     {
         for ( auto item : _validValues)
         {
-            if ( item == value )
+            if ( item.second == value )
                 return true;
         }
         return false;
+    }
+    void addItem(std::string &name, T value){
+
+        _validValues[name] = value;
+    }
+    void setSet(std::map<std::string, T> &initMap)
+    {
+        _validValues.erase();
+        _validValues = initMap;
     }
     spDataLimit_t type(void)
     {
         return spDataLimitTypeSet;
     };    
-private:
+    std::string to_string(void)
+    {
+        std::string values = "[";
+        for (auto item : _validValues)
+            values += item.first + ',';
 
-    std::vector<T> _validValues;
+        values += "]";
+        return values;
+    };
+protected:
+
+    std::map<std::string, T> _validValues;
 };
 
-class spDataLimitSetString : public spDataLimitType<char*>
+using spDataLimitSetInt8 = spDataLimitSet<int8_t>;
+using spDataLimitSetInt16 = spDataLimitSet<int16_t>;
+using spDataLimitSetInt = spDataLimitSet<int>;
+using spDataLimitSetUint8 = spDataLimitSet<uint8_t>;
+using spDataLimitSetUint16 = spDataLimitSet<uint16_t>;
+using spDataLimitSetUnt = spDataLimitSet<uint>;
+using spDataLimitSetFloat = spDataLimitSet<float>;
+using spDataLimitSetDouble = spDataLimitSet<double>;
+
+class spDataLimitSetString : public spDataLimitSet<char*>
 {
 public:
-    spDataLimitSetString( char ** values, size_t length)
-    {
-        if (!values || length == 0)
-            return;
-
-        for (int i=0 ; i < length; i++ )
-            _validValues.push_back(values[i]);
-    }
 
     bool isValid(char * value)
     {
+        if ( !value )
+            return false;
+        std::string tmp = value;
+        return isValid( tmp );
+    }    
+    bool isValid(std::string & value)
+    {
         for ( auto item : _validValues)
         {
-            if ( strcmp(item, value ) == 0 )
+            if ( item.second == value)
                 return true;
         }
         return false;
-    }
-    spDataLimit_t type(void)
-    {
-        return spDataLimitTypeSet;
-    }; 
-private:
-
-    std::vector<char *> _validValues;
+    } 
 };
 //---------------------------------------------------------
 // Define simple type ID "types" - used for class IDs

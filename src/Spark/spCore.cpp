@@ -2,7 +2,7 @@
 
 #include "spCore.h"
 
-static const char *typeNames[] = {"none",  "bool",   "int8",  "integer", "unsigned int8", "unsigned integer",
+static const char *typeNames[] = {"none",  "bool",   "int8", "int16", "integer", "unsigned int8", "unsigned int16", "unsigned integer",
                                   "float", "double", "string"};
 
 //-------------------------------------------------------------------------
@@ -11,5 +11,8 @@ static const char *typeNames[] = {"none",  "bool",   "int8",  "integer", "unsign
 // Return a human type give the framework type
 const char *spGetTypeName(spDataType_t type)
 {
-    return typeNames[type];
+    if (type < sizeof(typeNames))
+        return typeNames[type];
+
+    return "Invalid Type";
 }

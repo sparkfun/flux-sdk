@@ -164,8 +164,8 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
   
   public:
 
-    _spPropertyBase() : _dataLimit(nullptr) {};
-    
+    _spPropertyBase() : _dataLimit{nullptr} {};
+
     //---------------------------------------------------------------------------------
     spDataType_t type()
     {
@@ -276,6 +276,9 @@ protected:
 
   public:
 
+    _spPropertyBaseString() : _dataLimit{nullptr}
+    {
+    }
     spDataType_t type()
     {
         return spTypeString;
@@ -376,22 +379,19 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
 {
     Object *my_object; // Pointer to the containing object
 
+    //  member vars to cache an initial value until this object is connected to it's containing obj
+    T _initialValue;
+    bool _hasInitial;
+
   public:
-    _spPropertyTypedRW() : my_object(0)
+    _spPropertyTypedRW() : my_object(nullptr), _hasInitial{false}
+    {
+    }
+    // Initial Value
+    _spPropertyTypedRW( T value ) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
     {
     }
 
-    _spPropertyTypedRW(Object *me) : my_object(me)
-    {
-    }
-
-    _spPropertyTypedRW( T min, T max) :  _spPropertyBase<T>(min, max), my_object{0}
-    {
-    }
-
-    _spPropertyTypedRW( T **values, size_t len) :  _spPropertyBase<T>(values, len), my_object{0}
-    {
-    }
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
@@ -413,6 +413,12 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
 
         if (my_object)
             my_object->addProperty(this);
+
+        // This is basically the "registration" & init step of this object. 
+        // do we have an initial value? Now that we are "wired up" to the containing
+        // class, we can pass on the initial value
+        if ( _hasInitial )
+            set(_initialValue);
     }
     void operator()(Object *obj, const char *name)
     {
@@ -443,7 +449,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
             spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return (T)0;
         }
-
+        
         return (my_object->*_getter)();
     }
     //---------------------------------------------------------------------------------
@@ -548,12 +554,16 @@ class spPropertyRWString : public _spPropertyBaseString
 {
     Object *my_object;
 
+     //  member vars to cache an initial value until this object is connected to it's containing obj
+    std::string _initialValue;
+    bool _hasInitial;
+
   public:
-    spPropertyRWString() : my_object(0)
+    spPropertyRWString() : my_object(0), _hasInitial{false}
     {
     }
-
-    spPropertyRWString(Object *me) : my_object(me)
+    // Initial Value
+    spPropertyRWString( std::string value ) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
     {
     }
     //---------------------------------------------------------------------------------
@@ -577,6 +587,12 @@ class spPropertyRWString : public _spPropertyBaseString
         assert(my_object);
         if (my_object)
             my_object->addProperty(this);
+
+        // This is basically the "registration" & init step of this object. 
+        // do we have an initial value? Now that we are "wired up" to the containing
+        // class, we can pass on the initial value
+        if ( _hasInitial )
+            set(_initialValue);
     }
 
     void operator()(Object *obj, const char *name)
@@ -685,13 +701,11 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
 
     _spPropertyTyped()
     {}
-    _spPropertyTyped( T min, T max) :  _spPropertyBase<T>(min, max)
+    // Create property with an initial value
+    _spPropertyTyped( T value) : data{value}
     {
     }
 
-    _spPropertyTyped( T **values, size_t len) :  _spPropertyBase<T>(values, len)
-    {
-    }
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
     // i.e.
@@ -812,6 +826,14 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 {
 
   public:
+
+    spPropertyString()
+    {}
+
+    // Create property with an initial value
+    spPropertyString( std::string value) : data{value}
+    {
+    }
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
