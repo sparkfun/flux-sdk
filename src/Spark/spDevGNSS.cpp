@@ -82,12 +82,13 @@ bool spDevGNSS::isConnected(spDevI2C &i2cDriver, uint8_t address)
     bool trafficSeen = false;
     unsigned long startTime = millis();
 
+    // Read the number of bytes waiting in the module's I2C buffer
     bool i2cOK = i2cDriver.readRegister16(address, 0xFD, &firstBufferWaiting, false); // Big Endian
 
     if (!i2cOK)
-        return false; // Return now of the read fails
+        return false; // Return now of the read failed
 
-    // Wait for up to 2 seconds for traffic to be seen
+    // Wait for up to 2 seconds for more bytes to be added
     while(i2cOK && (!trafficSeen) && (millis() < (startTime + 2000)))
     {
         delay(100); // Don't pound the bus
@@ -102,7 +103,7 @@ bool spDevGNSS::isConnected(spDevI2C &i2cDriver, uint8_t address)
     // If the GNSS has been powered on for some time, the buffer could be full
     // Try to read some data from the buffer and see if the count changes
     if (bufferWaiting < 8)
-        return false; // Bail of there are less than 8 bytes in the buffer
+        return false; // Bail if there are less than 8 bytes in the buffer
 
     uint8_t buffer[8];
     i2cOK = i2cDriver.receiveResponse(address, buffer, 8); // Will read from address 0xFF
