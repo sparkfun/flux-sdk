@@ -150,7 +150,8 @@ public:
     uint        get(uint  v) {return value.ui32;}    
     float       get(float  v) {return value.f;}    
     double      get(double  v) {return value.d;}        
-    char *      get(char *) {return (char*) value.str;}            
+    char *      get(char *) {return (char*) value.str;}
+    char *      get(std::string&) {return (char*) value.str;}
     
 
     // is equal?
