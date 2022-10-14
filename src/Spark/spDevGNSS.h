@@ -61,6 +61,8 @@ private:
     float read_ground_speed();
     float read_heading();
     float read_pdop();
+    float read_horiz_acc();
+    float read_vert_acc();
     uint read_tow();
     std::string read_iso8601();
     std::string read_yyyy_mm_dd();
@@ -101,6 +103,8 @@ public:
     spParameterOutFloat<spDevGNSS, &spDevGNSS::read_ground_speed> groundSpeed;    
     spParameterOutFloat<spDevGNSS, &spDevGNSS::read_heading> heading;    
     spParameterOutFloat<spDevGNSS, &spDevGNSS::read_pdop> PDOP;    
+    spParameterOutFloat<spDevGNSS, &spDevGNSS::read_horiz_acc> horizontalAccEst;    
+    spParameterOutFloat<spDevGNSS, &spDevGNSS::read_vert_acc> verticalAccEst;    
     spParameterOutUint<spDevGNSS, &spDevGNSS::read_tow> TOW;    
     spParameterOutString<spDevGNSS, &spDevGNSS::read_iso8601> iso8601;    
     spParameterOutString<spDevGNSS, &spDevGNSS::read_yyyy_mm_dd> YYYYMMDD;    

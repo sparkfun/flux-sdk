@@ -55,6 +55,8 @@ spDevGNSS::spDevGNSS()
     spRegister(groundSpeed, "Ground Speed (m/s)", "Ground speed in metres per second");
     spRegister(heading, "Heading (deg)", "Heading / course in degrees");
     spRegister(PDOP, "PDOP", "Position Dilution Of Precision");
+    spRegister(horizontalAccEst, "Horizontal Accuracy Estimate (m)", "Horizontal Position Accuracy Estimate");
+    spRegister(verticalAccEst, "Vertical Accuracy Estimate (m)", "Vertical Position Accuracy Estimate");
     spRegister(TOW, "TOW (ms)", "Time Of Week in milliseconds");
     spRegister(iso8601, "ISO8601", "Date and time in ISO 8601 format");
     spRegister(YYYYMMDD, "YYYYMMDD", "Year/Month/Date");
@@ -153,6 +155,8 @@ uint spDevGNSS::read_fix() { return SFE_UBLOX_GNSS::getFixType(); }
 uint spDevGNSS::read_carrier_soln() { return SFE_UBLOX_GNSS::getCarrierSolutionType(); }
 float spDevGNSS::read_ground_speed() { return (((float)SFE_UBLOX_GNSS::getGroundSpeed()) / 1000); }
 float spDevGNSS::read_heading() { return (((float)SFE_UBLOX_GNSS::getHeading()) / 100000); }
+float spDevGNSS::read_horiz_acc() { return (((float)SFE_UBLOX_GNSS::getHorizontalAccEst()) / 1000); }
+float spDevGNSS::read_vert_acc() { return (((float)SFE_UBLOX_GNSS::getVerticalAccEst()) / 1000); }
 float spDevGNSS::read_pdop() { return (((float)SFE_UBLOX_GNSS::getPDOP()) / 100); }
 uint spDevGNSS::read_tow() { return SFE_UBLOX_GNSS::getTimeOfWeek(); }
 
