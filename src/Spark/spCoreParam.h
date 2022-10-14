@@ -46,6 +46,7 @@ class spParameterIn : public spParameter
 {
   public:
     virtual spEditResult_t editValue(spDataEditor &) = 0;
+    virtual bool setValue(spDataVariable&) = 0;
     virtual spDataLimit * dataLimit(void) = 0;
 };
 class spParameterOut : public spParameter, public spDataOut
@@ -543,7 +544,16 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
+    bool setValue( spDataVariable &value){
 
+        if ( value.type == type())
+        {
+            T c;
+            set(value.get(c));
+            return true;
+        }
+        return false;
+    };
     // Data Limit things
     void setDataLimit( spDataLimitType<T> &dataLimit)
     {
@@ -689,6 +699,17 @@ class spParameterInString : public spParameterIn, _spDataInString
     {
         return nullptr;
     }
+    
+    bool setValue( spDataVariable &value){
+
+        if ( value.type == type())
+        {
+            std::string c;
+            set(value.get(c));
+            return true;
+        }
+        return false;
+    };
 };
 
 // Need a wedge class to make it easy to cast to a void outside of the template
@@ -788,6 +809,10 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     spDataLimit * dataLimit(void)
     {
         return nullptr;
+    };
+    bool setValue( spDataVariable &value)
+    {
+         return true;
     };
 };
 // Handy macros to "register attributes (props/params)"

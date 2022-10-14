@@ -70,6 +70,162 @@ typedef enum
     spTypeString
 } spDataType_t;
 
+// helpful data types 
+typedef union {
+    bool        b;
+    int8_t      i8;
+    int16_t     i16;
+    int32_t     i32;
+    uint8_t     ui8;
+    uint16_t    ui16;
+    uint32_t    ui32;
+    float       f;
+    double      d;
+    const char *      str;
+} spDataAllType_t;
+
+class spDataVariable {
+public:
+    spDataType_t     type;
+    spDataAllType_t  value;
+
+    spDataVariable() : type{spTypeNone}{}
+    void set(bool v)
+    {
+        type = spTypeBool;
+        value.b = v;
+    };
+    void set(int8_t v)
+    {
+        type = spTypeInt8;
+        value.i8 = v;
+    };
+    void set(int16_t v)
+    {
+        type = spTypeInt16;
+        value.i16 = v;
+    };
+    void set(int32_t v)
+    {
+        type = spTypeInt;
+        value.i32 = v;
+    };
+    void set(uint8_t v)
+    {
+        type = spTypeUInt8;
+        value.ui8 = v;
+    };
+    void set(uint16_t v)
+    {
+        type = spTypeUInt16;
+        value.ui16 = v;
+    };
+    void set(uint32_t v)
+    {
+        type = spTypeUInt;
+        value.ui32 = v;
+    };  
+    void set(float v)
+    {
+        type = spTypeFloat;
+        value.f = v;
+    };
+    void set(double v)
+    {
+        type = spTypeDouble;
+        value.d = v;
+    };
+    void set(const char * v)
+    {
+        type = spTypeString;
+        value.str = v;
+    };
+    // gets
+    bool        get(bool v) {return value.b;}
+    int8_t      get(int8_t v) {return value.i8;}
+    int16_t     get(int16_t v) {return value.i16;}
+    int         get(int  v) {return value.i32;}
+    uint8_t     get(uint8_t v) {return value.ui8;}
+    uint16_t    get(uint16_t v) {return value.ui16;}
+    uint        get(uint  v) {return value.ui32;}    
+    float       get(float  v) {return value.f;}    
+    double      get(double  v) {return value.d;}        
+    char *      get(char *) {return (char*) value.str;}
+    char *      get(std::string&) {return (char*) value.str;}
+    
+
+    // is equal?
+    bool isEqual(bool v)
+    {
+        return ( type == spTypeBool && v == value.b);
+    };
+    bool isEqual(int8_t v)
+    {
+        return (type == spTypeInt8 && value.i8 == v);
+    };
+    bool isEqual(int16_t v)
+    {
+        return (type == spTypeInt16 && value.i16 == v);
+    };
+    bool isEqual(int32_t v)
+    {
+        return (type == spTypeInt && value.i32 == v);
+    };
+    bool isEqual(uint8_t v)
+    {
+        return (type == spTypeUInt8 && value.ui8 == v);
+    };
+    bool isEqual(uint16_t v)
+    {
+        return (type == spTypeUInt16 && value.ui16 == v);
+    };
+    bool isEqual(uint32_t v)
+    {
+       return ( type == spTypeUInt && value.ui32 == v);
+    };  
+    bool isEqual(float v)
+    {
+        return (type == spTypeFloat && value.f == v);
+    };
+    bool isEqual(double v)
+    {
+        return (type == spTypeDouble && value.d == v);
+    };
+    bool isEqual(const char * v)
+    {
+        return (type == spTypeString && strcmp(value.str, v) == 0);
+    };
+
+    std::string to_string(void)
+    {
+        switch(type){
+            case spTypeBool:
+                return sp_utils::to_string(value.b);
+            case spTypeInt8:
+                return sp_utils::to_string(value.i8);
+            case spTypeInt16:
+                return sp_utils::to_string(value.i16);
+            case spTypeInt:
+                return sp_utils::to_string(value.i32);            
+            case spTypeUInt8:
+                return sp_utils::to_string(value.ui8);
+            case spTypeUInt16:
+                return sp_utils::to_string(value.ui16);
+            case spTypeUInt:
+                return sp_utils::to_string(value.ui32);            
+            case spTypeFloat:
+                return sp_utils::to_string(value.f);
+            case spTypeDouble:
+                return sp_utils::to_string(value.d);                                
+            case spTypeString:
+                return sp_utils::to_string(value.str);                                
+            default:
+                break;
+        }
+        return std::string("");
+    };
+};
+
 class spDataTyper
 {
   public:
@@ -563,6 +719,14 @@ typedef enum
     spDataLimitTypeSet
 } spDataLimit_t;
 
+class spDataLimitDesc {
+public:
+    std::string      name;
+    spDataVariable   data;
+}; 
+using spDataLimitList = std::vector<spDataLimitDesc>;
+
+//-----------------------------------------------------------------
 class spDataLimit 
 {
 public:
@@ -570,8 +734,19 @@ public:
     {
         return spDataLimitTypeNone;
     }
-    virtual std::string to_string(void) = 0;
-    virtual std::vector<std::string> limits(void) = 0;
+    spDataLimitList  _dataLimits;
+
+     spDataLimitList & limits(void)
+    {
+        return _dataLimits;
+    }
+    void addLimit(spDataLimitDesc & item)
+    {
+        _dataLimits.push_back(item);
+    }
+    void clearLimits(void ){
+        _dataLimits.clear();
+    };
 };
 
 template <typename T>
@@ -605,6 +780,18 @@ public:
         }
 
         _isSet=true;
+
+        spDataLimit::clearLimits();
+        // build our limit descriptors
+        spDataLimitDesc  limit;
+        limit.name = sp_utils::to_string(_min);
+        limit.data.set(_min);
+        spDataLimit::addLimit(limit);
+
+        limit.name = sp_utils::to_string(_max);
+        limit.data.set(_max);
+        spDataLimit::addLimit(limit);
+
     };
 
 
@@ -618,23 +805,6 @@ public:
     spDataLimit_t type(void)
     {
         return spDataLimitTypeRange;
-    };
-
-    std::string to_string(void)
-    {
-
-        if ( !_isSet )
-            return " <No Limit Set>";
-        char szBuffer[64];
-        snprintf(szBuffer, sizeof(szBuffer), "[%s to %s]", 
-                sp_utils::to_string(_min).c_str(), sp_utils::to_string(_max).c_str());
-
-        return std::string(szBuffer);
-    }
-    std::vector<std::string> limits(void )
-    {
-        std::vector<std::string> tmp = {sp_utils::to_string(_min).c_str(), sp_utils::to_string(_max).c_str()};
-        return tmp;
     };
 
 private:
@@ -660,67 +830,9 @@ using spDataLimitRangeDouble = spDataLimitRange<double>;
 // where Name is a human readable string for display/UX
 //
 // This is the base class for this type of limit
-class spDataLimitSet : public spDataLimit
-{
-protected:
-
-    // Vector of tags names
-    std::vector<std::string>   _tags;   
-
-public:
-    std::string to_string(void)
-    {
-        std::string values = "[";
-        for (auto item : _tags)
-            values += item + ',';
-
-        values += "]";
-        return values;
-    };
-    std::vector<std::string> limits(void)
-    {
-        return _tags;
-    }
-    std::string &at(size_t pos)
-    {
-        return _tags.at(pos);
-    }
-    auto size() -> decltype(_tags.size())
-    {
-        return _tags.size();
-    }
-    auto cbegin() -> decltype(_tags.cbegin())
-    {
-        return _tags.cbegin();
-    }
-    auto cend() -> decltype(_tags.cend())
-    {
-        return _tags.cend();
-    }
-    auto begin() -> decltype(_tags.begin())
-    {
-        return _tags.begin();
-    }
-    auto end() -> decltype(_tags.end())
-    {
-        return _tags.end();
-    }
-    auto rbegin() -> decltype(_tags.rbegin())
-    {
-        return _tags.rbegin();
-    }
-    auto rend() -> decltype(_tags.rend())
-    {
-        return _tags.rend();
-    }
-    auto empty() -> decltype(_tags.empty())
-    {
-        return _tags.empty();
-    }
-};
 
 template <typename T>
-class spDataLimitSetType :  public spDataLimitSet, public spDataLimitType<T>
+class spDataLimitSetType :  public spDataLimitType<T>
 {
 public:
     spDataLimitSetType()
@@ -731,52 +843,38 @@ public:
     {
         if (list.size() < 1)
             throw std::length_error("invalid number of arguments");
+        
+        spDataLimitDesc  limit;
 
         for (auto item : list)
         {
-            spDataLimitSetType::_tags.push_back(item.first);
-            _values.push_back(item.second);
+            limit.name = item.first.c_str();
+            limit.data.set(item.second);
+            spDataLimit::addLimit(limit);            
         }
     }
 
     bool isValid(T value)
     {
-        for ( auto item : _values)
+        for ( auto item : spDataLimit::limits())
         {
-            if ( item == value )
+            if ( item.data.isEqual(value))
                 return true;
         }
         return false;
     }
+
     void addItem(std::string &name, T value)
     {
-        spDataLimitSet::_tags.push_back(name); 
-        _values.push_back(value);
+        spDataLimitDesc  limit;
+        limit.name = name.c_str();
+        limit.data.set(value);
+        spDataLimit::addLimit(limit);     
     }
     spDataLimit_t type(void)
     {
         return spDataLimitTypeSet;
     };  
-    std::string to_string()
-    {
-        return spDataLimitSet::to_string();
-    };  
-    std::vector<std::string> limits()
-    {
-        // Create a list of values/limits that include names and values
-        std::vector<std::string> limits;
-        char szBuffer[128];
-        for (int i=0; i < _values.size(); i++)
-        {
-            snprintf(szBuffer, sizeof(szBuffer), "%s = [ %s ]", spDataLimitSet::at(i).c_str(), sp_utils::to_string(_values.at(i)).c_str());
-            limits.push_back(szBuffer);   
-        }
-        return limits;
-    }; 
-
-protected:
-
-    std::vector<T> _values;
 };
 
 using spDataLimitSetInt8 = spDataLimitSetType<int8_t>;

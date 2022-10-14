@@ -41,7 +41,8 @@ class spProperty : public spDescriptor
     // displayed/set/managed in an editor
 
     virtual spEditResult_t editValue(spDataEditor &) = 0;
-    virtual spDataLimit * dataLimit(void)=0;
+    virtual spDataLimit * dataLimit(void) = 0;
+    virtual bool setValue( spDataVariable &) = 0;
 
     //---------------------------------------------------------------------------------
     virtual size_t size(void)
@@ -56,7 +57,7 @@ class spProperty : public spDescriptor
     };
 
     // Expect subclasses will override this
-    virtual std::string getString()
+    virtual std::string to_string()
     {
         std::string s = "";
         return s;
@@ -218,7 +219,7 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
     };
 
     // use this to route the call to our dataOut base class
-    virtual std::string getString(void)
+    virtual std::string to_string(void)
     {
         return _spDataOut<T>::getString();
     }
@@ -254,6 +255,17 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
     {
         return _dataLimit;
     }
+
+    bool setValue( spDataVariable &value){
+
+        if ( value.type == type())
+        {
+            T c;
+            set(value.get(c));
+            return true;
+        }
+        return false;
+    };
 
 protected:
 
@@ -313,6 +325,10 @@ protected:
         set(c);
     }
 
+    std::string to_string()
+    {
+       return  _spDataOutString::getString();
+    }
     //---------------------------------------------------------------------------------
     // serialization methods
     bool save(spStorageBlock2 *stBlk)
@@ -363,6 +379,14 @@ protected:
     {
         return _dataLimit;
     }
+    bool setValue( spDataVariable &value){
+
+        if ( value.type == type()){
+            set(value.value.str);
+            return true;
+        }
+        return false;
+    };
 };
 
 //----------------------------------------------------------------------------------------------------

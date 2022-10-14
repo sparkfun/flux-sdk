@@ -153,6 +153,8 @@ public:
 
         spRegister(in_string, "in string", "test input of a string value");
         spRegister(in_float, "in float", "test input of a float value");
+        in_float.setDataLimit(float_in_limit);
+
         spRegister(in_void, "in void", "test input parameter of type void");
     }
     
@@ -189,6 +191,13 @@ public:
     spDataLimitRangeInt  int_limit = {0, 144};   // define the limit, set it in the constructor
 
     spParameterInFloat<test_params, &test_params::set_float> in_float;
+    spDataLimitSetFloat float_in_limit = {
+        {"F one", 1.11},
+        {"F two", 2.22},
+        {"F three", 3.33},        
+        {"F four", 4.44},      
+        {"F five", 5.55}                       
+    };
     spParameterInString<test_params, &test_params::set_str>  in_string;  
 
     spParameterInVoid<test_params, &test_params::set_void>   in_void;   
