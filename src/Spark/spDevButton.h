@@ -54,7 +54,7 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
     void set_press_mode(uint8_t);
     uint8_t get_led_brightness();
     void set_led_brightness(uint8_t);
-    uint8_t _pressMode;
+    bool _pressMode;
     bool _last_button_state;
     bool _this_button_state;
     bool _toggle_state;
@@ -62,6 +62,7 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
 
   public:
     spPropertyRWUint8<spDevButton, &spDevButton::get_press_mode, &spDevButton::set_press_mode> pressMode; // true = Press mode. false = Click (Toggle) mode
+    spDataLimitSetUint8 mode_limit = { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } };
     spPropertyRWUint8<spDevButton, &spDevButton::get_led_brightness, &spDevButton::set_led_brightness> ledBrightness;
 
     // Define our output parameters - specify the get functions to call.

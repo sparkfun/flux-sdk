@@ -36,9 +36,9 @@ spDevButton::spDevButton()
 
     // Register Property
     spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
-    spDataLimitSetUint8 mode_limit = { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } };
     pressMode.setDataLimit(mode_limit);
-    _pressMode = 1;
+    pressMode = { 1 };
+    _pressMode = true;
     _last_button_state = false;
     _this_button_state = false;
     _toggle_state = false;
@@ -90,15 +90,15 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 bool spDevButton::read_button_state()
 {
-    if (_pressMode == 1)
+    if (_pressMode)
         return _this_button_state;
     else
         return _toggle_state;
 }
 
 // methods for the read-write properties
-uint8_t spDevButton::get_press_mode() { return _pressMode; }
-void spDevButton::set_press_mode(uint8_t mode) { _pressMode = mode;}
+uint8_t spDevButton::get_press_mode() { return (uint8_t)_pressMode; }
+void spDevButton::set_press_mode(uint8_t mode) { _pressMode = mode == 0 ? false : true; }
 uint8_t spDevButton::get_led_brightness() { return _ledBrightness; }
 void spDevButton::set_led_brightness(uint8_t brightness) { _ledBrightness = brightness; }
 
@@ -114,7 +114,7 @@ bool spDevButton::loop(void)
     _last_button_state = _this_button_state; // Store the last button state
     _this_button_state = QwiicButton::isPressed(); // Read the current button state
 
-    if (_pressMode == 1)
+    if (_pressMode)
     {
         if (_last_button_state != _this_button_state) // Has the button changed state?
         {
