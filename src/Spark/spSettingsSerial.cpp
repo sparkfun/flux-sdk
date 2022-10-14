@@ -102,7 +102,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 
 bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 {
-    if (!pCurrent)
+    if (!pCurrent || !pProp)
         return false;
 
     // Any value limits set? - use in prompt loop
