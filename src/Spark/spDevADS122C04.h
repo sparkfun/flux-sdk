@@ -46,9 +46,17 @@ private:
     float read_internal_temperature();
     float read_raw_voltage();
 
+    uint8_t get_wire_mode();
+    void set_wire_mode(uint8_t);
+    uint8_t get_sample_rate();
+    void set_sample_rate(uint8_t);
+
+    uint8_t _wireMode;
+    uint8_t _sampleRate;
+
 public:
-    spPropertyUint8<spDevADS122C04> wireMode;
-    spPropertyUint8<spDevADS122C04> sampleRate;
+    spPropertyRWUint8<spDevADS122C04, &spDevADS122C04::get_wire_mode, &spDevADS122C04::set_wire_mode> wireMode;
+    spPropertyRWUint8<spDevADS122C04, &spDevADS122C04::get_sample_rate, &spDevADS122C04::set_sample_rate> sampleRate;
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevADS122C04, &spDevADS122C04::read_temperature_c> temperatureC;
