@@ -39,22 +39,11 @@ spDevBME280::spDevBME280()
     setName(getDeviceName());
     setDescription("The Bosch BME280 Atmospheric Sensor.");
 
-    // Register the properties with the system - this makes the connections needed
-    // to support managed properties/public properties
-
-    // Register Property
-    spRegister(celsius, "Celsius", "Use celsius for temperature units");
-    celsius = false;
-    spRegister(metres, "Metres", "Use metres for altitude units");
-    metres = false;
-
     // Register parameters
     spRegister(humidity, "Humidity", "The sensed humidity value");
-    // spRegister(temperature);
     spRegister(temperatureF, "TemperatureF", "The sensed Temperature in degrees Fahrenheit");
     spRegister(temperatureC, "TemperatureC", "The sensed Temperature in degrees Celsius");
     spRegister(pressure, "Pressure", "The sensed pressure");
-    // spRegister(altitude);
     spRegister(altitudeM, "AltitudeM", "The sensed altitude in meters");
     spRegister(altitudeF, "AltitudeF", "The sensed altitude in feet");
 }
@@ -85,45 +74,14 @@ bool spDevBME280::onInitialize(TwoWire &wirePort)
     BME280::setI2CAddress(address());
     return BME280::beginI2C(wirePort);
 }
+
 // GETTER methods for output params
-float spDevBME280::read_Humidity()
-{
-    return BME280::readFloatHumidity();
-}
+float spDevBME280::read_Humidity() { return BME280::readFloatHumidity(); }
 
-float spDevBME280::read_Temperature()
-{
-    if (celsius)
-        return read_TemperatureC();
-    else
-        return read_TemperatureF();
-}
-float spDevBME280::read_TemperatureF()
-{
-    return BME280::readTempF();
-}
-float spDevBME280::read_TemperatureC()
-{
-    return BME280::readTempC();
-}
+float spDevBME280::read_TemperatureF() { return BME280::readTempF(); }
+float spDevBME280::read_TemperatureC() { return BME280::readTempC(); }
 
-float spDevBME280::read_Pressure()
-{
-    return BME280::readFloatPressure();
-}
+float spDevBME280::read_Pressure() { return BME280::readFloatPressure(); }
 
-float spDevBME280::read_Altitude()
-{
-    if (metres)
-        return read_AltitudeM();
-    else
-        return read_AltitudeF();
-}
-float spDevBME280::read_AltitudeM()
-{
-    return BME280::readFloatAltitudeMeters();
-}
-float spDevBME280::read_AltitudeF()
-{
-    return BME280::readFloatAltitudeFeet();
-}
+float spDevBME280::read_AltitudeM() { return BME280::readFloatAltitudeMeters(); }
+float spDevBME280::read_AltitudeF() { return BME280::readFloatAltitudeFeet(); }

@@ -24,11 +24,22 @@ spDevADS122C04::spDevADS122C04()
     spSetupDeviceIdent(getDeviceName());
     setDescription("ADS122C04 A/D Converter - used on Qwiic PT100");
 
-    // Register Property
-    spRegister(wireMode, "Wire mode", "Wire mode: 0 = 4-wire, 1 = 3-wire, 2 = 2-wire");
-    wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode. See SFE_ADS122C04::ADS122C04_4WIRE_MODE etc.
-    spRegister(sampleRate, "Sample rate", "Sample rate: 0 = 20SPS, 6 = 1000SPS");
-    sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second. See SFE_ADS122C04::ADS122C04_DATA_RATE_20SPS etc.
+    // Register Properties
+
+    // Note:
+    // We need to initialize both _wireMode and _sampleRate before we initialize wireMode.
+    // Initializing wireMode (*) will write both _wireMode and _sampleRate to the ADS122C04 over I2C.
+
+    _wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode
+    _sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second
+
+    spRegister(wireMode, "Wire mode", "Wire mode");
+    wireMode.setDataLimit(wire_limit);
+    wireMode = { ADS122C04_4WIRE_MODE }; // (*)
+    
+    spRegister(sampleRate, "Sample rate", "Sample rate");
+    sampleRate.setDataLimit(rate_limit);
+    sampleRate = { ADS122C04_DATA_RATE_20SPS };
 
     // Register output params
     spRegister(temperatureC, "Probe temperature (C)", "Probe temperature (C)");
@@ -49,11 +60,11 @@ float spDevADS122C04::read_temperature_f()
 }
 float spDevADS122C04::read_internal_temperature()
 {
-    return SFE_ADS122C04::readInternalTemperature(sampleRate);
+    return SFE_ADS122C04::readInternalTemperature(_sampleRate);
 }
 float spDevADS122C04::read_raw_voltage()
 {
-    int32_t raw_v = SFE_ADS122C04::readRawVoltage(sampleRate);
+    int32_t raw_v = SFE_ADS122C04::readRawVoltage(_sampleRate);
     return (((float)raw_v) * 244.14e-9); // Convert to Volts
 }
 
@@ -110,8 +121,28 @@ bool spDevADS122C04::onInitialize(TwoWire &wirePort)
     if (!result)
         spLog_E("ADS122C04 - begin failed");
 
-    result &= SFE_ADS122C04::configureADCmode(wireMode, sampleRate);
+    if (result)
+    {
+        _hasBegun = true;
+        result &= SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
+    }
 
     return result;
 }
 
+// read-write property methods
+
+uint8_t spDevADS122C04::get_wire_mode() { return _wireMode; }
+void spDevADS122C04::set_wire_mode(uint8_t mode)
+{
+    _wireMode = mode;
+    if (_hasBegun)
+        SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
+}
+uint8_t spDevADS122C04::get_sample_rate() { return _sampleRate; }
+void spDevADS122C04::set_sample_rate(uint8_t rate)
+{
+    _sampleRate = rate;
+    if (_hasBegun)
+        SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
+}

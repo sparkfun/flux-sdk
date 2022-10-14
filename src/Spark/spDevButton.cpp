@@ -34,15 +34,18 @@ spDevButton::spDevButton()
     setName(getDeviceName());
     setDescription("The SparkFun Qwiic Button");
 
-    last_button_state = false;
-    this_button_state = false;
-    toggle_state = false;
+    _pressMode = true;
+    _ledBrightness = 128;
 
     // Register Property
     spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
-    pressMode = true;
-    spRegister(ledBrightness, "LED brightness", "Set the LED brightness: 0 - 255");
-    ledBrightness = 128;
+    pressMode.setDataLimit(mode_limit);
+    pressMode = { 1 };
+    _last_button_state = false;
+    _this_button_state = false;
+    _toggle_state = false;
+
+    spRegister(ledBrightness, "LED brightness", "Set the LED brightness");
 
     // Register parameters
     spRegister(buttonState, "Button State", "The current state of the button");
@@ -77,8 +80,8 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
     if (!rc)
         spLog_E("BUTTON - begin failed");
 
-    this_button_state = QwiicButton::isPressed();
-    last_button_state = this_button_state;
+    _this_button_state = QwiicButton::isPressed();
+    _last_button_state = _this_button_state;
 
     rc &= QwiicButton::LEDoff(); // Make sure the LED is off
 
@@ -88,11 +91,18 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 bool spDevButton::read_button_state()
 {
-    if (pressMode)
-        return this_button_state;
+    if (_pressMode)
+        return _this_button_state;
     else
-        return toggle_state;
+        return _toggle_state;
 }
+
+// methods for the read-write properties
+uint8_t spDevButton::get_press_mode() { return (uint8_t)_pressMode; }
+void spDevButton::set_press_mode(uint8_t mode) { _pressMode = mode == 0 ? false : true; }
+uint8_t spDevButton::get_led_brightness() { return _ledBrightness; }
+void spDevButton::set_led_brightness(uint8_t brightness) { _ledBrightness = brightness; }
+
 
 //----------------------------------------------------------------------------------------------------------
 // Loop
@@ -102,38 +112,38 @@ bool spDevButton::loop(void)
     bool result = false;
 
     // process events
-    last_button_state = this_button_state; // Store the last button state
-    this_button_state = QwiicButton::isPressed(); // Read the current button state
+    _last_button_state = _this_button_state; // Store the last button state
+    _this_button_state = QwiicButton::isPressed(); // Read the current button state
 
-    if (pressMode)
+    if (_pressMode)
     {
-        if (last_button_state != this_button_state) // Has the button changed state?
+        if (_last_button_state != _this_button_state) // Has the button changed state?
         {
-            if (this_button_state) // Is the button pressed now?
+            if (_this_button_state) // Is the button pressed now?
             {
-                QwiicButton::LEDon(ledBrightness);
+                QwiicButton::LEDon(_ledBrightness);
             }
             else
             {
                 QwiicButton::LEDoff();
             }
 
-            on_clicked.emit(this_button_state);
+            on_clicked.emit(_this_button_state);
             result = true;
         }
     }
     else // Click (Toggle) mode
     {
-        if ((last_button_state == false) && (this_button_state == true)) // Has the button been pressed down?
+        if ((_last_button_state == false) && (_this_button_state == true)) // Has the button been pressed down?
         {
-            toggle_state = !toggle_state; // Toggle toggle_state
+            _toggle_state = !_toggle_state; // Toggle toggle_state
 
-            if (toggle_state) // Toggle the LED
-                QwiicButton::LEDon(ledBrightness);
+            if (_toggle_state) // Toggle the LED
+                QwiicButton::LEDon(_ledBrightness);
             else
                 QwiicButton::LEDoff();
 
-            on_clicked.emit(toggle_state);
+            on_clicked.emit(_toggle_state);
             result = true;
         }
     }
