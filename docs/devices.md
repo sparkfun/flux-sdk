@@ -151,9 +151,9 @@ Supported devices are:
     </tr>
 </table>
 
-## Allocated I<sup>2</sup>C Addresses
+## Allocated / Supported I<sup>2</sup>C Addresses
 
-Allocated I<sup>2</sup>C addresses are:
+Allocated / supported I<sup>2</sup>C addresses are:
 
 <table style="font-size:12.25px; width:100%">
     <tr>
@@ -213,9 +213,9 @@ Allocated I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">Temperature and Humidity sensor</td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">0x3E, 0x3F</td>
         <td style="vertical-align:middle" align="center">Twist</td>
         <td style="vertical-align:middle" align="center">SparkFun Qwiic Twist</td>
-        <td style="vertical-align:middle" align="center">0x3E, 0x3F</td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x40</b></td>
