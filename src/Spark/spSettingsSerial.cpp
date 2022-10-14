@@ -370,9 +370,9 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     if (propLimit )
     {
         // limits sets are handled in another routine
-        //if ( propLimit->type() == spDataLimitTypeSet)
-       //    return drawPage(pCurrent, pProp, propLimit );
-
+        if ( propLimit->type() == spDataLimitTypeSet)
+            return drawPage(pCurrent, pParam, propLimit );
+            
         if ( propLimit->type() == spDataLimitTypeRange)
         {
             bHasLimits=true;
@@ -429,6 +429,78 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     return result == spEditSuccess;
 }
 
+//-----------------------------------------------------------------------------
+// drawPage()  - parameter with a limit edition - TODO: Refactor to unify some of the routines.
+
+bool spSettingsSerial::drawPage(spObject *pCurrent, spParameterIn *pParam, spDataLimit *pLimit )
+{
+    if (!pCurrent || !pParam || !pLimit)
+        return false;
+
+    bool returnValue = false;
+    uint8_t selected = 0;
+    int nMenuItems;
+
+    spDataLimitList limitTags = pLimit->limits();
+
+    while (true)
+    {
+        drawPageHeader(pCurrent);
+
+        Serial.printf("Select from the following values:\n\r\n\r");
+
+        nMenuItems = 0;
+    
+        for (auto item : limitTags )
+        {
+            nMenuItems++;
+            drawMenuEntry(nMenuItems, (item.name + " = " + item.data.to_string()).c_str());
+        }
+
+        if (nMenuItems == 0)
+            Serial.printf("\tNo Entries\n\r");
+        else if (nMenuItems < 0)
+        {
+            Serial.println("Error generating menu entries.");
+            spLog_E("Error generating menu entries");
+            return false;
+        }
+
+        drawPageFooter(pCurrent);
+
+        selected = getMenuSelection((uint)nMenuItems);
+
+        // done?
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+        {
+            Serial.println("Escape");
+            returnValue = false;
+            break;
+        }
+        else if (selected == kReadBufferExit)
+        {
+            Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
+            returnValue = true;
+            break;
+        }
+
+        Serial.println(selected);
+
+        bool result = pParam->setValue(limitTags.at(selected-1).data);
+
+        if (result)
+            Serial.printf("\t[The value of %s was updated to %s = %s ]\n\r", pParam->name(), 
+                        limitTags.at(selected-1).name.c_str(), limitTags.at(selected-1).data.to_string().c_str());
+        else
+            Serial.printf("\t[%s is unchanged]\n\r", pParam->name());
+
+        delay(kMessageDelayTimeout); // good UX here I think
+
+        break;
+    }
+
+    return returnValue;
+}
 //-----------------------------------------------------------------------------
 // drawPage() - VOID Input Parameter Editing edition
 //
