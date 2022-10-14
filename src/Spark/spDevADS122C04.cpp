@@ -25,21 +25,21 @@ spDevADS122C04::spDevADS122C04()
     setDescription("ADS122C04 A/D Converter - used on Qwiic PT100");
 
     // Register Properties
-    spRegister(wireMode, "Wire mode", "Wire mode");
-    spDataLimitSetUint8 wire_limit = { { "4-Wire Mode", ADS122C04_4WIRE_MODE }, { "3-Wire Mode", ADS122C04_3WIRE_MODE },
-                                       { "2-Wire Mode", ADS122C04_2WIRE_MODE }, { "Internal Temperature Mode", ADS122C04_TEMPERATURE_MODE },
-                                       { "4-Wire Mode High Temperature", ADS122C04_4WIRE_HI_TEMP }, { "3-Wire Mode HIgh Temperature", ADS122C04_3WIRE_HI_TEMP },
-                                       { "4-Wire Mode High Temperature", ADS122C04_2WIRE_HI_TEMP } };
-    wireMode.setDataLimit(wire_limit);
+
+    // Note:
+    // We need to initialize both _wireMode and _sampleRate before we initialize wireMode.
+    // Initializing wireMode (*) will write both _wireMode and _sampleRate to the ADS122C04 over I2C.
+
     _wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode
+    _sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second
+
+    spRegister(wireMode, "Wire mode", "Wire mode");
+    wireMode.setDataLimit(wire_limit);
+    wireMode = { ADS122C04_4WIRE_MODE }; // (*)
     
     spRegister(sampleRate, "Sample rate", "Sample rate");
-    spDataLimitSetUint8 rate_limit = { { "20 Samples Per Sec", ADS122C04_DATA_RATE_20SPS }, { "45 Samples Per Sec", ADS122C04_DATA_RATE_45SPS },
-                                         { "90 Samples Per Sec", ADS122C04_DATA_RATE_90SPS }, { "175 Samples Per Sec", ADS122C04_DATA_RATE_175SPS },
-                                         { "330 Samples Per Sec", ADS122C04_DATA_RATE_330SPS }, { "600 Samples Per Sec", ADS122C04_DATA_RATE_600SPS },
-                                         { "1000 Samples Per Sec", ADS122C04_DATA_RATE_1000SPS } };
     sampleRate.setDataLimit(rate_limit);
-    _sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second
+    sampleRate = { ADS122C04_DATA_RATE_20SPS };
 
     // Register output params
     spRegister(temperatureC, "Probe temperature (C)", "Probe temperature (C)");
@@ -121,7 +121,11 @@ bool spDevADS122C04::onInitialize(TwoWire &wirePort)
     if (!result)
         spLog_E("ADS122C04 - begin failed");
 
-    result &= SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
+    if (result)
+    {
+        _hasBegun = true;
+        result &= SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
+    }
 
     return result;
 }
@@ -129,6 +133,16 @@ bool spDevADS122C04::onInitialize(TwoWire &wirePort)
 // read-write property methods
 
 uint8_t spDevADS122C04::get_wire_mode() { return _wireMode; }
-void spDevADS122C04::set_wire_mode(uint8_t mode) { _wireMode = mode; SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate); }
+void spDevADS122C04::set_wire_mode(uint8_t mode)
+{
+    _wireMode = mode;
+    if (_hasBegun)
+        SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
+}
 uint8_t spDevADS122C04::get_sample_rate() { return _sampleRate; }
-void spDevADS122C04::set_sample_rate(uint8_t rate) { _sampleRate = rate; SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate); }
+void spDevADS122C04::set_sample_rate(uint8_t rate)
+{
+    _sampleRate = rate;
+    if (_hasBegun)
+        SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
+}
