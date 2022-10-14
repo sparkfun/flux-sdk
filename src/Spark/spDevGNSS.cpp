@@ -104,6 +104,11 @@ bool spDevGNSS::isConnected(spDevI2C &i2cDriver, uint8_t address)
     if (i2cOK && trafficSeen)
         return true; // Return now if traffic has been seen
 
+    if (!i2cOK)
+        spLog_E("GNSS::isConnected i2c read error (first attempt)");
+    if (!trafficSeen)
+        spLog_W("GNSS::isConnected no traffic seen (first attempt)");
+
     // If the GNSS has been powered on for some time, the buffer could be full
     // Try to read some data from the buffer and see if the count changes
     if (bufferWaiting < 8)
@@ -113,6 +118,11 @@ bool spDevGNSS::isConnected(spDevI2C &i2cDriver, uint8_t address)
     i2cOK = i2cDriver.receiveResponse(address, buffer, 8); // Will read from address 0xFF
     i2cOK &= i2cDriver.readRegister16(address, 0xFD, &bufferWaiting, false); // Big Endian
     trafficSeen = (bufferWaiting != firstBufferWaiting);
+
+    if (!i2cOK)
+        spLog_E("GNSS::isConnected i2c read error (second attempt)");
+    if (!trafficSeen)
+        spLog_W("GNSS::isConnected no traffic seen (second attempt)");
 
     return (i2cOK && trafficSeen);
 }
