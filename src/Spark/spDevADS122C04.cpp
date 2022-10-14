@@ -26,14 +26,14 @@ spDevADS122C04::spDevADS122C04()
 
     // Register Properties
     spRegister(wireMode, "Wire mode", "Wire mode");
-    spDataLimitSetUint8 wire_limit = { { "4-Wire Mode", ADS122C04_4WIRE_MODE }, { "3-Wire Mode", ADS122C04_2WIRE_MODE },
+    spDataLimitSetUint8 wire_limit = { { "4-Wire Mode", ADS122C04_4WIRE_MODE }, { "3-Wire Mode", ADS122C04_3WIRE_MODE },
                                        { "2-Wire Mode", ADS122C04_2WIRE_MODE }, { "Internal Temperature Mode", ADS122C04_TEMPERATURE_MODE },
                                        { "4-Wire Mode High Temperature", ADS122C04_4WIRE_HI_TEMP }, { "3-Wire Mode HIgh Temperature", ADS122C04_3WIRE_HI_TEMP },
                                        { "4-Wire Mode High Temperature", ADS122C04_2WIRE_HI_TEMP } };
     wireMode.setDataLimit(wire_limit);
     _wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode
     spRegister(sampleRate, "Sample rate", "Sample rate");
-    spDataLimitRangeUint8 rate_limit = { { "20 Samples Per Sec", ADS122C04_DATA_RATE_20SPS }, { "45 Samples Per Sec", ADS122C04_DATA_RATE_45SPS },
+    spDataLimitSetUint8 rate_limit = { { "20 Samples Per Sec", ADS122C04_DATA_RATE_20SPS }, { "45 Samples Per Sec", ADS122C04_DATA_RATE_45SPS },
                                          { "90 Samples Per Sec", ADS122C04_DATA_RATE_90SPS }, { "175 Samples Per Sec", ADS122C04_DATA_RATE_175SPS },
                                          { "330 Samples Per Sec", ADS122C04_DATA_RATE_330SPS }, { "600 Samples Per Sec", ADS122C04_DATA_RATE_600SPS },
                                          { "1000 Samples Per Sec", ADS122C04_DATA_RATE_1000SPS } };
