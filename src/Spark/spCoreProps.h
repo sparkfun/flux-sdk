@@ -165,7 +165,7 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
   
   public:
 
-    _spPropertyBase() : _dataLimit{nullptr} {};
+    _spPropertyBase() : _dataLimit{nullptr}, _limitIsAlloc{false} {};
 
     //---------------------------------------------------------------------------------
     spDataType_t type()
@@ -249,7 +249,19 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
     // Data Limit things
     void setDataLimit( spDataLimitType<T> &dataLimit)
     {
+        if (_dataLimit && _limitIsAlloc)
+            delete _dataLimit;
+
+        _limitIsAlloc = false;
         _dataLimit = &dataLimit;
+    }
+    void setDataLimit( spDataLimitType<T> *dataLimit)
+    {
+        if (_dataLimit && _limitIsAlloc)
+            delete _dataLimit;
+
+        _limitIsAlloc = true;
+        _dataLimit = dataLimit;
     }
     spDataLimit * dataLimit(void)
     {
@@ -270,6 +282,9 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
 protected:
 
     spDataLimitType<T>  *_dataLimit;
+
+private:
+    bool _limitIsAlloc;
 };
 
 //----------------------------------------------------------------------------------------
@@ -724,7 +739,24 @@ class spPropertyRWString : public _spPropertyBaseString
 //
 template <class Object, class T> class _spPropertyTyped : public _spPropertyBase<T>
 {
+  private:
+    bool setRangeLimit(std::initializer_list<T> limitRange)
+    {
 
+        if ( limitRange.size() > 1 )
+        {
+            const T * data = limitRange.begin();
+            spDataLimitRange<T> *pLimit = new spDataLimitRange<T>(*data, *(data+1));
+            _spPropertyBase<T>::setDataLimit(pLimit);
+            return true;
+        }
+        return false;
+    }
+    void setSetLimit(std::initializer_list<std::pair<const std::string, T>> limitSet)
+    {
+        spDataLimitSetType<T> *pLimit = new spDataLimitSetType<T>(limitSet);
+        _spPropertyBase<T>::setDataLimit(pLimit);
+    }
   public:
 
     _spPropertyTyped()
@@ -733,6 +765,29 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
     _spPropertyTyped( T value) : data{value}
     {
     }
+    // Initial value and a limit range
+    _spPropertyTyped( T value, std::initializer_list<T> limitRange) : _spPropertyTyped(value)
+    {
+       setRangeLimit(limitRange);
+        // TODO, check size of the range init list
+    }
+    // Just a limit range
+    _spPropertyTyped( std::initializer_list<T> limitRange) 
+    {
+        setRangeLimit(limitRange);
+        // TODO, check size of the range init list
+    }
+    // Limit data set
+    _spPropertyTyped( std::initializer_list<std::pair<const std::string, T>> limitSet)
+    {
+        setSetLimit(limitSet);
+    }
+     // Initial value and limit data set.
+    _spPropertyTyped( T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTyped(value)
+    {
+        setSetLimit(limitSet);        
+    }
+
 
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
