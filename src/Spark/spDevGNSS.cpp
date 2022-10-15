@@ -255,7 +255,7 @@ std::string spDevGNSS::read_fix_string()
         snprintf(szBuffer, sizeof(szBuffer), "none");
         break;
     case 1:
-        snprintf(szBuffer, sizeof(szBuffer), "dead reckoning");
+        snprintf(szBuffer, sizeof(szBuffer), "dead_reckoning");
         break;
     case 2:
         snprintf(szBuffer, sizeof(szBuffer), "2D");
@@ -264,10 +264,10 @@ std::string spDevGNSS::read_fix_string()
         snprintf(szBuffer, sizeof(szBuffer), "3D");
         break;
     case 4:
-        snprintf(szBuffer, sizeof(szBuffer), "GNSS + dead reckoning");
+        snprintf(szBuffer, sizeof(szBuffer), "GNSS_+_dead_reckoning");
         break;
     case 5:
-        snprintf(szBuffer, sizeof(szBuffer), "time only");
+        snprintf(szBuffer, sizeof(szBuffer), "time_only");
         break;
     default:
         snprintf(szBuffer, sizeof(szBuffer), "unknown");
@@ -323,7 +323,7 @@ void spDevGNSS::factory_default()
 //----------------------------------------------------------------------------------------------------------
 // Loop
 
-bool spDevButton::loop(void)
+bool spDevGNSS::loop(void)
 {
     SFE_UBLOX_GNSS::checkUblox();
     return false;
