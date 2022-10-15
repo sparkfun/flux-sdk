@@ -32,10 +32,10 @@ public:
 
         spRegister(prop_bool);
         
-        spRegister(prop_int, "MyInteger", "Testing integer property - with a range limit");
-        prop_int.setDataLimit(int_limit);
-
-        spRegister(prop_float, "FloatValue");
+        spRegister(prop_int, "MyInteger", "Testing integer property - No initial value, a set Limit set");
+        spRegister(prop_int_set, "Int Set Test", "Testing integer property - with limit set in init");    
+        spRegister(prop_uint_range, "Uint Range Test", "No initial value, range limit set");    
+        spRegister(prop_float, "FloatValue", "Float with an initial value and a limit range");
         spRegister(prop_str, "stringProp", "Testing a StringProperty");        
 
         spRegister(rw_prop_bool);
@@ -97,11 +97,26 @@ public:
     // Define standard properties 
     spPropertyBool<test_properties>     prop_bool;
 
-    // int property, that we'll add a range limit to. 
-    spPropertyInt<test_properties>      prop_int={33};
-    spDataLimitRangeInt  int_limit = {33, 44};   // define the limit, set it in the constructor
+    // int property, with no initial value, but a set of limited values
+    spPropertyUint8<test_properties>      prop_int={
+                                            {"Value One", 10},
+                                            {"Value Two", 22},
+                                            {"Value Three", 33},        
+                                            {"Value Four", 44},      
+                                            {"Value Five", 155}                       
+                                        };
+    // Test property with an initial value and a value limit set.
+    spPropertyUint8<test_properties>      prop_int_set={44, {
+                                            {"Value 1One", 10},
+                                            {"Value 1Two", 22},
+                                            {"Value 1Three", 33},        
+                                            {"Value 1Four", 44},      
+                                            {"Value 1Five", 155}                       
+                                            }};
+    spPropertyUint<test_properties>       prop_uint_range = { 20, 60 };
 
-    spPropertyFloat<test_properties>    prop_float;
+    // A float property with an initial value and a limit range
+    spPropertyFloat<test_properties>    prop_float = {1.0, {-1.0, 20.0}};
     spPropertyString<test_properties>   prop_str = {"starter string"};
 
     // Define RW (getter/setter) Properties
