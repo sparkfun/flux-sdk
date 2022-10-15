@@ -155,46 +155,16 @@ public:
     
 
     // is equal?
-    bool isEqual(bool v)
-    {
-        return ( type == spTypeBool && v == value.b);
-    };
-    bool isEqual(int8_t v)
-    {
-        return (type == spTypeInt8 && value.i8 == v);
-    };
-    bool isEqual(int16_t v)
-    {
-        return (type == spTypeInt16 && value.i16 == v);
-    };
-    bool isEqual(int32_t v)
-    {
-        return (type == spTypeInt && value.i32 == v);
-    };
-    bool isEqual(uint8_t v)
-    {
-        return (type == spTypeUInt8 && value.ui8 == v);
-    };
-    bool isEqual(uint16_t v)
-    {
-        return (type == spTypeUInt16 && value.ui16 == v);
-    };
-    bool isEqual(uint32_t v)
-    {
-       return ( type == spTypeUInt && value.ui32 == v);
-    };  
-    bool isEqual(float v)
-    {
-        return (type == spTypeFloat && value.f == v);
-    };
-    bool isEqual(double v)
-    {
-        return (type == spTypeDouble && value.d == v);
-    };
-    bool isEqual(const char * v)
-    {
-        return (type == spTypeString && strcmp(value.str, v) == 0);
-    };
+    bool isEqual(bool v)  { return ( type == spTypeBool && v == value.b); }
+    bool isEqual(int8_t v)  { return (type == spTypeInt8 && value.i8 == v); }
+    bool isEqual(int16_t v)  { return (type == spTypeInt16 && value.i16 == v); }
+    bool isEqual(int32_t v)  { return (type == spTypeInt && value.i32 == v); }
+    bool isEqual(uint8_t v)  { return (type == spTypeUInt8 && value.ui8 == v); }
+    bool isEqual(uint16_t v) { return (type == spTypeUInt16 && value.ui16 == v); }
+    bool isEqual(uint32_t v) { return ( type == spTypeUInt && value.ui32 == v); }  
+    bool isEqual(float v) { return (type == spTypeFloat && value.f == v); }
+    bool isEqual(double v) { return (type == spTypeDouble && value.d == v); }
+    bool isEqual(const char * v) { return (type == spTypeString && strcmp(value.str, v) == 0); }
 
     std::string to_string(void)
     {
@@ -730,6 +700,9 @@ using spDataLimitList = std::vector<spDataLimitDesc>;
 class spDataLimit 
 {
 public:
+    virtual ~spDataLimit(){
+        
+    }
     virtual spDataLimit_t type(void)
     {
         return spDataLimitTypeNone;
