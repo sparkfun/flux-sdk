@@ -40,7 +40,7 @@ spDevSCD40::spDevSCD40()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(autoCalibrate, "Auto Calibration", "Enable / disable automatic calibration. Enabled by default");
+    spRegister(autoCalibrate, "Auto Calibration", "Enable / disable automatic calibration");
     spRegister(altitudeCompensation, "Altitude Compensation", "Define the sensor altitude in metres above sea level");
     spRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
 
