@@ -34,18 +34,23 @@ spDevVCNL4040::spDevVCNL4040()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("VCNL4040 Distance Sensor");
+    setDescription("VCNL4040 Proximity Sensor");
 
     // Register parameters
-    spRegister(proximity, "Proximity (mm)", "Proximity (mm)");
+    spRegister(proximity, "Proximity", "Proximity : high values indicate close proximity");
     spRegister(lux, "Lux", "Lux");
 
     // Register read-write properties
-    spRegister(ledCurrent, "LED Current (mA)", "LED Current (mA) : Min 50; Max 200");
-    spRegister(irDutyCycle, "IR Duty Cycle", "IR Duty Cycle : Min 40; Max 320");
-    spRegister(proximityIntegrationTime, "Proximity Integration Time", "Proximity Integration Time : Min 1; Max 8");
-    spRegister(proximityResolution, "Proximity Resolution", "Proximity Resolution : False : 12-bit; True : 16-bit");
-    spRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "Ambient Integration Time : Min 80; Max 640");
+    spRegister(ledCurrent, "LED Current (mA)", "LED Current (mA)");
+    ledCurrent.setDataLimit(led_current_limit);
+    spRegister(irDutyCycle, "IR Duty Cycle", "IR Duty Cycle");
+    irDutyCycle.setDataLimit(ir_duty_cycle_limit);
+    spRegister(proximityIntegrationTime, "Proximity Integration Time", "Proximity Integration Time");
+    proximityIntegrationTime.setDataLimit(proximity_integration_limit);
+    spRegister(proximityResolution, "Proximity Resolution", "Proximity Resolution");
+    proximityResolution.setDataLimit(proximity_resolution_limit);
+    spRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "Ambient Integration Time (ms)");
+    ambientIntegrationTime.setDataLimit(ambient_integration_time_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -87,67 +92,67 @@ bool spDevVCNL4040::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint spDevVCNL4040::read_proximity()
+uint16_t spDevVCNL4040::read_proximity()
 {
     return VCNL4040::getProximity();
 }
 
-uint spDevVCNL4040::read_lux()
+uint16_t spDevVCNL4040::read_lux()
 {
     return VCNL4040::getAmbient();
 }
 
 // methods for read-write properties
-uint spDevVCNL4040::get_LED_current()
+uint8_t spDevVCNL4040::get_LED_current()
 {
     return _ledCurrent;
 }
 
-void spDevVCNL4040::set_LED_current(uint current)
+void spDevVCNL4040::set_LED_current(uint8_t current)
 {
     _ledCurrent = current;
     VCNL4040::setLEDCurrent(current);
 }
 
-uint spDevVCNL4040::get_IR_duty_cycle()
+uint16_t spDevVCNL4040::get_IR_duty_cycle()
 {
     return _irDutyCycle;
 }
 
-void spDevVCNL4040::set_IR_duty_cycle(uint duty)
+void spDevVCNL4040::set_IR_duty_cycle(uint16_t duty)
 {
     _irDutyCycle = duty;
     VCNL4040::setIRDutyCycle(duty);
 }
 
-uint spDevVCNL4040::get_proximity_integration_time()
+uint8_t spDevVCNL4040::get_proximity_integration_time()
 {
     return  _proxIntTime;
 }
 
-void spDevVCNL4040::set_proximity_integration_time(uint intTime)
+void spDevVCNL4040::set_proximity_integration_time(uint8_t intTime)
 {
     _proxIntTime = intTime;
     VCNL4040::setProxIntegrationTime(intTime);
 }
 
-bool spDevVCNL4040::get_proximity_resolution()
+uint8_t spDevVCNL4040::get_proximity_resolution()
 {
     return _proxRes;
 }
 
-void spDevVCNL4040::set_proximity_resolution(bool res)
+void spDevVCNL4040::set_proximity_resolution(uint8_t res)
 {
     _proxRes = res;
-    VCNL4040::setProxResolution(res ? 16 : 12);
+    VCNL4040::setProxResolution(res);
 }
 
-uint spDevVCNL4040::get_ambient_integration_time()
+uint16_t spDevVCNL4040::get_ambient_integration_time()
 {
     return  _ambIntTime;
 }
 
-void spDevVCNL4040::set_ambient_integration_time(uint intTime)
+void spDevVCNL4040::set_ambient_integration_time(uint16_t intTime)
 {
     _ambIntTime = intTime;
     VCNL4040::setAmbientIntegrationTime(intTime);

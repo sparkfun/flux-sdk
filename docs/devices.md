@@ -157,7 +157,7 @@ Supported devices are:
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center">VCNL4040</td>
-        <td style="vertical-align:middle" align="center">Distance and Lux sensor</td>
+        <td style="vertical-align:middle" align="center">Proximity and Lux sensor</td>
         <td style="vertical-align:middle" align="center">0x60</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15177">SEN-15177</a></td>
     </tr>
@@ -317,7 +317,7 @@ Allocated / supported I<sup>2</sup>C addresses are:
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x60</b></td>
         <td style="vertical-align:middle" align="center">VCNL4040</td>
-        <td style="vertical-align:middle" align="center">Distance and Lux sensor</td>
+        <td style="vertical-align:middle" align="center">Proximity and Lux sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15177">SEN-15177</a></td>
     </tr>
     <tr>

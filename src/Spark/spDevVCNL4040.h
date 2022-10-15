@@ -46,36 +46,41 @@ public:
 private:
 
     // methods used to get values for our output parameters
-    uint read_proximity();
-    uint read_lux();
+    uint16_t read_proximity();
+    uint16_t read_lux();
 
     // methods to get/set our read-write properties
-    uint get_LED_current();
-    void set_LED_current(uint);
-    uint get_IR_duty_cycle();
-    void set_IR_duty_cycle(uint);
-    uint get_proximity_integration_time();
-    void set_proximity_integration_time(uint);
-    bool get_proximity_resolution();
-    void set_proximity_resolution(bool);
-    uint get_ambient_integration_time();
-    void set_ambient_integration_time(uint);
+    uint8_t get_LED_current();
+    void set_LED_current(uint8_t);
+    uint16_t get_IR_duty_cycle();
+    void set_IR_duty_cycle(uint16_t);
+    uint8_t get_proximity_integration_time();
+    void set_proximity_integration_time(uint8_t);
+    uint8_t get_proximity_resolution();
+    void set_proximity_resolution(uint8_t);
+    uint16_t get_ambient_integration_time();
+    void set_ambient_integration_time(uint16_t);
 
-    uint _ledCurrent = 200;
-    uint _irDutyCycle = 40;
-    uint _proxIntTime = 8;
-    bool _proxRes = true; // Default to 16-bit
-    uint _ambIntTime = 80;
+    uint8_t _ledCurrent = 200;
+    uint16_t _irDutyCycle = 40;
+    uint8_t _proxIntTime = 8;
+    uint8_t _proxRes = 16; // Default to 16-bit
+    uint16_t _ambIntTime = 80;
 
 public:
     // Define our read-write properties
-    spPropertyRWUint<spDevVCNL4040, &spDevVCNL4040::get_LED_current, &spDevVCNL4040::set_LED_current> ledCurrent;
-    spPropertyRWUint<spDevVCNL4040, &spDevVCNL4040::get_IR_duty_cycle, &spDevVCNL4040::set_IR_duty_cycle> irDutyCycle;
-    spPropertyRWUint<spDevVCNL4040, &spDevVCNL4040::get_proximity_integration_time, &spDevVCNL4040::set_proximity_integration_time> proximityIntegrationTime;
-    spPropertyRWBool<spDevVCNL4040, &spDevVCNL4040::get_proximity_resolution, &spDevVCNL4040::set_proximity_resolution> proximityResolution;
-    spPropertyRWUint<spDevVCNL4040, &spDevVCNL4040::get_ambient_integration_time, &spDevVCNL4040::set_ambient_integration_time> ambientIntegrationTime;
+    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_LED_current, &spDevVCNL4040::set_LED_current> ledCurrent;
+    spDataLimitRangeUint8 led_current_limit = { 50, 200 };
+    spPropertyRWUint16<spDevVCNL4040, &spDevVCNL4040::get_IR_duty_cycle, &spDevVCNL4040::set_IR_duty_cycle> irDutyCycle;
+    spDataLimitRangeUint16 ir_duty_cycle_limit = { 40, 320 };
+    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_proximity_integration_time, &spDevVCNL4040::set_proximity_integration_time> proximityIntegrationTime;
+    spDataLimitRangeUint8 proximity_integration_limit = { 1, 8 };
+    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_proximity_resolution, &spDevVCNL4040::set_proximity_resolution> proximityResolution;
+    spDataLimitSetUint8 proximity_resolution_limit = { { "12-bit", 12 }, { "16-bit", 16 } };
+    spPropertyRWUint16<spDevVCNL4040, &spDevVCNL4040::get_ambient_integration_time, &spDevVCNL4040::set_ambient_integration_time> ambientIntegrationTime;
+    spDataLimitRangeUint16 ambient_integration_time_limit = { 80, 640 };
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutUint<spDevVCNL4040, &spDevVCNL4040::read_proximity> proximity;    
-    spParameterOutUint<spDevVCNL4040, &spDevVCNL4040::read_lux> lux;    
+    spParameterOutUint16<spDevVCNL4040, &spDevVCNL4040::read_proximity> proximity;    
+    spParameterOutUint16<spDevVCNL4040, &spDevVCNL4040::read_lux> lux;    
 };
