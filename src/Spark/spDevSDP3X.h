@@ -50,19 +50,20 @@ private:
     float read_pressure();
 
     // methods used to get values for our RW properties
-    bool get_temperature_compensation();
+    uint8_t get_temperature_compensation();
     bool get_measurement_averaging();
-    void set_temperature_compensation(bool);
+    void set_temperature_compensation(uint8_t);
     void set_measurement_averaging(bool);
 
     // flags to avoid calling readM<easurement multiple times
     float _temperature = -9999; // Mark temperature as stale
     float _pressure = -9999; // Mark pressure as stale
-    bool _tempComp = true; // Default to mass flow temperature compensation with no averaging
+    uint8_t _tempComp = 1; // Default to mass flow temperature compensation with no averaging
     bool _measAvg = false;
 
 public:
-    spPropertyRWBool<spDevSDP3X, &spDevSDP3X::get_temperature_compensation, &spDevSDP3X::set_temperature_compensation> temperatureCompensation;
+    spPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_temperature_compensation, &spDevSDP3X::set_temperature_compensation> temperatureCompensation;
+    spDataLimitSetUint8 temp_comp_limit = { { "Differential Pressure", 0 }, { "Mass Flow", 1 } };
     spPropertyRWBool<spDevSDP3X, &spDevSDP3X::get_measurement_averaging, &spDevSDP3X::set_measurement_averaging> measurementAveraging;
 
     // Define our output parameters - specify the get functions to call.
