@@ -43,6 +43,8 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
+    bool loop(void);
+
 private:
     // methods used to get values for our output parameters
     uint read_year();

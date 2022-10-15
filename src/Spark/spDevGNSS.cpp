@@ -319,3 +319,12 @@ void spDevGNSS::factory_default()
     SFE_UBLOX_GNSS::saveConfigSelective(VAL_CFG_SUBSEC_IOPORT);
     SFE_UBLOX_GNSS::setAutoPVT(true);
 }
+
+//----------------------------------------------------------------------------------------------------------
+// Loop
+
+bool spDevButton::loop(void)
+{
+    SFE_UBLOX_GNSS::checkUblox();
+    return false;
+}
