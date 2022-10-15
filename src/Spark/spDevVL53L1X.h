@@ -51,23 +51,28 @@ private:
     uint read_signal_rate();
 
     // methods to get/set our read-write properties
-    bool get_distance_mode();
-    void set_distance_mode(bool);
-    uint get_intermeasurment_period();
-    void set_intermeasurment_period(uint);
-    uint get_crosstalk();
-    void set_crosstalk(uint);
-    uint get_offset();
-    void set_offset(uint);
+    uint8_t get_distance_mode();
+    void set_distance_mode(uint8_t);
+    uint16_t get_intermeasurment_period();
+    void set_intermeasurment_period(uint16_t);
+    uint16_t get_crosstalk();
+    void set_crosstalk(uint16_t);
+    uint16_t get_offset();
+    void set_offset(uint16_t);
 
     bool _shortDistanceMode = true; // Default to short distance mode
 
 public:
     // Define our read-write properties
-    spPropertyRWBool<spDevVL53L1X, &spDevVL53L1X::get_distance_mode, &spDevVL53L1X::set_distance_mode> distanceMode;
-    spPropertyRWUint<spDevVL53L1X, &spDevVL53L1X::get_intermeasurment_period, &spDevVL53L1X::set_intermeasurment_period> intermeasurementPeriod;
-    spPropertyRWUint<spDevVL53L1X, &spDevVL53L1X::get_crosstalk, &spDevVL53L1X::set_crosstalk> crosstalk;
-    spPropertyRWUint<spDevVL53L1X, &spDevVL53L1X::get_offset, &spDevVL53L1X::set_offset> offset;
+    spPropertyRWUint8<spDevVL53L1X, &spDevVL53L1X::get_distance_mode, &spDevVL53L1X::set_distance_mode> distanceMode;
+    spDataLimitSetUint8 distance_mode_limit = { { "Short", DISTANCE_SHORT }, { "Long", DISTANCE_LONG } } ;
+    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_intermeasurment_period, &spDevVL53L1X::set_intermeasurment_period> intermeasurementPeriod;
+    spDataLimitRangeUint16 intermeasurement_period_limit_short = { 20, 1000 };
+    spDataLimitRangeUint16 intermeasurement_period_limit_long = { 140, 1000 };
+    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_crosstalk, &spDevVL53L1X::set_crosstalk> crosstalk;
+    spDataLimitRangeUint16 crosstalk_limit = { 0, 4000 };
+    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_offset, &spDevVL53L1X::set_offset> offset;
+    spDataLimitRangeUint16 offset_limit = { 0, 4000 };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_distance> distance;    
