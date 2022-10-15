@@ -36,16 +36,21 @@ spDevMCP9600::spDevMCP9600()
     setDescription("Microchip MCP9600 Thermocouple Amplifier.");
 
     // register properties
-    spRegister(ambient_resolution);
-    spRegister(thermocouple_resolution);
-    spRegister(thermocouple_type);
-    spRegister(filter_coefficent);
-    spRegister(burst_samples);
+    spRegister(ambient_resolution, "Ambient Resolution", "Ambient Resolution");
+    ambient_resolution.setDataLimit(ambient_resolution_limit);
+    spRegister(thermocouple_resolution, "Thermocouple Resolution", "Thermocouple Resolution");
+    thermocouple_resolution.setDataLimit(thermocouple_resolution_limit);
+    spRegister(thermocouple_type, "Thermocouple Type", "Thermocouple Type");
+    thermocouple_type.setDataLimit(thermocouple_type_limit);
+    spRegister(filter_coefficent, "Filter Coefficient", "Filter Coefficient");
+    filter_coefficent.setDataLimit(filter_coefficient_limit);
+    spRegister(burst_samples, "Burst Samples", "Burst Samples");
+    burst_samples.setDataLimit(burst_samples_limit);
 
     // register parameters
     spRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature (C)");
     spRegister(ambient_temp, "Ambient temperature", "Ambient temperature (C)");
-    spRegister(temp_delta, "Temperature delta", "Temperature change since last reset (C)");
+    spRegister(temp_delta, "Temperature delta", "Difference between the thermocouple temperature and ambient (C)");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -77,55 +82,55 @@ bool spDevMCP9600::onInitialize(TwoWire &wirePort)
     return MCP9600::begin(address(), wirePort);
 }
 
-void spDevMCP9600::set_AmbientResolution(bool value)
+void spDevMCP9600::set_AmbientResolution(uint8_t value)
 {
     MCP9600::setAmbientResolution((Ambient_Resolution)value);
 }
-bool spDevMCP9600::get_AmbientResolution(void)
+uint8_t spDevMCP9600::get_AmbientResolution(void)
 {
 
-    return (bool)MCP9600::getAmbientResolution();
+    return MCP9600::getAmbientResolution();
 }
 
-void spDevMCP9600::set_ThermocoupleResolution(uint value)
+void spDevMCP9600::set_ThermocoupleResolution(uint8_t value)
 {
 
     MCP9600::setThermocoupleResolution((Thermocouple_Resolution)value);
 }
-uint spDevMCP9600::get_ThermocoupleResolution(void)
+uint8_t spDevMCP9600::get_ThermocoupleResolution(void)
 {
 
-    return (uint)MCP9600::getThermocoupleResolution();
+    return MCP9600::getThermocoupleResolution();
 }
 
-void spDevMCP9600::set_ThermocoupleType(uint value)
+void spDevMCP9600::set_ThermocoupleType(uint8_t value)
 {
 
     MCP9600::setThermocoupleType((Thermocouple_Type)value);
 }
-uint spDevMCP9600::get_ThermocoupleType(void)
+uint8_t spDevMCP9600::get_ThermocoupleType(void)
 {
 
     return MCP9600::getThermocoupleType();
 }
 
-void spDevMCP9600::set_FilterCoefficient(uint value)
+void spDevMCP9600::set_FilterCoefficient(uint8_t value)
 {
 
     MCP9600::setFilterCoefficient(value);
 }
-uint spDevMCP9600::get_FilterCoefficient(void)
+uint8_t spDevMCP9600::get_FilterCoefficient(void)
 {
 
     return MCP9600::getFilterCoefficient();
 }
 
-void spDevMCP9600::set_BurstSamples(uint value)
+void spDevMCP9600::set_BurstSamples(uint8_t value)
 {
 
     MCP9600::setBurstSamples((Burst_Sample)value);
 }
-uint spDevMCP9600::get_BurstSamples(void)
+uint8_t spDevMCP9600::get_BurstSamples(void)
 {
 
     return MCP9600::getBurstSamples();
