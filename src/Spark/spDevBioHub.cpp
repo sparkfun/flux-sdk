@@ -82,11 +82,14 @@ bool spDevBioHub::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevBioHub::onInitialize(TwoWire &wirePort)
 {
 
+    _bioI2cPort = &wirePort; // Cheat... Keep a local record of which wirePort is being used, so we can call begin again
+
     // begin should return 0x00, but will return 0xFF if the pins have not been defined
     uint8_t result = SparkFun_Bio_Sensor_Hub::begin(wirePort, _resetPin, _mfioPin);
     if (result == 0x00)
     {
-        _begun = true;
+        _beginAttempted = true;
+        _beginSuccess = true;
         SparkFun_Bio_Sensor_Hub::configBpm(MODE_TWO); // MODE_TWO provides the oxygen R value
         return true;
     }
@@ -94,7 +97,8 @@ bool spDevBioHub::onInitialize(TwoWire &wirePort)
     {
         // Pins have not (yet) been defined
         // Return true to indicate that the device is connected
-        _begun = true;
+        _beginAttempted = true;
+        _beginSuccess = false;
         return true;
     }
     return false;
@@ -105,9 +109,9 @@ int spDevBioHub::get_reset_pin() { return _resetPin; }
 void spDevBioHub::set_reset_pin(int pin)
 {
     _resetPin = pin;
-    if ((_begun) && (_resetPin >= 0) && (_mfioPin >= 0))
+    if ((_beginAttempted) && (_resetPin >= 0) && (_mfioPin >= 0))
     {
-        SparkFun_Bio_Sensor_Hub::begin(Wire, _resetPin, _mfioPin);
+        _beginSuccess = SparkFun_Bio_Sensor_Hub::begin(*_bioI2cPort, _resetPin, _mfioPin) == 0;
         SparkFun_Bio_Sensor_Hub::configBpm(MODE_TWO); // MODE_TWO provides the oxygen R value
     }
 }
@@ -115,15 +119,15 @@ int spDevBioHub::get_mfio_pin() { return _mfioPin; }
 void spDevBioHub::set_mfio_pin(int pin)
 {
     _mfioPin = pin;
-    if ((_begun) && (_resetPin >= 0) && (_mfioPin >= 0))
+    if ((_beginAttempted) && (_resetPin >= 0) && (_mfioPin >= 0))
     {
-        SparkFun_Bio_Sensor_Hub::begin(Wire, _resetPin, _mfioPin);
+        _beginSuccess = SparkFun_Bio_Sensor_Hub::begin(*_bioI2cPort, _resetPin, _mfioPin) == 0;
         SparkFun_Bio_Sensor_Hub::configBpm(MODE_TWO); // MODE_TWO provides the oxygen R value
     }
 }
 
 // GETTER methods for output params
-float spDevBioHub::read_heart_rate()
+uint16_t spDevBioHub::read_heart_rate()
 {
     if (!_heartRate)
     {
@@ -135,7 +139,7 @@ float spDevBioHub::read_heart_rate()
         _o2r = true;
     }
     _heartRate = false;
-    return (float)body.heartRate / 10;
+    return body.heartRate;
 }
 uint8_t spDevBioHub::read_confidence()
 {

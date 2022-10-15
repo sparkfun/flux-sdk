@@ -62,15 +62,18 @@ private:
 
     int _resetPin = -1;
     int _mfioPin = -1;
-    bool _begun = false;
+    bool _beginAttempted = false;
+    bool _beginSuccess = false;
 
-    // flags to prevent readBpm being called more than once
+    // flags to prevent readBpm being called multiple times
     bool _heartRate = false;
     bool _confidence = false;
     bool _o2 = false;
     bool _status = false;
     bool _eStatus = false;
     bool _o2r = false;
+
+    TwoWire *_bioI2cPort; // Cheat... Keep a local record of which wirePort is being used, so we can call begin again
 
 public:
     // Define our read-write properties
