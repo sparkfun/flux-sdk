@@ -51,21 +51,37 @@ class spDevTwist : public spDeviceType<spDevTwist>, public TWIST
     bool loop(void);
 
   private:
-    int last_count = 0;
+    int _last_count = 0;
 
-    bool last_button_state = false;
-    bool this_button_state = false;
-    bool toggle_state = false;
+    bool _pressMode;
+    bool _last_button_state = false;
+    bool _this_button_state = false;
+    bool _toggle_state = false;
 
     // methods used to get values for our output parameters
     bool read_button_state();
     int get_twist_count();
 
+    // methods for our read-write properties
+    uint8_t get_press_mode();
+    void set_press_mode(uint8_t);
+    uint8_t get_led_red();
+    void set_led_red(uint8_t);
+    uint8_t get_led_green();
+    void set_led_green(uint8_t);
+    uint8_t get_led_blue();
+    void set_led_blue(uint8_t);
+
+    uint8_t _ledRed;
+    uint8_t _ledGreen;
+    uint8_t _ledBlue;
+
   public:
-    spPropertyBool<spDevTwist> pressMode; // true = Press mode. false = Click (Toggle) mode
-    spPropertyUint8<spDevTwist> ledRed;
-    spPropertyUint8<spDevTwist> ledGreen;
-    spPropertyUint8<spDevTwist> ledBlue;
+    spPropertyRWUint8<spDevTwist, &spDevTwist::get_press_mode, &spDevTwist::set_press_mode> pressMode; // 0 = Click (Toggle) mode. 1 = Press mode.
+    spDataLimitSetUint8 mode_limit = { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } };
+    spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_red, &spDevTwist::set_led_red> ledRed;
+    spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_green, &spDevTwist::set_led_green> ledGreen;
+    spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_blue, &spDevTwist::set_led_blue> ledBlue;
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutBool<spDevTwist, &spDevTwist::read_button_state> buttonState;
