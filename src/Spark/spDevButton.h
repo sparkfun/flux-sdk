@@ -49,6 +49,7 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
   private:
     // methods used to get values for our output parameters
     bool read_button_state();
+
     // methods for our read-write properties
     uint8_t get_press_mode();
     void set_press_mode(uint8_t);
@@ -61,7 +62,7 @@ class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
     uint8_t _ledBrightness;
 
   public:
-    spPropertyRWUint8<spDevButton, &spDevButton::get_press_mode, &spDevButton::set_press_mode> pressMode; // true = Press mode. false = Click (Toggle) mode
+    spPropertyRWUint8<spDevButton, &spDevButton::get_press_mode, &spDevButton::set_press_mode> pressMode; // 0 = Click (Toggle) mode. 1 = Press mode.
     spDataLimitSetUint8 mode_limit = { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } };
     spPropertyRWUint8<spDevButton, &spDevButton::get_led_brightness, &spDevButton::set_led_brightness> ledBrightness;
 
