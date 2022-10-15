@@ -30,6 +30,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16618">SPX-16618</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">Bio Sensor Hub</td>
+        <td style="vertical-align:middle" align="center">MAX32664 Biometric Sensor Hub</td>
+        <td style="vertical-align:middle" align="center">0x55</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15291">SEN-15291</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">BME280</td>
         <td style="vertical-align:middle" align="center">Pressure, Humidity and Temperature sensor</td>
         <td style="vertical-align:middle" align="center">0x77, 0x76</td>
@@ -283,6 +289,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">TMP117</td>
         <td style="vertical-align:middle" align="center">Precision temperature sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15805">SEN-15805</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">0x55</td>
+        <td style="vertical-align:middle" align="center">Bio Sensor Hub</td>
+        <td style="vertical-align:middle" align="center">MAX32664 Biometric Sensor Hub</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15291">SEN-15291</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center">0x58</td>
