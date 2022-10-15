@@ -51,15 +51,18 @@ private:
     float read_uv_index();
 
     // methods to get/set our read-write properties
-    uint get_integration_time();
-    void set_integration_time(uint);
-    bool get_high_dynamic();
-    void set_high_dynamic(bool);
+    uint8_t get_integration_time();
+    void set_integration_time(uint8_t);
+    uint8_t get_high_dynamic();
+    void set_high_dynamic(uint8_t);
 
 public:
     // Define our read-write properties
-    spPropertyRWUint<spDevVEML6075, &spDevVEML6075::get_integration_time, &spDevVEML6075::set_integration_time> integrationTime;
-    spPropertyRWBool<spDevVEML6075, &spDevVEML6075::get_high_dynamic, &spDevVEML6075::set_high_dynamic> highDynamic;
+    spPropertyRWUint8<spDevVEML6075, &spDevVEML6075::get_integration_time, &spDevVEML6075::set_integration_time> integrationTime;
+    spDataLimitSetUint8 integration_time_limit = { { "50ms", VEML6075::IT_50MS }, { "100ms", VEML6075::IT_100MS },
+                                                   { "200ms", VEML6075::IT_200MS }, { "400ms", VEML6075::IT_400MS }, { "800ms", VEML6075::IT_800MS } };
+    spPropertyRWUint8<spDevVEML6075, &spDevVEML6075::get_high_dynamic, &spDevVEML6075::set_high_dynamic> highDynamic;
+    spDataLimitSetUint8 dynamic_limit = { { "Normal Dynamic", VEML6075::DYNAMIC_NORMAL }, { "High Dynamic", VEML6075::DYNAMIC_NORMAL } };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevVEML6075, &spDevVEML6075::read_uva> uva;    
