@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected( spDevI2C &i2cDriver, uint8_t address, int connectResetPin = -1, int connectMfioPin = -1 );
     static const char *getDeviceName()
     {
         return kBioHubDeviceName;
@@ -41,7 +41,7 @@ public:
     static uint8_t defaultDeviceAddress[];
 
     // Method called to initialize the class
-    bool onInitialize(TwoWire &);
+    bool onInitialize( TwoWire &, int connectResetPin = -1, int connectMfioPin = -1 );
 
 private:
 
@@ -62,8 +62,8 @@ private:
 
     int _resetPin = -1;
     int _mfioPin = -1;
-    bool _beginAttempted = false;
-    bool _beginSuccess = false;
+    bool _begun = false;
+    bool _initialized = false;
 
     // flags to prevent readBpm being called multiple times
     bool _heartRate = false;
