@@ -48,6 +48,7 @@ class spParameterIn : public spParameter
     virtual spEditResult_t editValue(spDataEditor &) = 0;
     virtual bool setValue(spDataVariable&) = 0;
     virtual spDataLimit * dataLimit(void) = 0;
+    std::string to_string() { return std::string(name());}; // for consistancy
 };
 class spParameterOut : public spParameter, public spDataOut
 {
