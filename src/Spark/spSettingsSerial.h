@@ -68,6 +68,10 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     uint8_t getMenuSelectionYN(uint timeout = 30);
 
   private:
+
+    // after set message timeout in ms
+    static constexpr uint16_t  kMessageDelayTimeout = 700;
+
     uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = 30);
 
     //-----------------------------------------------------------------------------
@@ -227,6 +231,82 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         return level;
     };
 
+    //-----------------------------------------------------------------------------
+    // drawPage()  - property with a limit edition
+
+    template <class T>
+    bool drawPage(spObject *pCurrent, T *pEntity, spDataLimit *propLimit, bool showValue = false)
+    {
+        if (!pCurrent || !pEntity || !propLimit)
+            return false;
+
+        bool returnValue = false;
+        uint8_t selected = 0;
+        int nMenuItems;
+
+        spDataLimitList limitTags = propLimit->limits();
+
+        while (true)
+        {
+            drawPageHeader(pCurrent, pEntity->name());
+
+            if (showValue)
+                Serial.printf("Current Value of `%s` =  %s\n\r\n\r", pEntity->name(), pEntity->to_string().c_str());
+            Serial.printf("Select from the following values:\n\r\n\r");
+
+            nMenuItems = 0;
+
+            for (auto item : limitTags)
+            {
+                nMenuItems++;
+                drawMenuEntry(nMenuItems, (item.name + " = " + item.data.to_string()).c_str());
+            }
+
+            if (nMenuItems == 0)
+                Serial.printf("\tNo Entries\n\r");
+            else if (nMenuItems < 0)
+            {
+                Serial.println("Error generating menu entries.");
+                spLog_E("Error generating menu entries");
+                return false;
+            }
+
+            drawPageFooter(pCurrent);
+
+            selected = getMenuSelection((uint)nMenuItems);
+
+            // done?
+            if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
+            {
+                Serial.println("Escape");
+                returnValue = false;
+                break;
+            }
+            else if (selected == kReadBufferExit)
+            {
+                Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
+                returnValue = true;
+                break;
+            }
+
+            Serial.println(selected);
+
+            bool result = pEntity->setValue(limitTags.at(selected - 1).data);
+
+            if (result)
+                Serial.printf("\t[The value of %s was updated to %s = %s ]\n\r", pEntity->name(),
+                              limitTags.at(selected - 1).name.c_str(),
+                              limitTags.at(selected - 1).data.to_string().c_str());
+            else
+                Serial.printf("\t[%s is unchanged]\n\r", pEntity->name());
+
+            delay(kMessageDelayTimeout); // good UX here I think
+
+            break;
+        }
+
+        return returnValue;
+    };
     void drawMenuEntry(uint item, spDescriptor *pDesc);
     void drawMenuEntry(uint item, const char *);
     void drawPageHeader(spObject *, const char *szItem = nullptr);
