@@ -42,6 +42,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15440">SEN-15440</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">BMP384</td>
+        <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
+        <td style="vertical-align:middle" align="center">0x77, 0x76</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19662">SEN-19662</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">BME680</td>
         <td style="vertical-align:middle" align="center">Air quality sensor</td>
         <td style="vertical-align:middle" align="center">0x77, 0x76</td>
@@ -379,6 +385,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">BME280</td>
         <td style="vertical-align:middle" align="center">Pressure, Humidity and Temperature sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15440">SEN-15440</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x76</b>, <b>0x77</b></td>
+        <td style="vertical-align:middle" align="center">BMP384</td>
+        <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19662">SEN-19662</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x76</b>, <b>0x77</b></td>
