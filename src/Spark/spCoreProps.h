@@ -165,7 +165,8 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
   
   public:
 
-    _spPropertyBase() : _dataLimit{nullptr}, _limitIsAlloc{false} {};
+    _spPropertyBase() : _dataLimit{nullptr}, _limitIsAlloc{false}, 
+        _dataLimitType{spDataLimit::dataLimitNone} {};
 
     //---------------------------------------------------------------------------------
     spDataType_t type()
@@ -245,8 +246,20 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
+    //---------------------------------------------------------------------------------
+    bool setValue( spDataVariable &value){
 
+        if ( value.type == type())
+        {
+            T c;
+            set(value.get(c));
+            return true;
+        }
+        return false;
+    };
+    //---------------------------------------------------------------------------------    
     // Data Limit things
+    //---------------------------------------------------------------------------------    
     void setDataLimit( spDataLimitType<T> &dataLimit)
     {
         if (_dataLimit && _limitIsAlloc)
@@ -268,23 +281,60 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         return _dataLimit;
     }
 
-    bool setValue( spDataVariable &value){
-
-        if ( value.type == type())
+    void setDataLimitRange( T min, T max)
+    {
+        if ( _dataLimitType != spDataLimit::dataLimitRange)
         {
-            T c;
-            set(value.get(c));
-            return true;
+            if (_dataLimit != nullptr && _limitIsAlloc)
+                delete _dataLimit;
+            _dataLimit = new spDataLimitRange<T>();
+            _dataLimitType = spDataLimit::dataLimitRange;
+            _limitIsAlloc=true;
         }
-        return false;
-    };
+        ((spDataLimitRange<T>*)_dataLimit)->setRange(min,max);      
+    }
 
-protected:
+    void setDataLimitRange( std::pair<T,T> range)
+    {
+        setDataLimitRange(range.first, range.second);
+    }
 
-    spDataLimitType<T>  *_dataLimit;
+    void addDataLimitValidValue(  std::string name, T value)
+    {
+        if ( _dataLimitType != spDataLimit::dataLimitSet)
+        {
+            if (_dataLimit != nullptr && _limitIsAlloc)
+                delete _dataLimit;
+            _dataLimit = new spDataLimitSetType<T>();
+            _dataLimitType = spDataLimit::dataLimitSet;
+            _limitIsAlloc=true;
+        }
+        ((spDataLimitSetType<T>*)_dataLimit)->addItem(name, value);
+    }
+    void addDataLimitValidValue( std::pair<const std::string, T> value)
+    {
+        addDataLimitValidValue((std::string)value.first, value.second);
+    }
 
+    void addDataLimitValidValue( std::initializer_list<std::pair<const std::string, T>> limitSet )
+    {
+        for (auto item : limitSet)
+            addDataLimitValidValue(item);
+    }
+
+    void clearDataLimit(void)
+    {
+        if ( _dataLimit )
+        {
+            delete _dataLimit;
+            _dataLimitType = spDataLimit::dataLimitNone;
+        }
+    }
 private:
+    spDataLimitType<T>  *_dataLimit;
     bool _limitIsAlloc;
+    spDataLimit::dataLimitType_t  _dataLimitType;
+
 };
 
 //----------------------------------------------------------------------------------------
@@ -435,6 +485,26 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     {
     }
 
+    // Initial value and a limit range
+    _spPropertyTypedRW( T value, std::pair<T, T> limitRange) : _spPropertyTypedRW(value)
+    {
+       _spPropertyBase<T>::setDataLimitRange(limitRange);
+    }
+    // Just a limit range
+    _spPropertyTypedRW( std::pair<T, T> limitRange) 
+    {
+        _spPropertyBase<T>::setDataLimitRange(limitRange);
+    }
+    // Limit data set
+    _spPropertyTypedRW( std::initializer_list<std::pair<const std::string, T>> limitSet)
+    {
+        _spPropertyBase<T>::addDataLimitValidValue(limitSet);
+    }
+     // Initial value and limit data set.
+    _spPropertyTypedRW( T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTypedRW(value)
+    {
+        _spPropertyBase<T>::addDataLimitValidValue(limitSet);       
+    }
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
@@ -739,24 +809,6 @@ class spPropertyRWString : public _spPropertyBaseString
 //
 template <class Object, class T> class _spPropertyTyped : public _spPropertyBase<T>
 {
-  private:
-    bool setRangeLimit(std::initializer_list<T> limitRange)
-    {
-
-        if ( limitRange.size() > 1 )
-        {
-            const T * data = limitRange.begin();
-            spDataLimitRange<T> *pLimit = new spDataLimitRange<T>(*data, *(data+1));
-            _spPropertyBase<T>::setDataLimit(pLimit);
-            return true;
-        }
-        return false;
-    }
-    void setSetLimit(std::initializer_list<std::pair<const std::string, T>> limitSet)
-    {
-        spDataLimitSetType<T> *pLimit = new spDataLimitSetType<T>(limitSet);
-        _spPropertyBase<T>::setDataLimit(pLimit);
-    }
   public:
 
     _spPropertyTyped()
@@ -766,26 +818,24 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
     {
     }
     // Initial value and a limit range
-    _spPropertyTyped( T value, std::initializer_list<T> limitRange) : _spPropertyTyped(value)
+    _spPropertyTyped( T value, std::pair<T, T> limitRange) : _spPropertyTyped(value)
     {
-       setRangeLimit(limitRange);
-        // TODO, check size of the range init list
+       _spPropertyBase<T>::setDataLimitRange(limitRange);
     }
     // Just a limit range
-    _spPropertyTyped( std::initializer_list<T> limitRange) 
+    _spPropertyTyped( std::pair<T, T> limitRange) 
     {
-        setRangeLimit(limitRange);
-        // TODO, check size of the range init list
+        _spPropertyBase<T>::setDataLimitRange(limitRange);
     }
     // Limit data set
     _spPropertyTyped( std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
-        setSetLimit(limitSet);
+        _spPropertyBase<T>::addDataLimitValidValue(limitSet);
     }
      // Initial value and limit data set.
     _spPropertyTyped( T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTyped(value)
     {
-        setSetLimit(limitSet);        
+        _spPropertyBase<T>::addDataLimitValidValue(limitSet);       
     }
 
 
