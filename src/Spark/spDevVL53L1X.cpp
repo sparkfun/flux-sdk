@@ -43,7 +43,6 @@ spDevVL53L1X::spDevVL53L1X()
 
     // Register read-write properties
     spRegister(distanceMode, "Distance Mode", "Distance Mode");
-    // Limit for short distance mode is 20:1000. For long distance mode, it is 140:1000. Default to short.
     spRegister(intermeasurementPeriod, "Inter-Measurement Period (ms)", "Inter-Measurement Period (ms)");
     spRegister(crosstalk, "Crosstalk", "Crosstalk");
     spRegister(offset, "Offset", "Offset");
@@ -81,6 +80,7 @@ bool spDevVL53L1X::onInitialize(TwoWire &wirePort)
     if (result)
     {
         (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
+        // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
         (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
         uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
         if (!_shortDistanceMode)
@@ -120,6 +120,7 @@ void spDevVL53L1X::set_distance_mode(uint8_t mode)
     SFEVL53L1X::stopRanging();
     _shortDistanceMode = (mode == DISTANCE_SHORT);
     (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
+    // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
     (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
     uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
     if (!_shortDistanceMode)
