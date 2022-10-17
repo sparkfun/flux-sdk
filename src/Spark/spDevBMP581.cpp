@@ -86,8 +86,14 @@ bool spDevBMP581::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 float spDevBMP581::read_TemperatureC()
 {
-    if (_temperature)
+    if (!_temperature)
     {
+        if ((_powerMode == BMP5_POWERMODE_DEEP_STANDBY) || (_powerMode == BMP5_POWERMODE_STANDBY))
+        {
+            BMP581::setMode(BMP5_POWERMODE_FORCED);
+            // Note to self: do we need to delay here? Or poll data ready somehow?
+        }
+
         int8_t err = BMP581::getSensorData(&bmpData);
 
         if (err == BMP5_OK)
@@ -98,8 +104,14 @@ float spDevBMP581::read_TemperatureC()
 }
 float spDevBMP581::read_Pressure()
 {
-    if (_pressure)
+    if (!_pressure)
     {
+        if ((_powerMode == BMP5_POWERMODE_DEEP_STANDBY) || (_powerMode == BMP5_POWERMODE_STANDBY))
+        {
+            BMP581::setMode(BMP5_POWERMODE_FORCED);
+            // Note to self: do we need to delay here? Or poll data ready somehow?
+        }
+
         int8_t err = BMP581::getSensorData(&bmpData);
 
         if (err == BMP5_OK)

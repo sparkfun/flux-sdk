@@ -66,6 +66,10 @@ public:
     spParameterOutFloat<spDevBMP581, &spDevBMP581::read_Pressure> pressure;
 
     // Define our read-write properties
+    // Note to self: we might need to restrict the available power modes if we can't guarantee spDevBMP581 handles
+    // all possible/required changes of mode correctly...
+    // From Dryw's notes: the sensor can only enter forced mode from sleep mode.
+    //                    Transitions between forced and normal modes are ignored
     spPropertyRWUint8<spDevBMP581, &spDevBMP581::get_power_mode, &spDevBMP581::set_power_mode> powerMode
         = { BMP5_POWERMODE_NORMAL, { { "Standby", BMP5_POWERMODE_STANDBY }, { "Normal", BMP5_POWERMODE_NORMAL },
                                      { "Forced", BMP5_POWERMODE_FORCED }, { "Continuous", BMP5_POWERMODE_CONTINOUS },
