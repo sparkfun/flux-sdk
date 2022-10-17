@@ -67,8 +67,8 @@ public:
     spPropertyRWUint8<spDevVL53L1X, &spDevVL53L1X::get_distance_mode, &spDevVL53L1X::set_distance_mode> distanceMode
          = { DISTANCE_SHORT, { { "Short", DISTANCE_SHORT }, { "Long", DISTANCE_LONG } } }; // Default to short distance mode
     spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_intermeasurment_period, &spDevVL53L1X::set_intermeasurment_period> intermeasurementPeriod;
-    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_crosstalk, &spDevVL53L1X::set_crosstalk> crosstalk = { 0, { 0, 4000 } };
-    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_offset, &spDevVL53L1X::set_offset> offset = { 0, { 0, 4000 } };
+    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_crosstalk, &spDevVL53L1X::set_crosstalk> crosstalk = { 0, 0, 4000 };
+    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_offset, &spDevVL53L1X::set_offset> offset = { 0, 0, 4000 };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_distance> distance;    
