@@ -44,7 +44,7 @@ public:
     bool onInitialize(TwoWire &);
 
 private:
-	bme68xData bmeData;
+	bme68xData bmeData = { 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0 };
 
     // methods used to get values for our output parameters
     float read_Humidity();

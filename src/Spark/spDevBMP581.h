@@ -44,7 +44,7 @@ public:
     bool onInitialize(TwoWire &);
 
 private:
-	bmp5_sensor_data bmpData;
+	bmp5_sensor_data bmpData = { 0.0, 0.0 };
 
     // methods used to get values for our output parameters
     float read_TemperatureC();
@@ -54,9 +54,21 @@ private:
     bool _temperature = false;
     bool _pressure = false;
 
+    uint8_t _powerMode = BMP5_POWERMODE_NORMAL;
+    bool _begun = false;
+
+    uint8_t get_power_mode();
+    void set_power_mode(uint8_t);
+
 public:
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevBMP581, &spDevBMP581::read_TemperatureC> temperatureC;
     spParameterOutFloat<spDevBMP581, &spDevBMP581::read_Pressure> pressure;
+
+    // Define our read-write properties
+    spPropertyRWUint8<spDevBMP581, &spDevBMP581::get_power_mode, &spDevBMP581::set_power_mode> powerMode
+        = { BMP5_POWERMODE_NORMAL, { { "Standby", BMP5_POWERMODE_STANDBY }, { "Normal", BMP5_POWERMODE_NORMAL },
+                                     { "Forced", BMP5_POWERMODE_FORCED }, { "Continuous", BMP5_POWERMODE_CONTINOUS },
+                                     { "Deep_Standby", BMP5_POWERMODE_DEEP_STANDBY } } };
 
 };

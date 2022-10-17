@@ -44,7 +44,7 @@ public:
     bool onInitialize(TwoWire &);
 
 private:
-	bmp3_data bmpData;
+	bmp3_data bmpData = { 0.0, 0.0 };
 
     // methods used to get values for our output parameters
     double read_TemperatureC();

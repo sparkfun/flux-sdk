@@ -75,7 +75,11 @@ bool spDevBMP581::onInitialize(TwoWire &wirePort)
         spLog_E("BMP581 Sensor error: %d", result);
         return false;
     }
-	
+
+	_begun = true;
+
+    BMP581::setMode((bmp5_powermode)_powerMode);
+
     return true;
 }
 
@@ -103,4 +107,13 @@ float spDevBMP581::read_Pressure()
 	}
     _pressure = false;
     return bmpData.pressure;
+}
+
+// Get-Set methods for our read-write properties
+uint8_t spDevBMP581::get_power_mode() { return _powerMode; }
+void spDevBMP581::set_power_mode(uint8_t mode)
+{
+    _powerMode = mode;
+    if (_begun)
+        BMP581::setMode((bmp5_powermode)mode);
 }
