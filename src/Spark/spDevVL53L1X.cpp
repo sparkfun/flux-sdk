@@ -43,13 +43,10 @@ spDevVL53L1X::spDevVL53L1X()
 
     // Register read-write properties
     spRegister(distanceMode, "Distance Mode", "Distance Mode");
-    distanceMode.setDataLimit(distance_mode_limit);
+    // Limit for short distance mode is 20:1000. For long distance mode, it is 140:1000. Default to short.
     spRegister(intermeasurementPeriod, "Inter-Measurement Period (ms)", "Inter-Measurement Period (ms)");
-    intermeasurementPeriod.setDataLimit(_shortDistanceMode ? intermeasurement_period_limit_short : intermeasurement_period_limit_long);
     spRegister(crosstalk, "Crosstalk", "Crosstalk");
-    crosstalk.setDataLimit(crosstalk_limit);
     spRegister(offset, "Offset", "Offset");
-    offset.setDataLimit(offset_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -84,7 +81,7 @@ bool spDevVL53L1X::onInitialize(TwoWire &wirePort)
     if (result)
     {
         (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
-        intermeasurementPeriod.setDataLimit(_shortDistanceMode ? intermeasurement_period_limit_short : intermeasurement_period_limit_long);
+        (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
         uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
         if (!_shortDistanceMode)
             if (imp < 140)
@@ -123,7 +120,7 @@ void spDevVL53L1X::set_distance_mode(uint8_t mode)
     SFEVL53L1X::stopRanging();
     _shortDistanceMode = (mode == DISTANCE_SHORT);
     (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
-    intermeasurementPeriod.setDataLimit(_shortDistanceMode ? intermeasurement_period_limit_short : intermeasurement_period_limit_long);
+    (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
     uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
     if (!_shortDistanceMode)
         if (imp < 140)
@@ -139,6 +136,8 @@ uint16_t spDevVL53L1X::get_intermeasurment_period()
 void spDevVL53L1X::set_intermeasurment_period(uint16_t period)
 {
     SFEVL53L1X::stopRanging();
+
+    // Validate period. This is probably redundant - given the data limit range?
     if (period < 20)
         period = 20;
     if (!_shortDistanceMode)
@@ -146,6 +145,7 @@ void spDevVL53L1X::set_intermeasurment_period(uint16_t period)
             period = 140;
     if (period > 1000)
         period = 1000;
+
     SFEVL53L1X::setIntermeasurementPeriod(period);
     SFEVL53L1X::startRanging();
 }
