@@ -98,7 +98,7 @@ bool spDevBME68x::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 float spDevBME68x::read_TemperatureC()
 {
-    if (_temperature)
+    if (!_temperature)
     {
         Bme68x::setOpMode(BME68X_FORCED_MODE);
         delayMicroseconds(Bme68x::getMeasDur());
@@ -117,7 +117,7 @@ float spDevBME68x::read_TemperatureC()
 }
 float spDevBME68x::read_Humidity()
 {
-    if (_humidity)
+    if (!_humidity)
     {
         Bme68x::setOpMode(BME68X_FORCED_MODE);
         delayMicroseconds(Bme68x::getMeasDur());
@@ -136,7 +136,7 @@ float spDevBME68x::read_Humidity()
 }
 float spDevBME68x::read_Pressure()
 {
-    if (_pressure)
+    if (!_pressure)
     {
         Bme68x::setOpMode(BME68X_FORCED_MODE);
         delayMicroseconds(Bme68x::getMeasDur());
@@ -155,7 +155,7 @@ float spDevBME68x::read_Pressure()
 }
 float spDevBME68x::read_GasResistance()
 {
-    if (_gasResistance)
+    if (!_gasResistance)
     {
         Bme68x::setOpMode(BME68X_FORCED_MODE);
         delayMicroseconds(Bme68x::getMeasDur());
@@ -174,7 +174,7 @@ float spDevBME68x::read_GasResistance()
 }
 uint8_t spDevBME68x::read_Status()
 {
-    if (_status)
+    if (!_status)
     {
         Bme68x::setOpMode(BME68X_FORCED_MODE);
         delayMicroseconds(Bme68x::getMeasDur());

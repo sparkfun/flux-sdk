@@ -82,7 +82,7 @@ bool spDevBMP384::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 double spDevBMP384::read_TemperatureC()
 {
-    if (_temperature)
+    if (!_temperature)
     {
         int8_t err = BMP384::getSensorData(&bmpData);
 
@@ -94,7 +94,7 @@ double spDevBMP384::read_TemperatureC()
 }
 double spDevBMP384::read_Pressure()
 {
-    if (_pressure)
+    if (!_pressure)
     {
         int8_t err = BMP384::getSensorData(&bmpData);
 
