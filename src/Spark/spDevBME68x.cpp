@@ -14,11 +14,12 @@
 #define BME688_CHIP_ID_REG 0xF0 // Chip ID 0x01
 #define BME680_CHIP_ID_REG 0xD0 // Chip ID 0x61
 
-#define kBME68xAddressDefault 0x3B
+#define kBME68xAddressDefault 0x77
+#define kBME68xAddressAlt1 0x76
 
 // Define our class static variables - allocs storage for them
 
-uint8_t spDevBME68x::defaultDeviceAddress[] = {kBME68xAddressDefault, kSparkDeviceAddressNull};
+uint8_t spDevBME68x::defaultDeviceAddress[] = {kBME68xAddressDefault, kBME68xAddressAlt1, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
