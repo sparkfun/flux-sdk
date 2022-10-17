@@ -720,7 +720,14 @@ public:
     void clearLimits(void ){
         _dataLimits.clear();
     };
+
+    typedef enum{
+        dataLimitNone = 0,
+        dataLimitRange,
+        dataLimitSet
+    }dataLimitType_t;
 };
+
 
 template <typename T>
 class spDataLimitType : public spDataLimit
