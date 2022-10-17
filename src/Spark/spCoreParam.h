@@ -445,7 +445,7 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
 };
 
 template <class T, class Object, void (Object::*_setter)(T const &)>
-class _spParameterIn : public spParameterIn, _spDataIn<T>
+class _spParameterIn : public spParameterIn, public _spDataIn<T>
 {
     Object *my_object; // Pointer to the containing object
 
@@ -453,10 +453,19 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
     _spParameterIn() : my_object(0)
     {
     }
-
-    _spParameterIn(Object *me) : my_object(me)
+        
+    // Limit data range
+    _spParameterIn(T min, T max)
     {
+      _spDataIn<T>::setDataLimitRange(min, max);
+    }        
+    // Limit data set
+    _spParameterIn( std::initializer_list<std::pair<const std::string, T>> limitSet )
+    {
+       _spDataIn<T>::addDataLimitValidValue(limitSet);
     }
+
+
     //---------------------------------------------------------------------------------
     spDataType_t type()
     {
@@ -538,8 +547,9 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
         if (bSuccess) // success
         {
             //do we have a dataLimit set, and if so are we in limits?
-            if ( _dataLimit && !_dataLimit->isValid(value))
+            if ( !_spDataIn<T>::isValueValid(value))
                 return spEditOutOfRange;
+
             set(value);
         }
 
@@ -555,19 +565,12 @@ class _spParameterIn : public spParameterIn, _spDataIn<T>
         }
         return false;
     };
-    // Data Limit things
-    void setDataLimit( spDataLimitType<T> &dataLimit)
-    {
-        _dataLimit = &dataLimit;
-    }
+    
     spDataLimit * dataLimit(void)
     {
-        return _dataLimit;
+        return _spDataIn<T>::dataLimit();
     }
 
-protected:
-
-    spDataLimitType<T>  *_dataLimit;
 };
 
 // Define by type
@@ -619,6 +622,7 @@ class spParameterInString : public spParameterIn, _spDataInString
     {
         return _spDataInString::type();
     };
+
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.

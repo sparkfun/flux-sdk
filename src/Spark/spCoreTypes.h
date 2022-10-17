@@ -15,6 +15,9 @@
 #include "spCoreLog.h"
 #include "spStorage.h"
 #include "spUtils.h"
+
+
+#include "Arduino.h"
 //----------------------------------------------------------------------------------------
 // spDescriptor
 //
@@ -472,215 +475,8 @@ class _spDataOutString : public spDataOut
     typedef std::string value_type; // might be handy in future
 };
 
-class spDataIn
-{
-  public:
-    virtual spDataType_t type(void) = 0;
-
-    virtual void setBool(bool) = 0;
-    virtual void setInt8(int8_t) = 0;
-    virtual void setInt16(int16_t) = 0;    
-    virtual void setInt(int) = 0;
-    virtual void setUint8(uint8_t) = 0;
-    virtual void setUint16(uint16_t) = 0;    
-    virtual void setUint(uint) = 0;
-    virtual void setFloat(float) = 0;
-    virtual void setDouble(double) = 0;
-    virtual void setString(std::string &) = 0;
-
-    void set_value(bool v)
-    {
-        setBool(v);
-    }
-    void set_value(int8_t v)
-    {
-        setInt8(v);
-    }
-    void set_value(int16_t v)
-    {
-        setInt16(v);
-    }
-    void set_value(int v)
-    {
-        setInt(v);
-    }
-    void set_value(uint8_t v)
-    {
-        setUint8(v);
-    }
-    void set_value(uint16_t v)
-    {
-        setUint16(v);
-    }
-    void set_value(uint v)
-    {
-        setUint(v);
-    }
-    void set_value(float v)
-    {
-        setFloat(v);
-    }
-    void set_value(double v)
-    {
-        setDouble(v);
-    }
-    void set_value(std::string &v)
-    {
-        setString(v);
-    }
-
-    
-};
-
-template <typename T> class _spDataIn : public spDataIn
-{
-
-  public:
-    spDataType_t type(void)
-    {
-        T c;
-        return spDataTyper::type(c);
-    };
-    virtual void set(T const &value) = 0;
-
-    void setBool(bool value)
-    {
-        set((T)value);
-    }
-    void setInt8(int8_t value)
-    {
-        set((T)value);
-    }
-    void setInt16(int16_t value)
-    {
-        set((T)value);
-    }
-    void setInt(int value)
-    {
-        set((T)value);
-    }
-    void setUint8(uint8_t value)
-    {
-        set((T)value);
-    }
-    void setUint16(uint16_t value)
-    {
-        set((T)value);
-    }
-    void setUint(uint value)
-    {
-        set((T)value);
-    }
-    void setFloat(float value)
-    {
-        set((T)value);
-    }
-    void setDouble(double value)
-    {
-        set((T)value);
-    }
-    void setString(std::string &value)
-    {
-        // Convert string to native type..
-        switch (this->type())
-        {
-        case spTypeBool:
-            set(value.length() > 0 ? (value != "false") : false);
-            break;
-        case spTypeInt:
-            set(std::stoi(value));
-            break;
-        case spTypeInt8:
-            set((int8_t)std::stoi(value));
-            break;
-        case spTypeInt16:
-            set((int16_t)std::stoi(value));
-            break;
-        case spTypeUInt:
-            set(std::stoul(value));
-            break;
-        case spTypeUInt8:
-            set((uint8_t)std::stoul(value));
-            break;
-        case spTypeUInt16:
-            set((uint16_t)std::stoul(value));
-            break;
-        case spTypeFloat:
-            set(std::stof(value));
-            break;
-        case spTypeDouble:
-            set(std::stof(value));
-            break;
-        case spTypeString:
-            break;
-        default:
-            spLog_W("Unknown property type set");
-            break;
-        }
-    };
-};
-
-class _spDataInString : public spDataIn
-{
-
-  public:
-    spDataType_t type(void)
-    {
-        return spTypeString;
-    };
-    virtual void set(const std::string &value) = 0;
-
-    virtual void set(const char *value)
-    {
-        std::string stmp = value;
-        set(value);
-    }
-
-    void setBool(bool value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setInt8(int8_t value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setInt16(int16_t value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setInt(int value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setUint8(uint8_t value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setUint16(uint16_t value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setUint(uint value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setFloat(float value)
-    {
-        set(sp_utils::to_string(value));
-    }
-    void setDouble(double value)
-    {
-        set(sp_utils::to_string(value));   
-    }
-    void setString(std::string &value)
-    {
-        set(value);
-    };
-};
-
-
 //---------------------------------------------------------
-// Testing data limits
+// Data input limits
 
 typedef enum 
 {
@@ -866,6 +662,304 @@ using spDataLimitSetUnt = spDataLimitSetType<uint>;
 using spDataLimitSetFloat = spDataLimitSetType<float>;
 using spDataLimitSetDouble = spDataLimitSetType<double>;
 using spDataLimitSetString = spDataLimitSetType<std::string>;
+//-----------------------------------------------------------------------------
+// Data input interface.
+class spDataIn
+{
+  public:
+    virtual spDataType_t type(void) = 0;
+
+    virtual void setBool(bool) = 0;
+    virtual void setInt8(int8_t) = 0;
+    virtual void setInt16(int16_t) = 0;    
+    virtual void setInt(int) = 0;
+    virtual void setUint8(uint8_t) = 0;
+    virtual void setUint16(uint16_t) = 0;    
+    virtual void setUint(uint) = 0;
+    virtual void setFloat(float) = 0;
+    virtual void setDouble(double) = 0;
+    virtual void setString(std::string &) = 0;
+
+    void set_value(bool v)
+    {
+        setBool(v);
+    }
+    void set_value(int8_t v)
+    {
+        setInt8(v);
+    }
+    void set_value(int16_t v)
+    {
+        setInt16(v);
+    }
+    void set_value(int v)
+    {
+        setInt(v);
+    }
+    void set_value(uint8_t v)
+    {
+        setUint8(v);
+    }
+    void set_value(uint16_t v)
+    {
+        setUint16(v);
+    }
+    void set_value(uint v)
+    {
+        setUint(v);
+    }
+    void set_value(float v)
+    {
+        setFloat(v);
+    }
+    void set_value(double v)
+    {
+        setDouble(v);
+    }
+    void set_value(std::string &v)
+    {
+        setString(v);
+    }
+
+    
+};
+
+template <typename T> class _spDataIn : public spDataIn
+{
+
+  public:
+    _spDataIn() : _dataLimit{nullptr}, _limitIsAlloc{false}, 
+        _dataLimitType{spDataLimit::dataLimitNone} {};
+
+    spDataType_t type(void)
+    {
+        T c;
+        return spDataTyper::type(c);
+    };
+    virtual void set(T const &value) = 0;
+
+    void setBool(bool value)
+    {
+        set((T)value);
+    }
+    void setInt8(int8_t value)
+    {
+        set((T)value);
+    }
+    void setInt16(int16_t value)
+    {
+        set((T)value);
+    }
+    void setInt(int value)
+    {
+        set((T)value);
+    }
+    void setUint8(uint8_t value)
+    {
+        set((T)value);
+    }
+    void setUint16(uint16_t value)
+    {
+        set((T)value);
+    }
+    void setUint(uint value)
+    {
+        set((T)value);
+    }
+    void setFloat(float value)
+    {
+        set((T)value);
+    }
+    void setDouble(double value)
+    {
+        set((T)value);
+    }
+    void setString(std::string &value)
+    {
+        // Convert string to native type..
+        switch (this->type())
+        {
+        case spTypeBool:
+            set(value.length() > 0 ? (value != "false") : false);
+            break;
+        case spTypeInt:
+            set(std::stoi(value));
+            break;
+        case spTypeInt8:
+            set((int8_t)std::stoi(value));
+            break;
+        case spTypeInt16:
+            set((int16_t)std::stoi(value));
+            break;
+        case spTypeUInt:
+            set(std::stoul(value));
+            break;
+        case spTypeUInt8:
+            set((uint8_t)std::stoul(value));
+            break;
+        case spTypeUInt16:
+            set((uint16_t)std::stoul(value));
+            break;
+        case spTypeFloat:
+            set(std::stof(value));
+            break;
+        case spTypeDouble:
+            set(std::stof(value));
+            break;
+        case spTypeString:
+            break;
+        default:
+            spLog_W("Unknown property type set");
+            break;
+        }
+    };
+    //---------------------------------------------------------------------------------    
+    // Data Limit things
+    //---------------------------------------------------------------------------------    
+    void setDataLimit( spDataLimitType<T> &dataLimit)
+    {
+        if (_dataLimit && _limitIsAlloc)
+            delete _dataLimit;
+
+        _limitIsAlloc = false;
+        _dataLimit = &dataLimit;
+    }
+    void setDataLimit( spDataLimitType<T> *dataLimit)
+    {
+        if (_dataLimit && _limitIsAlloc)
+            delete _dataLimit;
+
+        _limitIsAlloc = true;
+        _dataLimit = dataLimit;
+    }
+    // -------------------------------------------
+    spDataLimit * dataLimit(void)
+    {
+        return _dataLimit;
+    }
+
+    void setDataLimitRange( T min, T max)
+    {
+        if ( _dataLimitType != spDataLimit::dataLimitRange)
+        {
+            if (_dataLimit != nullptr && _limitIsAlloc)
+                delete _dataLimit;
+            _dataLimit = new spDataLimitRange<T>();
+            _dataLimitType = spDataLimit::dataLimitRange;
+            _limitIsAlloc=true;
+        }
+        ((spDataLimitRange<T>*)_dataLimit)->setRange(min,max);      
+    }
+
+    void setDataLimitRange( std::pair<T,T> range)
+    {
+        setDataLimitRange(range.first, range.second);
+    }
+
+    void addDataLimitValidValue(  std::string name, T value)
+    {
+        if ( _dataLimitType != spDataLimit::dataLimitSet)
+        {
+            if (_dataLimit != nullptr && _limitIsAlloc)
+                delete _dataLimit;
+            _dataLimit = new spDataLimitSetType<T>();
+            _dataLimitType = spDataLimit::dataLimitSet;
+            _limitIsAlloc=true;
+        }
+        ((spDataLimitSetType<T>*)_dataLimit)->addItem(name, value);
+    }
+    void addDataLimitValidValue( std::pair<const std::string, T> value)
+    {
+        addDataLimitValidValue((std::string)value.first, value.second);
+    }
+
+    void addDataLimitValidValue( std::initializer_list<std::pair<const std::string, T>> limitSet )
+    {
+        for (auto item : limitSet)
+            addDataLimitValidValue(item);
+    }
+    
+    void clearDataLimit(void)
+    {
+        if ( _dataLimit )
+        {
+            delete _dataLimit;
+            _dataLimitType = spDataLimit::dataLimitNone;
+        }
+    }
+    // Check value against the data limits
+    bool isValueValid(T value)
+    {
+        // if we have a limit, check value, else return true.
+        return  _dataLimit != nullptr ? _dataLimit->isValid(value) : true;
+    }
+
+private:
+    spDataLimitType<T>  *_dataLimit;
+    bool _limitIsAlloc;
+    spDataLimit::dataLimitType_t  _dataLimitType;
+
+};
+
+class _spDataInString : public spDataIn
+{
+
+  public:
+    spDataType_t type(void)
+    {
+        return spTypeString;
+    };
+    virtual void set(const std::string &value) = 0;
+
+    virtual void set(const char *value)
+    {
+        std::string stmp = value;
+        set(value);
+    }
+
+    void setBool(bool value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setInt8(int8_t value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setInt16(int16_t value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setInt(int value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setUint8(uint8_t value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setUint16(uint16_t value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setUint(uint value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setFloat(float value)
+    {
+        set(sp_utils::to_string(value));
+    }
+    void setDouble(double value)
+    {
+        set(sp_utils::to_string(value));   
+    }
+    void setString(std::string &value)
+    {
+        set(value);
+    };
+};
+
+
 
 //---------------------------------------------------------
 // Define simple type ID "types" - used for class IDs
