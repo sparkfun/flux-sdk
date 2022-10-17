@@ -21,6 +21,7 @@ class test_properties : public spActionType<test_properties>
 
     bool   _b_data=false;
     int    _i_data=0;
+    uint16_t _ui16_data=0;
     float  _f_data=0.;    
     std::string _s_data="";
 
@@ -33,21 +34,33 @@ public:
         spRegister(prop_bool);
         
         spRegister(prop_int, "MyInteger", "Testing integer property - No initial value, a set Limit set");
-        spRegister(prop_int_set, "Int Set Test", "Testing integer property - with limit set in init");    
+        spRegister(prop_int_set, "Int Set Test", "Testing integer property - with limit set in init");  
+
+
         spRegister(prop_uint_range, "Uint Range Test", "No initial value, range limit set");    
+        spRegister(prop_uint16, "Uint16 Test", "Uint 16, standard prop, initial value");
+        prop_uint16.setDataLimitRange(43, 98);
+
         spRegister(prop_float, "FloatValue", "Float with an initial value and a limit range");
-        spRegister(prop_str, "stringProp", "Testing a StringProperty");        
+        // change to a data limit set
+        prop_float.addDataLimitValidValue("ONE K", 1000.);
+        prop_float.addDataLimitValidValue("TWO K", 2000.);
+        prop_float.addDataLimitValidValue("THREE K", 3000.);
+        prop_float.addDataLimitValidValue("FOUR K", 4000.);
+
+
+        //spRegister(prop_str, "stringProp", "Testing a StringProperty");        
 
         spRegister(rw_prop_bool);
         
         // Register the RW int property and add the data limit set.
-        spRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property with data limit set");
-        rw_prop_int.setDataLimit(rw_init_limit);
+        spRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property with data limit set");        
+
+        spRegister(rw_prop_uint16, "RW UInt16", "UInt 16 RW property, with an initial value");
 
         spRegister(rw_prop_str);
         
-        spRegister(rw_prop_float, "RW Float", "Float property with a range limit");
-        rw_prop_float.setDataLimit(float_limit);
+        spRegister(rw_prop_float, "RW Float", "Float property with a range limit");        
     }
     
 
@@ -71,6 +84,17 @@ public:
     void set_int( int data){
 
         _i_data=data;
+
+    };
+
+    // int setter/getter
+    uint16_t get_uint16(void){
+
+        return _ui16_data;
+    }
+    void set_uint16( uint16_t data){
+
+        _ui16_data=data;
 
     };
 
@@ -113,27 +137,32 @@ public:
                                             {"Value 1Four", 44},      
                                             {"Value 1Five", 155}                       
                                             }};
-    spPropertyUint<test_properties>       prop_uint_range = { 20, 60 };
+    spPropertyUint<test_properties>       prop_uint_range = { {20, 60} };
+
+    spPropertyUint16<test_properties>     prop_uint16={11};
 
     // A float property with an initial value and a limit range
     spPropertyFloat<test_properties>    prop_float = {1.0, {-1.0, 20.0}};
-    spPropertyString<test_properties>   prop_str = {"starter string"};
+    //spPropertyString<test_properties>   prop_str = {"starter string"};
 
     // Define RW (getter/setter) Properties
     spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
     
-    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int = {111};    
-    // Add a list of available values for this property. These are name (human readable), value pairs
-    spDataLimitSetInt rw_init_limit = {
-        {"Value One", 111},
-        {"Value Two", 222},
-        {"Value Three", 333},        
-        {"Value Four", 444},      
-        {"Value Five", 555}                       
-    };
-    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float; 
-    spDataLimitRangeFloat float_limit = {-100, 100}; // limit the range from -100, 100
+    // Read-write property, with an initial value, and a set of Valid VAlues
+    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int = {111, {
+                                                                                                    {"Value One", 111},
+                                                                                                    {"Value Two", 222},
+                                                                                                    {"Value Three", 333},        
+                                                                                                    {"Value Four", 444},      
+                                                                                                    {"Value Five", 555}                       
+                                                                                                    } };
 
+    // uint 16 w/ initial value
+    spPropertyRWUint16<test_properties, &test_properties::get_uint16, &test_properties::set_uint16> rw_prop_uint16 = {4444};    
+
+    // Float with a initial value and a range limit
+    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float = {93, {-100, 100}}; 
+    
     spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str = {"rw string initial value"};   
 
 
