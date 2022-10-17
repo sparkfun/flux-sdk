@@ -38,8 +38,9 @@ spDevSDP3X::spDevSDP3X()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(temperatureCompensation, "Temperature Compensation", "True: Mass Flow; False: Differential Pressure");
-    spRegister(measurementAveraging, "Measurement Averaging", "True: enabled; False: disabled");
+    spRegister(temperatureCompensation, "Temperature Compensation", "Temperature Compensation");
+    temperatureCompensation.setDataLimit(temp_comp_limit);
+    spRegister(measurementAveraging, "Measurement Averaging", "Measurement Averaging");
 
     // Register parameters
     spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
@@ -104,7 +105,7 @@ bool spDevSDP3X::onInitialize(TwoWire &wirePort)
 
     SDP3X::stopContinuousMeasurement(address(), wirePort); // Make sure continuous measurements are stopped or .begin will fail
     bool result = SDP3X::begin(address(), wirePort);
-    result &= (SDP3X::startContinuousMeasurement(_tempComp, _measAvg) == SDP3X_SUCCESS);
+    result &= (SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg) == SDP3X_SUCCESS);
     return result;
 }
 
@@ -134,16 +135,16 @@ float spDevSDP3X::read_pressure()
 //----------------------------------------------------------------------------------------------------------
 // RW Properties
 
-bool spDevSDP3X::get_temperature_compensation()
+uint8_t spDevSDP3X::get_temperature_compensation()
 {
     return _tempComp;
 }
 
-void spDevSDP3X::set_temperature_compensation(bool enable)
+void spDevSDP3X::set_temperature_compensation(uint8_t mode)
 {
     SDP3X::stopContinuousMeasurement();
-    _tempComp = enable;
-    SDP3X::startContinuousMeasurement(_tempComp, _measAvg);
+    _tempComp = mode;
+    SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);
 }
 
 bool spDevSDP3X::get_measurement_averaging()
@@ -155,5 +156,5 @@ void spDevSDP3X::set_measurement_averaging(bool enable)
 {
     SDP3X::stopContinuousMeasurement();
     _measAvg = enable;
-    SDP3X::startContinuousMeasurement(_tempComp, _measAvg);
+    SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);
 }

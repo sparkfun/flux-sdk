@@ -42,10 +42,14 @@ spDevVL53L1X::spDevVL53L1X()
     spRegister(signalRate, "Signal Rate", "Signal Rate");
 
     // Register read-write properties
-    spRegister(distanceMode, "Distance Mode", "Distance Mode : True = Short; False = Long");
-    spRegister(intermeasurementPeriod, "Inter-Measurement Period", "Inter-Measurement Period : Min 20 or 140; Max 1000");
-    spRegister(crosstalk, "Crosstalk", "Crosstalk : Max 4000");
-    spRegister(offset, "Offset", "Offset : Max 4000");
+    spRegister(distanceMode, "Distance Mode", "Distance Mode");
+    distanceMode.setDataLimit(distance_mode_limit);
+    spRegister(intermeasurementPeriod, "Inter-Measurement Period (ms)", "Inter-Measurement Period (ms)");
+    intermeasurementPeriod.setDataLimit(_shortDistanceMode ? intermeasurement_period_limit_short : intermeasurement_period_limit_long);
+    spRegister(crosstalk, "Crosstalk", "Crosstalk");
+    crosstalk.setDataLimit(crosstalk_limit);
+    spRegister(offset, "Offset", "Offset");
+    offset.setDataLimit(offset_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -79,10 +83,12 @@ bool spDevVL53L1X::onInitialize(TwoWire &wirePort)
     bool result = (SFEVL53L1X::begin(wirePort) == 0);
     if (result)
     {
-        if (_shortDistanceMode)
-            SFEVL53L1X::setDistanceModeShort();
-        else
-            SFEVL53L1X::setDistanceModeLong();
+        (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
+        intermeasurementPeriod.setDataLimit(_shortDistanceMode ? intermeasurement_period_limit_short : intermeasurement_period_limit_long);
+        uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
+        if (!_shortDistanceMode)
+            if (imp < 140)
+                SFEVL53L1X::setIntermeasurementPeriod(140);
         SFEVL53L1X::startRanging();
     }
     return result;
@@ -105,25 +111,32 @@ uint spDevVL53L1X::read_signal_rate()
 }
 
 // methods for read-write properties
-bool spDevVL53L1X::get_distance_mode()
+uint8_t spDevVL53L1X::get_distance_mode()
 {
-    return _shortDistanceMode;
+    if (_shortDistanceMode)
+        return DISTANCE_SHORT;
+    return DISTANCE_LONG;
 }
 
-void spDevVL53L1X::set_distance_mode(bool mode)
+void spDevVL53L1X::set_distance_mode(uint8_t mode)
 {
     SFEVL53L1X::stopRanging();
-    _shortDistanceMode = mode;
-    (mode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
+    _shortDistanceMode = (mode == DISTANCE_SHORT);
+    (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
+    intermeasurementPeriod.setDataLimit(_shortDistanceMode ? intermeasurement_period_limit_short : intermeasurement_period_limit_long);
+    uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
+    if (!_shortDistanceMode)
+        if (imp < 140)
+            SFEVL53L1X::setIntermeasurementPeriod(140);
     SFEVL53L1X::startRanging();
 }
 
-uint spDevVL53L1X::get_intermeasurment_period()
+uint16_t spDevVL53L1X::get_intermeasurment_period()
 {
     return SFEVL53L1X::getIntermeasurementPeriod();
 }
 
-void spDevVL53L1X::set_intermeasurment_period(uint period)
+void spDevVL53L1X::set_intermeasurment_period(uint16_t period)
 {
     SFEVL53L1X::stopRanging();
     if (period < 20)
@@ -137,24 +150,24 @@ void spDevVL53L1X::set_intermeasurment_period(uint period)
     SFEVL53L1X::startRanging();
 }
 
-uint spDevVL53L1X::get_crosstalk()
+uint16_t spDevVL53L1X::get_crosstalk()
 {
     return SFEVL53L1X::getXTalk();
 }
 
-void spDevVL53L1X::set_crosstalk(uint level)
+void spDevVL53L1X::set_crosstalk(uint16_t level)
 {
     SFEVL53L1X::stopRanging();
     SFEVL53L1X::setXTalk(level);
     SFEVL53L1X::startRanging();
 }
 
-uint spDevVL53L1X::get_offset()
+uint16_t spDevVL53L1X::get_offset()
 {
     return SFEVL53L1X::getOffset();
 }
 
-void spDevVL53L1X::set_offset(uint offset)
+void spDevVL53L1X::set_offset(uint16_t offset)
 {
     SFEVL53L1X::stopRanging();
     SFEVL53L1X::setOffset(offset);

@@ -42,7 +42,8 @@ spDevSTC31::spDevSTC31()
     spRegister(temperatureC_In, "Temperature (C)", "Temperature (C)");
     spRegister(pressure, "Pressure (mbar)", "Pressure (mbar)");
 
-    spRegister(binaryGas, "Binary Gas", "Binary Gas: 0 = CO2 in N2 (100%); 1 = CO2 in Air (100%); 2 = CO2 in N2 (25%); 3 = CO2 in Air (25%)");
+    spRegister(binaryGas, "Binary Gas", "Binary Gas");
+    binaryGas.setDataLimit(binary_gas_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -145,11 +146,11 @@ void spDevSTC31::write_pressure(const uint &pressure)
 }
 
 // read-write properties
-uint spDevSTC31::get_binary_gas()
+uint8_t spDevSTC31::get_binary_gas()
 {
     return _binaryGas;
 }
-void spDevSTC31::set_binary_gas(uint gas)
+void spDevSTC31::set_binary_gas(uint8_t gas)
 {
     _binaryGas = gas;
     STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);

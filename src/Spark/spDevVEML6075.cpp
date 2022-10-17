@@ -42,8 +42,10 @@ spDevVEML6075::spDevVEML6075()
     spRegister(uvIndex, "UV Index", "UV Index");
 
     // Register read-write properties
-    spRegister(integrationTime, "Integration Time", "Integration Time: 0 = 50ms; 4 = 800ms");
-    spRegister(highDynamic, "Dynamic Range", "Dynamic Range: False : Normal Dynamic; True : High Dynamic");
+    spRegister(integrationTime, "Integration Time (ms)", "Integration Time (ms)");
+    integrationTime.setDataLimit(integration_time_limit);
+    spRegister(highDynamic, "Dynamic Range", "Dynamic Range");
+    highDynamic.setDataLimit(dynamic_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -92,22 +94,22 @@ float spDevVEML6075::read_uv_index()
 }
 
 // methods for read-write properties
-uint spDevVEML6075::get_integration_time()
+uint8_t spDevVEML6075::get_integration_time()
 {
     return VEML6075::getIntegrationTime();
 }
 
-void spDevVEML6075::set_integration_time(uint intTime)
+void spDevVEML6075::set_integration_time(uint8_t intTime)
 {
     VEML6075::setIntegrationTime((VEML6075::veml6075_uv_it_t)intTime);
 }
 
-bool spDevVEML6075::get_high_dynamic()
+uint8_t spDevVEML6075::get_high_dynamic()
 {
-    return (VEML6075::getHighDynamic() == VEML6075::DYNAMIC_HIGH);
+    return VEML6075::getHighDynamic();
 }
 
-void spDevVEML6075::set_high_dynamic(bool high)
+void spDevVEML6075::set_high_dynamic(uint8_t high)
 {
     VEML6075::setHighDynamic((VEML6075::veml6075_hd_t)high);
 }

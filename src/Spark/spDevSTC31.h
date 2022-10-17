@@ -60,9 +60,9 @@ private:
     void write_pressure(const uint &pressure);
 
     // read-write properties
-    uint get_binary_gas();
-    void set_binary_gas(uint gas);
-    uint _binaryGas = (uint)STC3X_BINARY_GAS_CO2_AIR_25;
+    uint8_t get_binary_gas();
+    void set_binary_gas(uint8_t gas);
+    uint8_t _binaryGas = (uint8_t)STC3X_BINARY_GAS_CO2_AIR_25;
 
 public:
     // Define our output parameters - specify the get functions to call.
@@ -76,5 +76,9 @@ public:
 
     // Define our read-write properties
     // binaryGas is STC3X_binary_gas_type_e. Default is STC3X_BINARY_GAS_CO2_AIR_25
-    spPropertyRWUint<spDevSTC31, &spDevSTC31::get_binary_gas, &spDevSTC31::set_binary_gas> binaryGas;
+    spPropertyRWUint8<spDevSTC31, &spDevSTC31::get_binary_gas, &spDevSTC31::set_binary_gas> binaryGas;
+    spDataLimitSetUint8 binary_gas_limit = { { "CO2 in N2 (100% max)", STC3X_BINARY_GAS_CO2_N2_100 },
+                                             { "CO2 in Air (100% max)", STC3X_BINARY_GAS_CO2_AIR_100 },
+                                             { "CO2 in N2 (25% max)", STC3X_BINARY_GAS_CO2_N2_25 },
+                                             { "CO2 in Air (25% max)", STC3X_BINARY_GAS_CO2_AIR_25 } };
 };

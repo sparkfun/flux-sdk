@@ -51,18 +51,24 @@ private:
     float read_lux();
 
     // methods to get/set our read-write properties
-    uint get_integration_time();
-    void set_integration_time(uint);
-    uint get_sensitivity();
-    void set_sensitivity(uint);
-    uint get_persistence();
-    void set_persistence(uint);
+    uint8_t get_integration_time();
+    void set_integration_time(uint8_t);
+    uint8_t get_sensitivity();
+    void set_sensitivity(uint8_t);
+    uint8_t get_persistence();
+    void set_persistence(uint8_t);
 
 public:
     // Define our read-write properties
-    spPropertyRWUint<spDevVEML7700, &spDevVEML7700::get_integration_time, &spDevVEML7700::set_integration_time> integrationTime;
-    spPropertyRWUint<spDevVEML7700, &spDevVEML7700::get_sensitivity, &spDevVEML7700::set_sensitivity> sensitivity;
-    spPropertyRWUint<spDevVEML7700, &spDevVEML7700::get_persistence, &spDevVEML7700::set_persistence> persistence;
+    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_integration_time, &spDevVEML7700::set_integration_time> integrationTime;
+    spDataLimitSetUint8 integration_time_limit = { { "25ms", VEML7700_INTEGRATION_25ms }, { "50ms", VEML7700_INTEGRATION_50ms }, { "100ms", VEML7700_INTEGRATION_100ms },
+                                                   { "200ms", VEML7700_INTEGRATION_200ms }, { "400ms", VEML7700_INTEGRATION_400ms }, { "800ms", VEML7700_INTEGRATION_800ms } };
+    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_sensitivity, &spDevVEML7700::set_sensitivity> sensitivity;
+    spDataLimitSetUint8 sensitivity_limit = { { "x1", VEML7700_SENSITIVITY_x1 }, { "x2", VEML7700_SENSITIVITY_x2 },
+                                              { "x1/8", VEML7700_SENSITIVITY_x1_8 }, { "x1/4", VEML7700_SENSITIVITY_x1_4 } };
+    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_persistence, &spDevVEML7700::set_persistence> persistence;
+    spDataLimitSetUint8 persistence_limit = { { "x1", VEML7700_PERSISTENCE_1 }, { "x2", VEML7700_PERSISTENCE_2 },
+                                              { "x4", VEML7700_PERSISTENCE_4 }, { "x8", VEML7700_PERSISTENCE_8 } };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutUint<spDevVEML7700, &spDevVEML7700::read_ambient_light> ambientLight;    

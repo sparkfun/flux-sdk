@@ -42,9 +42,12 @@ spDevVEML7700::spDevVEML7700()
     spRegister(lux, "Lux", "Lux");
 
     // Register read-write properties
-    spRegister(integrationTime, "Integration Time", "Integration Time: 0 = 25ms; 5 = 800ms");
-    spRegister(sensitivity, "Sensitivity", "Sensitivity : 0 = x1; 1 = x2; 2 = x1/8; 3 = x1/4");
-    spRegister(persistence, "Persistence", "Persistence : 0 = x1; 1 = x2; 2 = x4; 3 = x8");
+    spRegister(integrationTime, "Integration Time (ms)", "Integration Time (ms)");
+    integrationTime.setDataLimit(integration_time_limit);
+    spRegister(sensitivity, "Sensitivity", "Sensitivity");
+    sensitivity.setDataLimit(sensitivity_limit);
+    spRegister(persistence, "Persistence", "Persistence");
+    persistence.setDataLimit(persistence_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -100,32 +103,32 @@ float spDevVEML7700::read_lux()
 }
 
 // methods for read-write properties
-uint spDevVEML7700::get_integration_time()
+uint8_t spDevVEML7700::get_integration_time()
 {
     return VEML7700::getIntegrationTime();
 }
 
-void spDevVEML7700::set_integration_time(uint intTime)
+void spDevVEML7700::set_integration_time(uint8_t intTime)
 {
     VEML7700::setIntegrationTime((VEML7700_integration_time_t)intTime);
 }
 
-uint spDevVEML7700::get_sensitivity()
+uint8_t spDevVEML7700::get_sensitivity()
 {
     return VEML7700::getSensitivityMode();
 }
 
-void spDevVEML7700::set_sensitivity(uint sens)
+void spDevVEML7700::set_sensitivity(uint8_t sens)
 {
     VEML7700::setSensitivityMode((VEML7700_sensitivity_mode_t)sens);
 }
 
-uint spDevVEML7700::get_persistence()
+uint8_t spDevVEML7700::get_persistence()
 {
     return VEML7700::getPersistenceProtect();
 }
 
-void spDevVEML7700::set_persistence(uint pers)
+void spDevVEML7700::set_persistence(uint8_t pers)
 {
     VEML7700::setPersistenceProtect((VEML7700_persistence_protect_t)pers);
 }
