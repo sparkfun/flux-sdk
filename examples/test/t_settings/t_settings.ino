@@ -38,6 +38,14 @@ public:
 
 
         spRegister(prop_uint_range, "Uint Range Test", "No initial value, range limit set");    
+        // Change to a validation set:
+        prop_uint_range.addDataLimitValidValue( {
+                                            {"Value One", 22},
+                                            {"Value Two", 44},
+                                            {"Value Three", 66},        
+                                            {"Value Four", 88},      
+                                            {"Value Five", 110}                       
+                                        });
         spRegister(prop_uint16, "Uint16 Test", "Uint 16, standard prop, initial value");
         prop_uint16.setDataLimitRange(43, 98);
 
