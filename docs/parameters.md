@@ -14,6 +14,7 @@ The following are key attributes of parameters within the framework
 
 #### Parameter Data Types
 The following types are available for properties
+
 * bool
 * int8
 * int16
@@ -23,7 +24,7 @@ The following types are available for properties
 * uint
 * float
 * double
-* string 
+* string
 
 #### Parameter Use
 Setting an value of a Input Parameter - named ```input``` in this example:
@@ -201,8 +202,12 @@ Where:
 
 ##### Available Input Parameter Types:
 
-* spParameterOutBool - bool property
-* spParameterOutInt  - integer property
+* spParameterOutBool - bool parameter
+* spParameterOutInt8  - integer 8 parameter
+* spParameterOutInt16  - integer 16 parameter
+* spParameterOutInt  - integer parameter
+* spParameterOutUint8 - unsigned 8 integer
+* spParameterOutUint16 - unsigned 16 integer
 * spParameterOutUint - unsigned integer
 * spParameterOutFloat - float
 * spParameterOutDouble - double
