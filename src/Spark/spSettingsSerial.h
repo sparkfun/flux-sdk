@@ -8,6 +8,9 @@
 #define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
 #define kReadBufferEscape 253
+#define kReadBufferReturn 252
+#define kReadBufferNoMatch 251
+
 
 class spSettingsSerial : public spActionType<spSettingsSerial>
 {

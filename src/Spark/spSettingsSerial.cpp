@@ -743,13 +743,16 @@ int spSettingsSerial::selectMenu(spActionContainer *pCurrent, uint level)
 // note 27 == escape key
 #define kpCodeEscape 27
 #define kpCodeCR 13
+#define kCodeBell 7
+
+#define kNextDigitTimeout 1500
 
 static bool isGoBack(uint8_t ch)
 {
     return (ch == 'x' || ch == 'X' || ch == 'b' || ch == 'B');
 }
 //-----------------------------------------------------------------------------
-static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
+static uint8_t menuEventNormal(uint8_t chIn, uint maxEntry, uint minEntry)
 {
 
     uint value;
@@ -761,14 +764,17 @@ static uint8_t menuEventNormal(uint maxEntry, uint8_t chIn)
     if (isGoBack(chIn))
         return kReadBufferExit;
 
+    if (chIn == kpCodeCR)
+        return kReadBufferReturn;
+
     if (isdigit(chIn))
     {
         value = chIn - '0';
-        if (value > 0 && value <= maxEntry)
+        if (value + minEntry > 0 && value + minEntry <= maxEntry)
             return chIn - '0';
     }
 
-    return 0; // no match.
+    return kReadBufferNoMatch; // no match.
 }
 //-----------------------------------------------------------------------------
 static uint8_t menuEventYN(uint8_t chIn)
@@ -789,7 +795,7 @@ static uint8_t menuEventYN(uint8_t chIn)
         return 'n';
     }
 
-    return 0; // no match.
+    return kReadBufferNoMatch; // no match.
 }
 //-----------------------------------------------------------------------------
 
@@ -811,6 +817,8 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
     unsigned long startTime = millis();
 
     uint8_t chIn;
+    uint    current=0;
+    uint8_t number;
 
     while (true)
     {
@@ -818,24 +826,77 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
         {
             chIn = Serial.read();
 
-            chIn = (isYN ? menuEventYN(chIn) : menuEventNormal(maxEntry, chIn));
+            if (isYN)
+            {
+                number = menuEventYN(chIn);
+                if( number )
+                    break;
+            }
+            else
+            {
+                number = menuEventNormal(chIn, maxEntry, current * 10);
 
-            // match ? chIn != 0
-            if (chIn)
-                break;
+                // Jump out of this menu
+                if ( number == kReadBufferEscape || number == kReadBufferExit)
+                    break;
+
+                // user hit return - do we have pending daa.
+                if ( number == kReadBufferReturn )
+                {
+                    // Pending selection? 
+                    if ( current )
+                    {
+                        number = current;
+                        break;
+                    }
+                    // nothing, just continue
+                    continue;
+                }   // no match?
+                else if ( number == kReadBufferNoMatch )
+                {
+                    // Invalid entry 
+                    Serial.write(kCodeBell);
+                    // reset timeout
+                    startTime = millis();
+                    continue;
+                }
+
+                // Add up the curent digits - for multi digit entries
+                current = current * 10 + number; 
+
+                // Is there room for a possible othe digit? If not, return this number
+                if ( current * 10 >  maxEntry)
+                {
+                    number = current;
+                    break;
+                }
+                // print out the number that was entered as a prompt ...
+                Serial.printf("%u", number);
+
+                // the user could enter another digit
+                // adjust the timeout to give them a chance to do this....
+                startTime = millis();
+                timeout = kNextDigitTimeout;
+            }
         }
 
         // Timeout?
         if ((millis() - startTime) > timeout)
         {
-            Serial.println("No user input received.");
-            chIn = kReadBufferTimeoutExpired;
+            // number in the queue?
+            if ( current )
+                number = current;
+            else
+            {
+                Serial.println("No user input received.");
+                number = kReadBufferTimeoutExpired;
+            }
             break;
         }
         delay(100);
     }
     Serial.flush();
-    return chIn;
+    return number;
 }
 //--------------------------------------------------------------------------
 // get the selected menu item
