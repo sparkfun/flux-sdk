@@ -84,6 +84,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16481">GPS-16481</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">FS3000</td>
+        <td style="vertical-align:middle" align="center">Air velocity sensor</td>
+        <td style="vertical-align:middle" align="center">0x28</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18399">SEN-18377</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">LPS25HB</td>
         <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
         <td style="vertical-align:middle" align="center">0x5D, 0x5C</td>
@@ -265,6 +271,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">SDP31</td>
         <td style="vertical-align:middle" align="center">Differential pressure sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/17874">SPX-17874</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">0x28</td>
+        <td style="vertical-align:middle" align="center">FS3000</td>
+        <td style="vertical-align:middle" align="center">Air velocity sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18399">SEN-18377</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x29</b>, <b>0x2A</b>, 0x2B, 0x2C</td>
