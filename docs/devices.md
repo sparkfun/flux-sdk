@@ -42,6 +42,30 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15440">SEN-15440</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">BME680</td>
+        <td style="vertical-align:middle" align="center">Air quality sensor</td>
+        <td style="vertical-align:middle" align="center">0x77, 0x76</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16466">SEN-16466</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">BME688</td>
+        <td style="vertical-align:middle" align="center">Air quality sensor</td>
+        <td style="vertical-align:middle" align="center">0x76, 0x77</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19096">SEN-19096</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">BMP384</td>
+        <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
+        <td style="vertical-align:middle" align="center">0x77, 0x76</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19662">SEN-19662</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">BMP581</td>
+        <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
+        <td style="vertical-align:middle" align="center">0x47, 0x46</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/20170">SEN-20170</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">Button</td>
         <td style="vertical-align:middle" align="center">SparkFun Qwiic Button</td>
         <td style="vertical-align:middle" align="center">0x6F, 0x6E, 0x6D, 0x6C, 0x6B, 0x6A, 0x69, 0x68</td>
@@ -285,6 +309,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16481">GPS-16481</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">0x46, 0x47</td>
+        <td style="vertical-align:middle" align="center">BMP581</td>
+        <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/20170">SEN-20170</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">0x48, 0x49, 0x4A, 0x4B</td>
         <td style="vertical-align:middle" align="center">TMP117</td>
         <td style="vertical-align:middle" align="center">Precision temperature sensor</td>
@@ -363,10 +393,28 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16467">SEN-16467</a></td>
     </tr>
     <tr>
-        <td style="vertical-align:middle" align="center"><b>0x76</b>, 0x77</td>
+        <td style="vertical-align:middle" align="center"><b>0x76</b>, <b>0x77</b></td>
         <td style="vertical-align:middle" align="center">BME280</td>
         <td style="vertical-align:middle" align="center">Pressure, Humidity and Temperature sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15440">SEN-15440</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x76</b>, <b>0x77</b></td>
+        <td style="vertical-align:middle" align="center">BMP384</td>
+        <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19662">SEN-19662</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x76</b>, <b>0x77</b></td>
+        <td style="vertical-align:middle" align="center">BME680</td>
+        <td style="vertical-align:middle" align="center">Air quality sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16466">SEN-16466</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x76</b>, <b>0x77</b></td>
+        <td style="vertical-align:middle" align="center">BME688</td>
+        <td style="vertical-align:middle" align="center">Air quality sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19096">SEN-19096</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x76</b></td>

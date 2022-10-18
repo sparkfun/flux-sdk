@@ -1,8 +1,8 @@
 /*
  *
- *  spDevBME280.h
+ *  spDevBMP384.h
  *
- *  Device object for the BME280 Qwiic device.
+ *  Device object for the BMP384 Qwiic device.
  *
  *
  *
@@ -13,24 +13,24 @@
 #include "Arduino.h"
 
 #include "spDevice.h"
-#include "SparkFunBME280.h"
+#include "SparkFunBMP384.h"
 
 // What is the name used to ID this device?
-#define kBME280DeviceName "bme280"
+#define kBMP384DeviceName "bmp384"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBME280 : public spDeviceType<spDevBME280>, public BME280
+class spDevBMP384 : public spDeviceType<spDevBMP384>, public BMP384
 {
 
 public:
-    spDevBME280();
+    spDevBMP384();
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
-        return kBME280DeviceName;
+        return kBMP384DeviceName;
     };
 
     static const uint8_t *getDefaultAddresses()
@@ -44,21 +44,19 @@ public:
     bool onInitialize(TwoWire &);
 
 private:
+	bmp3_data bmpData = { 0.0, 0.0 };
+
     // methods used to get values for our output parameters
-    float read_Humidity();
-    float read_TemperatureF();
-    float read_TemperatureC();
-    float read_Pressure();
-    float read_AltitudeM();
-    float read_AltitudeF();
+    double read_TemperatureC();
+    double read_Pressure();
+
+    // flags to prevent getSensorData from being called multiple times
+    bool _temperature = false;
+    bool _pressure = false;
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_Humidity> humidity;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureF> temperatureF;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureC> temperatureC;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_Pressure> pressure;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeM> altitudeM;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeF> altitudeF;
+    spParameterOutDouble<spDevBMP384, &spDevBMP384::read_TemperatureC> temperatureC;
+    spParameterOutDouble<spDevBMP384, &spDevBMP384::read_Pressure> pressure;
 
 };
