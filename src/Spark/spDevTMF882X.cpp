@@ -46,6 +46,10 @@ spDevTMF882X::spDevTMF882X()
     spRegister(photonCount, "Photon Count", "Photon Count");
     spRegister(refPhotonCount, "Ref Photon Count", "Reference Photon Count");
     spRegister(ambientLight, "Ambient Light", "Ambient Light");
+
+    spRegister(reportPeriod, "Report Period (ms)", "Report Period (ms)");
+
+    spRegister(factoryCalibration, "Perform Factory Calibration", "Perform Factory Calibration - requires minimal ambient light and no target within 40 cm");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -73,10 +77,84 @@ bool spDevTMF882X::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevTMF882X::onInitialize(TwoWire &wirePort)
 {
 
-    bool result = SparkFun_TMF882X::begin(wirePort);
-    if (!result)
+    _begun = SparkFun_TMF882X::begin(wirePort, address());
+    if (!_begun)
         spLog_E("TMF882X - begin failed");
-    return result;
+    return _begun;
+}
+
+//methods for our read-write properties
+uint16_t spDevTMF882X::get_report_period()
+{
+    if (_begun)
+    {
+        // First set some config parameters to support the calibration
+        struct tmf882x_mode_app_config tofConfig;
+        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
+        {
+            spLog_E("TMF882X set_report_period - unable to get device configuration");
+            return _reportPeriod;
+        }
+        
+        _reportPeriod = tofConfig.report_period_ms;
+    }
+    return _reportPeriod;
+}
+void spDevTMF882X::set_report_period(uint16_t period)
+{
+    if (_begun)
+    {
+        // First set some config parameters to support the calibration
+        struct tmf882x_mode_app_config tofConfig;
+        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
+        {
+            spLog_E("TMF882X set_report_period - unable to get device configuration");
+            return;
+        }
+        
+        // Change the APP configuration
+        //  - set the reporting period
+        tofConfig.report_period_ms = period;
+        _reportPeriod = period;
+
+        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
+        {
+            spLog_E("TMF882X set_report_period- unable to set device configuration");
+            return;
+        }
+    }
+}
+
+//methods for write properties
+void spDevTMF882X::factory_calibration()
+{
+    if (_begun)
+    {
+        // First set some config parameters to support the calibration
+        struct tmf882x_mode_app_config tofConfig;
+        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
+        {
+            spLog_E("TMF882X factory_calibration - unable to get device configuration");
+            return;
+        }
+        
+        // Change the APP configuration
+        //  - set the reporting period to 460 milliseconds
+        //  - set the iterations to 4,000,000 (4M) to perform factory calibration
+        tofConfig.report_period_ms = 460;
+        _reportPeriod = 460;
+        tofConfig.kilo_iterations = 4000;
+
+        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
+        {
+            spLog_E("TMF882X factory_calibration - unable to set device configuration");
+            return;
+        }
+
+        struct tmf882x_mode_app_calib factoryCal;
+        if (!SparkFun_TMF882X::factoryCalibration(factoryCal))
+            spLog_E("TMF882X factory_calibration - factory calibration failed");
+    }
 }
 
 // GETTER methods for output params

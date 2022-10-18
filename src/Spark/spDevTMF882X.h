@@ -55,6 +55,13 @@ private:
     uint read_ref_photon_count();
     uint read_ambient_light();
 
+    //methods for our read-write properties
+    uint16_t get_report_period();
+    void set_report_period(uint16_t);
+
+    //methods for write properties
+    void factory_calibration();
+
     //flags to prevent startMeasuring being called multiple times
     bool _confidence = false;
     bool _distance = false;
@@ -66,6 +73,9 @@ private:
 
     tmf882x_msg_meas_results _results;
 
+    bool _begun = false;
+    uint16_t _reportPeriod = 460;
+
 public:
     // Define our output parameters - specify the get functions to call.
     // Strictly, these should be uint32_t
@@ -76,4 +86,9 @@ public:
     spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_photon_count> photonCount;    
     spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ref_photon_count> refPhotonCount;    
     spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ambient_light> ambientLight;    
+
+    spPropertyRWUint16<spDevTMF882X, &spDevTMF882X::get_report_period, &spDevTMF882X::set_report_period> reportPeriod
+        = { 460, 6, 460 };
+
+    spParameterInVoid<spDevTMF882X, &spDevTMF882X::factory_calibration> factoryCalibration;    
 };
