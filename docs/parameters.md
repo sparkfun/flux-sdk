@@ -14,12 +14,17 @@ The following are key attributes of parameters within the framework
 
 #### Parameter Data Types
 The following types are available for properties
+
 * bool
+* int8
+* int16
 * int
+* uint8
+* uint16
 * uint
 * float
 * double
-* string 
+* string
 
 #### Parameter Use
 Setting an value of a Input Parameter - named ```input``` in this example:
@@ -48,7 +53,7 @@ These parameter objects are used to define a input parameter to an operation. Be
 Within the definition of the class the parameter is for, the input parameter is defined using the following pattern:
 
 ```C++
-spParameterInType<ClassName, &ClassName::Writer>  input_name;
+spParameterInType<ClassName, &ClassName::Writer>  input_name = {optional data limit values};
 ```
 Where:
 * spParameterInType - the type of the input parameter class to use 
@@ -57,8 +62,12 @@ Where:
 
 ##### Available Input Parameter Types:
 
-* spParameterInBool - bool property
-* spParameterInInt  - integer property
+* spParameterInBool - bool parameter
+* spParameterInInt8  - integer8 parameter
+* spParameterInInt16  - integer16 parameter
+* spParameterInInt  - integer parameter
+* spParameterInUint8 - unsigned integer8
+* spParameterInUint16 - unsigned integer15
 * spParameterInUint - unsigned integer
 * spParameterInFloat - float
 * spParameterInDouble - double
@@ -97,6 +106,86 @@ Note
 > * The writer method must be declared before defining the parameter
 > * The use of the `write_` prefix on the writer methods help identify the methods as supporting a parameter.
 
+#### Data Limit Values
+Data limits define restrictions on the values the input parameter accepts. There are two types of data limits: range and valid value sets.
+
+*Data Range*
+This represents the minimum and maximum values a input parameter will accept. The values can be specified at parameter definition and also set at runtime. 
+
+To set the range at parameter definition, just set the declared parameter to the range using a C++ initializer list ```{ min, max}```
+
+Additionally, the method `clearDataLimit()` can be called to delete the current limit.
+
+Using the example from above:
+```C++
+    // Define an input parameter with a range of -29 to 144
+    spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { -28, 144 };
+```
+
+To set/change the range value at runtime, the method ```setDataLimitRange(min, max)``` is called on the input parameter object.
+
+Using the example parameter from above:
+```C++
+    // change the data range
+    my_input.setDataLimitRange(100, 198);
+```
+
+This changes the data range accepted by the input parameter and deletes any existing data limit.
+
+*Data Valid Value Set*
+This represents data limit provides a defined set of valid values for the input parameter. The limit is defined by a set of *name,value* pairs that enable a human readable presentation for the values a input parameter will accept. The values can be specified at parameter definition and also set at runtime. 
+
+To set the valid values at parameter definition, just set the declared parameter to the range using a C++ initializer list of name value pairs:  
+```
+    {
+        { NAME0, value0},
+        { NAME1, value1},
+        ...
+        };
+```
+
+Using the example from above:
+```C++
+// Define an input parameter with a range of -29 to 144
+spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {
+                                        {"Value One", 22},
+                                        {"Value Two", 44},
+                                        {"Value Three", 66},        
+                                        {"Value Four", 88},      
+                                        {"Value Five", 110}
+                                    };
+```
+
+To set/change the range value at runtime, the method ```addDataLimitValidValue()``` is called on the input parameter object. This object has two calling sequences:
+
+* Called with a name and a value
+* Called with a name value list, similar to the above initializer list.
+
+Additionally, the method `clearDataLimit()` can be called to delete the current limit
+
+Using the example parameter from above:
+```C++
+    // Add valid values ...
+    my_input.addDataLimitValidValue("ONE K", 100.);
+    my_input.addDataLimitValidValue("ONE K", 100.);    
+```
+
+Or for an entire parameter list:
+
+```C++
+    my_input.addDataLimitValidValue( {
+                                        {"Value One", 22},
+                                        {"Value Two", 44},
+                                        {"Value Three", 66},        
+                                        {"Value Four", 88},      
+                                        {"Value Five", 10}                       
+                                        });
+```
+
+The values are added to the current valid value list. If a *ValidValue* data limit was not it i place when called, the current limit is deleted and a valid value limit is put in place.
+
+
+
 ### Output Parameter Objects
 These parameter objects are used to define a output parameter to an operation. Besides allowing introspection at runtime, they also retrieve the desired value from a method.
 
@@ -113,8 +202,12 @@ Where:
 
 ##### Available Input Parameter Types:
 
-* spParameterOutBool - bool property
-* spParameterOutInt  - integer property
+* spParameterOutBool - bool parameter
+* spParameterOutInt8  - integer 8 parameter
+* spParameterOutInt16  - integer 16 parameter
+* spParameterOutInt  - integer parameter
+* spParameterOutUint8 - unsigned 8 integer
+* spParameterOutUint16 - unsigned 16 integer
 * spParameterOutUint - unsigned integer
 * spParameterOutFloat - float
 * spParameterOutDouble - double

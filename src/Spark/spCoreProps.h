@@ -165,9 +165,6 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
   
   public:
 
-    _spPropertyBase() : _dataLimit{nullptr}, _limitIsAlloc{false}, 
-        _dataLimitType{spDataLimit::dataLimitNone} {};
-
     //---------------------------------------------------------------------------------
     spDataType_t type()
     {
@@ -238,7 +235,7 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         if (bSuccess) // success
         {
             //do we have a dataLimit set, and if so are we in limits?
-            if ( _dataLimit && !_dataLimit->isValid(value))
+            if ( !_spDataIn<T>::isValueValid(value))
                 return spEditOutOfRange;
 
             set(value);
@@ -257,83 +254,11 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         }
         return false;
     };
-    //---------------------------------------------------------------------------------    
-    // Data Limit things
-    //---------------------------------------------------------------------------------    
-    void setDataLimit( spDataLimitType<T> &dataLimit)
-    {
-        if (_dataLimit && _limitIsAlloc)
-            delete _dataLimit;
 
-        _limitIsAlloc = false;
-        _dataLimit = &dataLimit;
-    }
-    void setDataLimit( spDataLimitType<T> *dataLimit)
-    {
-        if (_dataLimit && _limitIsAlloc)
-            delete _dataLimit;
-
-        _limitIsAlloc = true;
-        _dataLimit = dataLimit;
-    }
     spDataLimit * dataLimit(void)
     {
-        return _dataLimit;
+        return _spDataIn<T>::dataLimit();
     }
-
-    void setDataLimitRange( T min, T max)
-    {
-        if ( _dataLimitType != spDataLimit::dataLimitRange)
-        {
-            if (_dataLimit != nullptr && _limitIsAlloc)
-                delete _dataLimit;
-            _dataLimit = new spDataLimitRange<T>();
-            _dataLimitType = spDataLimit::dataLimitRange;
-            _limitIsAlloc=true;
-        }
-        ((spDataLimitRange<T>*)_dataLimit)->setRange(min,max);      
-    }
-
-    void setDataLimitRange( std::pair<T,T> range)
-    {
-        setDataLimitRange(range.first, range.second);
-    }
-
-    void addDataLimitValidValue(  std::string name, T value)
-    {
-        if ( _dataLimitType != spDataLimit::dataLimitSet)
-        {
-            if (_dataLimit != nullptr && _limitIsAlloc)
-                delete _dataLimit;
-            _dataLimit = new spDataLimitSetType<T>();
-            _dataLimitType = spDataLimit::dataLimitSet;
-            _limitIsAlloc=true;
-        }
-        ((spDataLimitSetType<T>*)_dataLimit)->addItem(name, value);
-    }
-    void addDataLimitValidValue( std::pair<const std::string, T> value)
-    {
-        addDataLimitValidValue((std::string)value.first, value.second);
-    }
-
-    void addDataLimitValidValue( std::initializer_list<std::pair<const std::string, T>> limitSet )
-    {
-        for (auto item : limitSet)
-            addDataLimitValidValue(item);
-    }
-
-    void clearDataLimit(void)
-    {
-        if ( _dataLimit )
-        {
-            delete _dataLimit;
-            _dataLimitType = spDataLimit::dataLimitNone;
-        }
-    }
-private:
-    spDataLimitType<T>  *_dataLimit;
-    bool _limitIsAlloc;
-    spDataLimit::dataLimitType_t  _dataLimitType;
 
 };
 
@@ -485,25 +410,26 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     {
     }
 
-    // Initial value and a limit range
-    _spPropertyTypedRW( T value, std::pair<T, T> limitRange) : _spPropertyTypedRW(value)
+    // set min and max range
+    _spPropertyTypedRW( T min, T max ) 
     {
-       _spPropertyBase<T>::setDataLimitRange(limitRange);
+        _spDataIn<T>::setDataLimitRange(min, max);
     }
-    // Just a limit range
-    _spPropertyTypedRW( std::pair<T, T> limitRange) 
+    // initial value, min, max range
+    _spPropertyTypedRW(T value,  T min, T max ) : _spPropertyTypedRW(value)
     {
-        _spPropertyBase<T>::setDataLimitRange(limitRange);
+        _spDataIn<T>::setDataLimitRange(min, max);
     }
+ 
     // Limit data set
     _spPropertyTypedRW( std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
-        _spPropertyBase<T>::addDataLimitValidValue(limitSet);
+        _spDataIn<T>::addDataLimitValidValue(limitSet);
     }
      // Initial value and limit data set.
     _spPropertyTypedRW( T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTypedRW(value)
     {
-        _spPropertyBase<T>::addDataLimitValidValue(limitSet);       
+        _spDataIn<T>::addDataLimitValidValue(limitSet);       
     }
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
@@ -817,25 +743,27 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
     _spPropertyTyped( T value) : data{value}
     {
     }
-    // Initial value and a limit range
-    _spPropertyTyped( T value, std::pair<T, T> limitRange) : _spPropertyTyped(value)
-    {
-       _spPropertyBase<T>::setDataLimitRange(limitRange);
-    }
+
     // Just a limit range
-    _spPropertyTyped( std::pair<T, T> limitRange) 
+    _spPropertyTyped( T min, T max ) 
     {
-        _spPropertyBase<T>::setDataLimitRange(limitRange);
+        _spDataIn<T>::setDataLimitRange(min, max);
+    }
+
+    // Initial value and a limit range
+    _spPropertyTyped(T value,  T min, T max ) : _spPropertyTyped(value)
+    {
+        _spDataIn<T>::setDataLimitRange(min, max);
     }
     // Limit data set
     _spPropertyTyped( std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
-        _spPropertyBase<T>::addDataLimitValidValue(limitSet);
+        _spDataIn<T>::addDataLimitValidValue(limitSet);
     }
      // Initial value and limit data set.
     _spPropertyTyped( T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTyped(value)
     {
-        _spPropertyBase<T>::addDataLimitValidValue(limitSet);       
+        _spDataIn<T>::addDataLimitValidValue(limitSet);       
     }
 
 

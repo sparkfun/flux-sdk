@@ -47,7 +47,7 @@ public:
                                             {"Value Five", 110}                       
                                         });
         spRegister(prop_uint16, "Uint16 Test", "Uint 16, standard prop, initial value");
-        prop_uint16.setDataLimitRange(43, 98);
+        //prop_uint16.setDataLimitRange(43, 98);
 
         spRegister(prop_float, "FloatValue", "Float with an initial value and a limit range");
         // change to a data limit set
@@ -60,7 +60,7 @@ public:
         //spRegister(prop_str, "stringProp", "Testing a StringProperty");        
 
         spRegister(rw_prop_bool);
-        
+        spRegister(rw_prop_float, "RW Float", "Float property with a range limit");                
         // Register the RW int property and add the data limit set.
         spRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property with data limit set");        
 
@@ -68,7 +68,7 @@ public:
 
         spRegister(rw_prop_str);
         
-        spRegister(rw_prop_float, "RW Float", "Float property with a range limit");        
+
     }
     
 
@@ -145,12 +145,12 @@ public:
                                             {"Value 1Four", 44},      
                                             {"Value 1Five", 155}                       
                                             }};
-    spPropertyUint<test_properties>       prop_uint_range = { {20, 60} };
+    spPropertyUint<test_properties>       prop_uint_range = { 20, 60 };
 
-    spPropertyUint16<test_properties>     prop_uint16={11};
+    spPropertyUint16<test_properties>     prop_uint16={12, 1, 13};
 
     // A float property with an initial value and a limit range
-    spPropertyFloat<test_properties>    prop_float = {1.0, {-1.0, 20.0}};
+    spPropertyFloat<test_properties>    prop_float = {1.0, -1.0, 20.0};
     //spPropertyString<test_properties>   prop_str = {"starter string"};
 
     // Define RW (getter/setter) Properties
@@ -169,7 +169,7 @@ public:
     spPropertyRWUint16<test_properties, &test_properties::get_uint16, &test_properties::set_uint16> rw_prop_uint16 = {4444};    
 
     // Float with a initial value and a range limit
-    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float = {93, {-100, 100}}; 
+    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float = {93, -100, 100}; 
     
     spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str = {"rw string initial value"};   
 
@@ -201,14 +201,12 @@ public:
         spRegister(in_bool, "in bool", "test input of a bool value");
         
         spRegister(in_int,  "in int", "test input of a int value with a range limit");
-        in_int.setDataLimit(int_limit);
 
         spRegister(in_string, "in string", "test input of a string value");
         spRegister(in_float, "in float", "test input of a float value");
-        in_float.setDataLimit(float_in_limit);
 
         spRegister(in_void, "in void", "test input parameter of type void");
-    }
+    };
     
 
 
@@ -239,17 +237,15 @@ public:
     spParameterOutString<test_params, &test_params::get_str>  out_string;
 
     spParameterInBool<test_params, &test_params::set_bool>   in_bool;
-    spParameterInInt<test_params, &test_params::set_int>     in_int;
-    spDataLimitRangeInt  int_limit = {0, 144};   // define the limit, set it in the constructor
+    spParameterInInt<test_params, &test_params::set_int>     in_int = {0, 144};
 
-    spParameterInFloat<test_params, &test_params::set_float> in_float;
-    spDataLimitSetFloat float_in_limit = {
-        {"F one", 1.11},
-        {"F two", 2.22},
-        {"F three", 3.33},        
-        {"F four", 4.44},      
-        {"F five", 5.55}                       
-    };
+    spParameterInFloat<test_params, &test_params::set_float> in_float = {
+                                            {"Value One", 10.},
+                                            {"Value Two", 22.},
+                                            {"Value Three", 33.},        
+                                            {"Value Four", 44.},      
+                                            {"Value Five", 155.}                       
+                                        };
     spParameterInString<test_params, &test_params::set_str>  in_string;  
 
     spParameterInVoid<test_params, &test_params::set_void>   in_void;   
