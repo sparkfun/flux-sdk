@@ -28,8 +28,20 @@ void spLogger::logSection(const char *section_name, spParameterOutList &paramLis
         case spTypeBool:
             writeValue(param->name(), param->getBool());
             break;
+        case spTypeInt8:
+            writeValue(param->name(), param->getInt8());
+            break;
+        case spTypeInt16:
+            writeValue(param->name(), param->getInt16());
+            break;
         case spTypeInt:
             writeValue(param->name(), param->getInt());
+            break;
+        case spTypeUInt8:
+            writeValue(param->name(), param->getUint8());
+            break;
+        case spTypeUInt16:
+            writeValue(param->name(), param->getUint16());
             break;
         case spTypeUInt:
             writeValue(param->name(), param->getUint());
