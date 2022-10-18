@@ -174,6 +174,18 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18385">SPX-18385</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">TMF8820</td>
+        <td style="vertical-align:middle" align="center">Time-Of-Flight sensor</td>
+        <td style="vertical-align:middle" align="center">0x41</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19036">SEN-19036</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">TMF8821</td>
+        <td style="vertical-align:middle" align="center">Time-Of-Flight sensor</td>
+        <td style="vertical-align:middle" align="center">0x41</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19037">SEN-19037</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">TMP117</td>
         <td style="vertical-align:middle" align="center">Precision temperature sensor</td>
         <td style="vertical-align:middle" align="center">0x48, 0x49, 0x4A, 0x4B</td>
@@ -297,10 +309,22 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16298">SPX-16298</a></td>
     </tr>
     <tr>
-        <td style="vertical-align:middle" align="center"><b>0x40</b>, 0x41, 0x44, 0x45</td>
+        <td style="vertical-align:middle" align="center"><b>0x40</b>, <b>0x41</b>, 0x44, 0x45</td>
         <td style="vertical-align:middle" align="center">ADS122C04</td>
         <td style="vertical-align:middle" align="center">Precision A/D Converter - used on Qwiic PT100</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16770">SPX-16770</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x41</b></td>
+        <td style="vertical-align:middle" align="center">TMF8820</td>
+        <td style="vertical-align:middle" align="center">Time-Of-Flight sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19036">SEN-19036</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x41</b></td>
+        <td style="vertical-align:middle" align="center">TMF8821</td>
+        <td style="vertical-align:middle" align="center">Time-Of-Flight sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19037">SEN-19037</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center">0x42</td>

@@ -36,7 +36,7 @@ spDevTMF882X::spDevTMF882X()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("TMF882X Distance Sensor");
+    setDescription("TMF882X Time-Of-Flight Sensor");
 
     // Register parameters
     spRegister(confidence, "Confidence", "Confidence");
