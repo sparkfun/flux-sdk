@@ -77,13 +77,14 @@ bool spDevAMG8833::onInitialize(TwoWire &wirePort)
     else
         GridEYE::setFramerate1FPS();
 
-    bool result = GridEYE::isFramerate10FPS() == _frameRate10FPS; // Not a great test, but something...
+    bool is10FPS = false;
+    bool result = GridEYE::getFramerate(&is10FPS); // Checks I2C is working
+    result &= is10FPS == _frameRate10FPS; // Not a great test, but something...
     
-    if (!result)
-        spLog_E("AMG8833 - begin failed");
-
     if (result)
         _begun = true;
+    else
+        spLog_E("AMG8833 - begin failed");
 
     return result;
 }
@@ -124,8 +125,10 @@ std::string spDevAMG8833::read_pixel_temperatures()
             temps[i] = '0';
         else if (temp > 10)
             temps[i] = 'o';
-        else
+        else if (temp > 0)
             temps[i] = '.';
+        else
+            temps[i] = ' ';
     }
 
     char szBuffer1[10] = {'\0'};
