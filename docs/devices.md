@@ -30,6 +30,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16618">SPX-16618</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">AMG8833</td>
+        <td style="vertical-align:middle" align="center">Grid-EYE infrared array</td>
+        <td style="vertical-align:middle" align="center">0x69, 0x68</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14607">SEN-14607</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">Bio Sensor Hub</td>
         <td style="vertical-align:middle" align="center">MAX32664 Biometric Sensor Hub</td>
         <td style="vertical-align:middle" align="center">0x55</td>
@@ -409,6 +415,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">SCD40</td>
         <td style="vertical-align:middle" align="center">CO<sub>2</sub>, Humidity and Temperature sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18365">SPX-18365</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x68</b>, <b>0x69</b></td>
+        <td style="vertical-align:middle" align="center">AMG8833</td>
+        <td style="vertical-align:middle" align="center">Grid-EYE infrared array</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14607">SEN-14607</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center">0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F</td>
