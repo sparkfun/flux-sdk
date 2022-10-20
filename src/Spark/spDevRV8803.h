@@ -44,11 +44,10 @@ private:
     std::string read_date_USA();
     std::string read_date();
     std::string read_time();
-    std::string read_timestamp();
     std::string read_iso8601();
-    uint get_epoch_1970();
+    uint get_epoch();
 
-    void set_epoch_1970(const uint &);
+    void set_epoch(const uint &);
     void set_seconds(const uint8_t &);
     void set_minutes(const uint8_t &);
     void set_hours(const uint8_t &);
@@ -57,19 +56,29 @@ private:
     void set_month(const uint8_t &);
     void set_year(const uint16_t &);
 
+    bool get_offset_epoch();
+    void set_offset_epoch(bool);
+
     bool _begun = false;
+    bool _offsetEpoch = false;
+
+    // Flags to prevent updateTime from being called multiple times
+    bool _dateUSA = false;
+    bool _date = false;
+    bool _time = false;
+    bool _iso8601 = false;
+    bool _epoch = false;
 
 public:
     // Define our output parameters - specify the get functions to call.
     spParameterOutString<spDevRV8803, &spDevRV8803::read_date_USA> readDateUSA;
     spParameterOutString<spDevRV8803, &spDevRV8803::read_date> readDate;
     spParameterOutString<spDevRV8803, &spDevRV8803::read_time> readTime;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_timestamp> readTimestamp;
     spParameterOutString<spDevRV8803, &spDevRV8803::read_iso8601> readISO8601;
-    spParameterOutUint<spDevRV8803, &spDevRV8803::get_epoch_1970> getEpoch1970;
+    spParameterOutUint<spDevRV8803, &spDevRV8803::get_epoch> getEpoch;
 
     // Define our input parameters
-    spParameterInUint<spDevRV8803, &spDevRV8803::set_epoch_1970> setEpoch1970;
+    spParameterInUint<spDevRV8803, &spDevRV8803::set_epoch> setEpoch;
     spParameterInUint8<spDevRV8803, &spDevRV8803::set_seconds> setSeconds;
     spParameterInUint8<spDevRV8803, &spDevRV8803::set_minutes> setMinutes;
     spParameterInUint8<spDevRV8803, &spDevRV8803::set_hours> setHours;
@@ -77,4 +86,7 @@ public:
     spParameterInUint8<spDevRV8803, &spDevRV8803::set_weekday> setWeekday;
     spParameterInUint8<spDevRV8803, &spDevRV8803::set_month> setMonth;
     spParameterInUint16<spDevRV8803, &spDevRV8803::set_year> setYear;
+
+    // Define our read-write properties
+    spPropertyRWBool<spDevRV8803, &spDevRV8803::get_offset_epoch, &spDevRV8803::set_offset_epoch> offsetEpoch;
 };

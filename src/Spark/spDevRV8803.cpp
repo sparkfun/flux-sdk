@@ -27,12 +27,11 @@ spDevRV8803::spDevRV8803()
     spRegister(readDateUSA, "Read Date (MM/DD/YYYY)", "Read the date in USA format");
     spRegister(readDate, "Read Date (DD/MM/YY)", "Read the date");
     spRegister(readTime, "Read Time (HH:MM:SS)", "Read the time");
-    spRegister(readTimestamp, "Read Timestamp (HH:MM:SS:SS)", "Read the timestamp with centis");
     spRegister(readISO8601, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS)", "Read the date and time in ISO8601 format");
-    spRegister(getEpoch1970, "Get Unix Epoch (1970)", "Get the time in seconds since the 1970 epoch");
+    spRegister(getEpoch, "Get Epoch", "Get the time in seconds since the Epoch");
 
     // Register input params
-    spRegister(setEpoch1970, "Set Unix Epoch (1970)", "Set the time in seconds since the 1970 epoch");
+    spRegister(setEpoch, "Set Epoch", "Set the time since the Epoch");
     spRegister(setSeconds, "Set the seconds", "Set the seconds");
     spRegister(setMinutes, "Set the minutes", "Set the minutes");
     spRegister(setHours, "Set the hours", "Set the hours");
@@ -40,6 +39,9 @@ spDevRV8803::spDevRV8803()
     spRegister(setWeekday, "Set the weekday", "Set the weekday: 0=Sunday, 6=Saturday");
     spRegister(setMonth, "Set the month", "Set the month");
     spRegister(setYear, "Set the year", "Set the year");
+
+    // Register read-write properties
+    spRegister(offsetEpoch, "Offset Epoch", "Default false. Set to true if time.h requires an offset to 1970");
 }
 
 // Static method used to determine if this device is connected
@@ -79,7 +81,7 @@ bool spDevRV8803::onInitialize(TwoWire &wirePort)
 
     RV8803::set24Hour();
 
-    RV8803::setEpoch(1640995200, false); // Jan 1st 2022
+    RV8803::setEpoch(1640995200, _offsetEpoch); // Jan 1st 2022
 
     if (result)
         _begun = true;
@@ -92,9 +94,19 @@ bool spDevRV8803::onInitialize(TwoWire &wirePort)
 // Output parameters
 std::string spDevRV8803::read_date_USA()
 {
+    if (!_dateUSA)
+    {
+        RV8803::updateTime();
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _epoch = true;
+    }
+    _dateUSA = false;
+
     char szBuffer[12] = {'\0'};
 
-    if (RV8803::stringDateUSA(szBuffer, sizeof(szBuffer)) != (char*)szBuffer) // Should return MM/DD/YYYY
+    if (RV8803::stringDateUSA(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return MM/DD/YYYY
         spLog_E("RV8803 - read_date_USA failed");
 
     std::string theString = szBuffer;
@@ -103,9 +115,19 @@ std::string spDevRV8803::read_date_USA()
 }
 std::string spDevRV8803::read_date()
 {
+    if (!_date)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _time = true;
+        _iso8601 = true;
+        _epoch = true;
+    }
+    _date = false;
+
     char szBuffer[12] = {'\0'};
 
-    if (RV8803::stringDate(szBuffer, sizeof(szBuffer)) != (char*)szBuffer) // Should return DD/MM/YYYY
+    if (RV8803::stringDate(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return DD/MM/YYYY
         spLog_E("RV8803 - read_date failed");
 
     std::string theString = szBuffer;
@@ -114,21 +136,20 @@ std::string spDevRV8803::read_date()
 }
 std::string spDevRV8803::read_time()
 {
+    if (!_time)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _iso8601 = true;
+        _epoch = true;
+    }
+    _time = false;
+
     char szBuffer[12] = {'\0'};
 
-    if (RV8803::stringTime(szBuffer, sizeof(szBuffer)) != (char*)szBuffer) // Should return HH:MM:SS
+    if (RV8803::stringTime(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return HH:MM:SS
         spLog_E("RV8803 - read_time failed");
-
-    std::string theString = szBuffer;
-
-    return theString;
-}
-std::string spDevRV8803::read_timestamp()
-{
-    char szBuffer[12] = {'\0'};
-
-    if (RV8803::stringTimestamp(szBuffer, sizeof(szBuffer)) != (char*)szBuffer) // Should return HH:MM:SS:SS
-        spLog_E("RV8803 - read_timestamp failed");
 
     std::string theString = szBuffer;
 
@@ -136,25 +157,45 @@ std::string spDevRV8803::read_timestamp()
 }
 std::string spDevRV8803::read_iso8601()
 {
+    if (!_iso8601)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _epoch = true;
+    }
+    _iso8601 = false;
+
     char szBuffer[21] = {'\0'};
 
-    if (RV8803::stringTime8601(szBuffer, sizeof(szBuffer)) != (char*)szBuffer) // Should return YYYY-MM-DDTHH:MM:SS
+    if (RV8803::stringTime8601(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return YYYY-MM-DDTHH:MM:SS
         spLog_E("RV8803 - read_iso8601 failed");
 
     std::string theString = szBuffer;
 
     return theString;
 }
-uint spDevRV8803::get_epoch_1970()
+uint spDevRV8803::get_epoch()
 {
-    return RV8803::getEpoch(true);
+    if (!_epoch)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+    }
+    _epoch = false;
+
+    return RV8803::getEpoch(_offsetEpoch);
 }
 
 // Output parameters
-void spDevRV8803::set_epoch_1970(const uint &epoch)
+void spDevRV8803::set_epoch(const uint &epoch)
 {
-    if (!RV8803::setEpoch(epoch, true))
-        spLog_E("RV8803 - set_epoch_1970 failed");
+    if (!RV8803::setEpoch(epoch, _offsetEpoch))
+        spLog_E("RV8803 - set_epoch failed");
 }
 void spDevRV8803::set_seconds(const uint8_t &secs)
 {
@@ -194,3 +235,6 @@ void spDevRV8803::set_weekday(const uint8_t &dow)
         spLog_E("RV8803 - set_weekday failed");
 }
 
+// Read-write properties
+bool spDevRV8803::get_offset_epoch() { return _offsetEpoch; }
+void spDevRV8803::set_offset_epoch(bool offset) { _offsetEpoch = offset; }
