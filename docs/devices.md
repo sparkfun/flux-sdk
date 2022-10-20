@@ -435,7 +435,7 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14607">SEN-14607</a></td>
     </tr>
     <tr>
-        <td style="vertical-align:middle" align="center">0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F</td>
+        <td style="vertical-align:middle" align="center"><b>0x68</b>, <b>0x69</b>, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F</td>
         <td style="vertical-align:middle" align="center">Button</td>
         <td style="vertical-align:middle" align="center">SparkFun Qwiic Button</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15932">BOB-15932</a></td>
