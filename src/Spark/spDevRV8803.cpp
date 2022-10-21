@@ -28,6 +28,13 @@ spDevRV8803::spDevRV8803()
     spRegister(readDate, "Read Date (DD/MM/YY)", "Read the date");
     spRegister(readTime, "Read Time (HH:MM:SS)", "Read the time");
     spRegister(readISO8601, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS)", "Read the date and time in ISO8601 format");
+    spRegister(readISO8601TZ, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS+HH:MM)", "Read the date and time in ISO8601 format with time zone");
+    spRegister(readDayOfWeek, "Read the day of week", "Read the day of week (Monday, Tuesday, etc)");
+    spRegister(readDayOfWeekShort, "Read the day of week (short)", "Read the day of week (Mon, Tue, etc)");
+    spRegister(readOrdinal, "Read the day of month (ordinal)", "Read the day of month in ordinal form (1st, 2nd, 3rd etc)");
+    spRegister(readMonth, "Read the month", "Read the name of the month (January, February etc)");
+    spRegister(readMonthShort, "Read the month (short)", "Read the name of the month (Jan, Feb etc)");
+    spRegister(readYear, "Read the year", "Read the year (2022 etc)");
     spRegister(getEpoch, "Get Epoch", "Get the time in seconds since the Epoch");
 
     // Register input params
@@ -42,6 +49,7 @@ spDevRV8803::spDevRV8803()
 
     // Register read-write properties
     spRegister(offsetEpoch, "Offset Epoch", "Default false. Set to true if time.h requires an offset to 1970");
+    spRegister(timeZoneQuarterHours, "The Time Zone offset", "The Time Zone offset in quarter hours (15 minute increments)");
 }
 
 // Static method used to determine if this device is connected
@@ -52,18 +60,22 @@ bool spDevRV8803::isConnected(spDevI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    // Write 0xAA to RAM (register 0x07). Read it back. Set it to 0x00.
-    if (!i2cDriver.writeRegister(address, 0x07, 0xAA))
-        return false;
-
+    // Read the RAM byte. Change it. Check it. Restore it
     uint8_t ramByte = 0;
-    if (!i2cDriver.readRegister(address, 0x07, &ramByte))
+    if (!i2cDriver.readRegister(address, RV8803_RAM, &ramByte))
         return false;
 
-    if (!i2cDriver.writeRegister(address, 0x07, 0x00))
+    if (!i2cDriver.writeRegister(address, RV8803_RAM, 0xAA))
         return false;
 
-    return (ramByte == 0xAA);
+    uint8_t ramByte2 = 0;
+    if (!i2cDriver.readRegister(address, RV8803_RAM, &ramByte2))
+        return false;
+
+    if (!i2cDriver.writeRegister(address, RV8803_RAM, ramByte))
+        return false;
+
+    return (ramByte2 == 0xAA);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -80,8 +92,6 @@ bool spDevRV8803::onInitialize(TwoWire &wirePort)
     bool result = RV8803::begin(wirePort);
 
     RV8803::set24Hour();
-
-    RV8803::setEpoch(1640995200, _offsetEpoch); // Jan 1st 2022
 
     if (result)
         _begun = true;
@@ -100,7 +110,14 @@ std::string spDevRV8803::read_date_USA()
         _date = true;
         _time = true;
         _iso8601 = true;
+        _iso8601tz = true;
         _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
     }
     _dateUSA = false;
 
@@ -121,7 +138,14 @@ std::string spDevRV8803::read_date()
         _dateUSA = true;
         _time = true;
         _iso8601 = true;
+        _iso8601tz = true;
         _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
     }
     _date = false;
 
@@ -142,7 +166,14 @@ std::string spDevRV8803::read_time()
         _dateUSA = true;
         _date = true;
         _iso8601 = true;
+        _iso8601tz = true;
         _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
     }
     _time = false;
 
@@ -163,7 +194,14 @@ std::string spDevRV8803::read_iso8601()
         _dateUSA = true;
         _date = true;
         _time = true;
+        _iso8601tz = true;
         _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
     }
     _iso8601 = false;
 
@@ -176,6 +214,196 @@ std::string spDevRV8803::read_iso8601()
 
     return theString;
 }
+std::string spDevRV8803::read_iso8601_tz()
+{
+    if (!_iso8601tz)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
+    }
+    _iso8601tz = false;
+
+    char szBuffer[27] = {'\0'};
+
+    if (RV8803::stringTime8601TZ(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return YYYY-MM-DDTHH:MM:SS-HH:MM
+        spLog_E("RV8803 - read_iso8601 failed");
+
+    std::string theString = szBuffer;
+
+    return theString;
+}
+std::string spDevRV8803::read_day()
+{
+    if (!_day)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _iso8601tz = true;
+        _epoch = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
+    }
+    _day = false;
+
+    char szBuffer[11] = {'\0'};
+
+    if (RV8803::stringDayOfWeek(szBuffer, sizeof(szBuffer)) != szBuffer)
+        spLog_E("RV8803 - read_day failed");
+
+    std::string theString = szBuffer;
+
+    return theString;
+}
+std::string spDevRV8803::read_day_short()
+{
+    if (!_day_short)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _iso8601tz = true;
+        _epoch = true;
+        _day = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
+    }
+    _day_short = false;
+
+    char szBuffer[5] = {'\0'};
+
+    if (RV8803::stringDayOfWeekShort(szBuffer, sizeof(szBuffer)) != szBuffer)
+        spLog_E("RV8803 - read_day_short failed");
+
+    std::string theString = szBuffer;
+
+    return theString;
+}
+std::string spDevRV8803::read_ordinal()
+{
+    if (!_ordinal)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _iso8601tz = true;
+        _epoch = true;
+        _day = true;
+        _day_short = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
+    }
+    _ordinal = false;
+
+    char szBuffer[6] = {'\0'};
+
+    if (RV8803::stringDateOrdinal(szBuffer, sizeof(szBuffer)) != szBuffer)
+        spLog_E("RV8803 - read_ordinal failed");
+
+    std::string theString = szBuffer;
+
+    return theString;
+}
+std::string spDevRV8803::read_month()
+{
+    if (!_month)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _iso8601tz = true;
+        _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month_short = true;
+        _year = true;
+    }
+    _month = false;
+
+    char szBuffer[11] = {'\0'};
+
+    if (RV8803::stringMonth(szBuffer, sizeof(szBuffer)) != szBuffer)
+        spLog_E("RV8803 - read_month failed");
+
+    std::string theString = szBuffer;
+
+    return theString;
+}
+std::string spDevRV8803::read_month_short()
+{
+    if (!_month_short)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _iso8601tz = true;
+        _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _year = true;
+    }
+    _month_short = false;
+
+    char szBuffer[5] = {'\0'};
+
+    if (RV8803::stringMonthShort(szBuffer, sizeof(szBuffer)) != szBuffer)
+        spLog_E("RV8803 - read_month_short failed");
+
+    std::string theString = szBuffer;
+
+    return theString;
+}
+uint16_t spDevRV8803::read_year()
+{
+    if (!_year)
+    {
+        RV8803::updateTime();
+        _dateUSA = true;
+        _date = true;
+        _time = true;
+        _iso8601 = true;
+        _iso8601tz = true;
+        _epoch = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
+    }
+    _year = false;
+
+    return RV8803::getYear();
+}
 uint spDevRV8803::get_epoch()
 {
     if (!_epoch)
@@ -185,6 +413,13 @@ uint spDevRV8803::get_epoch()
         _date = true;
         _time = true;
         _iso8601 = true;
+        _iso8601tz = true;
+        _day = true;
+        _day_short = true;
+        _ordinal = true;
+        _month = true;
+        _month_short = true;
+        _year = true;
     }
     _epoch = false;
 
@@ -201,8 +436,6 @@ void spDevRV8803::set_seconds(const uint8_t &secs)
 {
     if (!RV8803::setSeconds(secs))
         spLog_E("RV8803 - set_seconds failed");
-    else
-        RV8803::setHundredthsToZero();
 }
 void spDevRV8803::set_minutes(const uint8_t &min)
 {
@@ -236,5 +469,23 @@ void spDevRV8803::set_weekday(const uint8_t &dow)
 }
 
 // Read-write properties
-bool spDevRV8803::get_offset_epoch() { return _offsetEpoch; }
-void spDevRV8803::set_offset_epoch(bool offset) { _offsetEpoch = offset; }
+bool spDevRV8803::get_offset_epoch()
+{
+    return _offsetEpoch;
+}
+void spDevRV8803::set_offset_epoch(bool offset)
+{
+    _offsetEpoch = offset;
+}
+int8_t spDevRV8803::get_time_zone_quarter_hours()
+{ 
+    if (_begun)
+        return RV8803::getTimeZoneQuarterHours();
+    else
+        return 0; // What else can we do?
+}
+void spDevRV8803::set_time_zone_quarter_hours(int8_t offset)
+{
+    if (_begun)
+        RV8803::setTimeZoneQuarterHours(offset);
+}
