@@ -292,6 +292,125 @@ class spDataTyper
 };
 const char *spGetTypeName(spDataType_t type);
 
+//----------------------------------------------------------------------------------------
+// Array variable/data type.
+
+// Basic interface
+class spDataArray 
+{
+
+public:
+    spDataArray(): _n_dims{0}, _dimensions{0} {};
+
+    virtual spDataType_t type() = 0;
+
+    uint8_t      n_dimensions()
+    {
+        return _n_dims;
+    };
+    uint16_t   *dimensions()
+    {
+        return (uint16_t*)&_dimensions;
+    }
+
+protected:
+
+    void setDimensions(uint16_t d0)
+    {
+        _n_dims = 1;
+        _dimensions[0] = d0;
+    }
+    void setDimensions(uint16_t d0, uint16_t d1)
+    {
+        _n_dims = 2;
+        _dimensions[0] = d0;
+        _dimensions[1] = d1;        
+    }
+    void setDimensions(uint16_t d0, uint16_t d1, uint16_t d2)
+    {
+        _n_dims = 3;
+        _dimensions[0] = d0;
+        _dimensions[1] = d1;
+        _dimensions[2] = d2;                
+    }
+    
+    uint8_t   _n_dims;
+    uint16_t  _dimensions[3];
+
+};
+// ----------------------------------------------------------------------
+// Type templated array class...
+// 
+template <typename T>
+class spDataArrayType : public spDataArray
+{
+
+public: 
+
+    spDataArrayType() : _data{nullptr} {}
+
+    spDataType_t type(void)
+    {
+        T *c;
+        return spDataTyper::type(c);
+    }
+
+    void set(T * data, uint16_t d0)
+    {
+
+        if (setDataPtr(data)){
+            setDimensions(d0);
+        }
+    };
+
+    void set(T * data, uint16_t d0, uint16_t d1)
+    {
+        if (setDataPtr(data)){
+            setDimensions(d0, d1);
+        }
+    };
+
+    void set(T * data, uint16_t d0, uint16_t d1, uint16_t d2)
+    {
+        if (setDataPtr(data)){
+            setDimensions(d0, d1, d2);
+        }
+    };        
+
+    T * get()
+    {
+        return _data;
+    };
+
+private:
+
+    bool setDataPtr( T* data)
+    {
+        if (!data)
+            return false;
+
+        if ( _data != nullptr)
+            delete _data;
+        _data = data;
+
+        return true;
+    };
+
+    T   * _data;
+
+};
+
+using spDataArrayBool = spDataArrayType<bool>;
+using spDataArrayInt8 = spDataArrayType<int8_t>;
+using spDataArrayInt16 = spDataArrayType<int16_t>;
+using spDataArrayInt = spDataArrayType<int>;
+using spDataArrayUint8 = spDataArrayType<uint8_t>;
+using spDataArrayUint16 = spDataArrayType<uint16_t>;
+using spDataArrayUint = spDataArrayType<uint>;
+using spDataArrayFloat = spDataArrayType<float>;
+using spDataArrayDouble = spDataArrayType<double>;
+using spDataArrayString = spDataArrayType<std::string>;
+//----------------------------------------------------------------------------------------
 struct spPersist
 {
 
