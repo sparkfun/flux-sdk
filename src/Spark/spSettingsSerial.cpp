@@ -840,7 +840,7 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
                 if ( number == kReadBufferEscape || number == kReadBufferExit)
                     break;
 
-                // user hit return - do we have pending daa.
+                // user hit return - do we have pending data.
                 if ( number == kReadBufferReturn )
                 {
                     // Pending selection? 
@@ -864,7 +864,7 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
                 // Add up the curent digits - for multi digit entries
                 current = current * 10 + number; 
 
-                // Is there room for a possible othe digit? If not, return this number
+                // Is there room for a possible additional digit? If not, return this number
                 if ( current * 10 >  maxEntry)
                 {
                     number = current;
