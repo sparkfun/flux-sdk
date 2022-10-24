@@ -69,7 +69,7 @@ bool spDevACS37800::isConnected(spDevI2C &i2cDriver, uint8_t address)
         return false;
 
     // It is difficult to prove if an ACS37800 is connected without (e.g.) attempting to write to volatile memory
-    // So, let's prove that it is not an MCP9600 or VEML4040
+    // So, let's prove that it is not an MCP9600 or VCNL4040
 
     // MCP9600
     uint8_t devID[2] = {0};

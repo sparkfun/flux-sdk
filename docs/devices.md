@@ -90,16 +90,22 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14348">SEN-14348</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">FS3000</td>
+        <td style="vertical-align:middle" align="center">Air velocity sensor</td>
+        <td style="vertical-align:middle" align="center">0x28</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18399">SEN-18377</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">GNSS</td>
         <td style="vertical-align:middle" align="center">u-blox GNSS module</td>
         <td style="vertical-align:middle" align="center">0x42</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16481">GPS-16481</a></td>
     </tr>
     <tr>
-        <td style="vertical-align:middle" align="center">FS3000</td>
-        <td style="vertical-align:middle" align="center">Air velocity sensor</td>
-        <td style="vertical-align:middle" align="center">0x28</td>
-        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18399">SEN-18377</a></td>
+        <td style="vertical-align:middle" align="center">ISM330DHCX</td>
+        <td style="vertical-align:middle" align="center">Inertial Measurement Unit</td>
+        <td style="vertical-align:middle" align="center">0x6B, 0x6A</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19764">SEN-19764</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center">LPS25HB</td>
@@ -451,6 +457,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">Button</td>
         <td style="vertical-align:middle" align="center">SparkFun Qwiic Button</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15932">BOB-15932</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x6A</b>, <b>0x6B</b></td>
+        <td style="vertical-align:middle" align="center">ISM330DHCX</td>
+        <td style="vertical-align:middle" align="center">Inertial Measurement Unit</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19764">SEN-19764</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x70</b>, 0x71, 0x72, 0x73, 0x74, 0x75</td>
