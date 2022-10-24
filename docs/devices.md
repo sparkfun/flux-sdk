@@ -18,6 +18,12 @@ Supported devices are:
         </th>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">ACS37800</td>
+        <td style="vertical-align:middle" align="center">Power sensor</td>
+        <td style="vertical-align:middle" align="center">0x60</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/17873">SPX-17873</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">ADS122C04</td>
         <td style="vertical-align:middle" align="center">Precision A/D Converter - used on Qwiic PT100</td>
         <td style="vertical-align:middle" align="center">0x45, 0x44, 0x41, 0x40</td>
@@ -403,6 +409,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">LPS25HB</td>
         <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14767">SPX-14767</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x60</b></td>
+        <td style="vertical-align:middle" align="center">ACS37800</td>
+        <td style="vertical-align:middle" align="center">Power sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/17873">SPX-17873</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x60</b>, <b>0x61</b>, <b>0x62</b>, 0x63, 0x64, 0x65, 0x66, 0x67</td>
