@@ -41,12 +41,12 @@ spDevISM330::spDevISM330()
     // to support managed properties/public properties
 
     // Register parameters
-    spRegister(accelX, "Accel X (g)", "Accelerometer X (g)");
-    spRegister(accelY, "Accel Y (g)", "Accelerometer Y (g)");
-    spRegister(accelZ, "Accel Z (g)", "Accelerometer Z (g)");
-    spRegister(gyroX, "Gyro X (dps)", "Gyro X (dps)");
-    spRegister(gyroY, "Gyro Y (dps)", "Gyro Y (dps)");
-    spRegister(gyroZ, "Gyro Z (dps)", "Gyro Z (dps)");
+    spRegister(accelX, "Accel X (milli-g)", "Accelerometer X (milli-g)");
+    spRegister(accelY, "Accel Y (milli-g)", "Accelerometer Y (milli-g)");
+    spRegister(accelZ, "Accel Z (milli-g)", "Accelerometer Z (milli-g)");
+    spRegister(gyroX, "Gyro X (milli-dps)", "Gyro X (milli-dps)");
+    spRegister(gyroY, "Gyro Y (milli-dps)", "Gyro Y (milli-dps)");
+    spRegister(gyroZ, "Gyro Z (milli-dps)", "Gyro Z (milli-dps)");
     spRegister(temperature, "Temperature (C)", "Temperature (C)");
 
     // Register properties
@@ -92,6 +92,7 @@ bool spDevISM330::onInitialize(TwoWire &wirePort)
         while (!reset && (millis() < (startTime + 2000))) // Time out after 2 seconds
         {
             reset = SparkFun_ISM330DHCX::getDeviceReset();
+            delay(1);
         }
         if (reset)
         {
@@ -106,10 +107,17 @@ bool spDevISM330::onInitialize(TwoWire &wirePort)
             result &= SparkFun_ISM330DHCX::setAccelSlopeFilter(_accel_slope_filter);
             result &= SparkFun_ISM330DHCX::setGyroFilterLP1(_gyro_filter_lp1);
             result &= SparkFun_ISM330DHCX::setGyroLP1Bandwidth(_gyro_lp1_bandwidth);
+            if (!result)
+                spLog_E("ISM330 onInitialize: device configuration failed");
         }
         else
+        {
+            spLog_E("ISM330 onInitialize: device did not reset");
             result = false;
+        }
     }
+    else
+        spLog_E("ISM330 onInitialize: device did not begin");
     _begun = result;
     return result;
 }
@@ -195,7 +203,10 @@ float spDevISM330::read_gyro_z()
 }
 float spDevISM330::read_temperature()
 {
-    return (float)SparkFun_ISM330DHCX::getTemp();
+    float temp = (float)SparkFun_ISM330DHCX::getTemp();
+    temp /= 256; // Temperature sensitivity 256 LSB/°C
+    temp += 25; // The output of the temperature sensor is 0 LSB (typ.) at 25 °C
+    return temp;
 }
 
 

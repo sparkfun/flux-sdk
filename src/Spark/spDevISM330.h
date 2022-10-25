@@ -110,24 +110,24 @@ public:
 
     // Define our read-write properties
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_data_rate, &spDevISM330::set_accel_data_rate> accelDataRate
-        = { {"Off", ISM_XL_ODR_OFF}, {"12.5 Hz", ISM_XL_ODR_12Hz5}, {"26 Hz", ISM_XL_ODR_26Hz}, {"52 Hz", ISM_XL_ODR_52Hz}, {"104 Hz", ISM_XL_ODR_104Hz}, {"208 Hz", ISM_XL_ODR_208Hz}, 
+        = { ISM_XL_ODR_104Hz, { {"Off", ISM_XL_ODR_OFF}, {"12.5 Hz", ISM_XL_ODR_12Hz5}, {"26 Hz", ISM_XL_ODR_26Hz}, {"52 Hz", ISM_XL_ODR_52Hz}, {"104 Hz", ISM_XL_ODR_104Hz}, {"208 Hz", ISM_XL_ODR_208Hz}, 
             {"416 Hz", ISM_XL_ODR_416Hz}, {"833 Hz", ISM_XL_ODR_833Hz}, {"1666 Hz", ISM_XL_ODR_1666Hz}, {"3332 Hz", ISM_XL_ODR_3332Hz}, {"6667 Hz", ISM_XL_ODR_6667Hz},
-            {"1.6 Hz", ISM_XL_ODR_1Hz6} };
+            {"1.6 Hz", ISM_XL_ODR_1Hz6} } };
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_full_scale, &spDevISM330::set_accel_full_scale> accelFullScale
-        = { {"2 g", ISM_2g}, {"16 g", ISM_16g}, {"4 g", ISM_4g}, {"8 g", ISM_8g} };
+        = { ISM_4g, { {"2 g", ISM_2g}, {"16 g", ISM_16g}, {"4 g", ISM_4g}, {"8 g", ISM_8g} } };
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_data_rate, &spDevISM330::set_gyro_data_rate> gyroDataRate
-        = { {"Off", ISM_GY_ODR_OFF}, {"12 Hz", ISM_GY_ODR_12Hz}, {"26 Hz", ISM_GY_ODR_26Hz}, {"52 Hz", ISM_GY_ODR_52Hz}, {"104 Hz", ISM_GY_ODR_104Hz}, {"208 Hz", ISM_GY_ODR_208Hz}, 
-            {"416 Hz", ISM_GY_ODR_416Hz}, {"833 Hz", ISM_GY_ODR_833Hz}, {"1666 Hz", ISM_GY_ODR_1666Hz}, {"3332 Hz", ISM_GY_ODR_3332Hz}, {"6667 Hz", ISM_GY_ODR_6667Hz} };
+        = { ISM_GY_ODR_104Hz, { {"Off", ISM_GY_ODR_OFF}, {"12 Hz", ISM_GY_ODR_12Hz}, {"26 Hz", ISM_GY_ODR_26Hz}, {"52 Hz", ISM_GY_ODR_52Hz}, {"104 Hz", ISM_GY_ODR_104Hz}, {"208 Hz", ISM_GY_ODR_208Hz}, 
+            {"416 Hz", ISM_GY_ODR_416Hz}, {"833 Hz", ISM_GY_ODR_833Hz}, {"1666 Hz", ISM_GY_ODR_1666Hz}, {"3332 Hz", ISM_GY_ODR_3332Hz}, {"6667 Hz", ISM_GY_ODR_6667Hz} } };
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_full_scale, &spDevISM330::set_gyro_full_scale> gyroFullScale
-        = { {"125 dps", ISM_125dps}, {"250 dps", ISM_250dps}, {"500 dps", ISM_500dps}, {"1000 dps", ISM_1000dps}, {"2000 dps", ISM_2000dps}, {"4000 dps", ISM_4000dps} };
+        = { ISM_500dps, { {"125 dps", ISM_125dps}, {"250 dps", ISM_250dps}, {"500 dps", ISM_500dps}, {"1000 dps", ISM_1000dps}, {"2000 dps", ISM_2000dps}, {"4000 dps", ISM_4000dps} } };
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_filter_lp2, &spDevISM330::set_accel_filter_lp2> accelFilterLP2
-        = { {"Enabled", 1}, {"Disabled", 0} };
+        = { 1, { {"Enabled", 1}, {"Disabled", 0} } };
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_filter_lp1, &spDevISM330::set_gyro_filter_lp1> gyroFilterLP1
-        = { {"Enabled", 1}, {"Disabled", 0} };
+        = { 1, { {"Enabled", 1}, {"Disabled", 0} } };
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_slope_filter, &spDevISM330::set_accel_slope_filter> accelSlopeFilter
-        = { {"ODR/4", 0}, {"ODR/10", ISM_LP_ODR_DIV_10}, {"ODR/20", ISM_LP_ODR_DIV_20}, {"ODR/45", ISM_LP_ODR_DIV_45},
-            {"ODR/100", ISM_LP_ODR_DIV_100}, {"ODR/200", ISM_LP_ODR_DIV_200}, {"ODR/400", ISM_LP_ODR_DIV_400}, {"ODR/800", ISM_LP_ODR_DIV_800}  };
+        = { ISM_LP_ODR_DIV_100, { {"ODR/4", 0}, {"ODR/10", ISM_LP_ODR_DIV_10}, {"ODR/20", ISM_LP_ODR_DIV_20}, {"ODR/45", ISM_LP_ODR_DIV_45},
+            {"ODR/100", ISM_LP_ODR_DIV_100}, {"ODR/200", ISM_LP_ODR_DIV_200}, {"ODR/400", ISM_LP_ODR_DIV_400}, {"ODR/800", ISM_LP_ODR_DIV_800} } };
     spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_lp1_bandwidth, &spDevISM330::set_gyro_lp1_bandwidth> gyroLP1Bandwidth
-        = { {"Ultra Light", ISM_ULTRA_LIGHT}, {"Very Light", ISM_VERY_LIGHT}, {"Light", ISM_LIGHT}, {"Medium", ISM_MEDIUM},
-            {"Strong", ISM_STRONG}, {"Very Strong", ISM_VERY_STRONG}, {"Aggressive", ISM_AGGRESSIVE}, {"Extreme", ISM_XTREME}  };
+        = { ISM_MEDIUM, { {"Ultra Light", ISM_ULTRA_LIGHT}, {"Very Light", ISM_VERY_LIGHT}, {"Light", ISM_LIGHT}, {"Medium", ISM_MEDIUM},
+            {"Strong", ISM_STRONG}, {"Very Strong", ISM_VERY_STRONG}, {"Aggressive", ISM_AGGRESSIVE}, {"Extreme", ISM_XTREME} } };
 };
