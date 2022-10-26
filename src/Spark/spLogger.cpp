@@ -48,11 +48,105 @@ void spLogger::logScalar(spParameterOutScalar *pScalar)
     }
 }
 //----------------------------------------------------------------------------
-void spLogger::logArray( spParameterOutArray * pArray)
+void spLogger::logArray( spParameterOutArray * pParam)
 {
+    switch (pParam->type()) {
 
-    spLog_W("Need to implement array logging!");
+    case spTypeBool:
+    {
+        spDataArrayBool* theArray = (spDataArrayBool*)pParam->get();
 
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    case spTypeInt8:
+    {
+        spDataArrayInt8* theArray = (spDataArrayInt8*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    case spTypeInt16:
+    {
+        spDataArrayInt16* theArray = (spDataArrayInt16*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    case spTypeInt:
+    {
+        spDataArrayInt* theArray = (spDataArrayInt*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    case spTypeUInt8:
+    {
+        spDataArrayUint8* theArray = (spDataArrayUint8*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    case spTypeUInt16:
+    {
+        spDataArrayUint16* theArray = (spDataArrayUint16*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    case spTypeUInt:
+    {
+        spDataArrayUint* theArray = (spDataArrayUint*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    case spTypeFloat:
+    {
+        spDataArrayFloat* theArray = (spDataArrayFloat*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray, pParam->precision());
+
+        break;
+    }
+    case spTypeDouble:
+    {
+        spDataArrayDouble* theArray = (spDataArrayDouble*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray, pParam->precision());
+
+        break;
+    }
+    case spTypeString:
+    {
+        spDataArrayString* theArray = (spDataArrayString*)pParam->get();
+
+        if (theArray != nullptr)
+            writeValue(pParam->name(), theArray);
+
+        break;
+    }
+    default:
+        spLog_D("Unknown Array Parameter Value");
+        break;
+
+    }
 }
 //----------------------------------------------------------------------------
 // Log the data in a section of the output - title and parameter values
