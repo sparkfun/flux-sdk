@@ -47,6 +47,8 @@ public:
         spRegister(in_float);
         spRegister(in_string);
 
+        spRegister(out_int_arr, "Output Int Array", "Testing array output");
+
     }
     
 
@@ -84,6 +86,9 @@ public:
     void set_str(const std::string &);
 
 
+    // out arrays
+    bool get_int_arr(spDataArrayInt *);
+
     // Output Parameters
     spParameterOutBool<test_params, &test_params::get_bool>         out_bool;
     spParameterOutInt8<test_params, &test_params::get_int8>         out_int8;    
@@ -101,7 +106,10 @@ public:
     spParameterInUint8<test_params, &test_params::set_uint8>      in_uint8;        
     spParameterInUint16<test_params, &test_params::set_uint16>      in_uint16;            
     spParameterInFloat<test_params, &test_params::set_float>        in_float;
-    spParameterInString<test_params, &test_params::set_str>         in_string;     
+    spParameterInString<test_params, &test_params::set_str>         in_string;    
+
+
+    spParameterOutArrayInt<test_params, &test_params::get_int_arr>  out_int_arr;
 };
 
 // Method implementation
@@ -168,6 +176,18 @@ std::string test_params::get_str(void){
 }
 void test_params::set_str(const std::string &data){
         _s_data=data;    
+}
+
+// Array
+
+// out arrays
+bool test_params::get_int_arr(spDataArrayInt *theArray)
+{
+    static int mydata[] = {1, 2, 3, 4, 5, 6};
+
+    theArray->set(mydata, sizeof(mydata)/sizeof(int));
+
+    return true;
 }
 /////////////////////////////////////////////////////////////////////////
 //
@@ -319,7 +339,26 @@ void run_tests()
     Serial.print("   Test 2: "); Serial.println( (myTest.out_string.get() == s_test ? "PASS" : "FAIL"));  
 
     Serial.println();    
-    Serial.println("DONE");        
+    Serial.println("DONE"); 
+
+
+    // Array tests
+
+    Serial.println("Int Array Test:");
+    spDataArrayInt *iArr = myTest.out_int_arr.get();
+    if (!iArr)
+        Serial.println("Error accessing int array");
+    else
+    {
+        int * pData = iArr->get();
+        Serial.print("Array Data: [");
+        for (int i=0; i < iArr->size(); i++)
+            Serial.printf( "%s%d", (i > 0 ? ", " : ""), *pData++);
+        Serial.println("]");
+
+        delete iArr;
+    }
+
 }      
 //---------------------------------------------------------------------
 // Arduino Setup
