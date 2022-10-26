@@ -89,6 +89,46 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
+
+    //-----------------------------------------------------------------
+    // Arrays
+    //-----------------------------------------------------------------
+    void logValue(const std::string &tag, spDataArrayBool *value)
+    {
+
+    }
+    void logValue(const std::string &tag, spDataArrayInt8 *value)
+    {
+
+    }
+    void logValue(const std::string &tag, spDataArrayInt16 *value)
+    {
+
+    }
+    void logValue(const std::string &tag, spDataArrayInt *value )
+    {
+
+    }   
+    void logValue(const std::string &tag, spDataArrayUint8 *value)
+    {
+
+    }
+    void logValue(const std::string &tag, spDataArrayUint16 *value)
+    {
+
+    }
+    void logValue(const std::string &tag, spDataArrayUint *value)
+    {
+
+    }
+    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision=3)
+    {
+
+    }
+    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision=3)
+    {
+        
+    }
     //-----------------------------------------------------------------
     // structure cycle
 
