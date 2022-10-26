@@ -8,7 +8,6 @@
 
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "spCoreProps.h"
 #include "spCoreTypes.h"
@@ -503,7 +502,7 @@ public:
 
 //---------------------------------------------------------------------------------------
 
-template <class T, class Object, bool (Object::*_getter)(spDataArrayType<T> &)>
+template <class T, class Object, bool (Object::*_getter)(spDataArrayType<T> *)>
 class spParameterOutArrayType :  public spParameterOutArray
 {
     Object *my_object; // Pointer to the containing object
@@ -569,21 +568,23 @@ class spParameterOutArrayType :  public spParameterOutArray
     //
     // NOTE - using smart pointer/shared pointer for the return value. This will automatically
     //        free memory when the pointer goes out of scope.
-    
-    std::shared_ptr<spDataArrayType<T>>  get(void) 
+
+    spDataArrayType<T> *  get(void) 
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
-            return false;
+            return nullptr;
         }
-        spDataArrayType<T>  data;
+        spDataArrayType<T>  *data = new spDataArrayType<T>;
         bool bstatus = (my_object->*_getter)(data);
 
-        if (!bstatus)
+        if (!bstatus){
+            delete data;
             return nullptr;
+        }
 
-        return std::make_shared<spDataArrayType<T>>(std::move(data));
+        return data;
     }
 
     // //---------------------------------------------------------------------------------
@@ -595,28 +596,28 @@ class spParameterOutArrayType :  public spParameterOutArray
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)(spDataArrayType<bool> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<bool> *)> 
 using spParameterOutArrayBool = spParameterOutArrayType<bool, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int8_t> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<int8_t> *)> 
 using spParameterOutArrayInt8 = spParameterOutArrayType<int8_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int16_t> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<int16_t> *)> 
 using spParameterOutArrayInt16 = spParameterOutArrayType<int16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<int> *)> 
 using spParameterOutArrayInt = spParameterOutArrayType<int, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint8_t> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint8_t> *)> 
 using spParameterOutArrayUint8 = spParameterOutArrayType<uint8_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint16_t> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint16_t> *)> 
 using spParameterOutArrayUint16 = spParameterOutArrayType<uint16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint> *)> 
 using spParameterOutArrayUint = spParameterOutArrayType<uint, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<float> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<float> *)> 
 class spParameterOutArrayFloat: public spParameterOutArrayType<float, Object, _getter>
 {
 public: 
@@ -633,7 +634,7 @@ private:
     uint16_t _precision;
 };
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<double> &)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<double> *)> 
 class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object, _getter>
 {
 public: 
