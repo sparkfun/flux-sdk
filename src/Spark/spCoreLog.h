@@ -4,8 +4,9 @@
 
 // Messaging/logging system for the framework
 #include <stdarg.h>
-#include "spOutput.h"
 #include <WString.h>
+
+#include "spCoreInterface.h"
 // Lets enable logging
 #define SP_LOGGING_ENABLED
 
