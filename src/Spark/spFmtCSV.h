@@ -21,6 +21,14 @@
 class spFormatCSV : public spOutputFormat
 {
 
+  private:
+    void writeHeaderEntry(const std::string &tag)
+    {
+        if (_bWriteHeader)
+            if (!append_to_header(tag))
+                spLog_W("CSV - internal header buffer size exceeded.");
+    }
+
   public:
     //-----------------------------------------------------------------
     spFormatCSV()
@@ -33,11 +41,10 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, bool value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
-        if (!append_csv_value(value ? "true" : "false", _data_buffer))
+        std::string stmp = sp_utils::to_string(value);
+        if (!append_csv_value(stmp, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
@@ -45,13 +52,10 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, int value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
-        char szBuffer[32] = {'\0'};
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
-        if (!append_csv_value(szBuffer, _data_buffer))
+        std::string stmp = sp_utils::to_string(value);
+        if (!append_csv_value(stmp, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
@@ -59,13 +63,10 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, int8_t value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
-        char szBuffer[32] = {'\0'};
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
-        if (!append_csv_value(szBuffer, _data_buffer))
+        std::string stmp = sp_utils::to_string(value);
+        if (!append_csv_value(stmp, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
@@ -73,13 +74,10 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, int16_t value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
-        char szBuffer[32] = {'\0'};
-        snprintf(szBuffer, sizeof(szBuffer), "%d", value);
-        if (!append_csv_value(szBuffer, _data_buffer))
+        std::string stmp = sp_utils::to_string(value);
+        if (!append_csv_value(stmp, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
@@ -87,13 +85,10 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, uint value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
-        char szBuffer[32] = {'\0'};
-        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
-        if (!append_csv_value(szBuffer, _data_buffer))
+        std::string stmp = sp_utils::to_string(value);
+        if (!append_csv_value(stmp, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
@@ -101,13 +96,10 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, uint8_t value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
-        char szBuffer[32] = {'\0'};
-        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
-        if (!append_csv_value(szBuffer, _data_buffer))
+        std::string stmp = sp_utils::to_string(value);
+        if (!append_csv_value(stmp, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
@@ -115,13 +107,10 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, uint16_t value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
-        char szBuffer[32] = {'\0'};
-        snprintf(szBuffer, sizeof(szBuffer), "%u", value);
-        if (!append_csv_value(szBuffer, _data_buffer))
+        std::string stmp = sp_utils::to_string(value);
+        if (!append_csv_value(stmp, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
@@ -134,9 +123,7 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, double value, uint16_t precision)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
         char szBuffer[32] = {'\0'};
         (void)sp_utils::dtostr(value, szBuffer, sizeof(szBuffer), precision);
@@ -148,9 +135,7 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, const std::string &value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+        writeHeaderEntry(tag);
 
         if (!append_csv_value(value, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
@@ -159,14 +144,70 @@ class spFormatCSV : public spOutputFormat
     void logValue(const std::string &tag, const char *value)
     {
         // header?
-        if (_bWriteHeader)
-            if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
-
+        writeHeaderEntry(tag);
+        
         if (!append_csv_value(std::string(value), _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
-    //-----------------------------------------------------------------
+
+
+
+
+    void logValue(const std::string &tag, spDataArrayBool *value)
+    {
+        // header
+        writeHeaderEntry(tag);
+        writeOutArray(value);
+    }
+    void logValue(const std::string &tag, spDataArrayInt8 *value)
+    {
+        // header
+        writeHeaderEntry(tag);
+        
+    }
+    void logValue(const std::string &tag, spDataArrayInt16 *value)
+    {
+        // header
+        writeHeaderEntry(tag);
+    }
+        
+    void logValue(const std::string &tag, spDataArrayInt *value )
+    {
+        // header
+        writeHeaderEntry(tag);
+        
+    }   
+    void logValue(const std::string &tag, spDataArrayUint8 *value)
+    {
+        // header
+        writeHeaderEntry(tag);
+        
+    }
+    void logValue(const std::string &tag, spDataArrayUint16 *value)
+    {
+        // header
+        writeHeaderEntry(tag);
+        
+    }
+    void logValue(const std::string &tag, spDataArrayUint *value)
+    {
+        // header
+        writeHeaderEntry(tag);
+    
+    }
+    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision=3)
+    {
+        // header
+        writeHeaderEntry(tag);
+        
+    }
+    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision=3)
+    {
+        // header
+        writeHeaderEntry(tag);
+        
+    }
+    //-----------------------------------------------------------    
     // structure cycle
 
     virtual void beginObservation(const char *szTitle = nullptr)
@@ -275,6 +316,56 @@ class spFormatCSV : public spOutputFormat
         strlcat(szBuffer, tag.c_str(), sizeof(szBuffer));
 
         return append_csv_value(szBuffer, _header_buffer);
+    }
+
+    //-----------------------------------------------------------------
+    // Array support
+    //-----------------------------------------------------------------
+
+    // 
+    template <typename T>
+    void writeOutArrayDimension(std::string &sData, T * &pData, uint16_t nDim, uint16_t *dims, uint16_t currentDim)
+    {
+        sData += "[";
+        // Write out the data?
+        if ( currentDim == nDim -1  )
+        {
+            for (int i=0; i < dims[currentDim]; i++)
+            {
+                if (i > 0)
+                    sData += ", ";
+                sData += sp_utils::to_string(*pData++);
+            }
+        }
+        else
+        {
+            // Need to recurse 
+            for ( int i=0; i < dims[currentDim]-1; i++)
+            {
+                if (i > 0)
+                    sData += ", ";
+                // recurse
+                writeOutArrayDimension(sData, pData, nDim, dims, currentDim+1);
+            }
+        }
+        sData += "]";
+    }
+
+    template <typename T>
+    void writeOutArray(spDataArrayType<T> *theArray)
+    {
+        std::string sData = "";
+
+        T * pData = theArray->get();
+
+        if (!pData)
+            sData = "[]";
+        else
+            writeOutArrayDimension(sData, pData,  theArray->n_dimensions(), theArray->dimensions(), 0);
+
+        if (!append_csv_value(sData, _data_buffer))
+            spLog_E("CSV - internal data buffer size exceeded.");
+
     }
 
     //-----------------------------------------------------------------
