@@ -200,7 +200,7 @@ Where:
 * ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in. 
 * Reader - the name of the _read_ method the parameter should call when it's value is retrieved. **NOTE**: A reference, `& operator`, to the reader is provided
 
-##### Available Input Parameter Types:
+##### Available Output Parameter Types:
 
 * spParameterOutBool - bool parameter
 * spParameterOutInt8  - integer 8 parameter
@@ -246,7 +246,81 @@ Note
 > * The reader method must be declared before defining the parameter
 > * The use of the `read_` prefix on the writer methods help identify the methods as supporting a parameter.
 
-#### Runtime Registration
+### Output Array Parameters
+
+For outputs that have array values, an array output parameter is declared. These are declared and operate in a similar fashion as scalar output parameters.
+
+#### Declaring the Output Array Parameter
+Within the definition of the class the parameter is for, the output array parameter is defined using the following pattern:
+
+```C++
+spParameterOutArrayType<ClassName, &ClassName::Reader>  output_name;
+```
+Where:
+* spParameterOutArrayType - the type of the output parameter class to use 
+* ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in. 
+* Reader - the name of the _read_ method the parameter should call when it's value is retrieved. **NOTE**: A reference, `& operator`, to the reader is provided
+
+##### Available Output Parameter Types:
+
+* spParameterOutArrayBool - bool parameter
+* spParameterOutArrayInt8  - integer 8 parameter
+* spParameterOutArrayInt16  - integer 16 parameter
+* spParameterOutArrayInt  - integer parameter
+* spParameterOutArrayUint8 - unsigned 8 integer
+* spParameterOutArrayUint16 - unsigned 16 integer
+* spParameterOutArrayUint - unsigned integer
+* spParameterOutArrayFloat - float
+* spParameterOutArrayDouble - double
+* spParameterOutArrayString - string -> std::string
+
+##### Reader Methods
+
+These methods are implemented on the containing class and are called when the value of a parameter is requested. These methods have the following signature:
+
+```C++
+bool ClassName::read_Name(spDataArray<type> *array);
+```
+Where
+
+* array  -  a pointer to an spDataArray<type> object. Type is the type of the parameter (int, float, double ...etc)
+* ClassName - the name of the containing class for the property
+* On success, a true value is returned, false on error.
+
+Note
+>By convention, reader method names are prefixed by ```read_```
+
+In the reader methods, the data and dimensions of the array are set in the array object.
+
+```C++
+   array->set(myArrayData, X);
+```
+
+or for two dimensional arrays...
+
+```C++
+   array->set(myArrayData, X, Y);
+```
+
+##### Example
+
+```C++
+class MyClass : public spObject
+{
+private:
+    bool read_myOutput(spDataArrayInt *array);
+
+public:
+   // Define an output parameter
+   spParameterOutArrayInt<MyClass, &MyClass::read_MyOutput>  my_output;
+}
+```
+Note
+> * By convention declaring the output reader method as private. This can be optional
+> * The reader method must be declared before defining the parameter
+> * The use of the `read_` prefix on the writer methods help identify the methods as supporting a parameter.
+
+### Runtime Registration
 
 When an instance of the object that contains the parameter is created, the parameter is registered with that object using the ```spRegister()``` function. This step connects the object instance with the parameter. 
 
