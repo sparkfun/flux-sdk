@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "spCoreTypes.h"
+#include "spCoreInterface.h"
 #include "spStorage.h"
 #include "spUtils.h"
 
