@@ -5,25 +5,10 @@
 #pragma once
 #include <string>
 #include <vector>
+
+#include "spCoreTypes.h"
+#include "spCoreInterface.h"
 //-----------------------------------------
-// Define an interface for output of log information.
-
-class spWriter
-{
-
-  public:
-    virtual void write(bool value)
-    {
-        write((int)value);
-    };
-    virtual void write(int) = 0;
-    virtual void write(float) = 0;
-    virtual void write(const char *) = 0;
-    virtual void write(std::string &value)
-    {
-        write(value.c_str());
-    };
-};
 
 // Define a formatter for log data
 
@@ -35,7 +20,11 @@ class spOutputFormat
 
     // value methods
     virtual void logValue(const std::string &tag, bool value) = 0;
-    virtual void logValue(const std::string &tag, int value) = 0;
+    virtual void logValue(const std::string &tag, int8_t value) = 0;
+    virtual void logValue(const std::string &tag, int16_t value) = 0;
+    virtual void logValue(const std::string &tag, int value) = 0;    
+    virtual void logValue(const std::string &tag, uint8_t value) = 0;
+    virtual void logValue(const std::string &tag, uint16_t value) = 0;        
     virtual void logValue(const std::string &tag, uint value) = 0;
     virtual void logValue(const std::string &tag, float value, uint16_t precision=3) = 0;
     virtual void logValue(const std::string &tag, double value, uint16_t precision=3) = 0;
@@ -44,6 +33,17 @@ class spOutputFormat
     {
         logValue(tag, value.c_str());
     }
+
+    // Array value methods
+    virtual void logValue(const std::string &tag, spDataArrayBool *value) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayInt8 *value) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayInt16 *value) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayInt *value) = 0;    
+    virtual void logValue(const std::string &tag, spDataArrayUint8 *value) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayUint16 *value) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayUint *value) = 0;        
+    virtual void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision=3) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision=3) = 0;
 
     // structure cycle
 
