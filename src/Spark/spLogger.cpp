@@ -56,8 +56,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayBool* theArray = (spDataArrayBool*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
@@ -65,8 +67,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayInt8* theArray = (spDataArrayInt8*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
@@ -74,8 +78,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayInt16* theArray = (spDataArrayInt16*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
@@ -83,8 +89,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayInt* theArray = (spDataArrayInt*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
@@ -92,8 +100,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayUint8* theArray = (spDataArrayUint8*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
@@ -101,8 +111,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayUint16* theArray = (spDataArrayUint16*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
@@ -110,8 +122,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayUint* theArray = (spDataArrayUint*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
@@ -119,8 +133,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayFloat* theArray = (spDataArrayFloat*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray, pParam->precision());
+            delete theArray;
+        }
 
         break;
     }
@@ -128,8 +144,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayDouble* theArray = (spDataArrayDouble*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray, pParam->precision());
+            delete theArray;
+        }
 
         break;
     }
@@ -137,8 +155,10 @@ void spLogger::logArray( spParameterOutArray * pParam)
     {
         spDataArrayString* theArray = (spDataArrayString*)pParam->get();
 
-        if (theArray != nullptr)
+        if (theArray != nullptr){
             writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
 
         break;
     }
