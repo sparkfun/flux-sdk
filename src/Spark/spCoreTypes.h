@@ -302,6 +302,8 @@ class spDataArray
 public:
     spDataArray(): _n_dims{0}, _dimensions{0} {};
 
+    virtual ~spDataArray(){}
+
     virtual spDataType_t type() = 0;
 
     uint8_t      n_dimensions()
@@ -313,6 +315,13 @@ public:
         return (uint16_t*)&_dimensions;
     }
 
+    uint  size(void)
+    {
+        uint sum = 0;
+        for (int i=0; i < _n_dims; i++)
+            sum += _dimensions[i];
+        return sum;
+    }
 protected:
 
     void setDimensions(uint16_t d0)
@@ -351,7 +360,7 @@ public:
 
     spDataType_t type(void)
     {
-        T *c;
+        T c;
         return spDataTyper::type(c);
     }
 
