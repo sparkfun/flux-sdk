@@ -50,19 +50,47 @@ class spParameterIn : public spParameter
     virtual spDataLimit * dataLimit(void) = 0;
     std::string to_string() { return std::string(name());}; // for consistancy
 };
-class spParameterOut : public spParameter, public spDataOut
+
+#define kParameterOutFlagArray 0x01
+
+//class spParameterOut : public spParameter, public spDataOut
+class spParameterOut : public spParameter
 {
   public:
+    spParameterOut() : _flags{0}{}
+    spParameterOut(uint8_t flags) : _flags{flags}{}
+
     virtual spDataType_t type(void) = 0;
     // Some types need precision - just make it generic
     virtual uint16_t precision(void)
     {
         return 0;
     };
+
+    // This is used with covariant returns values of the sub-classes.
+    // Returns the property pointer for a given class
+    virtual spParameterOut * accessor() = 0; 
+
+    // flags -- used to highlight attributes of the output
+
+    uint8_t flags()
+    {
+        return _flags;
+    }
+
+protected:
+    void setFlag(uint8_t flag)
+    {
+        _flags |= flag;
+    }
+
+private:
+        uint8_t _flags;
 };
 // simple def - list of parameters
 using spParameterInList = std::vector<spParameterIn *>;
 using spParameterOutList = std::vector<spParameterOut *>;
+
 
 //----------------------------------------------------------------------------------------
 // spParameterContainer
@@ -130,6 +158,19 @@ class _spParameterContainer
 };
 
 //----------------------------------------------------------------------------------------------------
+// spParameterOutScalar
+
+class spParameterOutScalar : public spParameterOut, public spDataOut
+{
+public:
+    // mostly a 
+     spParameterOutScalar * accessor()
+     {
+        return this;
+     }
+     virtual spDataType_t type(void)=0;
+};
+//----------------------------------------------------------------------------------------------------
 // spParameterOut
 //
 // Output Parameter Template
@@ -137,7 +178,7 @@ class _spParameterContainer
 //
 
 template <class T, class Object, T (Object::*_getter)()>
-class _spParameterOut : public _spDataOut<T>, public spParameterOut
+class _spParameterOut : public _spDataOut<T>, public spParameterOutScalar
 {
     Object *my_object; // Pointer to the containing object
 
@@ -322,16 +363,12 @@ private:
 //
 //
 template <class Object, std::string (Object::*_getter)()>
-class spParameterOutString : public spParameterOut, public _spDataOutString
+class spParameterOutString : public spParameterOutScalar, public _spDataOutString
 {
     Object *my_object; // Pointer to the containing object
 
   public:
     spParameterOutString() : my_object(0)
-    {
-    }
-
-    spParameterOutString(Object *me) : my_object(me)
     {
     }
 
@@ -443,6 +480,164 @@ class spParameterOutString : public spParameterOut, public _spDataOutString
         return _spDataOutString::getString();
     };
 };
+
+//----------------------------------------------------------------------------------------------------
+// spParameterOutArray
+
+class spParameterOutArray : public spParameterOut
+{
+public:
+
+    spParameterOutArray() : spParameterOut{kParameterOutFlagArray}{}
+
+    spParameterOutArray* accessor()
+    {
+        return this;
+    }
+
+};
+
+//---------------------------------------------------------------------------------------
+
+template <class T, class Object, bool (Object::*_getter)(spDataArrayType<T> &)>
+class spParameterOutArrayType :  public spParameterOutArray
+{
+    Object *my_object; // Pointer to the containing object
+
+  public:
+    spParameterOutArrayType() : my_object(0)
+    {
+    }
+
+    //---------------------------------------------------------------------------------
+    // return our data type
+    spDataType_t type()
+    {
+        T c;
+        return spDataTyper::type(&c);
+    };
+
+    //---------------------------------------------------------------------------------
+    // to register the parameter - set the containing object instance
+    // Normally done in the containing objects constructor.
+    // i.e.
+    //     parameter_object(this);
+    //
+    // This allows the parameter to add itself to the containing objects list of
+    // parameter.
+    //
+    // Also the containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterOutArray: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+    }
+    void operator()(Object *obj, const char *name)
+    {
+        // set the name of the property on init
+        if (name)
+            setName(name);
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+    void operator()(Object *obj, const char *name, const char *desc)
+    {
+        // Description of the object
+        if (desc)
+            setDescription(desc);
+
+        // cascade to other version of method
+        (*this)(obj, name);
+    }
+
+    //---------------------------------------------------------------------------------
+    // get/set syntax
+    bool get(spDataArrayType<T> & data) 
+    {
+        if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            return false;
+        }
+        return (my_object->*_getter)(data);
+    }
+
+    //---------------------------------------------------------------------------------
+    // get -> parameter()
+    bool operator()(spDataArrayType<T> & data) 
+    {
+        return get(data);
+    };
+};
+
+// Define by type
+template <class Object, bool (Object::*_getter)(spDataArrayType<bool> &)> 
+using spParameterOutArrayBool = spParameterOutArrayType<bool, Object, _getter>;
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<int8_t> &)> 
+using spParameterOutArrayInt8 = spParameterOutArrayType<int8_t, Object, _getter>;
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<int16_t> &)> 
+using spParameterOutArrayInt16 = spParameterOutArrayType<int16_t, Object, _getter>;
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<int> &)> 
+using spParameterOutArrayInt = spParameterOutArrayType<int, Object, _getter>;
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint8_t> &)> 
+using spParameterOutArrayUint8 = spParameterOutArrayType<uint8_t, Object, _getter>;
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint16_t> &)> 
+using spParameterOutArrayUint16 = spParameterOutArrayType<uint16_t, Object, _getter>;
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint> &)> 
+using spParameterOutArrayUint = spParameterOutArrayType<uint, Object, _getter>;
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<float> &)> 
+class spParameterOutArrayFloat: public spParameterOutArrayType<float, Object, _getter>
+{
+public: 
+    spParameterOutArrayFloat() : _precision(3){}
+    void setPrecision(uint16_t prec)
+    {
+        _precision = prec;
+    }
+    uint16_t precision(void)
+    {
+        return _precision;
+    }
+private:
+    uint16_t _precision;
+};
+
+template <class Object, bool (Object::*_getter)(spDataArrayType<double> &)> 
+class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object, _getter>
+{
+public: 
+    spParameterOutArrayDouble() : _precision(3){}
+    void setPrecision(uint16_t prec)
+    {
+        _precision = prec;
+    }
+    uint16_t precision(void)
+    {
+        return _precision;
+    }
+private:
+    uint16_t _precision;
+};
+
+
+
+//-----------------------------------------------------------------------------------
 
 template <class T, class Object, void (Object::*_setter)(T const &)>
 class _spParameterIn : public spParameterIn, public _spDataIn<T>

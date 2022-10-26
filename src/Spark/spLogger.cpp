@@ -7,6 +7,54 @@
 #include "spLogger.h"
 
 //----------------------------------------------------------------------------
+void spLogger::logScalar(spParameterOutScalar *pScalar)
+{
+
+    switch (pScalar->type()) {
+    case spTypeBool:
+        writeValue(pScalar->name(), pScalar->getBool());
+        break;
+    case spTypeInt8:
+        writeValue(pScalar->name(), pScalar->getInt8());
+        break;
+    case spTypeInt16:
+        writeValue(pScalar->name(), pScalar->getInt16());
+        break;
+    case spTypeInt:
+        writeValue(pScalar->name(), pScalar->getInt());
+        break;
+    case spTypeUInt8:
+        writeValue(pScalar->name(), pScalar->getUint8());
+        break;
+    case spTypeUInt16:
+        writeValue(pScalar->name(), pScalar->getUint16());
+        break;
+    case spTypeUInt:
+        writeValue(pScalar->name(), pScalar->getUint());
+        break;
+    case spTypeFloat:
+        writeValue(pScalar->name(), pScalar->getFloat(), pScalar->precision());
+        break;
+    case spTypeDouble:
+        writeValue(pScalar->name(), pScalar->getDouble(), pScalar->precision());
+        break;
+    case spTypeString:
+        writeValue(pScalar->name(), pScalar->getString());
+        break;
+
+    default:
+        spLog_D("Unknown Parameter Value");
+        break;
+    }
+}
+//----------------------------------------------------------------------------
+void spLogger::logArray( spParameterOutArray * pArray)
+{
+
+    spLog_W("Need to implement array logging!");
+
+}
+//----------------------------------------------------------------------------
 // Log the data in a section of the output - title and parameter values
 void spLogger::logSection(const char *section_name, spParameterOutList &paramList)
 {
@@ -23,43 +71,11 @@ void spLogger::logSection(const char *section_name, spParameterOutList &paramLis
         if (!param->enabled())
             continue;
 
-        switch (param->type())
-        {
-        case spTypeBool:
-            writeValue(param->name(), param->getBool());
-            break;
-        case spTypeInt8:
-            writeValue(param->name(), param->getInt8());
-            break;
-        case spTypeInt16:
-            writeValue(param->name(), param->getInt16());
-            break;
-        case spTypeInt:
-            writeValue(param->name(), param->getInt());
-            break;
-        case spTypeUInt8:
-            writeValue(param->name(), param->getUint8());
-            break;
-        case spTypeUInt16:
-            writeValue(param->name(), param->getUint16());
-            break;
-        case spTypeUInt:
-            writeValue(param->name(), param->getUint());
-            break;
-        case spTypeFloat:
-            writeValue(param->name(), param->getFloat(), param->precision());
-            break;
-        case spTypeDouble:
-            writeValue(param->name(), param->getDouble(), param->precision());
-            break;
-        case spTypeString:
-            writeValue(param->name(), param->getString());
-            break;
-
-        default:
-            spLog_D("Unknown Parameter Value");
-            break;
-        }
+        // is this an array or a scalar? 
+        if ( (param->flags() & kParameterOutFlagArray ) == kParameterOutFlagArray)
+            logArray((spParameterOutArray*)param->accessor());
+        else
+            logScalar((spParameterOutScalar*)param->accessor());        
     }
 
     for (auto theFormatter : _Formatters)
