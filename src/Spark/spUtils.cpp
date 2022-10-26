@@ -197,20 +197,31 @@ std::string sp_utils::to_string(uint16_t const data)
     return stmp;
 }
 //-------------------------------------------------------------------
+std::string sp_utils::to_string(float const data, uint8_t precision)
+{
+    return sp_utils::to_string( (double)data, precision);
+    char szBuffer[20];
+    sp_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);
+    std::string stmp = szBuffer;
+    return stmp;
+}
 std::string sp_utils::to_string(float const data)
 {
+    return sp_utils::to_string(data, 3);
+}
+
+//-------------------------------------------------------------------
+std::string sp_utils::to_string(double const data, uint8_t precision) 
+{
     char szBuffer[20];
-    snprintf(szBuffer, sizeof(szBuffer), "%.3f", data);
+    sp_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);    
     std::string stmp = szBuffer;
     return stmp;
 }
 //-------------------------------------------------------------------
 std::string sp_utils::to_string(double const data) 
 {
-    char szBuffer[20];
-    snprintf(szBuffer, sizeof(szBuffer), "%.4f", data);
-    std::string stmp = szBuffer;
-    return stmp;
+    return sp_utils::to_string(data, 4);
 }
 //-------------------------------------------------------------------
 std::string sp_utils::to_string(bool const data) 
@@ -219,3 +230,4 @@ std::string sp_utils::to_string(bool const data)
     stmp = data ? "true" : "false";
     return stmp;
 }
+

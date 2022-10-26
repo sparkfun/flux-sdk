@@ -30,7 +30,9 @@ std::string to_string(int16_t const data);
 std::string to_string(uint const data);
 std::string to_string(uint8_t const data);
 std::string to_string(uint16_t const data);
+std::string to_string(float const data, uint8_t precision);
 std::string to_string(float const data);
+std::string to_string(double const data, uint8_t precision);
 std::string to_string(double const data);
 std::string to_string(bool const data);
 
