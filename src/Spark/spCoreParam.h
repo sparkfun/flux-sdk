@@ -8,9 +8,11 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "spCoreProps.h"
 #include "spCoreTypes.h"
+#include "spCoreInterface.h"
 #include "spUtils.h"
 
 //----------------------------------------------------------------------------------------
@@ -495,6 +497,8 @@ public:
         return this;
     }
 
+    virtual spDataArray * get(void) = 0;
+
 };
 
 //---------------------------------------------------------------------------------------
@@ -505,6 +509,7 @@ class spParameterOutArrayType :  public spParameterOutArray
     Object *my_object; // Pointer to the containing object
 
   public:
+
     spParameterOutArrayType() : my_object(0)
     {
     }
@@ -560,23 +565,33 @@ class spParameterOutArrayType :  public spParameterOutArray
     }
 
     //---------------------------------------------------------------------------------
-    // get/set syntax
-    bool get(spDataArrayType<T> & data) 
+    // get the value of the parameter.
+    //
+    // NOTE - using smart pointer/shared pointer for the return value. This will automatically
+    //        free memory when the pointer goes out of scope.
+    
+    std::shared_ptr<spDataArrayType<T>>  get(void) 
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return false;
         }
-        return (my_object->*_getter)(data);
+        spDataArrayType<T>  data;
+        bool bstatus = (my_object->*_getter)(data);
+
+        if (!bstatus)
+            return nullptr;
+
+        return std::make_shared<spDataArrayType<T>>(std::move(data));
     }
 
-    //---------------------------------------------------------------------------------
-    // get -> parameter()
-    bool operator()(spDataArrayType<T> & data) 
-    {
-        return get(data);
-    };
+    // //---------------------------------------------------------------------------------
+    // // get -> parameter()
+    // bool operator()(spDataArrayType<T> & data) 
+    // {
+    //     return get(data);
+    // };
 };
 
 // Define by type
