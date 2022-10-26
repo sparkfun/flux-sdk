@@ -98,7 +98,7 @@ class spLogger : public spActionType<spLogger>
     // Log Event
     //
     // These set of routines are setup to log an actual event. Outputting
-    // the value and the name of the object that tiggered the event
+    // the value and the name of the object that triggered the event
 
     void logEvent(spOperation *theObj)
     {
@@ -199,13 +199,12 @@ class spLogger : public spActionType<spLogger>
 
     void logScalar(spParameterOutScalar*);
     void logArray(spParameterOutArray*);
-    
+
     //----------------------------------------------------------------------------
     // When we log a value, we need to write it to all formatters. Seems like a lot
     // of short loops, but we want to write the SAME value to all formatters
     template <typename T> void writeValue(const std::string &tag, T value)
     {
-
         for (auto theFormatter : _Formatters)
             theFormatter->logValue(tag, value);
     }
