@@ -149,6 +149,13 @@ const std::string &sp_utils::to_string(std::string const &data)
     return data;
 }
 //-------------------------------------------------------------------
+std::string sp_utils::to_string(char * const data)
+{
+    std::string stmp = data;
+    return stmp;
+}
+
+//-------------------------------------------------------------------
 std::string sp_utils::to_string(int const data)
 {
     char szBuffer[20];

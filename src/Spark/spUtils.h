@@ -21,6 +21,7 @@ bool id_hash_string_to_string(const char *instr, char *outstr, size_t len);
 //-------------------------------------------------------------------
 std::string &to_string(std::string &data);
 const std::string &to_string(std::string const &data);
+std::string to_string(char* const data);
 std::string to_string(int const data);
 std::string to_string(int8_t const data);
 std::string to_string(int16_t const data);
