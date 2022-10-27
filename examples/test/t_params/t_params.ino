@@ -185,7 +185,7 @@ bool test_params::get_int_arr(spDataArrayInt *theArray)
 {
     static int mydata[] = {1, 2, 3, 4, 5, 6};
 
-    theArray->set(mydata, sizeof(mydata)/sizeof(int));
+    theArray->set(mydata, sizeof(mydata)/sizeof(int), false);
 
     return true;
 }
