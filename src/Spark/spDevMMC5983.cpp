@@ -43,11 +43,13 @@ spDevMMC5983::spDevMMC5983()
     spRegister(magX, "X Field (Gauss)", "X Field (Gauss)");
     spRegister(magY, "Y Field (Gauss)", "Y Field (Gauss)");
     spRegister(magZ, "Z Field (Gauss)", "Z Field (Gauss)");
+    magX.setPrecision(5);
+    magY.setPrecision(5);
+    magZ.setPrecision(5);
     spRegister(temperature, "Temperature (C)", "Temperature (C)");
 
     // Register properties
     spRegister(filterBandwidth, "Filter Bandwidth (Hz)", "Filter Bandwidth (Hz)");
-    spRegister(continuousFrequency, "Continuous Frequency (Hz)", "Continuous Frequency (Hz)");
     spRegister(autoReset, "Auto-Reset", "Auto-Reset");
 }
 
@@ -77,14 +79,12 @@ bool spDevMMC5983::onInitialize(TwoWire &wirePort)
     bool result = SFE_MMC5983MA::begin(wirePort);
     if (result)
     {
-        SFE_MMC5983MA::softReset();
-        SFE_MMC5983MA::setFilterBandwidth(_filter_bandwidth);
-        // SFE_MMC5983MA::setContinuousModeFrequency(_continuous_frequency);
-        // if (_auto_reset)
-        //     SFE_MMC5983MA::enableAutomaticSetReset();
-        // else
-        //     SFE_MMC5983MA::disableAutomaticSetReset();
-        // SFE_MMC5983MA::enableContinuousMode();
+        result &= SFE_MMC5983MA::softReset();
+        result &= SFE_MMC5983MA::setFilterBandwidth(_filter_bandwidth);
+        if (_auto_reset)
+            result &= SFE_MMC5983MA::enableAutomaticSetReset();
+        else
+            result &= SFE_MMC5983MA::disableAutomaticSetReset();
     }
     else
         spLog_E("MMC5983 onInitialize: device did not begin");
@@ -95,15 +95,36 @@ bool spDevMMC5983::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 double spDevMMC5983::read_x()
 {
-    return ((double)SFE_MMC5983MA::getMeasurementX() - 131072.0) * 8.0 / 131072.0;
+    if (!_magX)
+    {
+        SFE_MMC5983MA::getMeasurementXYZ(&_rawX, &_rawY, &_rawZ);
+        _magY = true;
+        _magZ = true;
+    }
+    _magX = false;
+    return ((double)_rawX - 131072.0) * 8.0 / 131072.0; // Convert to Gauss
 }
 double spDevMMC5983::read_y()
 {
-    return ((double)SFE_MMC5983MA::getMeasurementY() - 131072.0) * 8.0 / 131072.0;
+    if (!_magY)
+    {
+        SFE_MMC5983MA::getMeasurementXYZ(&_rawX, &_rawY, &_rawZ);
+        _magX = true;
+        _magZ = true;
+    }
+    _magY = false;
+    return ((double)_rawY - 131072.0) * 8.0 / 131072.0; // Convert to Gauss
 }
 double spDevMMC5983::read_z()
 {
-    return ((double)SFE_MMC5983MA::getMeasurementZ() - 131072.0) * 8.0 / 131072.0;
+    if (!_magZ)
+    {
+        SFE_MMC5983MA::getMeasurementXYZ(&_rawX, &_rawY, &_rawZ);
+        _magX = true;
+        _magY = true;
+    }
+    _magZ = false;
+    return ((double)_rawZ - 131072.0) * 8.0 / 131072.0; // Convert to Gauss
 }
 int spDevMMC5983::read_temperature()
 {
@@ -123,19 +144,6 @@ void spDevMMC5983::set_filter_bandwidth(uint16_t bw)
     _filter_bandwidth = bw;
     if (_begun)
         SFE_MMC5983MA::setFilterBandwidth(bw);
-}
-uint16_t spDevMMC5983::get_continuous_frequency()
-{
-    if (_begun)
-        return SFE_MMC5983MA::getContinuousModeFrequency();
-    else
-        return _continuous_frequency;
-}
-void spDevMMC5983::set_continuous_frequency(uint16_t freq)
-{
-    _continuous_frequency = freq;
-    if (_begun)
-        SFE_MMC5983MA::setContinuousModeFrequency(freq);
 }
 uint8_t spDevMMC5983::get_auto_reset()
 {

@@ -56,16 +56,22 @@ private:
     // methods used to get values for our RW properties
     uint16_t get_filter_bandwidth();
     void set_filter_bandwidth(uint16_t);
-    uint16_t get_continuous_frequency();
-    void set_continuous_frequency(uint16_t);
     uint8_t get_auto_reset();
     void set_auto_reset(uint8_t);
 
     uint16_t _filter_bandwidth = 100;
-    uint16_t _continuous_frequency = 100;
     bool _auto_reset = true;
 
     bool _begun = false;
+
+    // Flags to prevent getMeasurementXYZ being called mulitple times
+    bool _magX = false;
+    bool _magY = false;
+    bool _magZ = false;
+
+    uint32_t _rawX = 0;
+    uint32_t _rawY = 0;
+    uint32_t _rawZ = 0;
 
 public:
     // Define our output parameters - specify the get functions to call.
@@ -77,8 +83,6 @@ public:
     // Define our read-write properties
     spPropertyRWUint16<spDevMMC5983, &spDevMMC5983::get_filter_bandwidth, &spDevMMC5983::set_filter_bandwidth> filterBandwidth
         = { 100, { {"100 Hz", 100}, {"200 Hz", 200}, {"400 Hz", 400}, {"800 Hz", 800} } };
-    spPropertyRWUint16<spDevMMC5983, &spDevMMC5983::get_continuous_frequency, &spDevMMC5983::set_continuous_frequency> continuousFrequency
-        = { 100, { {"Off", 0}, {"1 Hz", 1}, {"10 Hz", 10}, {"20 Hz", 20}, {"50 Hz", 50}, {"100 Hz", 100}, {"200 Hz", 200}, {"1000 Hz", 1000} } };
     spPropertyRWUint8<spDevMMC5983, &spDevMMC5983::get_auto_reset, &spDevMMC5983::set_auto_reset> autoReset
         = { 1, { {"Enabled", 1}, {"Disabled", 0} } };
 };
