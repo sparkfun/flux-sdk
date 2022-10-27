@@ -95,39 +95,39 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, spDataArrayBool *value)
     {
-
+        writeOutArray(tag, value);
     }
     void logValue(const std::string &tag, spDataArrayInt8 *value)
     {
-
+        writeOutArray(tag, value);
     }
     void logValue(const std::string &tag, spDataArrayInt16 *value)
     {
-
+        writeOutArray(tag, value);
     }
     void logValue(const std::string &tag, spDataArrayInt *value )
     {
-
+        writeOutArray(tag, value);
     }   
     void logValue(const std::string &tag, spDataArrayUint8 *value)
     {
-
+        writeOutArray(tag, value);
     }
     void logValue(const std::string &tag, spDataArrayUint16 *value)
     {
-
+        writeOutArray(tag, value);
     }
     void logValue(const std::string &tag, spDataArrayUint *value)
     {
-
+        writeOutArray(tag, value);
     }
     void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision=3)
     {
-
+        writeOutArray(tag, value);
     }
     void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision=3)
     {
-        
+        writeOutArray(tag, value);
     }
     //-----------------------------------------------------------------
     // structure cycle
@@ -181,6 +181,45 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     size_t buffer_size;
 
   protected:
+
+template <typename T>
+    void writeOutArrayDimension(JsonArray &jsonArray, T * &pData, spDataArrayType<T> *theArray, uint16_t currentDim)
+    {
+
+        // Write out the data?
+        if ( currentDim == theArray->n_dimensions() -1  )
+        {
+            for (int i=0; i < theArray->dimensions()[currentDim]; i++)
+                jsonArray.add(*pData++);
+        }
+        else
+        {
+            // Need to recurse 
+            for ( int i=0; i < theArray->dimensions()[currentDim]; i++)
+            {
+                JsonArray jsonNext = jsonArray.createNestedArray();
+                // recurse
+                writeOutArrayDimension(jsonNext, pData, theArray, currentDim+1);
+            }
+        }
+    }
+    //-----------------------------------------------------------------
+    template <typename T>
+    void writeOutArray(const std::string &tag, spDataArrayType<T> *theArray)
+    {
+        // create an array in this section
+
+        JsonArray jsonArray = _jSection.createNestedArray(tag);
+
+        T * pData = theArray->get();
+
+        if (!pData)
+            return;
+        else
+            writeOutArrayDimension(jsonArray, pData,  theArray, 0);
+
+    }
+
     JsonObject _jSection;
 
     StaticJsonDocument<BUFFER_SIZE> _jDoc;
