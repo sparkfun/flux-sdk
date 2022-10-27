@@ -7,8 +7,16 @@
 #include "spLogger.h"
 
 //----------------------------------------------------------------------------
+// logScalar()
+//
+// Outputs the value of a scalar parameter.
+//
 void spLogger::logScalar(spParameterOutScalar *pScalar)
 {
+
+    // Key off parameter type, get the correct data value and type, call
+    // writeValue(), which will dispatch to "formatter/writers" added
+    // to the logger
 
     switch (pScalar->type())
     {
@@ -49,121 +57,62 @@ void spLogger::logScalar(spParameterOutScalar *pScalar)
     }
 }
 //----------------------------------------------------------------------------
+// logArray()
+//
+// Manages the logging of array parameters.
+
 void spLogger::logArray(spParameterOutArray *pParam)
 {
+    // Key off parameter type and do the following
+    //  - Get the array object, of the correct type from the parameter
+    //     NOTE: This object is allocated off the heap.
+    //
+    //  - Call writeValue() with the array - this will call the added formatter/output objects
+    //  - Delete the array
+    //
     switch (pParam->type())
     {
 
-    case spTypeBool: {
-        spDataArrayBool *theArray = (spDataArrayBool *)pParam->get();
-
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeBool:
+        logArrayType<spDataArrayBool>(pParam);
         break;
-    }
-    case spTypeInt8: {
-        spDataArrayInt8 *theArray = (spDataArrayInt8 *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeInt8:
+        logArrayType<spDataArrayInt8>(pParam);
         break;
-    }
-    case spTypeInt16: {
-        spDataArrayInt16 *theArray = (spDataArrayInt16 *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeInt16:
+        logArrayType<spDataArrayInt16>(pParam);
         break;
-    }
-    case spTypeInt: {
-        spDataArrayInt *theArray = (spDataArrayInt *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeInt:
+        logArrayType<spDataArrayInt>(pParam);
         break;
-    }
-    case spTypeUInt8: {
-        spDataArrayUint8 *theArray = (spDataArrayUint8 *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeUInt8:
+        logArrayType<spDataArrayUint8>(pParam);
         break;
-    }
-    case spTypeUInt16: {
-        spDataArrayUint16 *theArray = (spDataArrayUint16 *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeUInt16:
+        logArrayType<spDataArrayUint16>(pParam);
         break;
-    }
-    case spTypeUInt: {
-        spDataArrayUint *theArray = (spDataArrayUint *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeUInt:
+        logArrayType<spDataArrayUint>(pParam);
         break;
-    }
-    case spTypeFloat: {
-        spDataArrayFloat *theArray = (spDataArrayFloat *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray, pParam->precision());
-            delete theArray;
-        }
-
+    case spTypeFloat:
+        logArrayType<spDataArrayFloat>(pParam, pParam->precision());
         break;
-    }
-    case spTypeDouble: {
-        spDataArrayDouble *theArray = (spDataArrayDouble *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray, pParam->precision());
-            delete theArray;
-        }
-
+    case spTypeDouble:
+        logArrayType<spDataArrayDouble>(pParam, pParam->precision());
         break;
-    }
-    case spTypeString: {
-        spDataArrayString *theArray = (spDataArrayString *)pParam->get();
 
-        if (theArray != nullptr)
-        {
-            writeValue(pParam->name(), theArray);
-            delete theArray;
-        }
-
+    case spTypeString:
+        logArrayType<spDataArrayString>(pParam);
         break;
-    }
+
     default:
         spLog_D("Unknown Array Parameter Value");
         break;
@@ -186,7 +135,7 @@ void spLogger::logSection(const char *section_name, spParameterOutList &paramLis
         if (!param->enabled())
             continue;
 
-        // is this an array or a scalar?
+        // is this an array or a scalar? Note: using covariant return values to get correct pointer
         if ((param->flags() & kParameterOutFlagArray) == kParameterOutFlagArray)
             logArray((spParameterOutArray *)param->accessor());
         else

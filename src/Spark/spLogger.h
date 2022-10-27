@@ -200,25 +200,51 @@ class spLogger : public spActionType<spLogger>
     void logScalar(spParameterOutScalar *);
     void logArray(spParameterOutArray *);
 
+    // Templates used to manage array logging based on type.
+    template <typename T> void logArrayType(spParameterOutArray *pParam)
+    {
+        T *theArray = (T *)pParam->get();
+
+        if (theArray != nullptr)
+        {
+            writeValue(pParam->name(), theArray);
+            delete theArray;
+        }
+    }
+
+    template <typename T> void logArrayType(spParameterOutArray *pParam, uint16_t precision)
+    {
+        T *theArray = (T *)pParam->get();
+
+        if (theArray != nullptr)
+        {
+            writeValue(pParam->name(), theArray, precision);
+            delete theArray;
+        }
+    }
     //----------------------------------------------------------------------------
     // When we log a value, we need to write it to all formatters. Seems like a lot
     // of short loops, but we want to write the SAME value to all formatters
+
     template <typename T> void writeValue(const std::string &tag, T value)
     {
         for (auto theFormatter : _Formatters)
             theFormatter->logValue(tag, value);
     }
+
     template <typename T> void writeValue(const std::string &tag, T value, uint16_t precision)
     {
         for (auto theFormatter : _Formatters)
             theFormatter->logValue(tag, value, precision);
     }
+
     void logSection(const char *section_name, spParameterOutList &params);
 
     void logSection(const std::string &name, spParameterOutList &params)
     {
         logSection(name.c_str(), params);
     }
+
     // vargs management - how to add things recursively.
     //
     // General pattern for the below methods:
