@@ -315,7 +315,7 @@ public:
         return (uint16_t*)&_dimensions;
     }
 
-    uint  size(void)
+    size_t  size(void)
     {
         uint sum = 0;
         for (int i=0; i < _n_dims; i++)
@@ -324,11 +324,14 @@ public:
     }
 protected:
 
+    static constexpr uint16_t kMaxArrayDims = 3;
+
     void setDimensions(uint16_t d0)
     {
         _n_dims = 1;
         _dimensions[0] = d0;
     }
+
     void setDimensions(uint16_t d0, uint16_t d1)
     {
         _n_dims = 2;
@@ -343,8 +346,15 @@ protected:
         _dimensions[2] = d2;                
     }
     
+    virtual void reset()
+    {
+        _n_dims=0;
+        memset(_dimensions, 0, sizeof(uint16_t)*kMaxArrayDims);
+
+    };
+
     uint8_t   _n_dims;
-    uint16_t  _dimensions[3];
+    uint16_t  _dimensions[kMaxArrayDims];
 
 };
 // ----------------------------------------------------------------------
@@ -356,7 +366,13 @@ class spDataArrayType : public spDataArray
 
 public: 
 
-    spDataArrayType() : _data{nullptr} {}
+    spDataArrayType() : _data{nullptr}, _bAlloc{false} {}
+
+    ~spDataArrayType()
+    {
+        if ( _bAlloc && _data != nullptr)
+            delete _data;
+    }
 
     spDataType_t type(void)
     {
@@ -364,25 +380,27 @@ public:
         return spDataTyper::type(c);
     }
 
-    void set(T * data, uint16_t d0)
+    void set(T * data, uint16_t d0, bool no_copy=false)
     {
-
-        if (setDataPtr(data)){
-            setDimensions(d0);
+        setDimensions(d0);
+        if (!setDataPtr(data, size(), no_copy)){
+            reset();
         }
     };
 
-    void set(T * data, uint16_t d0, uint16_t d1)
+    void set(T * data, uint16_t d0, uint16_t d1, bool no_copy=false)
     {
-        if (setDataPtr(data)){
-            setDimensions(d0, d1);
+        setDimensions(d0, d1);
+        if (!setDataPtr(data, size(), no_copy)){
+            reset();
         }
     };
 
-    void set(T * data, uint16_t d0, uint16_t d1, uint16_t d2)
+    void set(T * data, uint16_t d0, uint16_t d1, uint16_t d2, bool no_copy=false)
     {
-        if (setDataPtr(data)){
-            setDimensions(d0, d1, d2);
+        setDimensions(d0, d1, d2);
+        if (!setDataPtr(data, size(), no_copy)){
+            reset();
         }
     };        
 
@@ -391,21 +409,45 @@ public:
         return _data;
     };
 
+protected:
+    void reset()
+    {
+        spDataArray::reset();
+
+        if ( _data && _bAlloc)
+            delete _data;
+
+        _data  = nullptr;
+        _bAlloc = false;
+    }
+
 private:
 
-    bool setDataPtr( T* data)
+    bool setDataPtr( T* data, size_t length, bool no_copy)
     {
-        if (!data)
+        if (!data || length == 0)
             return false;
 
-        if ( _data != nullptr)
+        if ( _data != nullptr && _bAlloc)
+        {
             delete _data;
-        _data = data;
+            _data = nullptr;
+            _bAlloc = false;
+        }
 
+        if (no_copy)
+            _data = data;
+        else
+        {
+            _data = new T[length];
+            memcpy(_data, data, length*sizeof(T));
+            _bAlloc = true;
+        }
         return true;
     };
 
-    T   * _data;
+    T       * _data;
+    bool      _bAlloc;
 
 };
 
