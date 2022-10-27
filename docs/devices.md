@@ -132,6 +132,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/16476">SEN-16476</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">MMC5983</td>
+        <td style="vertical-align:middle" align="center">Magnetometer</td>
+        <td style="vertical-align:middle" align="center">0x30</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19034">SPX-19034</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">MS5637</td>
         <td style="vertical-align:middle" align="center">Pressure and Temperature sensor</td>
         <td style="vertical-align:middle" align="center">0x76</td>
@@ -319,6 +325,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">NAU7802</td>
         <td style="vertical-align:middle" align="center">Load cell amplifier</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15242">SEN-15242</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">0x30</td>
+        <td style="vertical-align:middle" align="center">MMC5983</td>
+        <td style="vertical-align:middle" align="center">Magnetometer</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19034">SPX-19034</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center">0x32</td>
