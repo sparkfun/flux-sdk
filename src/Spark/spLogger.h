@@ -200,7 +200,10 @@ class spLogger : public spActionType<spLogger>
     void logScalar(spParameterOutScalar *);
     void logArray(spParameterOutArray *);
 
-    // Templates used to manage array logging based on type.
+    // Templates used to manage array logging based on type. 
+    //
+    // Note - the array object is dynamically allocated.
+
     template <typename T> void logArrayType(spParameterOutArray *pParam)
     {
         T *theArray = (T *)pParam->get();
@@ -212,6 +215,7 @@ class spLogger : public spActionType<spLogger>
         }
     }
 
+    // same as above, just adding precision support for our float/double types
     template <typename T> void logArrayType(spParameterOutArray *pParam, uint16_t precision)
     {
         T *theArray = (T *)pParam->get();

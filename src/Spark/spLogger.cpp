@@ -63,13 +63,8 @@ void spLogger::logScalar(spParameterOutScalar *pScalar)
 
 void spLogger::logArray(spParameterOutArray *pParam)
 {
-    // Key off parameter type and do the following
-    //  - Get the array object, of the correct type from the parameter
-    //     NOTE: This object is allocated off the heap.
-    //
-    //  - Call writeValue() with the array - this will call the added formatter/output objects
-    //  - Delete the array
-    //
+    // Key off parameter type and call logArrayType<> with required type
+
     switch (pParam->type())
     {
 
