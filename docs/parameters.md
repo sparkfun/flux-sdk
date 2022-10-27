@@ -293,13 +293,21 @@ Note
 In the reader methods, the data and dimensions of the array are set in the array object.
 
 ```C++
-   array->set(myArrayData, X);
+   array->set(myArrayData, X );
 ```
 
 or for two dimensional arrays...
 
 ```C++
-   array->set(myArrayData, X, Y);
+   array->set(myArrayData, X, Y );
+```
+
+Note:
+> * By default the set method will make a copy of the data array passed in. 
+> * To prevent the array copy, pass in the optional no_copy parameter set to `true`
+
+```C++
+    array->set(myArrayData, X, true);
 ```
 
 ##### Example
