@@ -38,6 +38,8 @@ test_device::test_device()
     
     spRegister(array_double, "double.array", "Array Parameter Test");
     array_double.setPrecision(6);
+
+    spRegister(array_string, "string.array", "Array Parameter Test");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -165,6 +167,9 @@ bool  test_device::get_double(spDataArrayDouble *theArray)
 //-------------------------------------------------------------------
 bool  test_device::get_string(spDataArrayString *theArray)
 {
-    // not there yet ... return false -- system should handle this ...
-    return false;
+    static const char * myData[] = {"one", "two", "three", "four"};
+
+    theArray->set((char**)myData, 4, true);
+
+    return true;
 }

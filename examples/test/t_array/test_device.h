@@ -60,8 +60,8 @@ public:
     spParameterOutArrayUint8<test_device, &test_device::get_uint8>      array_uint8;
     spParameterOutArrayUint16<test_device, &test_device::get_uint16>    array_uint16;
     spParameterOutArrayUint<test_device, &test_device::get_uint>        array_uint;        
-    spParameterOutArrayFloat<test_device, &test_device::get_float>     array_float;
-    spParameterOutArrayDouble<test_device, &test_device::get_double>   array_double;    
-    //spParameterOutArrayString<test_device, &test_device::get_string>   array_string;        
+    spParameterOutArrayFloat<test_device, &test_device::get_float>      array_float;
+    spParameterOutArrayDouble<test_device, &test_device::get_double>    array_double;    
+    spParameterOutArrayString<test_device, &test_device::get_string>    array_string;        
 
 };
