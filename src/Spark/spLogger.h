@@ -197,8 +197,8 @@ class spLogger : public spActionType<spLogger>
     spParameterOutList _paramsToLog;
     spPropertyList _propsToLog;
 
-    void logScalar(spParameterOutScalar*);
-    void logArray(spParameterOutArray*);
+    void logScalar(spParameterOutScalar *);
+    void logArray(spParameterOutArray *);
 
     //----------------------------------------------------------------------------
     // When we log a value, we need to write it to all formatters. Seems like a lot

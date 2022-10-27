@@ -63,16 +63,16 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
-    
-    void logValue(const std::string &tag, float value, uint16_t precision=3)
+
+    void logValue(const std::string &tag, float value, uint16_t precision = 3)
     {
         // no control for precision with the JSON lib, so just pass up
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
     }
-    
+
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, double value, uint16_t precision=3)
+    void logValue(const std::string &tag, double value, uint16_t precision = 3)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
@@ -105,10 +105,10 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayInt *value )
+    void logValue(const std::string &tag, spDataArrayInt *value)
     {
         writeOutArray(tag, value);
-    }   
+    }
     void logValue(const std::string &tag, spDataArrayUint8 *value)
     {
         writeOutArray(tag, value);
@@ -121,11 +121,11 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision=3)
+    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision = 3)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision=3)
+    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision = 3)
     {
         writeOutArray(tag, value);
     }
@@ -181,43 +181,40 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     size_t buffer_size;
 
   protected:
-
-template <typename T>
-    void writeOutArrayDimension(JsonArray &jsonArray, T * &pData, spDataArrayType<T> *theArray, uint16_t currentDim)
+    template <typename T>
+    void writeOutArrayDimension(JsonArray &jsonArray, T *&pData, spDataArrayType<T> *theArray, uint16_t currentDim)
     {
 
         // Write out the data?
-        if ( currentDim == theArray->n_dimensions() -1  )
+        if (currentDim == theArray->n_dimensions() - 1)
         {
-            for (int i=0; i < theArray->dimensions()[currentDim]; i++)
+            for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
                 jsonArray.add(*pData++);
         }
         else
         {
-            // Need to recurse 
-            for ( int i=0; i < theArray->dimensions()[currentDim]; i++)
+            // Need to recurse
+            for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
             {
                 JsonArray jsonNext = jsonArray.createNestedArray();
                 // recurse
-                writeOutArrayDimension(jsonNext, pData, theArray, currentDim+1);
+                writeOutArrayDimension(jsonNext, pData, theArray, currentDim + 1);
             }
         }
     }
     //-----------------------------------------------------------------
-    template <typename T>
-    void writeOutArray(const std::string &tag, spDataArrayType<T> *theArray)
+    template <typename T> void writeOutArray(const std::string &tag, spDataArrayType<T> *theArray)
     {
         // create an array in this section
 
         JsonArray jsonArray = _jSection.createNestedArray(tag);
 
-        T * pData = theArray->get();
+        T *pData = theArray->get();
 
         if (!pData)
             return;
         else
-            writeOutArrayDimension(jsonArray, pData,  theArray, 0);
-
+            writeOutArrayDimension(jsonArray, pData, theArray, 0);
     }
 
     JsonObject _jSection;

@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "spCoreInterface.h"
 #include "spCoreProps.h"
 #include "spCoreTypes.h"
-#include "spCoreInterface.h"
 #include "spUtils.h"
 
 //----------------------------------------------------------------------------------------
@@ -47,19 +47,26 @@ class spParameterIn : public spParameter
 {
   public:
     virtual spEditResult_t editValue(spDataEditor &) = 0;
-    virtual bool setValue(spDataVariable&) = 0;
-    virtual spDataLimit * dataLimit(void) = 0;
-    std::string to_string() { return std::string(name());}; // for consistancy
+    virtual bool setValue(spDataVariable &) = 0;
+    virtual spDataLimit *dataLimit(void) = 0;
+    std::string to_string()
+    {
+        return std::string(name());
+    }; // for consistancy
 };
 
 #define kParameterOutFlagArray 0x01
 
-//class spParameterOut : public spParameter, public spDataOut
+// class spParameterOut : public spParameter, public spDataOut
 class spParameterOut : public spParameter
 {
   public:
-    spParameterOut() : _flags{0}{}
-    spParameterOut(uint8_t flags) : _flags{flags}{}
+    spParameterOut() : _flags{0}
+    {
+    }
+    spParameterOut(uint8_t flags) : _flags{flags}
+    {
+    }
 
     virtual spDataType_t type(void) = 0;
     // Some types need precision - just make it generic
@@ -70,7 +77,7 @@ class spParameterOut : public spParameter
 
     // This is used with covariant returns values of the sub-classes.
     // Returns the property pointer for a given class
-    virtual spParameterOut * accessor() = 0; 
+    virtual spParameterOut *accessor() = 0;
 
     // flags -- used to highlight attributes of the output
 
@@ -79,19 +86,18 @@ class spParameterOut : public spParameter
         return _flags;
     }
 
-protected:
+  protected:
     void setFlag(uint8_t flag)
     {
         _flags |= flag;
     }
 
-private:
-        uint8_t _flags;
+  private:
+    uint8_t _flags;
 };
 // simple def - list of parameters
 using spParameterInList = std::vector<spParameterIn *>;
 using spParameterOutList = std::vector<spParameterOut *>;
-
 
 //----------------------------------------------------------------------------------------
 // spParameterContainer
@@ -163,13 +169,13 @@ class _spParameterContainer
 
 class spParameterOutScalar : public spParameterOut, public spDataOut
 {
-public:
-    // mostly a 
-     spParameterOutScalar * accessor()
-     {
+  public:
+    // mostly a
+    spParameterOutScalar *accessor()
+    {
         return this;
-     }
-     virtual spDataType_t type(void)=0;
+    }
+    virtual spDataType_t type(void) = 0;
 };
 //----------------------------------------------------------------------------------------------------
 // spParameterOut
@@ -302,8 +308,7 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOutScalar
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)()> 
-using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
+template <class Object, bool (Object::*_getter)()> using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
 
 template <class Object, int8_t (Object::*_getter)()>
 using spParameterOutInt8 = _spParameterOut<int8_t, Object, _getter>;
@@ -311,8 +316,7 @@ using spParameterOutInt8 = _spParameterOut<int8_t, Object, _getter>;
 template <class Object, int16_t (Object::*_getter)()>
 using spParameterOutInt16 = _spParameterOut<int16_t, Object, _getter>;
 
-template <class Object, int (Object::*_getter)()> 
-using spParameterOutInt = _spParameterOut<int, Object, _getter>;
+template <class Object, int (Object::*_getter)()> using spParameterOutInt = _spParameterOut<int, Object, _getter>;
 
 template <class Object, uint8_t (Object::*_getter)()>
 using spParameterOutUint8 = _spParameterOut<uint8_t, Object, _getter>;
@@ -320,14 +324,15 @@ using spParameterOutUint8 = _spParameterOut<uint8_t, Object, _getter>;
 template <class Object, uint16_t (Object::*_getter)()>
 using spParameterOutUint16 = _spParameterOut<uint16_t, Object, _getter>;
 
-template <class Object, uint (Object::*_getter)()> 
-using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
+template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
 
-template <class Object, float (Object::*_getter)()> 
+template <class Object, float (Object::*_getter)()>
 class spParameterOutFloat : public _spParameterOut<float, Object, _getter>
 {
-public: 
-    spParameterOutFloat() : _precision(3){}
+  public:
+    spParameterOutFloat() : _precision(3)
+    {
+    }
     void setPrecision(uint16_t prec)
     {
         _precision = prec;
@@ -336,15 +341,18 @@ public:
     {
         return _precision;
     }
-private:
+
+  private:
     uint16_t _precision;
 };
 
 template <class Object, double (Object::*_getter)()>
 class spParameterOutDouble : public _spParameterOut<double, Object, _getter>
 {
-public: 
-    spParameterOutDouble() : _precision(3){}
+  public:
+    spParameterOutDouble() : _precision(3)
+    {
+    }
     void setPrecision(uint16_t prec)
     {
         _precision = prec;
@@ -353,7 +361,8 @@ public:
     {
         return _precision;
     }
-private:
+
+  private:
     uint16_t _precision;
 };
 //----------------------------------------------------------------------------------------------------
@@ -487,28 +496,27 @@ class spParameterOutString : public spParameterOutScalar, public _spDataOutStrin
 
 class spParameterOutArray : public spParameterOut
 {
-public:
+  public:
+    spParameterOutArray() : spParameterOut{kParameterOutFlagArray}
+    {
+    }
 
-    spParameterOutArray() : spParameterOut{kParameterOutFlagArray}{}
-
-    spParameterOutArray* accessor()
+    spParameterOutArray *accessor()
     {
         return this;
     }
 
-    virtual spDataArray * get(void) = 0;
-
+    virtual spDataArray *get(void) = 0;
 };
 
 //---------------------------------------------------------------------------------------
 
 template <class T, class Object, bool (Object::*_getter)(spDataArrayType<T> *)>
-class spParameterOutArrayType :  public spParameterOutArray
+class spParameterOutArrayType : public spParameterOutArray
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-
     spParameterOutArrayType() : my_object(0)
     {
     }
@@ -569,17 +577,18 @@ class spParameterOutArrayType :  public spParameterOutArray
     // NOTE - using smart pointer/shared pointer for the return value. This will automatically
     //        free memory when the pointer goes out of scope.
 
-    spDataArrayType<T> *  get(void) 
+    spDataArrayType<T> *get(void)
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return nullptr;
         }
-        spDataArrayType<T>  *data = new spDataArrayType<T>;
+        spDataArrayType<T> *data = new spDataArrayType<T>;
         bool bstatus = (my_object->*_getter)(data);
 
-        if (!bstatus){
+        if (!bstatus)
+        {
             delete data;
             return nullptr;
         }
@@ -589,39 +598,41 @@ class spParameterOutArrayType :  public spParameterOutArray
 
     // //---------------------------------------------------------------------------------
     // // get -> parameter()
-    // bool operator()(spDataArrayType<T> & data) 
+    // bool operator()(spDataArrayType<T> & data)
     // {
     //     return get(data);
     // };
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)(spDataArrayType<bool> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<bool> *)>
 using spParameterOutArrayBool = spParameterOutArrayType<bool, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int8_t> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<int8_t> *)>
 using spParameterOutArrayInt8 = spParameterOutArrayType<int8_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int16_t> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<int16_t> *)>
 using spParameterOutArrayInt16 = spParameterOutArrayType<int16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<int> *)>
 using spParameterOutArrayInt = spParameterOutArrayType<int, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint8_t> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint8_t> *)>
 using spParameterOutArrayUint8 = spParameterOutArrayType<uint8_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint16_t> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint16_t> *)>
 using spParameterOutArrayUint16 = spParameterOutArrayType<uint16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<uint> *)>
 using spParameterOutArrayUint = spParameterOutArrayType<uint, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<float> *)> 
-class spParameterOutArrayFloat: public spParameterOutArrayType<float, Object, _getter>
+template <class Object, bool (Object::*_getter)(spDataArrayType<float> *)>
+class spParameterOutArrayFloat : public spParameterOutArrayType<float, Object, _getter>
 {
-public: 
-    spParameterOutArrayFloat() : _precision(3){}
+  public:
+    spParameterOutArrayFloat() : _precision(3)
+    {
+    }
     void setPrecision(uint16_t prec)
     {
         _precision = prec;
@@ -630,15 +641,18 @@ public:
     {
         return _precision;
     }
-private:
+
+  private:
     uint16_t _precision;
 };
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<double> *)> 
+template <class Object, bool (Object::*_getter)(spDataArrayType<double> *)>
 class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object, _getter>
 {
-public: 
-    spParameterOutArrayDouble() : _precision(3){}
+  public:
+    spParameterOutArrayDouble() : _precision(3)
+    {
+    }
     void setPrecision(uint16_t prec)
     {
         _precision = prec;
@@ -647,11 +661,10 @@ public:
     {
         return _precision;
     }
-private:
+
+  private:
     uint16_t _precision;
 };
-
-
 
 //-----------------------------------------------------------------------------------
 
@@ -664,18 +677,17 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
     _spParameterIn() : my_object(0)
     {
     }
-        
+
     // Limit data range
     _spParameterIn(T min, T max)
     {
-      _spDataIn<T>::setDataLimitRange(min, max);
-    }        
-    // Limit data set
-    _spParameterIn( std::initializer_list<std::pair<const std::string, T>> limitSet )
-    {
-       _spDataIn<T>::addDataLimitValidValue(limitSet);
+        _spDataIn<T>::setDataLimitRange(min, max);
     }
-
+    // Limit data set
+    _spParameterIn(std::initializer_list<std::pair<const std::string, T>> limitSet)
+    {
+        _spDataIn<T>::addDataLimitValidValue(limitSet);
+    }
 
     //---------------------------------------------------------------------------------
     spDataType_t type()
@@ -757,8 +769,8 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
 
         if (bSuccess) // success
         {
-            //do we have a dataLimit set, and if so are we in limits?
-            if ( !_spDataIn<T>::isValueValid(value))
+            // do we have a dataLimit set, and if so are we in limits?
+            if (!_spDataIn<T>::isValueValid(value))
                 return spEditOutOfRange;
 
             set(value);
@@ -766,9 +778,10 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
-    bool setValue( spDataVariable &value){
+    bool setValue(spDataVariable &value)
+    {
 
-        if ( value.type == type())
+        if (value.type == type())
         {
             T c;
             set(value.get(c));
@@ -776,12 +789,11 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
         }
         return false;
     };
-    
-    spDataLimit * dataLimit(void)
+
+    spDataLimit *dataLimit(void)
     {
         return _spDataIn<T>::dataLimit();
     }
-
 };
 
 // Define by type
@@ -911,14 +923,15 @@ class spParameterInString : public spParameterIn, _spDataInString
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
-    spDataLimit * dataLimit(void)
+    spDataLimit *dataLimit(void)
     {
         return nullptr;
     }
-    
-    bool setValue( spDataVariable &value){
 
-        if ( value.type == type())
+    bool setValue(spDataVariable &value)
+    {
+
+        if (value.type == type())
         {
             std::string c;
             set(value.get(c));
@@ -1022,13 +1035,13 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     {
         return spEditSuccess;
     };
-    spDataLimit * dataLimit(void)
+    spDataLimit *dataLimit(void)
     {
         return nullptr;
     };
-    bool setValue( spDataVariable &value)
+    bool setValue(spDataVariable &value)
     {
-         return true;
+        return true;
     };
 };
 // Handy macros to "register attributes (props/params)"
@@ -1078,7 +1091,6 @@ using spActionContainer = spContainer<spAction *>;
 template <typename T> class spActionType : public spAction
 {
   public:
-
     // ---------------------------------------------------------------
     // Typing system for actions
     //

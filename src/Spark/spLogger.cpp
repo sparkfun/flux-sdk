@@ -10,7 +10,8 @@
 void spLogger::logScalar(spParameterOutScalar *pScalar)
 {
 
-    switch (pScalar->type()) {
+    switch (pScalar->type())
+    {
     case spTypeBool:
         writeValue(pScalar->name(), pScalar->getBool());
         break;
@@ -48,114 +49,115 @@ void spLogger::logScalar(spParameterOutScalar *pScalar)
     }
 }
 //----------------------------------------------------------------------------
-void spLogger::logArray( spParameterOutArray * pParam)
+void spLogger::logArray(spParameterOutArray *pParam)
 {
-    switch (pParam->type()) {
-
-    case spTypeBool:
+    switch (pParam->type())
     {
-        spDataArrayBool* theArray = (spDataArrayBool*)pParam->get();
 
-        if (theArray != nullptr){
+    case spTypeBool: {
+        spDataArrayBool *theArray = (spDataArrayBool *)pParam->get();
+
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
 
         break;
     }
-    case spTypeInt8:
-    {
-        spDataArrayInt8* theArray = (spDataArrayInt8*)pParam->get();
+    case spTypeInt8: {
+        spDataArrayInt8 *theArray = (spDataArrayInt8 *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
 
         break;
     }
-    case spTypeInt16:
-    {
-        spDataArrayInt16* theArray = (spDataArrayInt16*)pParam->get();
+    case spTypeInt16: {
+        spDataArrayInt16 *theArray = (spDataArrayInt16 *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
 
         break;
     }
-    case spTypeInt:
-    {
-        spDataArrayInt* theArray = (spDataArrayInt*)pParam->get();
+    case spTypeInt: {
+        spDataArrayInt *theArray = (spDataArrayInt *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
 
         break;
     }
-    case spTypeUInt8:
-    {
-        spDataArrayUint8* theArray = (spDataArrayUint8*)pParam->get();
+    case spTypeUInt8: {
+        spDataArrayUint8 *theArray = (spDataArrayUint8 *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
 
         break;
     }
-    case spTypeUInt16:
-    {
-        spDataArrayUint16* theArray = (spDataArrayUint16*)pParam->get();
+    case spTypeUInt16: {
+        spDataArrayUint16 *theArray = (spDataArrayUint16 *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
 
         break;
     }
-    case spTypeUInt:
-    {
-        spDataArrayUint* theArray = (spDataArrayUint*)pParam->get();
+    case spTypeUInt: {
+        spDataArrayUint *theArray = (spDataArrayUint *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
 
         break;
     }
-    case spTypeFloat:
-    {
-        spDataArrayFloat* theArray = (spDataArrayFloat*)pParam->get();
+    case spTypeFloat: {
+        spDataArrayFloat *theArray = (spDataArrayFloat *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray, pParam->precision());
             delete theArray;
         }
 
         break;
     }
-    case spTypeDouble:
-    {
-        spDataArrayDouble* theArray = (spDataArrayDouble*)pParam->get();
+    case spTypeDouble: {
+        spDataArrayDouble *theArray = (spDataArrayDouble *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray, pParam->precision());
             delete theArray;
         }
 
         break;
     }
-    case spTypeString:
-    {
-        spDataArrayString* theArray = (spDataArrayString*)pParam->get();
+    case spTypeString: {
+        spDataArrayString *theArray = (spDataArrayString *)pParam->get();
 
-        if (theArray != nullptr){
+        if (theArray != nullptr)
+        {
             writeValue(pParam->name(), theArray);
             delete theArray;
         }
@@ -165,7 +167,6 @@ void spLogger::logArray( spParameterOutArray * pParam)
     default:
         spLog_D("Unknown Array Parameter Value");
         break;
-
     }
 }
 //----------------------------------------------------------------------------
@@ -185,11 +186,11 @@ void spLogger::logSection(const char *section_name, spParameterOutList &paramLis
         if (!param->enabled())
             continue;
 
-        // is this an array or a scalar? 
-        if ( (param->flags() & kParameterOutFlagArray ) == kParameterOutFlagArray)
-            logArray((spParameterOutArray*)param->accessor());
+        // is this an array or a scalar?
+        if ((param->flags() & kParameterOutFlagArray) == kParameterOutFlagArray)
+            logArray((spParameterOutArray *)param->accessor());
         else
-            logScalar((spParameterOutScalar*)param->accessor());        
+            logScalar((spParameterOutScalar *)param->accessor());
     }
 
     for (auto theFormatter : _Formatters)

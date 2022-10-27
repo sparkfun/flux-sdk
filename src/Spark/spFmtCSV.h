@@ -59,7 +59,7 @@ class spFormatCSV : public spOutputFormat
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
-	//-----------------------------------------------------------------
+    //-----------------------------------------------------------------
     void logValue(const std::string &tag, int8_t value)
     {
         // header?
@@ -145,13 +145,10 @@ class spFormatCSV : public spOutputFormat
     {
         // header?
         writeHeaderEntry(tag);
-        
+
         if (!append_csv_value(std::string(value), _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
     }
-
-
-
 
     void logValue(const std::string &tag, spDataArrayBool *value)
     {
@@ -163,57 +160,52 @@ class spFormatCSV : public spOutputFormat
     {
         // header
         writeHeaderEntry(tag);
-        writeOutArray(value);        
+        writeOutArray(value);
     }
     void logValue(const std::string &tag, spDataArrayInt16 *value)
     {
         // header
         writeHeaderEntry(tag);
-        writeOutArray(value);        
+        writeOutArray(value);
     }
-        
-    void logValue(const std::string &tag, spDataArrayInt *value )
+
+    void logValue(const std::string &tag, spDataArrayInt *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
-        
-    }   
+    }
     void logValue(const std::string &tag, spDataArrayUint8 *value)
     {
         // header
         writeHeaderEntry(tag);
-        writeOutArray(value);        
-        
+        writeOutArray(value);
     }
     void logValue(const std::string &tag, spDataArrayUint16 *value)
     {
         // header
         writeHeaderEntry(tag);
-        writeOutArray(value);        
+        writeOutArray(value);
     }
     void logValue(const std::string &tag, spDataArrayUint *value)
     {
         // header
         writeHeaderEntry(tag);
-        writeOutArray(value);        
-    
+        writeOutArray(value);
     }
-    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision=3)
+    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision = 3)
     {
         // header
         writeHeaderEntry(tag);
-        writeOutArray(value, precision);        
-        
+        writeOutArray(value, precision);
     }
-    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision=3)
+    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision = 3)
     {
         // header
         writeHeaderEntry(tag);
-        writeOutArray(value, precision);        
-        
+        writeOutArray(value, precision);
     }
-    //-----------------------------------------------------------    
+    //-----------------------------------------------------------
     // structure cycle
 
     virtual void beginObservation(const char *szTitle = nullptr)
@@ -302,7 +294,7 @@ class spFormatCSV : public spOutputFormat
             buffer += ',';
 
         buffer += value;
-        
+
         return true;
     }
     //-----------------------------------------------------------------
@@ -328,70 +320,68 @@ class spFormatCSV : public spOutputFormat
     // Array support
     //-----------------------------------------------------------------
 
-    template < typename T>
-    void formatArrayValue( std::string &sData, T value, uint16_t precision=3 )
+    template <typename T> void formatArrayValue(std::string &sData, T value, uint16_t precision = 3)
     {
         sData += sp_utils::to_string(value);
     }
-    void formatArrayValue( std::string &sData, float value, uint16_t precision)
+    void formatArrayValue(std::string &sData, float value, uint16_t precision)
     {
         sData += sp_utils::to_string(value, precision);
     }
-    void formatArrayValue( std::string &sData, double value, uint16_t precision)
+    void formatArrayValue(std::string &sData, double value, uint16_t precision)
     {
         sData += sp_utils::to_string(value, precision);
     }
 
     template <typename T>
-    void writeOutArrayDimension(std::string &sData, T * &pData, spDataArrayType<T> *theArray, uint16_t currentDim, uint16_t precision=3)
+    void writeOutArrayDimension(std::string &sData, T *&pData, spDataArrayType<T> *theArray, uint16_t currentDim,
+                                uint16_t precision = 3)
     {
         sData += "[";
 
         // Write out the data?
-        if ( currentDim == theArray->n_dimensions() -1  )
+        if (currentDim == theArray->n_dimensions() - 1)
         {
             bool isFloat = (theArray->type() == spTypeFloat || theArray->type() == spTypeDouble);
 
-            for (int i=0; i < theArray->dimensions()[currentDim]; i++)
+            for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
             {
                 if (i > 0)
                     sData += ", ";
 
                 if (isFloat)
                     formatArrayValue(sData, *pData++, precision);
-                else 
+                else
                     formatArrayValue(sData, *pData++);
             }
         }
         else
         {
-            // Need to recurse 
-            for ( int i=0; i < theArray->dimensions()[currentDim]; i++)
+            // Need to recurse
+            for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
             {
                 if (i > 0)
                     sData += ", ";
                 // recurse
-                writeOutArrayDimension(sData, pData, theArray, currentDim+1, precision);
+                writeOutArrayDimension(sData, pData, theArray, currentDim + 1, precision);
             }
         }
         sData += "]";
     }
     //-----------------------------------------------------------------
-    template <typename T>
-    void writeOutArray(spDataArrayType<T> *theArray, uint16_t precision=3)
+    template <typename T> void writeOutArray(spDataArrayType<T> *theArray, uint16_t precision = 3)
     {
         std::string sData = "";
 
-        T * pData = theArray->get();
+        T *pData = theArray->get();
 
         if (!pData)
             sData = "[]";
         else
-            writeOutArrayDimension(sData, pData,  theArray, 0, precision);
+            writeOutArrayDimension(sData, pData, theArray, 0, precision);
 
         if (!append_csv_value(sData, _data_buffer))
             spLog_E("CSV - internal data buffer size exceeded.");
-
     }
 
     //-----------------------------------------------------------------
