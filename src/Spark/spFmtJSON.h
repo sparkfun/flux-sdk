@@ -129,6 +129,10 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     {
         writeOutArray(tag, value);
     }
+    void logValue(const std::string &tag, spDataArrayString *value)
+    {
+        writeOutArray(tag, value);
+    }
     //-----------------------------------------------------------------
     // structure cycle
 

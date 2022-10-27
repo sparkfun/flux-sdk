@@ -6,16 +6,15 @@
 #pragma once
 
 #include <functional>
+#include <map>
+#include <string.h>
 #include <string>
 #include <type_traits>
 #include <vector>
-#include <map>
-#include <string.h>
 
 #include "spCoreLog.h"
 #include "spStorage.h"
 #include "spUtils.h"
-
 
 #include "Arduino.h"
 //----------------------------------------------------------------------------------------
@@ -73,26 +72,29 @@ typedef enum
     spTypeString
 } spDataType_t;
 
-// helpful data types 
+// helpful data types
 typedef union {
-    bool        b;
-    int8_t      i8;
-    int16_t     i16;
-    int32_t     i32;
-    uint8_t     ui8;
-    uint16_t    ui16;
-    uint32_t    ui32;
-    float       f;
-    double      d;
-    const char *      str;
+    bool b;
+    int8_t i8;
+    int16_t i16;
+    int32_t i32;
+    uint8_t ui8;
+    uint16_t ui16;
+    uint32_t ui32;
+    float f;
+    double d;
+    const char *str;
 } spDataAllType_t;
 
-class spDataVariable {
-public:
-    spDataType_t     type;
-    spDataAllType_t  value;
+class spDataVariable
+{
+  public:
+    spDataType_t type;
+    spDataAllType_t value;
 
-    spDataVariable() : type{spTypeNone}{}
+    spDataVariable() : type{spTypeNone}
+    {
+    }
     void set(bool v)
     {
         type = spTypeBool;
@@ -127,7 +129,7 @@ public:
     {
         type = spTypeUInt;
         value.ui32 = v;
-    };  
+    };
     void set(float v)
     {
         type = spTypeFloat;
@@ -138,62 +140,125 @@ public:
         type = spTypeDouble;
         value.d = v;
     };
-    void set(const char * v)
+    void set(const char *v)
     {
         type = spTypeString;
         value.str = v;
     };
     // gets
-    bool        get(bool v) {return value.b;}
-    int8_t      get(int8_t v) {return value.i8;}
-    int16_t     get(int16_t v) {return value.i16;}
-    int         get(int  v) {return value.i32;}
-    uint8_t     get(uint8_t v) {return value.ui8;}
-    uint16_t    get(uint16_t v) {return value.ui16;}
-    uint        get(uint  v) {return value.ui32;}    
-    float       get(float  v) {return value.f;}    
-    double      get(double  v) {return value.d;}        
-    char *      get(char *) {return (char*) value.str;}
-    char *      get(std::string&) {return (char*) value.str;}
-    
+    bool get(bool v)
+    {
+        return value.b;
+    }
+    int8_t get(int8_t v)
+    {
+        return value.i8;
+    }
+    int16_t get(int16_t v)
+    {
+        return value.i16;
+    }
+    int get(int v)
+    {
+        return value.i32;
+    }
+    uint8_t get(uint8_t v)
+    {
+        return value.ui8;
+    }
+    uint16_t get(uint16_t v)
+    {
+        return value.ui16;
+    }
+    uint get(uint v)
+    {
+        return value.ui32;
+    }
+    float get(float v)
+    {
+        return value.f;
+    }
+    double get(double v)
+    {
+        return value.d;
+    }
+    char *get(char *)
+    {
+        return (char *)value.str;
+    }
+    char *get(std::string &)
+    {
+        return (char *)value.str;
+    }
 
     // is equal?
-    bool isEqual(bool v)  { return ( type == spTypeBool && v == value.b); }
-    bool isEqual(int8_t v)  { return (type == spTypeInt8 && value.i8 == v); }
-    bool isEqual(int16_t v)  { return (type == spTypeInt16 && value.i16 == v); }
-    bool isEqual(int32_t v)  { return (type == spTypeInt && value.i32 == v); }
-    bool isEqual(uint8_t v)  { return (type == spTypeUInt8 && value.ui8 == v); }
-    bool isEqual(uint16_t v) { return (type == spTypeUInt16 && value.ui16 == v); }
-    bool isEqual(uint32_t v) { return ( type == spTypeUInt && value.ui32 == v); }  
-    bool isEqual(float v) { return (type == spTypeFloat && value.f == v); }
-    bool isEqual(double v) { return (type == spTypeDouble && value.d == v); }
-    bool isEqual(const char * v) { return (type == spTypeString && strcmp(value.str, v) == 0); }
+    bool isEqual(bool v)
+    {
+        return (type == spTypeBool && v == value.b);
+    }
+    bool isEqual(int8_t v)
+    {
+        return (type == spTypeInt8 && value.i8 == v);
+    }
+    bool isEqual(int16_t v)
+    {
+        return (type == spTypeInt16 && value.i16 == v);
+    }
+    bool isEqual(int32_t v)
+    {
+        return (type == spTypeInt && value.i32 == v);
+    }
+    bool isEqual(uint8_t v)
+    {
+        return (type == spTypeUInt8 && value.ui8 == v);
+    }
+    bool isEqual(uint16_t v)
+    {
+        return (type == spTypeUInt16 && value.ui16 == v);
+    }
+    bool isEqual(uint32_t v)
+    {
+        return (type == spTypeUInt && value.ui32 == v);
+    }
+    bool isEqual(float v)
+    {
+        return (type == spTypeFloat && value.f == v);
+    }
+    bool isEqual(double v)
+    {
+        return (type == spTypeDouble && value.d == v);
+    }
+    bool isEqual(const char *v)
+    {
+        return (type == spTypeString && strcmp(value.str, v) == 0);
+    }
 
     std::string to_string(void)
     {
-        switch(type){
-            case spTypeBool:
-                return sp_utils::to_string(value.b);
-            case spTypeInt8:
-                return sp_utils::to_string(value.i8);
-            case spTypeInt16:
-                return sp_utils::to_string(value.i16);
-            case spTypeInt:
-                return sp_utils::to_string(value.i32);            
-            case spTypeUInt8:
-                return sp_utils::to_string(value.ui8);
-            case spTypeUInt16:
-                return sp_utils::to_string(value.ui16);
-            case spTypeUInt:
-                return sp_utils::to_string(value.ui32);            
-            case spTypeFloat:
-                return sp_utils::to_string(value.f);
-            case spTypeDouble:
-                return sp_utils::to_string(value.d);                                
-            case spTypeString:
-                return sp_utils::to_string(value.str);                                
-            default:
-                break;
+        switch (type)
+        {
+        case spTypeBool:
+            return sp_utils::to_string(value.b);
+        case spTypeInt8:
+            return sp_utils::to_string(value.i8);
+        case spTypeInt16:
+            return sp_utils::to_string(value.i16);
+        case spTypeInt:
+            return sp_utils::to_string(value.i32);
+        case spTypeUInt8:
+            return sp_utils::to_string(value.ui8);
+        case spTypeUInt16:
+            return sp_utils::to_string(value.ui16);
+        case spTypeUInt:
+            return sp_utils::to_string(value.ui32);
+        case spTypeFloat:
+            return sp_utils::to_string(value.f);
+        case spTypeDouble:
+            return sp_utils::to_string(value.d);
+        case spTypeString:
+            return sp_utils::to_string(value.str);
+        default:
+            break;
         }
         return std::string("");
     };
@@ -247,6 +312,10 @@ class spDataTyper
     {
         return spTypeString;
     };
+    static spDataType_t type(char *t)
+    {
+        return spTypeString;
+    };
 
     // non pointer
     static spDataType_t type(bool &t)
@@ -296,44 +365,46 @@ const char *spGetTypeName(spDataType_t type);
 // Array variable/data type.
 
 // Basic interface
-class spDataArray 
+class spDataArray
 {
 
-public:
-    spDataArray(): _n_dims{0}, _dimensions{0} {};
+  public:
+    spDataArray() : _n_dims{0}, _dimensions{0} {};
 
-    virtual ~spDataArray(){}
+    virtual ~spDataArray()
+    {
+    }
 
     virtual spDataType_t type() = 0;
 
     //--------------------------------------------------------------------
     // number of dimensions
 
-    uint8_t      n_dimensions()
+    uint8_t n_dimensions()
     {
         return _n_dims;
     };
     //--------------------------------------------------------------------
     // dimensions()
     //
-    // Returns a pointer to the array's dimension array.    
-    uint16_t   *dimensions()
+    // Returns a pointer to the array's dimension array.
+    uint16_t *dimensions()
     {
-        return (uint16_t*)&_dimensions;
+        return (uint16_t *)&_dimensions;
     }
     //--------------------------------------------------------------------
-    // size() 
+    // size()
     //
     // Total number of elements in the array
-    size_t  size(void)
+    size_t size(void)
     {
         uint sum = 0;
-        for (int i=0; i < _n_dims; i++)
+        for (int i = 0; i < _n_dims; i++)
             sum += _dimensions[i];
         return sum;
     }
-protected:
 
+  protected:
     static constexpr uint16_t kMaxArrayDims = 3;
 
     void setDimensions(uint16_t d0)
@@ -346,51 +417,47 @@ protected:
     {
         _n_dims = 2;
         _dimensions[0] = d0;
-        _dimensions[1] = d1;        
+        _dimensions[1] = d1;
     }
     void setDimensions(uint16_t d0, uint16_t d1, uint16_t d2)
     {
         _n_dims = 3;
         _dimensions[0] = d0;
         _dimensions[1] = d1;
-        _dimensions[2] = d2;                
+        _dimensions[2] = d2;
     }
-    
+
     virtual void reset()
     {
-        _n_dims=0;
-        memset(_dimensions, 0, sizeof(uint16_t)*kMaxArrayDims);
-
+        _n_dims = 0;
+        memset(_dimensions, 0, sizeof(uint16_t) * kMaxArrayDims);
     };
 
-    uint8_t   _n_dims;
-    uint16_t  _dimensions[kMaxArrayDims];
-
+    uint8_t _n_dims;
+    uint16_t _dimensions[kMaxArrayDims];
 };
 // ----------------------------------------------------------------------
 // Type templated array class...
-// 
-template <typename T>
-class spDataArrayType : public spDataArray
+//
+template <typename T> class spDataArrayType : public spDataArray
 {
 
-public: 
-
-    spDataArrayType() : _data{nullptr}, _bAlloc{false} {}
+  public:
+    spDataArrayType() : _bAlloc{false}, _data{nullptr}
+    {
+    }
 
     ~spDataArrayType()
     {
-        // free any alloc'd data...
-        if ( _bAlloc && _data != nullptr)
-            delete _data;
+        reset();
     }
 
     //--------------------------------------------------------------------
-    // return the type of this array 
+    // return the type of this array
 
     spDataType_t type(void)
     {
-        T c;
+        T c = {0};
         return spDataTyper::type(c); // use the typer object - leverage overloading
     }
 
@@ -399,90 +466,95 @@ public:
     //
     // note - by default the no_copy flag is false, so a copy of the set data is made.
 
-    void set(T * data, uint16_t d0, bool no_copy=false)
+    void set(T *data, uint16_t d0, bool no_copy = false)
     {
         setDimensions(d0);
-        if (!setDataPtr(data, size(), no_copy)){
+        if (!setDataPtr(data, size(), no_copy))
+        {
             reset();
         }
     };
 
     //--------------------------------------------------------------------
 
-    void set(T * data, uint16_t d0, uint16_t d1, bool no_copy=false)
+    void set(T *data, uint16_t d0, uint16_t d1, bool no_copy = false)
     {
         setDimensions(d0, d1);
-        if (!setDataPtr(data, size(), no_copy)){
+        if (!setDataPtr(data, size(), no_copy))
+        {
             reset();
         }
     };
     //--------------------------------------------------------------------
 
-    void set(T * data, uint16_t d0, uint16_t d1, uint16_t d2, bool no_copy=false)
+    void set(T *data, uint16_t d0, uint16_t d1, uint16_t d2, bool no_copy = false)
     {
         setDimensions(d0, d1, d2);
-        if (!setDataPtr(data, size(), no_copy)){
+        if (!setDataPtr(data, size(), no_copy))
+        {
             reset();
         }
-    };        
+    };
 
     //--------------------------------------------------------------------
     // Return a pointer to the array data
 
-    T * get()
+    T *get()
     {
         return _data;
     };
 
-protected:
+  protected:
     //--------------------------------------------------------------------
     // Reset the array object.
-    
-    void reset()
+
+    virtual void reset()
     {
+        // free any alloc first - this might require array dims ...
+        freeAlloc();
+
         spDataArray::reset(); // call superclass
-
-        if ( _data && _bAlloc)
-            delete _data;
-
-        _data  = nullptr;
-        _bAlloc = false;
     }
 
-private:
-
-    //--------------------------------------------------------------------    
-    bool setDataPtr( T* data, size_t length, bool no_copy)
+    virtual void freeAlloc(void)
     {
-        // valid?
-        if (!data || length == 0)
-            return false;
-
         // free any existing alloc'd memory
-        if ( _data != nullptr && _bAlloc)
+        if (_data != nullptr && _bAlloc)
         {
             delete _data;
             _data = nullptr;
             _bAlloc = false;
         }
+    }
+
+    bool _bAlloc;
+
+    //--------------------------------------------------------------------
+    virtual bool setDataPtr(T *data, size_t length, bool no_copy)
+    {
+        // valid?
+        if (!data || length == 0)
+            return false;
+
+        // free any alloc'd memory
+        freeAlloc();
 
         // copy data or not?
-        if (no_copy)   
+        if (no_copy)
             _data = data;
         else
-        {   
+        {
             // create a copy of the passed in data.
             _data = new T[length];
-            memcpy(_data, data, length*sizeof(T));
+            memcpy(_data, data, length * sizeof(T));
             _bAlloc = true;
         }
 
         return true;
     };
 
-    T       * _data;
-    bool      _bAlloc;
-
+  private:
+    T *_data;
 };
 
 using spDataArrayBool = spDataArrayType<bool>;
@@ -494,7 +566,60 @@ using spDataArrayUint16 = spDataArrayType<uint16_t>;
 using spDataArrayUint = spDataArrayType<uint>;
 using spDataArrayFloat = spDataArrayType<float>;
 using spDataArrayDouble = spDataArrayType<double>;
-using spDataArrayString = spDataArrayType<std::string>;
+
+// strings are special ..
+class spDataArrayString : public spDataArrayType<char *>
+{
+    //--------------------------------------------------------------------
+    void freeAlloc(void)
+    {
+
+        char **pData = get();
+        // free any existing alloc'd memory
+        if (pData != nullptr && _bAlloc)
+        {
+            // need to delete the strings
+
+            uint16_t nStr = size();
+
+            for (int i = 0; i < nStr; i++)
+                delete *pData++;
+        }
+
+        // call super
+        spDataArrayType<char *>::freeAlloc();
+    }
+    //--------------------------------------------------------------------
+    bool setDataPtr(char **data, size_t length, bool no_copy)
+    {
+        if (!spDataArrayType<char *>::setDataPtr(data, length, no_copy))
+            return false;
+
+        if (no_copy) // done
+            return true;
+
+        // at this point the array storage area is a new allocated char * array,
+        // with the original pointers values in place. The strings need to be copied.
+
+        char **pData = get();
+        if (!pData) // this is an issue
+            return false;
+
+        uint16_t nStr = size();
+        size_t slen;
+        for (int i = 0; i < nStr; i++, pData++, data++)
+        {
+            if (!*data) // no string?
+                continue;
+
+            // alloc and copy over string data...
+            slen = strlen(*data) + 1;
+            *pData = new char[slen];
+            strlcpy(*pData, *data, slen);
+        }
+        return true;
+    };
+};
 
 //----------------------------------------------------------------------------------------
 struct spPersist
@@ -515,10 +640,10 @@ class spDataOut
 
     virtual bool getBool() = 0;
     virtual int8_t getInt8() = 0;
-    virtual int16_t getInt16() = 0;    
+    virtual int16_t getInt16() = 0;
     virtual int getInt() = 0;
     virtual uint8_t getUint8() = 0;
-    virtual uint16_t getUint16() = 0;    
+    virtual uint16_t getUint16() = 0;
     virtual uint getUint() = 0;
     virtual float getFloat() = 0;
     virtual double getDouble() = 0;
@@ -683,73 +808,75 @@ class _spDataOutString : public spDataOut
 //---------------------------------------------------------
 // Data input limits
 
-typedef enum 
+typedef enum
 {
     spDataLimitTypeNone = 0,
     spDataLimitTypeRange,
     spDataLimitTypeSet
 } spDataLimit_t;
 
-class spDataLimitDesc {
-public:
-    std::string      name;
-    spDataVariable   data;
-}; 
+class spDataLimitDesc
+{
+  public:
+    std::string name;
+    spDataVariable data;
+};
 using spDataLimitList = std::vector<spDataLimitDesc>;
 
 //-----------------------------------------------------------------
-class spDataLimit 
+class spDataLimit
 {
-public:
-    virtual ~spDataLimit(){
-        
+  public:
+    virtual ~spDataLimit()
+    {
     }
     virtual spDataLimit_t type(void)
     {
         return spDataLimitTypeNone;
     }
-    spDataLimitList  _dataLimits;
+    spDataLimitList _dataLimits;
 
-     spDataLimitList & limits(void)
+    spDataLimitList &limits(void)
     {
         return _dataLimits;
     }
-    void addLimit(spDataLimitDesc & item)
+    void addLimit(spDataLimitDesc &item)
     {
         _dataLimits.push_back(item);
     }
-    void clearLimits(void ){
+    void clearLimits(void)
+    {
         _dataLimits.clear();
     };
 
-    typedef enum{
+    typedef enum
+    {
         dataLimitNone = 0,
         dataLimitRange,
         dataLimitSet
-    }dataLimitType_t;
+    } dataLimitType_t;
 };
 
-
-template <typename T>
-class spDataLimitType : public spDataLimit
+template <typename T> class spDataLimitType : public spDataLimit
 {
-public:
+  public:
     virtual bool isValid(T value) = 0;
 };
 
-template <typename T>
-class spDataLimitRange : public spDataLimitType<T> 
+template <typename T> class spDataLimitRange : public spDataLimitType<T>
 {
-public:
-    spDataLimitRange() : _isSet{false} {}
-    spDataLimitRange( T min, T max )
+  public:
+    spDataLimitRange() : _isSet{false}
     {
-        setRange( min, max);
+    }
+    spDataLimitRange(T min, T max)
+    {
+        setRange(min, max);
     }
 
     void setRange(T min, T max)
     {
-        if (min < max )
+        if (min < max)
         {
             _min = min;
             _max = max;
@@ -760,11 +887,11 @@ public:
             _max = min;
         }
 
-        _isSet=true;
+        _isSet = true;
 
         spDataLimit::clearLimits();
         // build our limit descriptors
-        spDataLimitDesc  limit;
+        spDataLimitDesc limit;
         limit.name = sp_utils::to_string(_min);
         limit.data.set(_min);
         spDataLimit::addLimit(limit);
@@ -772,23 +899,21 @@ public:
         limit.name = sp_utils::to_string(_max);
         limit.data.set(_max);
         spDataLimit::addLimit(limit);
-
     };
-
 
     bool isValid(T value)
     {
-        if ( !_isSet )
+        if (!_isSet)
             return false;
 
-        return ( value >= _min && value <= _max);
+        return (value >= _min && value <= _max);
     }
     spDataLimit_t type(void)
     {
         return spDataLimitTypeRange;
     };
 
-private:
+  private:
     T _min;
     T _max;
     bool _isSet;
@@ -803,43 +928,41 @@ using spDataLimitRangeUnt = spDataLimitRange<uint>;
 using spDataLimitRangeFloat = spDataLimitRange<float>;
 using spDataLimitRangeDouble = spDataLimitRange<double>;
 
-
 //----------------------------------------------------------------------------
 // spDataLimitSetType
 //
-// Used to contain a set of valid values. The values are stored as Name, Value pairs, 
+// Used to contain a set of valid values. The values are stored as Name, Value pairs,
 // where Name is a human readable string for display/UX
 //
 // This is the base class for this type of limit
 
-template <typename T>
-class spDataLimitSetType :  public spDataLimitType<T>
+template <typename T> class spDataLimitSetType : public spDataLimitType<T>
 {
-public:
+  public:
     spDataLimitSetType()
     {
     }
-    
-    spDataLimitSetType( std::initializer_list<std::pair<const std::string, T>> list)
+
+    spDataLimitSetType(std::initializer_list<std::pair<const std::string, T>> list)
     {
         if (list.size() < 1)
             throw std::length_error("invalid number of arguments");
-        
-        spDataLimitDesc  limit;
+
+        spDataLimitDesc limit;
 
         for (auto item : list)
         {
             limit.name = item.first.c_str();
             limit.data.set(item.second);
-            spDataLimit::addLimit(limit);            
+            spDataLimit::addLimit(limit);
         }
     }
 
     bool isValid(T value)
     {
-        for ( auto item : spDataLimit::limits())
+        for (auto item : spDataLimit::limits())
         {
-            if ( item.data.isEqual(value))
+            if (item.data.isEqual(value))
                 return true;
         }
         return false;
@@ -847,15 +970,15 @@ public:
 
     void addItem(std::string &name, T value)
     {
-        spDataLimitDesc  limit;
+        spDataLimitDesc limit;
         limit.name = name.c_str();
         limit.data.set(value);
-        spDataLimit::addLimit(limit);     
+        spDataLimit::addLimit(limit);
     }
     spDataLimit_t type(void)
     {
         return spDataLimitTypeSet;
-    };  
+    };
 };
 
 using spDataLimitSetInt8 = spDataLimitSetType<int8_t>;
@@ -876,10 +999,10 @@ class spDataIn
 
     virtual void setBool(bool) = 0;
     virtual void setInt8(int8_t) = 0;
-    virtual void setInt16(int16_t) = 0;    
+    virtual void setInt16(int16_t) = 0;
     virtual void setInt(int) = 0;
     virtual void setUint8(uint8_t) = 0;
-    virtual void setUint16(uint16_t) = 0;    
+    virtual void setUint16(uint16_t) = 0;
     virtual void setUint(uint) = 0;
     virtual void setFloat(float) = 0;
     virtual void setDouble(double) = 0;
@@ -925,16 +1048,13 @@ class spDataIn
     {
         setString(v);
     }
-
-    
 };
 
 template <typename T> class _spDataIn : public spDataIn
 {
 
   public:
-    _spDataIn() : _dataLimit{nullptr}, _limitIsAlloc{false}, 
-        _dataLimitType{spDataLimit::dataLimitNone} {};
+    _spDataIn() : _dataLimit{nullptr}, _limitIsAlloc{false}, _dataLimitType{spDataLimit::dataLimitNone} {};
 
     spDataType_t type(void)
     {
@@ -1018,10 +1138,10 @@ template <typename T> class _spDataIn : public spDataIn
             break;
         }
     };
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     // Data Limit things
-    //---------------------------------------------------------------------------------    
-    void setDataLimit( spDataLimitType<T> &dataLimit)
+    //---------------------------------------------------------------------------------
+    void setDataLimit(spDataLimitType<T> &dataLimit)
     {
         if (_dataLimit && _limitIsAlloc)
             delete _dataLimit;
@@ -1029,7 +1149,7 @@ template <typename T> class _spDataIn : public spDataIn
         _limitIsAlloc = false;
         _dataLimit = &dataLimit;
     }
-    void setDataLimit( spDataLimitType<T> *dataLimit)
+    void setDataLimit(spDataLimitType<T> *dataLimit)
     {
         if (_dataLimit && _limitIsAlloc)
             delete _dataLimit;
@@ -1038,55 +1158,55 @@ template <typename T> class _spDataIn : public spDataIn
         _dataLimit = dataLimit;
     }
     // -------------------------------------------
-    spDataLimit * dataLimit(void)
+    spDataLimit *dataLimit(void)
     {
         return _dataLimit;
     }
 
-    void setDataLimitRange( T min, T max)
+    void setDataLimitRange(T min, T max)
     {
-        if ( _dataLimitType != spDataLimit::dataLimitRange)
+        if (_dataLimitType != spDataLimit::dataLimitRange)
         {
             if (_dataLimit != nullptr && _limitIsAlloc)
                 delete _dataLimit;
             _dataLimit = new spDataLimitRange<T>();
             _dataLimitType = spDataLimit::dataLimitRange;
-            _limitIsAlloc=true;
+            _limitIsAlloc = true;
         }
-        ((spDataLimitRange<T>*)_dataLimit)->setRange(min,max);      
+        ((spDataLimitRange<T> *)_dataLimit)->setRange(min, max);
     }
 
-    void setDataLimitRange( std::pair<T,T> range)
+    void setDataLimitRange(std::pair<T, T> range)
     {
         setDataLimitRange(range.first, range.second);
     }
 
-    void addDataLimitValidValue(  std::string name, T value)
+    void addDataLimitValidValue(std::string name, T value)
     {
-        if ( _dataLimitType != spDataLimit::dataLimitSet)
+        if (_dataLimitType != spDataLimit::dataLimitSet)
         {
             if (_dataLimit != nullptr && _limitIsAlloc)
                 delete _dataLimit;
             _dataLimit = new spDataLimitSetType<T>();
             _dataLimitType = spDataLimit::dataLimitSet;
-            _limitIsAlloc=true;
+            _limitIsAlloc = true;
         }
-        ((spDataLimitSetType<T>*)_dataLimit)->addItem(name, value);
+        ((spDataLimitSetType<T> *)_dataLimit)->addItem(name, value);
     }
-    void addDataLimitValidValue( std::pair<const std::string, T> value)
+    void addDataLimitValidValue(std::pair<const std::string, T> value)
     {
         addDataLimitValidValue((std::string)value.first, value.second);
     }
 
-    void addDataLimitValidValue( std::initializer_list<std::pair<const std::string, T>> limitSet )
+    void addDataLimitValidValue(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
         for (auto item : limitSet)
             addDataLimitValidValue(item);
     }
-    
+
     void clearDataLimit(void)
     {
-        if ( _dataLimit )
+        if (_dataLimit)
         {
             delete _dataLimit;
             _dataLimitType = spDataLimit::dataLimitNone;
@@ -1096,14 +1216,13 @@ template <typename T> class _spDataIn : public spDataIn
     bool isValueValid(T value)
     {
         // if we have a limit, check value, else return true.
-        return  _dataLimit != nullptr ? _dataLimit->isValid(value) : true;
+        return _dataLimit != nullptr ? _dataLimit->isValid(value) : true;
     }
 
-private:
-    spDataLimitType<T>  *_dataLimit;
+  private:
+    spDataLimitType<T> *_dataLimit;
     bool _limitIsAlloc;
-    spDataLimit::dataLimitType_t  _dataLimitType;
-
+    spDataLimit::dataLimitType_t _dataLimitType;
 };
 
 class _spDataInString : public spDataIn
@@ -1156,7 +1275,7 @@ class _spDataInString : public spDataIn
     }
     void setDouble(double value)
     {
-        set(sp_utils::to_string(value));   
+        set(sp_utils::to_string(value));
     }
     void setString(std::string &value)
     {
@@ -1164,14 +1283,11 @@ class _spDataInString : public spDataIn
     };
 };
 
-
-
 //---------------------------------------------------------
 // Define simple type ID "types" - used for class IDs
 
 typedef uint32_t spTypeID;
 #define kspTypeIDNone 0
-
 
 template <typename T> spTypeID spGetClassTypeID()
 {
@@ -1181,8 +1297,6 @@ template <typename T> spTypeID spGetClassTypeID()
 
     // Hash the name, make that our type ID.
     return sp_utils::id_hash_string(__PRETTY_FUNCTION__);
-    
 };
-
 
 // End - spCoreTypes.h

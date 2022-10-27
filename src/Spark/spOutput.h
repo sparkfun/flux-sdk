@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "spCoreTypes.h"
 #include "spCoreInterface.h"
+#include "spCoreTypes.h"
 //-----------------------------------------
 
 // Define a formatter for log data
@@ -22,12 +22,12 @@ class spOutputFormat
     virtual void logValue(const std::string &tag, bool value) = 0;
     virtual void logValue(const std::string &tag, int8_t value) = 0;
     virtual void logValue(const std::string &tag, int16_t value) = 0;
-    virtual void logValue(const std::string &tag, int value) = 0;    
+    virtual void logValue(const std::string &tag, int value) = 0;
     virtual void logValue(const std::string &tag, uint8_t value) = 0;
-    virtual void logValue(const std::string &tag, uint16_t value) = 0;        
+    virtual void logValue(const std::string &tag, uint16_t value) = 0;
     virtual void logValue(const std::string &tag, uint value) = 0;
-    virtual void logValue(const std::string &tag, float value, uint16_t precision=3) = 0;
-    virtual void logValue(const std::string &tag, double value, uint16_t precision=3) = 0;
+    virtual void logValue(const std::string &tag, float value, uint16_t precision = 3) = 0;
+    virtual void logValue(const std::string &tag, double value, uint16_t precision = 3) = 0;
     virtual void logValue(const std::string &tag, const char *value) = 0;
     virtual void logValue(const std::string &tag, std::string &value)
     {
@@ -38,12 +38,13 @@ class spOutputFormat
     virtual void logValue(const std::string &tag, spDataArrayBool *value) = 0;
     virtual void logValue(const std::string &tag, spDataArrayInt8 *value) = 0;
     virtual void logValue(const std::string &tag, spDataArrayInt16 *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayInt *value) = 0;    
+    virtual void logValue(const std::string &tag, spDataArrayInt *value) = 0;
     virtual void logValue(const std::string &tag, spDataArrayUint8 *value) = 0;
     virtual void logValue(const std::string &tag, spDataArrayUint16 *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayUint *value) = 0;        
-    virtual void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision=3) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision=3) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayUint *value) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision = 3) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision = 3) = 0;
+    virtual void logValue(const std::string &tag, spDataArrayString *value) = 0;
 
     // structure cycle
 

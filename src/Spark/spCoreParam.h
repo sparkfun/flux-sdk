@@ -514,6 +514,7 @@ class spParameterOutArray : public spParameterOut
 template <class T, class Object, bool (Object::*_getter)(spDataArrayType<T> *)>
 class spParameterOutArrayType : public spParameterOutArray
 {
+
     Object *my_object; // Pointer to the containing object
 
   public:
@@ -526,7 +527,7 @@ class spParameterOutArrayType : public spParameterOutArray
     spDataType_t type()
     {
         T c;
-        return spDataTyper::type(&c);
+        return spDataTyper::type(c);
     };
 
     //---------------------------------------------------------------------------------
@@ -664,6 +665,91 @@ class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object,
 
   private:
     uint16_t _precision;
+};
+
+template <class Object, bool (Object::*_getter)(spDataArrayString *)>
+class spParameterOutArrayString : public spParameterOutArray
+{
+
+    Object *my_object; // Pointer to the containing object
+
+  public:
+    spParameterOutArrayString() : my_object(0)
+    {
+    }
+
+    //---------------------------------------------------------------------------------
+    // return our data type
+    spDataType_t type()
+    {
+        return spTypeString;
+    };
+
+    //---------------------------------------------------------------------------------
+    // to register the parameter - set the containing object instance
+    // Normally done in the containing objects constructor.
+    // i.e.
+    //     parameter_object(this);
+    //
+    // This allows the parameter to add itself to the containing objects list of
+    // parameter.
+    //
+    // Also the containing object is needed to call the getter/setter methods on that object
+    void operator()(Object *obj)
+    {
+        // my_object must be derived from _spParameterContainer
+        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
+                      "spParameterOutArray: type parameter of this class must derive from _spParameterContainer");
+
+        my_object = obj;
+        assert(my_object);
+
+        if (my_object)
+            my_object->addParameter(this);
+    }
+    void operator()(Object *obj, const char *name)
+    {
+        // set the name of the property on init
+        if (name)
+            setName(name);
+
+        // cascade to other version of method
+        (*this)(obj);
+    }
+
+    void operator()(Object *obj, const char *name, const char *desc)
+    {
+        // Description of the object
+        if (desc)
+            setDescription(desc);
+
+        // cascade to other version of method
+        (*this)(obj, name);
+    }
+    //---------------------------------------------------------------------------------
+    // get the value of the parameter.
+    //
+    // NOTE - using smart pointer/shared pointer for the return value. This will automatically
+    //        free memory when the pointer goes out of scope.
+
+    spDataArrayString *get(void)
+    {
+        if (!my_object) // would normally throw an exception, but not very Arduino like!
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            return nullptr;
+        }
+        spDataArrayString *data = new spDataArrayString;
+        bool bstatus = (my_object->*_getter)(data);
+
+        if (!bstatus)
+        {
+            delete data;
+            return nullptr;
+        }
+
+        return data;
+    }
 };
 
 //-----------------------------------------------------------------------------------

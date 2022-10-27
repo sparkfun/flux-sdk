@@ -205,6 +205,12 @@ class spFormatCSV : public spOutputFormat
         writeHeaderEntry(tag);
         writeOutArray(value, precision);
     }
+
+    void logValue(const std::string &tag, spDataArrayString *value)
+    {
+        writeHeaderEntry(tag);
+        writeOutArray(value);
+    }
     //-----------------------------------------------------------
     // structure cycle
 
