@@ -306,15 +306,25 @@ public:
 
     virtual spDataType_t type() = 0;
 
+    //--------------------------------------------------------------------
+    // number of dimensions
+
     uint8_t      n_dimensions()
     {
         return _n_dims;
     };
+    //--------------------------------------------------------------------
+    // dimensions()
+    //
+    // Returns a pointer to the array's dimension array.    
     uint16_t   *dimensions()
     {
         return (uint16_t*)&_dimensions;
     }
-
+    //--------------------------------------------------------------------
+    // size() 
+    //
+    // Total number of elements in the array
     size_t  size(void)
     {
         uint sum = 0;
@@ -370,15 +380,24 @@ public:
 
     ~spDataArrayType()
     {
+        // free any alloc'd data...
         if ( _bAlloc && _data != nullptr)
             delete _data;
     }
 
+    //--------------------------------------------------------------------
+    // return the type of this array 
+
     spDataType_t type(void)
     {
         T c;
-        return spDataTyper::type(c);
+        return spDataTyper::type(c); // use the typer object - leverage overloading
     }
+
+    //--------------------------------------------------------------------
+    // set the array data and pass in dimensions - several variations of this method
+    //
+    // note - by default the no_copy flag is false, so a copy of the set data is made.
 
     void set(T * data, uint16_t d0, bool no_copy=false)
     {
@@ -388,6 +407,8 @@ public:
         }
     };
 
+    //--------------------------------------------------------------------
+
     void set(T * data, uint16_t d0, uint16_t d1, bool no_copy=false)
     {
         setDimensions(d0, d1);
@@ -395,6 +416,7 @@ public:
             reset();
         }
     };
+    //--------------------------------------------------------------------
 
     void set(T * data, uint16_t d0, uint16_t d1, uint16_t d2, bool no_copy=false)
     {
@@ -404,15 +426,21 @@ public:
         }
     };        
 
+    //--------------------------------------------------------------------
+    // Return a pointer to the array data
+
     T * get()
     {
         return _data;
     };
 
 protected:
+    //--------------------------------------------------------------------
+    // Reset the array object.
+    
     void reset()
     {
-        spDataArray::reset();
+        spDataArray::reset(); // call superclass
 
         if ( _data && _bAlloc)
             delete _data;
@@ -423,11 +451,14 @@ protected:
 
 private:
 
+    //--------------------------------------------------------------------    
     bool setDataPtr( T* data, size_t length, bool no_copy)
     {
+        // valid?
         if (!data || length == 0)
             return false;
 
+        // free any existing alloc'd memory
         if ( _data != nullptr && _bAlloc)
         {
             delete _data;
@@ -435,14 +466,17 @@ private:
             _bAlloc = false;
         }
 
-        if (no_copy)
+        // copy data or not?
+        if (no_copy)   
             _data = data;
         else
-        {
+        {   
+            // create a copy of the passed in data.
             _data = new T[length];
             memcpy(_data, data, length*sizeof(T));
             _bAlloc = true;
         }
+
         return true;
     };
 
@@ -461,6 +495,7 @@ using spDataArrayUint = spDataArrayType<uint>;
 using spDataArrayFloat = spDataArrayType<float>;
 using spDataArrayDouble = spDataArrayType<double>;
 using spDataArrayString = spDataArrayType<std::string>;
+
 //----------------------------------------------------------------------------------------
 struct spPersist
 {
