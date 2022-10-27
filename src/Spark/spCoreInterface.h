@@ -21,16 +21,15 @@ class spDataEditor
     virtual bool editField(std::string &value, uint32_t timeout = 60) = 0;
     virtual bool editField(bool &value, uint32_t timeout = 60) = 0;
     virtual bool editField(int8_t &value, uint32_t timeout = 60) = 0;
-    virtual bool editField(int16_t &value, uint32_t timeout = 60) = 0;    
+    virtual bool editField(int16_t &value, uint32_t timeout = 60) = 0;
     virtual bool editField(int32_t &value, uint32_t timeout = 60) = 0;
     virtual bool editField(uint8_t &value, uint32_t timeout = 60) = 0;
-    virtual bool editField(uint16_t &value, uint32_t timeout = 60) = 0;    
+    virtual bool editField(uint16_t &value, uint32_t timeout = 60) = 0;
     virtual bool editField(uint32_t &value, uint32_t timeout = 60) = 0;
     virtual bool editField(float &value, uint32_t timeout = 60) = 0;
     virtual bool editField(double &value, uint32_t timeout = 60) = 0;
     virtual void beep() = 0;
 };
-
 
 // Define an interface for output of log information.
 

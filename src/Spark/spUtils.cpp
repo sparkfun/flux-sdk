@@ -120,10 +120,11 @@ uint32_t sp_utils::id_hash_string(const char *str)
     return hash; //& 0xFFFF; // NOTE - we're just using 16 bits
 }
 //-------------------------------------------------------------------
-// returns a string version of the hash. 
-bool sp_utils::id_hash_string_to_string(const char * instr, char *outstr, size_t len){
+// returns a string version of the hash.
+bool sp_utils::id_hash_string_to_string(const char *instr, char *outstr, size_t len)
+{
 
-    if ( !instr || !outstr || !len)
+    if (!instr || !outstr || !len)
     {
         spLog_E("String hash - invalid parameters");
         return false;
@@ -134,17 +135,16 @@ bool sp_utils::id_hash_string_to_string(const char * instr, char *outstr, size_t
 
     // Now print this has into a string -- forms a unique tag
     snprintf(outstr, len, "%X", hash);
-    
-    return true;
 
+    return true;
 }
 //-------------------------------------------------------------------
-std::string & sp_utils::to_string(std::string &data)
+std::string &sp_utils::to_string(std::string &data)
 {
     return data;
 }
 //-------------------------------------------------------------------
-const std::string & sp_utils::to_string(std::string const &data)
+const std::string &sp_utils::to_string(std::string const &data)
 {
     return data;
 }
@@ -199,7 +199,7 @@ std::string sp_utils::to_string(uint16_t const data)
 //-------------------------------------------------------------------
 std::string sp_utils::to_string(float const data, uint8_t precision)
 {
-    return sp_utils::to_string( (double)data, precision);
+    return sp_utils::to_string((double)data, precision);
     char szBuffer[20];
     sp_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);
     std::string stmp = szBuffer;
@@ -211,23 +211,22 @@ std::string sp_utils::to_string(float const data)
 }
 
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(double const data, uint8_t precision) 
+std::string sp_utils::to_string(double const data, uint8_t precision)
 {
     char szBuffer[20];
-    sp_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);    
+    sp_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);
     std::string stmp = szBuffer;
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(double const data) 
+std::string sp_utils::to_string(double const data)
 {
     return sp_utils::to_string(data, 4);
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(bool const data) 
+std::string sp_utils::to_string(bool const data)
 {
     std::string stmp;
     stmp = data ? "true" : "false";
     return stmp;
 }
-

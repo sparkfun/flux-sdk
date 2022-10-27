@@ -7,7 +7,6 @@
 #include <string.h>
 #include <string>
 
-
 // use a utils namespace
 
 namespace sp_utils
@@ -17,9 +16,7 @@ size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 
 
 uint32_t id_hash_string(const char *str);
 
-bool id_hash_string_to_string(const char * instr, char *outstr, size_t len);
-
-
+bool id_hash_string_to_string(const char *instr, char *outstr, size_t len);
 
 //-------------------------------------------------------------------
 std::string &to_string(std::string &data);
@@ -35,10 +32,6 @@ std::string to_string(float const data);
 std::string to_string(double const data, uint8_t precision);
 std::string to_string(double const data);
 std::string to_string(bool const data);
-
-
-
-
 
 } // namespace sp_utils
 

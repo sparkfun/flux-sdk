@@ -3,15 +3,16 @@
 #pragma once
 
 // Messaging/logging system for the framework
-#include <stdarg.h>
 #include <WString.h>
+#include <stdarg.h>
 
 #include "spCoreInterface.h"
 // Lets enable logging
 #define SP_LOGGING_ENABLED
 
 // Define logging levels
-typedef enum {
+typedef enum
+{
     spLogNone,
     spLogError,
     spLogWarning,
@@ -20,29 +21,31 @@ typedef enum {
     spLogVerbose
 } spLogLevel_t;
 
-
 // ----------------------------------------------------------------------------
 // spLoggingDriver()
 //
-// This class actually does the log work. It allows the backend of the logging 
+// This class actually does the log work. It allows the backend of the logging
 // system to be changed as needed. For example if you want to use a native
 // log system.
 
-class spLoggingDriver {
+class spLoggingDriver
+{
 
-// Very simple interface - just follow a standard printf() format, but with
-// log level also passed in
-public:
-    virtual int logPrintf(const spLogLevel_t level, const char *fmt, va_list args)=0;
+    // Very simple interface - just follow a standard printf() format, but with
+    // log level also passed in
+  public:
+    virtual int logPrintf(const spLogLevel_t level, const char *fmt, va_list args) = 0;
 
-    virtual void setLogLevel(spLogLevel_t level){}
+    virtual void setLogLevel(spLogLevel_t level)
+    {
+    }
 };
 
 #ifdef THIS_IS_NOT_WORKING_ON_ESP32
 // // ----------------------------------------------------------------------------
-// // spLoggingDrvESP32  - 
+// // spLoggingDrvESP32  -
 // //
-// // Sends log output to the ESP32 native, IDF system 
+// // Sends log output to the ESP32 native, IDF system
 
 // class spLoggingDrvESP32 : public spLoggingDriver
 // {
@@ -61,8 +64,10 @@ public:
 
 class spLoggingDrvDefault : public spLoggingDriver
 {
-public:
-    spLoggingDrvDefault() : _wrOutput(nullptr) {}
+  public:
+    spLoggingDrvDefault() : _wrOutput(nullptr)
+    {
+    }
 
     int logPrintf(const spLogLevel_t level, const char *fmt, va_list args);
 
@@ -70,22 +75,22 @@ public:
     {
         setOutput(&theWriter);
     }
-    void setOutput(spWriter *theWriter)    
+    void setOutput(spWriter *theWriter)
     {
         _wrOutput = theWriter;
     }
 
-private:
+  private:
     // our output device
-    spWriter * _wrOutput;   
+    spWriter *_wrOutput;
 };
 
 // ----------------------------------------------------------------------------
 // main interface for the logging system
-class spLogging 
+class spLogging
 {
-public:
-    // this is a singleton 
+  public:
+    // this is a singleton
     static spLogging &get(void)
     {
         static spLogging instance;
@@ -110,10 +115,11 @@ public:
         return _logLevel;
     }
     //-------------------------------------------------------------------------
-    void setLogDriver(spLoggingDriver &theDriver){
+    void setLogDriver(spLoggingDriver &theDriver)
+    {
 
         _pLogDriver = &theDriver;
-        _pLogDriver->setLogLevel(_logLevel);        
+        _pLogDriver->setLogLevel(_logLevel);
     }
 
     //-------------------------------------------------------------------------
@@ -121,11 +127,11 @@ public:
     int logPrintf(const spLogLevel_t level, const __FlashStringHelper *fmt, ...)
     {
         int retval = 0;
-        if ( _pLogDriver && level <= _logLevel && level != spLogNone)
+        if (_pLogDriver && level <= _logLevel && level != spLogNone)
         {
             va_list ap;
             va_start(ap, fmt);
-            retval =  _pLogDriver->logPrintf(level, reinterpret_cast<const char *>(fmt), ap);
+            retval = _pLogDriver->logPrintf(level, reinterpret_cast<const char *>(fmt), ap);
             va_end(ap);
         }
         return retval;
@@ -135,28 +141,28 @@ public:
     int logPrintf(const spLogLevel_t level, const char *fmt, ...)
     {
         int retval = 0;
-        if ( _pLogDriver && level <= _logLevel && level != spLogNone)
+        if (_pLogDriver && level <= _logLevel && level != spLogNone)
         {
             va_list ap;
             va_start(ap, fmt);
-            retval =  _pLogDriver->logPrintf(level, fmt, ap);
+            retval = _pLogDriver->logPrintf(level, fmt, ap);
             va_end(ap);
         }
         return retval;
     }
 
-private:
+  private:
+    spLogging() : _logLevel{spLogWarning}, _pLogDriver{nullptr}
+    {
+    }
 
-    spLogging(): _logLevel{spLogWarning}, _pLogDriver{nullptr}{}
+    spLogLevel_t _logLevel;
 
-    spLogLevel_t        _logLevel;
-
-    spLoggingDriver   * _pLogDriver;
+    spLoggingDriver *_pLogDriver;
 };
 extern spLogging &spLog;
 
-
-// Define log macros used throughout the system for logging 
+// Define log macros used throughout the system for logging
 #ifdef SP_LOGGING_ENABLED
 
 #define spLog_V(format, ...) spLog.logPrintf(spLogVerbose, format, ##__VA_ARGS__)
@@ -167,10 +173,25 @@ extern spLogging &spLog;
 
 #else
 
-#define spLog_V(format, ...) do {} while(0)
-#define spLog_D(format, ...) do {} while(0)
-#define spLog_I(format, ...) do {} while(0)
-#define spLog_W(format, ...) do {} while(0)
-#define spLog_E(format, ...) do {} while(0)
+#define spLog_V(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_D(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_I(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_W(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_E(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
 
 #endif

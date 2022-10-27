@@ -11,15 +11,14 @@
 #include <string>
 #include <vector>
 
-#include "spCoreTypes.h"
 #include "spCoreInterface.h"
+#include "spCoreTypes.h"
 #include "spStorage.h"
 #include "spUtils.h"
 
-
 #define kMaxPropertyString 256
 
-typedef enum 
+typedef enum
 {
     spEditSuccess = 0,
     spEditFailure,
@@ -42,8 +41,8 @@ class spProperty : public spDescriptor
     // displayed/set/managed in an editor
 
     virtual spEditResult_t editValue(spDataEditor &) = 0;
-    virtual spDataLimit * dataLimit(void) = 0;
-    virtual bool setValue( spDataVariable &) = 0;
+    virtual spDataLimit *dataLimit(void) = 0;
+    virtual bool setValue(spDataVariable &) = 0;
 
     //---------------------------------------------------------------------------------
     virtual size_t size(void)
@@ -114,7 +113,7 @@ class _spPropertyContainer
     bool saveProperties(spStorageBlock2 *stBlk)
     {
         bool rc = true;
-        bool status; 
+        bool status;
         for (auto property : _properties)
         {
             status = property->save(stBlk);
@@ -139,7 +138,7 @@ class _spPropertyContainer
 
     size_t propertySaveSize()
     {
-        size_t totalSize =0;
+        size_t totalSize = 0;
 
         for (auto property : _properties)
             totalSize += property->save_size();
@@ -160,12 +159,10 @@ class _spPropertyContainer
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T> 
-class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
+template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
 {
-  
-  public:
 
+  public:
     //---------------------------------------------------------------------------------
     spDataType_t type()
     {
@@ -198,7 +195,7 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         T c = get();
         bool status = stBlk->write(name(), c);
 
-        if( !status )
+        if (!status)
             spLog_E("Error when saving property %s", name());
 
         return status;
@@ -211,7 +208,7 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
 
         bool status = stBlk->read(name(), c);
 
-        if (status )
+        if (status)
             set(c);
 
         return status;
@@ -235,8 +232,8 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
 
         if (bSuccess) // success
         {
-            //do we have a dataLimit set, and if so are we in limits?
-            if ( !_spDataIn<T>::isValueValid(value))
+            // do we have a dataLimit set, and if so are we in limits?
+            if (!_spDataIn<T>::isValueValid(value))
                 return spEditOutOfRange;
 
             set(value);
@@ -245,9 +242,10 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         return bSuccess ? spEditSuccess : spEditFailure;
     }
     //---------------------------------------------------------------------------------
-    bool setValue( spDataVariable &value){
+    bool setValue(spDataVariable &value)
+    {
 
-        if ( value.type == type())
+        if (value.type == type())
         {
             T c;
             set(value.get(c));
@@ -256,11 +254,10 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
         return false;
     };
 
-    spDataLimit * dataLimit(void)
+    spDataLimit *dataLimit(void)
     {
         return _spDataIn<T>::dataLimit();
     }
-
 };
 
 //----------------------------------------------------------------------------------------
@@ -274,11 +271,10 @@ class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOu
 //
 class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
 {
-protected:
-    spDataLimitType<std::string> * _dataLimit;
+  protected:
+    spDataLimitType<std::string> *_dataLimit;
 
   public:
-
     _spPropertyBaseString() : _dataLimit{nullptr}
     {
     }
@@ -318,7 +314,7 @@ protected:
 
     std::string to_string()
     {
-       return  _spDataOutString::getString();
+        return _spDataOutString::getString();
     }
     //---------------------------------------------------------------------------------
     // serialization methods
@@ -328,7 +324,7 @@ protected:
         std::string c = get();
 
         bool status = stBlk->writeString(name(), c.c_str()) == c.length();
-        if( !status )
+        if (!status)
             spLog_E("Error saving string for property: %s", name());
         return status;
     }
@@ -340,7 +336,7 @@ protected:
 
         size_t len = stBlk->readString(name(), szBuffer, sizeof(szBuffer));
 
-        if ( len > 0)
+        if (len > 0)
             set(szBuffer);
 
         return true;
@@ -359,20 +355,23 @@ protected:
         if (bSuccess) // success
             set(value);
 
-        return bSuccess ? spEditSuccess : spEditFailure;;
+        return bSuccess ? spEditSuccess : spEditFailure;
+        ;
     }
     // Data Limit things
-    void setDataLimit( spDataLimitType<std::string> &dataLimit)
+    void setDataLimit(spDataLimitType<std::string> &dataLimit)
     {
         _dataLimit = &dataLimit;
     }
-    spDataLimit * dataLimit(void)
+    spDataLimit *dataLimit(void)
     {
         return _dataLimit;
     }
-    bool setValue( spDataVariable &value){
+    bool setValue(spDataVariable &value)
+    {
 
-        if ( value.type == type()){
+        if (value.type == type())
+        {
             set(value.value.str);
             return true;
         }
@@ -407,30 +406,31 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     {
     }
     // Initial Value
-    _spPropertyTypedRW( T value ) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
+    _spPropertyTypedRW(T value) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
     {
     }
 
     // set min and max range
-    _spPropertyTypedRW( T min, T max ) 
+    _spPropertyTypedRW(T min, T max)
     {
         _spDataIn<T>::setDataLimitRange(min, max);
     }
     // initial value, min, max range
-    _spPropertyTypedRW(T value,  T min, T max ) : _spPropertyTypedRW(value)
+    _spPropertyTypedRW(T value, T min, T max) : _spPropertyTypedRW(value)
     {
         _spDataIn<T>::setDataLimitRange(min, max);
     }
- 
+
     // Limit data set
-    _spPropertyTypedRW( std::initializer_list<std::pair<const std::string, T>> limitSet)
+    _spPropertyTypedRW(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
         _spDataIn<T>::addDataLimitValidValue(limitSet);
     }
-     // Initial value and limit data set.
-    _spPropertyTypedRW( T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTypedRW(value)
+    // Initial value and limit data set.
+    _spPropertyTypedRW(T value, std::initializer_list<std::pair<const std::string, T>> limitSet)
+        : _spPropertyTypedRW(value)
     {
-        _spDataIn<T>::addDataLimitValidValue(limitSet);       
+        _spDataIn<T>::addDataLimitValidValue(limitSet);
     }
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
@@ -454,10 +454,10 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
         if (my_object)
             my_object->addProperty(this);
 
-        // This is basically the "registration" & init step of this object. 
+        // This is basically the "registration" & init step of this object.
         // do we have an initial value? Now that we are "wired up" to the containing
         // class, we can pass on the initial value
-        if ( _hasInitial )
+        if (_hasInitial)
             set(_initialValue);
     }
     void operator()(Object *obj, const char *name)
@@ -489,7 +489,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
             spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return (T)0;
         }
-        
+
         return (my_object->*_getter)();
     }
     //---------------------------------------------------------------------------------
@@ -594,7 +594,7 @@ class spPropertyRWString : public _spPropertyBaseString
 {
     Object *my_object;
 
-     //  member vars to cache an initial value until this object is connected to it's containing obj
+    //  member vars to cache an initial value until this object is connected to it's containing obj
     std::string _initialValue;
     bool _hasInitial;
 
@@ -603,7 +603,7 @@ class spPropertyRWString : public _spPropertyBaseString
     {
     }
     // Initial Value
-    spPropertyRWString( std::string value ) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
+    spPropertyRWString(std::string value) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
     {
     }
     //---------------------------------------------------------------------------------
@@ -628,10 +628,10 @@ class spPropertyRWString : public _spPropertyBaseString
         if (my_object)
             my_object->addProperty(this);
 
-        // This is basically the "registration" & init step of this object. 
+        // This is basically the "registration" & init step of this object.
         // do we have an initial value? Now that we are "wired up" to the containing
         // class, we can pass on the initial value
-        if ( _hasInitial )
+        if (_hasInitial)
             set(_initialValue);
     }
 
@@ -666,12 +666,12 @@ class spPropertyRWString : public _spPropertyBaseString
         return get() != rhs;
     }
     // String - needed to overload the equality operator
-    bool operator==( const char * rhs)
+    bool operator==(const char *rhs)
     {
         return strcmp(get().c_str(), rhs) == 0;
     }
     // String - needed to overload the equality operator
-    bool operator!=( const char * rhs)
+    bool operator!=(const char *rhs)
     {
         return strcmp(get().c_str(), rhs) != 0;
     }
@@ -681,7 +681,7 @@ class spPropertyRWString : public _spPropertyBaseString
     {
         if (!my_object)
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this property.");            
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return "";
         }
 
@@ -691,8 +691,9 @@ class spPropertyRWString : public _spPropertyBaseString
     //---------------------------------------------------------------------------------
     void set(std::string const &value)
     {
-        if (!my_object){
-            spLog_E("Containing object not set. Verify spRegister() was called on this property.");            
+        if (!my_object)
+        {
+            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return;
         }
 
@@ -737,36 +738,35 @@ class spPropertyRWString : public _spPropertyBaseString
 template <class Object, class T> class _spPropertyTyped : public _spPropertyBase<T>
 {
   public:
-
     _spPropertyTyped()
-    {}
+    {
+    }
     // Create property with an initial value
-    _spPropertyTyped( T value) : data{value}
+    _spPropertyTyped(T value) : data{value}
     {
     }
 
     // Just a limit range
-    _spPropertyTyped( T min, T max ) 
+    _spPropertyTyped(T min, T max)
     {
         _spDataIn<T>::setDataLimitRange(min, max);
     }
 
     // Initial value and a limit range
-    _spPropertyTyped(T value,  T min, T max ) : _spPropertyTyped(value)
+    _spPropertyTyped(T value, T min, T max) : _spPropertyTyped(value)
     {
         _spDataIn<T>::setDataLimitRange(min, max);
     }
     // Limit data set
-    _spPropertyTyped( std::initializer_list<std::pair<const std::string, T>> limitSet)
+    _spPropertyTyped(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
         _spDataIn<T>::addDataLimitValidValue(limitSet);
     }
-     // Initial value and limit data set.
-    _spPropertyTyped( T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTyped(value)
+    // Initial value and limit data set.
+    _spPropertyTyped(T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTyped(value)
     {
-        _spDataIn<T>::addDataLimitValidValue(limitSet);       
+        _spDataIn<T>::addDataLimitValidValue(limitSet);
     }
-
 
     // to register the property - set the containing object instance
     // Normally done in the containing objects constructor.
@@ -888,12 +888,12 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 {
 
   public:
-
     spPropertyString()
-    {}
+    {
+    }
 
     // Create property with an initial value
-    spPropertyString( std::string value) : data{value}
+    spPropertyString(std::string value) : data{value}
     {
     }
     //---------------------------------------------------------------------------------
@@ -961,12 +961,12 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
         return get() != rhs;
     }
     // String - needed to overload the equality operator
-    bool operator==( const char * rhs)
+    bool operator==(const char *rhs)
     {
         return strcmp(get().c_str(), rhs) == 0;
     }
     // String - needed to overload the equality operator
-    bool operator!=( const char * rhs)
+    bool operator!=(const char *rhs)
     {
         return strcmp(get().c_str(), rhs) != 0;
     }
@@ -1020,14 +1020,13 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
 {
 
-private:
-
+  private:
     spObject *_parent;
 
     //---------------------------------------------------------------------------------
     static uint16_t getNextNameNumber(void)
     {
-        static uint16_t _nextNumber=0;
+        static uint16_t _nextNumber = 0;
 
         _nextNumber++;
         return _nextNumber;
@@ -1038,7 +1037,7 @@ private:
     {
         // setup a default name for this device.
         char szBuffer[64];
-        snprintf(szBuffer, sizeof(szBuffer), "spObject%04u", getNextNameNumber() );
+        snprintf(szBuffer, sizeof(szBuffer), "spObject%04u", getNextNameNumber());
         setName(szBuffer);
     }
     virtual ~spObject()
@@ -1059,19 +1058,17 @@ private:
         return _parent;
     }
 
-
     //---------------------------------------------------------------------------------
     virtual bool save(spStorage2 *pStorage)
     {
 
-        spStorageBlock2 * stBlk = pStorage->beginBlock( name() );
-        if ( !stBlk )
+        spStorageBlock2 *stBlk = pStorage->beginBlock(name());
+        if (!stBlk)
             return false;
 
         bool status = saveProperties(stBlk);
         if (!status)
             spLog_W("Error Saving a property for %s", name());
-
 
         pStorage->endBlock(stBlk);
 
@@ -1082,19 +1079,18 @@ private:
     virtual bool restore(spStorage2 *pStorage)
     {
         // Do we have this block in storage?
-        spStorageBlock2 * stBlk = pStorage->getBlock( name() );
+        spStorageBlock2 *stBlk = pStorage->getBlock(name());
 
-
-        if ( !stBlk )
+        if (!stBlk)
         {
             spLog_E("Object Restore - error getting storage block");
-            return true;  // nothing to restore
+            return true; // nothing to restore
         }
 
         // restore props
         bool status = restoreProperties(stBlk);
-        if (!status) 
-            spLog_W("Error restoring a property for %s", name());           
+        if (!status)
+            spLog_W("Error restoring a property for %s", name());
 
         pStorage->endBlock(stBlk);
 
@@ -1226,16 +1222,16 @@ template <class T> class spContainer : public spObject
     //---------------------------------------------------------------------------------
     virtual bool save(spStorage2 *pStorage)
     {
-        for( auto pObj: _vector)
-        pObj->save(pStorage);
-     
+        for (auto pObj : _vector)
+            pObj->save(pStorage);
+
         return true;
     };
 
     //---------------------------------------------------------------------------------
     virtual bool restore(spStorage2 *pStorage)
     {
-        for( auto pObj: _vector)
+        for (auto pObj : _vector)
             pObj->restore(pStorage);
 
         return true;
