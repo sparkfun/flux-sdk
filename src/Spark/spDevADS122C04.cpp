@@ -34,12 +34,8 @@ spDevADS122C04::spDevADS122C04()
     _sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second
 
     spRegister(wireMode, "Wire mode", "Wire mode");
-    wireMode.setDataLimit(wire_limit);
-    wireMode = { ADS122C04_4WIRE_MODE }; // (*)
     
     spRegister(sampleRate, "Sample rate", "Sample rate");
-    sampleRate.setDataLimit(rate_limit);
-    sampleRate = { ADS122C04_DATA_RATE_20SPS };
 
     // Register output params
     spRegister(temperatureC, "Probe temperature (C)", "Probe temperature (C)");
@@ -123,7 +119,7 @@ bool spDevADS122C04::onInitialize(TwoWire &wirePort)
 
     if (result)
     {
-        _hasBegun = true;
+        _begun = true;
         result &= SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
     }
 
@@ -132,17 +128,25 @@ bool spDevADS122C04::onInitialize(TwoWire &wirePort)
 
 // read-write property methods
 
-uint8_t spDevADS122C04::get_wire_mode() { return _wireMode; }
+uint8_t spDevADS122C04::get_wire_mode()
+{
+    if (_begun)
+        _wireMode = SFE_ADS122C04::getWireMode();
+    return _wireMode;
+}
 void spDevADS122C04::set_wire_mode(uint8_t mode)
 {
     _wireMode = mode;
-    if (_hasBegun)
+    if (_begun)
         SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
 }
-uint8_t spDevADS122C04::get_sample_rate() { return _sampleRate; }
+uint8_t spDevADS122C04::get_sample_rate()
+{
+    return _sampleRate;
+}
 void spDevADS122C04::set_sample_rate(uint8_t rate)
 {
     _sampleRate = rate;
-    if (_hasBegun)
+    if (_begun)
         SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
 }

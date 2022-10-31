@@ -24,6 +24,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/17873">SPX-17873</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">ADS1015</td>
+        <td style="vertical-align:middle" align="center">4-channel 12-bit A/D Converter</td>
+        <td style="vertical-align:middle" align="center">0x48, 0x49, 0x4A, 0x4B</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15334">DEV-15334</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">ADS122C04</td>
         <td style="vertical-align:middle" align="center">Precision A/D Converter - used on Qwiic PT100</td>
         <td style="vertical-align:middle" align="center">0x45, 0x44, 0x41, 0x40</td>
@@ -393,7 +399,13 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/20170">SEN-20170</a></td>
     </tr>
     <tr>
-        <td style="vertical-align:middle" align="center">0x48, 0x49, 0x4A, 0x4B</td>
+        <td style="vertical-align:middle" align="center"><b>0x48</b>, <b>0x49</b>, <b>0x4A</b>, <b>0x4B</b></td>
+        <td style="vertical-align:middle" align="center">ADS1015</td>
+        <td style="vertical-align:middle" align="center">4-channel 12-bit A/D Converter</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15334">DEV-15334</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x48</b>, <b>0x49</b>, <b>0x4A</b>, <b>0x4B</b></td>
         <td style="vertical-align:middle" align="center">TMP117</td>
         <td style="vertical-align:middle" align="center">Precision temperature sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15805">SEN-15805</a></td>
