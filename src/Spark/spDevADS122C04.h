@@ -54,19 +54,19 @@ private:
     uint8_t _wireMode;
     uint8_t _sampleRate;
 
-    bool _hasBegun = false;
+    bool _begun = false;
 
 public:
-    spPropertyRWUint8<spDevADS122C04, &spDevADS122C04::get_wire_mode, &spDevADS122C04::set_wire_mode> wireMode;
-    spDataLimitSetUint8 wire_limit = { { "4-Wire Mode", ADS122C04_4WIRE_MODE }, { "3-Wire Mode", ADS122C04_3WIRE_MODE },
+    spPropertyRWUint8<spDevADS122C04, &spDevADS122C04::get_wire_mode, &spDevADS122C04::set_wire_mode> wireMode
+           = { ADS122C04_4WIRE_MODE, { { "4-Wire Mode", ADS122C04_4WIRE_MODE }, { "3-Wire Mode", ADS122C04_3WIRE_MODE },
                                        { "2-Wire Mode", ADS122C04_2WIRE_MODE }, { "Internal Temperature Mode", ADS122C04_TEMPERATURE_MODE },
                                        { "Raw ADC Voltage Mode", ADS122C04_RAW_MODE }, { "4-Wire Mode High Temperature", ADS122C04_4WIRE_HI_TEMP },
-                                       { "3-Wire Mode High Temperature", ADS122C04_3WIRE_HI_TEMP }, { "2-Wire Mode High Temperature", ADS122C04_2WIRE_HI_TEMP } };
-    spPropertyRWUint8<spDevADS122C04, &spDevADS122C04::get_sample_rate, &spDevADS122C04::set_sample_rate> sampleRate;
-    spDataLimitSetUint8 rate_limit = { { "20 Samples Per Sec", ADS122C04_DATA_RATE_20SPS }, { "45 Samples Per Sec", ADS122C04_DATA_RATE_45SPS },
+                                       { "3-Wire Mode High Temperature", ADS122C04_3WIRE_HI_TEMP }, { "2-Wire Mode High Temperature", ADS122C04_2WIRE_HI_TEMP } } };
+    spPropertyRWUint8<spDevADS122C04, &spDevADS122C04::get_sample_rate, &spDevADS122C04::set_sample_rate> sampleRate
+      = { ADS122C04_DATA_RATE_20SPS, { { "20 Samples Per Sec", ADS122C04_DATA_RATE_20SPS }, { "45 Samples Per Sec", ADS122C04_DATA_RATE_45SPS },
                                        { "90 Samples Per Sec", ADS122C04_DATA_RATE_90SPS }, { "175 Samples Per Sec", ADS122C04_DATA_RATE_175SPS },
                                        { "330 Samples Per Sec", ADS122C04_DATA_RATE_330SPS }, { "600 Samples Per Sec", ADS122C04_DATA_RATE_600SPS },
-                                       { "1000 Samples Per Sec", ADS122C04_DATA_RATE_1000SPS } };
+                                       { "1000 Samples Per Sec", ADS122C04_DATA_RATE_1000SPS } } };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevADS122C04, &spDevADS122C04::read_temperature_c> temperatureC;
