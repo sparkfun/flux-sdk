@@ -1201,4 +1201,25 @@ template <typename T> class spActionType : public spAction
     }
 };
 
+// KDB - Temporary ...
+
+template <typename T>
+class spSystemType : public spActionType<T> {
+
+public:
+    // setup and lifecycle of the file system interface
+    virtual bool initialize()=0;
+
+    // Power interface
+    virtual void setPower(bool powerOn)=0;
+    void powerOn(void)
+    {
+        setPower(true);
+    }
+    void powerOff()
+    {
+        setPower(false);
+    }
+    virtual bool power(void) = 0;
+};
 // End - spCoreParam.h
