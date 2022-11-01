@@ -142,7 +142,7 @@ void spDevTMF882X::factory_calibration()
         //  - set the reporting period to 460 milliseconds
         //  - set the iterations to 4,000,000 (4M) to perform factory calibration
         tofConfig.report_period_ms = 460;
-        _reportPeriod = 460;
+        uint16_t originalIterations = tofConfig.kilo_iterations;
         tofConfig.kilo_iterations = 4000;
 
         if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
@@ -154,12 +154,23 @@ void spDevTMF882X::factory_calibration()
         struct tmf882x_mode_app_calib factoryCal;
         if (!SparkFun_TMF882X::factoryCalibration(factoryCal))
             spLog_E("TMF882X factory_calibration - factory calibration failed");
+
+        tofConfig.report_period_ms = _reportPeriod;
+        tofConfig.kilo_iterations = originalIterations;
+
+        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
+        {
+            spLog_E("TMF882X factory_calibration - unable to restore device configuration");
+            return;
+        }
     }
 }
 
 // GETTER methods for output params
-uint spDevTMF882X::read_confidence()
+bool spDevTMF882X::read_confidence(spDataArrayUint *conf)
 {
+    static uint32_t theConfidence[TMF882X_MAX_MEAS_RESULTS] = {0};
+
     if (!_confidence)
     {
         if (SparkFun_TMF882X::startMeasuring(_results))
@@ -173,13 +184,20 @@ uint spDevTMF882X::read_confidence()
         }
     }
     _confidence = false;
-    uint32_t _numResults = _results.num_results;
-    if (_numResults > 0)
-        _numResults -= 1;
-    return _results.results[_numResults].confidence;
+
+    for (uint32_t result = 0; (result < _results.num_results) && (result < TMF882X_MAX_MEAS_RESULTS); result++)
+    {
+        theConfidence[result] = _results.results[result].confidence;
+    }
+
+    conf->set(theConfidence, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+
+    return true;
 }
-uint spDevTMF882X::read_distance()
+bool spDevTMF882X::read_distance(spDataArrayUint *dist)
 {
+    static uint32_t theDistance[TMF882X_MAX_MEAS_RESULTS] = {0};
+
     if (!_distance)
     {
         if (SparkFun_TMF882X::startMeasuring(_results))
@@ -193,13 +211,20 @@ uint spDevTMF882X::read_distance()
         }
     }
     _distance = false;
-    uint32_t _numResults = _results.num_results;
-    if (_numResults > 0)
-        _numResults -= 1;
-    return _results.results[_numResults].distance_mm;
+
+    for (uint32_t result = 0; (result < _results.num_results) && (result < TMF882X_MAX_MEAS_RESULTS); result++)
+    {
+        theDistance[result] = _results.results[result].distance_mm;
+    }
+
+    dist->set(theDistance, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+
+    return true;
 }
-uint spDevTMF882X::read_channel()
+bool spDevTMF882X::read_channel(spDataArrayUint *chan)
 {
+    static uint32_t theChannel[TMF882X_MAX_MEAS_RESULTS] = {0};
+
     if (!_channel)
     {
         if (SparkFun_TMF882X::startMeasuring(_results))
@@ -213,13 +238,20 @@ uint spDevTMF882X::read_channel()
         }
     }
     _channel = false;
-    uint32_t _numResults = _results.num_results;
-    if (_numResults > 0)
-        _numResults -= 1;
-    return _results.results[_numResults].channel;
+
+    for (uint32_t result = 0; (result < _results.num_results) && (result < TMF882X_MAX_MEAS_RESULTS); result++)
+    {
+        theChannel[result] = _results.results[result].channel;
+    }
+
+    chan->set(theChannel, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+
+    return true;
 }
-uint spDevTMF882X::read_sub_capture()
+bool spDevTMF882X::read_sub_capture(spDataArrayUint *sub)
 {
+    static uint32_t theSubCapture[TMF882X_MAX_MEAS_RESULTS] = {0};
+
     if (!_sub_capture)
     {
         if (SparkFun_TMF882X::startMeasuring(_results))
@@ -233,10 +265,15 @@ uint spDevTMF882X::read_sub_capture()
         }
     }
     _sub_capture = false;
-    uint32_t _numResults = _results.num_results;
-    if (_numResults > 0)
-        _numResults -= 1;
-    return _results.results[_numResults].sub_capture;
+
+    for (uint32_t result = 0; (result < _results.num_results) && (result < TMF882X_MAX_MEAS_RESULTS); result++)
+    {
+        theSubCapture[result] = _results.results[result].sub_capture;
+    }
+
+    sub->set(theSubCapture, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+
+    return true;
 }
 uint spDevTMF882X::read_photon_count()
 {

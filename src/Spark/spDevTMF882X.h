@@ -47,10 +47,10 @@ private:
 
     // methods used to get values for our output parameters
     // Strictly, these should be uint32_t
-    uint read_confidence();
-    uint read_distance();
-    uint read_channel();
-    uint read_sub_capture();
+    bool read_confidence(spDataArrayUint *);
+    bool read_distance(spDataArrayUint *);
+    bool read_channel(spDataArrayUint *);
+    bool read_sub_capture(spDataArrayUint *);
     uint read_photon_count();
     uint read_ref_photon_count();
     uint read_ambient_light();
@@ -79,10 +79,10 @@ private:
 public:
     // Define our output parameters - specify the get functions to call.
     // Strictly, these should be uint32_t
-    spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_confidence> confidence;    
-    spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_distance> distance;    
-    spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_channel> channel;    
-    spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_sub_capture> subCapture;    
+    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_confidence> confidence;    
+    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_distance> distance;    
+    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_channel> channel;    
+    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_sub_capture> subCapture;    
     spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_photon_count> photonCount;    
     spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ref_photon_count> refPhotonCount;    
     spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ambient_light> ambientLight;    
