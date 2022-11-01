@@ -47,12 +47,12 @@ class spDevST25DV : public spDeviceType<spDevST25DV>, public SFE_ST25DV64KC_NDEF
     bool loop(void);
 
   private:
-    #define MAX_SSID_PASWORD_LEN 64
+    #define MAX_SSID_PASSWORD_LEN 64
 
-    char _readSsid[MAX_SSID_PASWORD_LEN] = {'\0'};
-    char _readPassword[MAX_SSID_PASWORD_LEN] = {'\0'};
-    char _previousSsid[MAX_SSID_PASWORD_LEN] = {'\0'};
-    char _previousPassword[MAX_SSID_PASWORD_LEN] = {'\0'};
+    char _readSsid[MAX_SSID_PASSWORD_LEN] = {'\0'};
+    char _readPassword[MAX_SSID_PASSWORD_LEN] = {'\0'};
+    char _previousSsid[MAX_SSID_PASSWORD_LEN] = {'\0'};
+    char _previousPassword[MAX_SSID_PASSWORD_LEN] = {'\0'};
 
     // Flags to prevent readNDEFWiFi being called multiple times
     bool _ssid = false;

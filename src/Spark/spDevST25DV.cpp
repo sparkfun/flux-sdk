@@ -50,14 +50,27 @@ bool spDevST25DV::isConnected(spDevI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    // Read the IC_REF. Check it is 0x24 or 0x26
-    uint8_t icRefReg[2] = { REG_IC_REF >> 8, REG_IC_REF & 0xFF };
+    // Read the ST Product Code. Check it is 0x50 or 0x51
+    // Note: these values are different to the ones in the ST25DVxxKC datasheet!
+    // We found 0x51 by reading the device, and in this App Note:
+    // https://www.st.com/resource/en/application_note/an5675-st25dv64kcdisco-firmware-documentation-stmicroelectronics.pdf
+    uint8_t icRefReg[2] = { 0x00, 0x1D };
     if (!i2cDriver.write(address, icRefReg, 2))
         return false;
     uint8_t icRef = 0;
     if (!i2cDriver.receiveResponse(address, &icRef, 1))
         return false;
-    return ((icRef == 0x24) || (icRef == 0x26));
+
+    if ((icRef == 0x50) || (icRef == 0x51))
+    {
+        spLog_I("ST25DV: isConnected icRef 0x%x", icRef);
+        return true;
+    }
+    else
+    {
+        spLog_E("ST25DV: isConnected unexpected icRef 0x%x", icRef);
+        return false;
+    }
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()
@@ -83,7 +96,7 @@ std::string spDevST25DV::get_ssid()
     bool success = false;
     if (!_ssid)
     {
-        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASWORD_LEN, _readPassword, MAX_SSID_PASWORD_LEN); // Read the first WiFi Record
+        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASSWORD_LEN, _readPassword, MAX_SSID_PASSWORD_LEN); // Read the first WiFi Record
     }
     if (success)
     {
@@ -97,25 +110,14 @@ std::string spDevST25DV::get_ssid()
 }
 void spDevST25DV::set_ssid(std::string newSsid)
 {
-    bool success = true;
-    strncpy(_readSsid, newSsid.c_str(), MAX_SSID_PASWORD_LEN); // Record the SSID
-    _ssidW = true;
-    if (_ssidW && _passwordW)
-    {
-        success = SFE_ST25DV64KC_NDEF::writeNDEFEmpty();
-        success &= SFE_ST25DV64KC_NDEF::writeNDEFWiFi((const char *)_readSsid, (const char *)_readPassword);
-        _ssidW = false;
-        _passwordW = false;
-    }
-    if (!success)
-        spLog_E("ST25DV set_ssid writeNDEFWiFi failed!");
+    spLog_I("ST25DV: set_ssid called with SSID \"%s\"", newSsid); // DELETE ME !
 }
 std::string spDevST25DV::get_password()
 {
     bool success = false;
     if (!_password)
     {
-        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASWORD_LEN, _readPassword, MAX_SSID_PASWORD_LEN); // Read the first WiFi Record
+        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASSWORD_LEN, _readPassword, MAX_SSID_PASSWORD_LEN); // Read the first WiFi Record
     }
     if (success)
     {
@@ -129,18 +131,7 @@ std::string spDevST25DV::get_password()
 }
 void spDevST25DV::set_password(std::string newPassword)
 {
-    bool success = true;
-    strncpy(_readPassword, newPassword.c_str(), MAX_SSID_PASWORD_LEN); // Record the Password
-    _passwordW = true;
-    if (_ssidW && _passwordW)
-    {
-        success = SFE_ST25DV64KC_NDEF::writeNDEFEmpty();
-        success &= SFE_ST25DV64KC_NDEF::writeNDEFWiFi((const char *)_readSsid, (const char *)_readPassword);
-        _ssidW = false;
-        _passwordW = false;
-    }
-    if (!success)
-        spLog_E("ST25DV set_password writeNDEFWiFi failed!");
+    spLog_I("ST25DV: set_ssid called with password \"%s\"", newPassword); // DELETE ME !
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -150,11 +141,30 @@ bool spDevST25DV::loop(void)
 {
     bool result = false;
 
-    static unsigned long lastMillis = millis();
+    static unsigned long lastMillis = millis() - 14000; // Read the tag after 1 second, first time around
 
-    if (millis() > (lastMillis + 5000)) // Check tag every 5 seconds to avoid possible I2C/RF collisions
+    if (millis() > (lastMillis + 15000)) // Check tag every 15 seconds to avoid possible I2C/RF collisions
     {
-        new_WiFi_record.emit();
+        spLog_I("ST25DV: checking WiFi record");
+
+        if (SFE_ST25DV64KC_NDEF::RFFieldDetected()) // Do a quick RF check first
+        {
+            lastMillis = millis() - 10000; // Wait another 5 seconds if an RF field was detected
+        }
+        else
+        {
+            lastMillis = millis(); // Update lastMillis
+            bool success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASSWORD_LEN, _readPassword, MAX_SSID_PASSWORD_LEN); // Read the first WiFi Record
+            if (success && (strlen(_readSsid) > 0) && (strlen(_readPassword) > 0)
+                && ((strcmp(_readSsid, _previousSsid) != 0) || (strcmp(_readPassword, _previousPassword) != 0))) // If either the SSID or Password has changed
+            {
+                strcpy(_previousPassword, _readPassword); // Update the previous SSID and Password
+                strcpy(_previousSsid, _readSsid);
+                spLog_I("ST25DV: new WiFi record detected! SSID:\"%s\" Password:\"%s\"", _readSsid, _readPassword); // DELETE ME !
+                new_WiFi_record.emit();
+                result = true;
+            }
+        }
     }
 
     return result;
