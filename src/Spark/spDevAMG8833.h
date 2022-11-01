@@ -42,7 +42,7 @@ public:
 
 private:
     float read_device_temperature_C();
-    std::string read_pixel_temperatures();
+    bool read_pixel_temperatures(spDataArrayFloat *);
 
     bool _frameRate10FPS = true; // Default to 10 FPS
 
@@ -54,7 +54,7 @@ private:
 public:
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevAMG8833, &spDevAMG8833::read_device_temperature_C> deviceTemperatureC;
-    spParameterOutString<spDevAMG8833, &spDevAMG8833::read_pixel_temperatures> pixelTemperatures;
+    spParameterOutArrayFloat<spDevAMG8833, &spDevAMG8833::read_pixel_temperatures> pixelTemperatures;
 
     spPropertyRWUint8<spDevAMG8833, &spDevAMG8833::get_frame_rate, &spDevAMG8833::set_frame_rate> frameRate
          = { 1 , { { "1 Frame Per Second", 0 }, { "10 Frames Per Second", 1 } } };
