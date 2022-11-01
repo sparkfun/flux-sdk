@@ -83,7 +83,7 @@ std::string spDevST25DV::get_ssid()
     bool success = false;
     if (!_ssid)
     {
-        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASWORD_LEN - 1, _readPassword, MAX_SSID_PASWORD_LEN - 1); // Read the first WiFi Record
+        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASWORD_LEN, _readPassword, MAX_SSID_PASWORD_LEN); // Read the first WiFi Record
     }
     if (success)
     {
@@ -98,7 +98,7 @@ std::string spDevST25DV::get_ssid()
 void spDevST25DV::set_ssid(std::string newSsid)
 {
     bool success = true;
-    strncpy(_readSsid, newSsid, MAX_SSID_PASWORD_LEN); // Record the SSID
+    strncpy(_readSsid, newSsid.c_str(), MAX_SSID_PASWORD_LEN); // Record the SSID
     _ssidW = true;
     if (_ssidW && _passwordW)
     {
@@ -115,7 +115,7 @@ std::string spDevST25DV::get_password()
     bool success = false;
     if (!_password)
     {
-        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASWORD_LEN - 1, _readPassword, MAX_SSID_PASWORD_LEN - 1); // Read the first WiFi Record
+        success = SFE_ST25DV64KC_NDEF::readNDEFWiFi(_readSsid, MAX_SSID_PASWORD_LEN, _readPassword, MAX_SSID_PASWORD_LEN); // Read the first WiFi Record
     }
     if (success)
     {
@@ -130,7 +130,7 @@ std::string spDevST25DV::get_password()
 void spDevST25DV::set_password(std::string newPassword)
 {
     bool success = true;
-    strncpy(_readPassword, newPassword, MAX_SSID_PASWORD_LEN); // Record the Password
+    strncpy(_readPassword, newPassword.c_str(), MAX_SSID_PASWORD_LEN); // Record the Password
     _passwordW = true;
     if (_ssidW && _passwordW)
     {
