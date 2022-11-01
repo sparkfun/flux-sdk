@@ -216,6 +216,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18385">SPX-18385</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">ST25DVxxKC</td>
+        <td style="vertical-align:middle" align="center">Dynamic RFID Tag</td>
+        <td style="vertical-align:middle" align="center">0x51, 0x53, 0x55, 0x57</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19035">SPX-19035</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">TMF8820</td>
         <td style="vertical-align:middle" align="center">Time-Of-Flight sensor</td>
         <td style="vertical-align:middle" align="center">0x41</td>
@@ -409,6 +415,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">TMP117</td>
         <td style="vertical-align:middle" align="center">Precision temperature sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15805">SEN-15805</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">0x51, 0x53, <b>0x55</b>, 0x57</td>
+        <td style="vertical-align:middle" align="center">ST25DVxxKC</td>
+        <td style="vertical-align:middle" align="center">Dynamic RFID Tag</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19035">SPX-19035</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center">0x55</td>
