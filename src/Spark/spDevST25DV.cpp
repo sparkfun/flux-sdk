@@ -39,7 +39,7 @@ spDevST25DV::spDevST25DV()
 
     // Register Properties
     spRegister(ssid, "WiFi Record SSID", "WiFi Record SSID");
-    spRegister(password, "WiFi Key / Password", "WiFi Key / Password");
+    spRegister(password, "WiFi Record Key / Password", "WiFi Record Key / Password");
 }
 
 //----------------------------------------------------------------------------------------------------------
