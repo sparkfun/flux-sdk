@@ -190,7 +190,7 @@ bool spDevTMF882X::read_confidence(spDataArrayUint *conf)
         theConfidence[result] = _results.results[result].confidence;
     }
 
-    conf->set(theConfidence, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    conf->set(theConfidence, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
 
     return true;
 }
@@ -217,7 +217,7 @@ bool spDevTMF882X::read_distance(spDataArrayUint *dist)
         theDistance[result] = _results.results[result].distance_mm;
     }
 
-    dist->set(theDistance, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    dist->set(theDistance, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
 
     return true;
 }
@@ -244,7 +244,7 @@ bool spDevTMF882X::read_channel(spDataArrayUint *chan)
         theChannel[result] = _results.results[result].channel;
     }
 
-    chan->set(theChannel, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    chan->set(theChannel, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
 
     return true;
 }
@@ -271,7 +271,7 @@ bool spDevTMF882X::read_sub_capture(spDataArrayUint *sub)
         theSubCapture[result] = _results.results[result].sub_capture;
     }
 
-    sub->set(theSubCapture, 1, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    sub->set(theSubCapture, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
 
     return true;
 }
