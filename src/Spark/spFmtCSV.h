@@ -353,7 +353,7 @@ class spFormatCSV : public spOutputFormat
             for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
             {
                 if (i > 0)
-                    sData += ", ";
+                    sData += ",";
 
                 if (isFloat)
                     formatArrayValue(sData, *pData++, precision);
@@ -367,7 +367,7 @@ class spFormatCSV : public spOutputFormat
             for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
             {
                 if (i > 0)
-                    sData += ", ";
+                    sData += ",";
                 // recurse
                 writeOutArrayDimension(sData, pData, theArray, currentDim + 1, precision);
             }
