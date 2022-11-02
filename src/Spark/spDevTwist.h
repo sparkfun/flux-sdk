@@ -53,7 +53,7 @@ class spDevTwist : public spDeviceType<spDevTwist>, public TWIST
   private:
     int _last_count = 0;
 
-    bool _pressMode;
+    bool _pressMode = true;
     bool _last_button_state = false;
     bool _this_button_state = false;
     bool _toggle_state = false;
@@ -72,13 +72,13 @@ class spDevTwist : public spDeviceType<spDevTwist>, public TWIST
     uint8_t get_led_blue();
     void set_led_blue(uint8_t);
 
-    uint8_t _ledRed;
-    uint8_t _ledGreen;
-    uint8_t _ledBlue;
+    uint8_t _ledRed = 128;
+    uint8_t _ledGreen = 0;
+    uint8_t _ledBlue = 128;
 
   public:
-    spPropertyRWUint8<spDevTwist, &spDevTwist::get_press_mode, &spDevTwist::set_press_mode> pressMode; // 0 = Click (Toggle) mode. 1 = Press mode.
-    spDataLimitSetUint8 mode_limit = { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } };
+    spPropertyRWUint8<spDevTwist, &spDevTwist::get_press_mode, &spDevTwist::set_press_mode> pressMode
+      = { 1, { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } } };
     spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_red, &spDevTwist::set_led_red> ledRed;
     spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_green, &spDevTwist::set_led_green> ledGreen;
     spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_blue, &spDevTwist::set_led_blue> ledBlue;
