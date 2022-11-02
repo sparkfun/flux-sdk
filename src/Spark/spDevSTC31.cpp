@@ -43,7 +43,6 @@ spDevSTC31::spDevSTC31()
     spRegister(pressure, "Pressure (mbar)", "Pressure (mbar)");
 
     spRegister(binaryGas, "Binary Gas", "Binary Gas");
-    binaryGas.setDataLimit(binary_gas_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -101,11 +100,11 @@ bool spDevSTC31::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevSTC31::onInitialize(TwoWire &wirePort)
 {
 
-    bool result = STC3x::begin(address(), wirePort);
-    result &= STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);
-    result &= STC3x::setRelativeHumidity(50.0);
-    result &= STC3x::setPressure(1000);
-    return result;
+    _begun = STC3x::begin(address(), wirePort);
+    _begun &= STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);
+    _begun &= STC3x::setRelativeHumidity(50.0);
+    _begun &= STC3x::setPressure(1000);
+    return _begun;
 }
 
 // GETTER methods for output params
@@ -153,5 +152,6 @@ uint8_t spDevSTC31::get_binary_gas()
 void spDevSTC31::set_binary_gas(uint8_t gas)
 {
     _binaryGas = gas;
-    STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);
+    if (_begun)
+        STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);
 }
