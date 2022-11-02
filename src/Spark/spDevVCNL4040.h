@@ -67,18 +67,16 @@ private:
     uint8_t _proxRes = 16; // Default to 16-bit
     uint16_t _ambIntTime = 80;
 
+    bool _begun = false;
+
 public:
     // Define our read-write properties
-    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_LED_current, &spDevVCNL4040::set_LED_current> ledCurrent;
-    spDataLimitRangeUint8 led_current_limit = { 50, 200 };
-    spPropertyRWUint16<spDevVCNL4040, &spDevVCNL4040::get_IR_duty_cycle, &spDevVCNL4040::set_IR_duty_cycle> irDutyCycle;
-    spDataLimitRangeUint16 ir_duty_cycle_limit = { 40, 320 };
-    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_proximity_integration_time, &spDevVCNL4040::set_proximity_integration_time> proximityIntegrationTime;
-    spDataLimitRangeUint8 proximity_integration_limit = { 1, 8 };
-    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_proximity_resolution, &spDevVCNL4040::set_proximity_resolution> proximityResolution;
-    spDataLimitSetUint8 proximity_resolution_limit = { { "12-bit", 12 }, { "16-bit", 16 } };
-    spPropertyRWUint16<spDevVCNL4040, &spDevVCNL4040::get_ambient_integration_time, &spDevVCNL4040::set_ambient_integration_time> ambientIntegrationTime;
-    spDataLimitRangeUint16 ambient_integration_time_limit = { 80, 640 };
+    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_LED_current, &spDevVCNL4040::set_LED_current> ledCurrent = { 50, 200 };
+    spPropertyRWUint16<spDevVCNL4040, &spDevVCNL4040::get_IR_duty_cycle, &spDevVCNL4040::set_IR_duty_cycle> irDutyCycle = { 40, 320 };
+    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_proximity_integration_time, &spDevVCNL4040::set_proximity_integration_time> proximityIntegrationTime = { 1, 8 };
+    spPropertyRWUint8<spDevVCNL4040, &spDevVCNL4040::get_proximity_resolution, &spDevVCNL4040::set_proximity_resolution> proximityResolution
+        = { 16, { { "12-bit", 12 }, { "16-bit", 16 } } };
+    spPropertyRWUint16<spDevVCNL4040, &spDevVCNL4040::get_ambient_integration_time, &spDevVCNL4040::set_ambient_integration_time> ambientIntegrationTime = { 80, 640 };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutUint16<spDevVCNL4040, &spDevVCNL4040::read_proximity> proximity;    
