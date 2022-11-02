@@ -58,17 +58,23 @@ private:
     uint8_t get_persistence();
     void set_persistence(uint8_t);
 
+    uint8_t _integrationTime = VEML7700_INTEGRATION_100ms;
+    uint8_t _sensitivity = VEML7700_SENSITIVITY_x1;
+    uint8_t _persistence = VEML7700_PERSISTENCE_1;
+
+    bool _begun = false;
+
 public:
     // Define our read-write properties
-    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_integration_time, &spDevVEML7700::set_integration_time> integrationTime;
-    spDataLimitSetUint8 integration_time_limit = { { "25ms", VEML7700_INTEGRATION_25ms }, { "50ms", VEML7700_INTEGRATION_50ms }, { "100ms", VEML7700_INTEGRATION_100ms },
-                                                   { "200ms", VEML7700_INTEGRATION_200ms }, { "400ms", VEML7700_INTEGRATION_400ms }, { "800ms", VEML7700_INTEGRATION_800ms } };
-    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_sensitivity, &spDevVEML7700::set_sensitivity> sensitivity;
-    spDataLimitSetUint8 sensitivity_limit = { { "x1", VEML7700_SENSITIVITY_x1 }, { "x2", VEML7700_SENSITIVITY_x2 },
-                                              { "x1/8", VEML7700_SENSITIVITY_x1_8 }, { "x1/4", VEML7700_SENSITIVITY_x1_4 } };
-    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_persistence, &spDevVEML7700::set_persistence> persistence;
-    spDataLimitSetUint8 persistence_limit = { { "x1", VEML7700_PERSISTENCE_1 }, { "x2", VEML7700_PERSISTENCE_2 },
-                                              { "x4", VEML7700_PERSISTENCE_4 }, { "x8", VEML7700_PERSISTENCE_8 } };
+    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_integration_time, &spDevVEML7700::set_integration_time> integrationTime
+        = { VEML7700_INTEGRATION_100ms, { { "25ms", VEML7700_INTEGRATION_25ms }, { "50ms", VEML7700_INTEGRATION_50ms }, { "100ms", VEML7700_INTEGRATION_100ms },
+                                          { "200ms", VEML7700_INTEGRATION_200ms }, { "400ms", VEML7700_INTEGRATION_400ms }, { "800ms", VEML7700_INTEGRATION_800ms } } };
+    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_sensitivity, &spDevVEML7700::set_sensitivity> sensitivity
+        = { VEML7700_SENSITIVITY_x1, { { "x1", VEML7700_SENSITIVITY_x1 }, { "x2", VEML7700_SENSITIVITY_x2 },
+                                       { "x1/8", VEML7700_SENSITIVITY_x1_8 }, { "x1/4", VEML7700_SENSITIVITY_x1_4 } } };
+    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_persistence, &spDevVEML7700::set_persistence> persistence
+        = { VEML7700_PERSISTENCE_1, { { "x1", VEML7700_PERSISTENCE_1 }, { "x2", VEML7700_PERSISTENCE_2 },
+                                      { "x4", VEML7700_PERSISTENCE_4 }, { "x8", VEML7700_PERSISTENCE_8 } } };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutUint<spDevVEML7700, &spDevVEML7700::read_ambient_light> ambientLight;    
