@@ -41,8 +41,43 @@ float spDevAHT20::read_humidity()
 
 bool spDevAHT20::isConnected(spDevI2C &i2cDriver, uint8_t address)
 {
+    // For speed, ping the device address first
+    if (!i2cDriver.ping(address))
+        return false;
 
-    return i2cDriver.ping(address);
+    uint8_t triggerMeasurement[3] = { 0xAC, 0x33, 0x00 };
+    if (!i2cDriver.write(address, triggerMeasurement, 3))
+    {
+        spLog_E("AHT20 isConnected triggerMeasurement failed");
+        return false;
+    }
+    delay(80);
+    uint8_t results[7];
+    if (!i2cDriver.receiveResponse(address, results, 7))
+    {
+        spLog_E("AHT20 isConnected receiveResponse failed");
+        return false;
+    }
+
+    // Check CRC
+    uint8_t crc = 0xFF; // Init with 0xFF
+    for (uint8_t x = 0; x < 6; x++)
+    {
+        crc ^= results[x]; // XOR-in the next input byte
+
+        for (uint8_t i = 0; i < 8; i++)
+        {
+            if ((crc & 0x80) != 0)
+                crc = (uint8_t)((crc << 1) ^ 0x31);
+            else
+                crc <<= 1;
+        }
+    }
+    if (crc == results[6])
+        return true;
+
+    spLog_E("AHT20 CRC failed: 0x%02x vs 0x%02x", crc, results[6]);
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------
