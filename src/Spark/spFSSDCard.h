@@ -23,9 +23,11 @@ public:
 	
 	size_t write(const uint8_t *buf, size_t size);
 
-  	void close(void);
+  void close(void);
 
-  	operator bool() const;
+  operator bool() const;
+
+  void flush(void);
 
 private:
 	friend _spFSSDCard;

@@ -9,7 +9,7 @@
 #include "FS.h"
 #include "SD_MMC.h"
 
-// Global object - for quick access to Spark.
+// Global object - for quick access to MMC FS.
 _spFSSDCard &_theFSSDCard = _spFSSDCard::get();
 
 bool _spFSSDCard::initialize()
@@ -17,16 +17,12 @@ bool _spFSSDCard::initialize()
     if (_isInitalized)
         return true;
 
-    if (!_pinCS || !_pinPower)
-    {
-        spLog_E("Unable to initialize SD Card device - hardware not configured.");
-        return false;
-    }
+    // do we have a power pin for the SD card?
+    if ( _pinPower)
+       pinMode(_pinPower, OUTPUT);
 
-    pinMode(_pinPower, OUTPUT);
-    pinMode(_pinCS, OUTPUT);
-
-    digitalWrite(_pinCS, HIGH);
+//    pinMode(_pinCS, OUTPUT);
+//    digitalWrite(_pinCS, HIGH);
 
     setPower(true);
 
@@ -46,7 +42,6 @@ bool _spFSSDCard::initialize()
         return false;
     }
 
-    Serial.print("SD_MMC Card Type: ");
     std::string type = "UNKNOWN";
     if (cardType == CARD_MMC)
         type = "MMC";
@@ -57,7 +52,7 @@ bool _spFSSDCard::initialize()
 
     uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
 
-    spLog_I(F("SD Card type: %s, Size: %lluMB"), type.c_str(), cardSize);
+    Serial.printf("SD Card type: %s, Size: %lluMB\n\r", type.c_str(), cardSize);
 
     _isInitalized = true;
 
@@ -104,7 +99,7 @@ spFSFile _spFSSDCard::open(const char *name, spFileOpenMode_t mode, bool create)
 
     spFSFile theSPFile;
 
-    if (!_isInitalized)
+    if (!_isInitalized || !name || strlen(name) < 4)
         return theSPFile;
 
     const char *sdMode = FILE_READ;
@@ -114,7 +109,18 @@ spFSFile _spFSSDCard::open(const char *name, spFileOpenMode_t mode, bool create)
     else if (mode == kFileAppend)
         sdMode = FILE_APPEND;
 
-    File sdFile = SD_MMC.open(name, sdMode, create);
+    // the MMC needs to have a full path - the filename must start with "/"
+
+    char szBuffer[128];
+    uint8_t offset=0;
+    if (*name != '/')
+    {
+        offset=1;
+        szBuffer[0] = '/';
+    }
+    snprintf(szBuffer+offset, sizeof(szBuffer)-offset, "%s", name);
+
+    File sdFile = SD_MMC.open(szBuffer, sdMode, create);
 
     if (sdFile)
         theSPFile.setFile(sdFile);
@@ -181,4 +187,10 @@ void spFSFile::close(void)
 {
     if (_file)
         _file.close();
+}
+
+void spFSFile::flush(void)
+{
+    if (_file)
+        _file.flush();
 }
