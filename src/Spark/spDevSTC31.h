@@ -64,6 +64,8 @@ private:
     void set_binary_gas(uint8_t gas);
     uint8_t _binaryGas = (uint8_t)STC3X_BINARY_GAS_CO2_AIR_25;
 
+    bool _begun = false;
+
 public:
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevSTC31, &spDevSTC31::read_co2> co2;    
@@ -76,9 +78,9 @@ public:
 
     // Define our read-write properties
     // binaryGas is STC3X_binary_gas_type_e. Default is STC3X_BINARY_GAS_CO2_AIR_25
-    spPropertyRWUint8<spDevSTC31, &spDevSTC31::get_binary_gas, &spDevSTC31::set_binary_gas> binaryGas;
-    spDataLimitSetUint8 binary_gas_limit = { { "CO2 in N2 (100% max)", STC3X_BINARY_GAS_CO2_N2_100 },
-                                             { "CO2 in Air (100% max)", STC3X_BINARY_GAS_CO2_AIR_100 },
-                                             { "CO2 in N2 (25% max)", STC3X_BINARY_GAS_CO2_N2_25 },
-                                             { "CO2 in Air (25% max)", STC3X_BINARY_GAS_CO2_AIR_25 } };
+    spPropertyRWUint8<spDevSTC31, &spDevSTC31::get_binary_gas, &spDevSTC31::set_binary_gas> binaryGas
+        = { STC3X_BINARY_GAS_CO2_AIR_25, { { "CO2 in N2 (100% max)", STC3X_BINARY_GAS_CO2_N2_100 },
+                                           { "CO2 in Air (100% max)", STC3X_BINARY_GAS_CO2_AIR_100 },
+                                           { "CO2 in N2 (25% max)", STC3X_BINARY_GAS_CO2_N2_25 },
+                                           { "CO2 in Air (25% max)", STC3X_BINARY_GAS_CO2_AIR_25 } } };
 };

@@ -43,11 +43,8 @@ spDevVEML7700::spDevVEML7700()
 
     // Register read-write properties
     spRegister(integrationTime, "Integration Time (ms)", "Integration Time (ms)");
-    integrationTime.setDataLimit(integration_time_limit);
     spRegister(sensitivity, "Sensitivity", "Sensitivity");
-    sensitivity.setDataLimit(sensitivity_limit);
     spRegister(persistence, "Persistence", "Persistence");
-    persistence.setDataLimit(persistence_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -83,7 +80,8 @@ bool spDevVEML7700::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevVEML7700::onInitialize(TwoWire &wirePort)
 {
 
-    return VEML7700::begin(wirePort);
+    _begun = VEML7700::begin(wirePort);
+    return _begun;
 }
 
 // GETTER methods for output params
@@ -105,31 +103,43 @@ float spDevVEML7700::read_lux()
 // methods for read-write properties
 uint8_t spDevVEML7700::get_integration_time()
 {
-    return VEML7700::getIntegrationTime();
+    if (_begun)
+        _integrationTime = VEML7700::getIntegrationTime();
+    return _integrationTime;
 }
 
 void spDevVEML7700::set_integration_time(uint8_t intTime)
 {
-    VEML7700::setIntegrationTime((VEML7700_integration_time_t)intTime);
+    _integrationTime = intTime;
+    if (_begun)
+        VEML7700::setIntegrationTime((VEML7700_integration_time_t)intTime);
 }
 
 uint8_t spDevVEML7700::get_sensitivity()
 {
-    return VEML7700::getSensitivityMode();
+    if (_begun)
+        _sensitivity = VEML7700::getSensitivityMode();
+    return _sensitivity;
 }
 
 void spDevVEML7700::set_sensitivity(uint8_t sens)
 {
-    VEML7700::setSensitivityMode((VEML7700_sensitivity_mode_t)sens);
+    _sensitivity = sens;
+    if (_begun)
+        VEML7700::setSensitivityMode((VEML7700_sensitivity_mode_t)sens);
 }
 
 uint8_t spDevVEML7700::get_persistence()
 {
-    return VEML7700::getPersistenceProtect();
+    if (_begun)
+        _persistence = VEML7700::getPersistenceProtect();
+    return _persistence;
 }
 
 void spDevVEML7700::set_persistence(uint8_t pers)
 {
-    VEML7700::setPersistenceProtect((VEML7700_persistence_protect_t)pers);
+    _persistence = pers;
+    if (_begun)
+        VEML7700::setPersistenceProtect((VEML7700_persistence_protect_t)pers);
 }
 

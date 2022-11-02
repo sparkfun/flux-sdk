@@ -39,7 +39,6 @@ spDevSDP3X::spDevSDP3X()
 
     // Register Property
     spRegister(temperatureCompensation, "Temperature Compensation", "Temperature Compensation");
-    temperatureCompensation.setDataLimit(temp_comp_limit);
     spRegister(measurementAveraging, "Measurement Averaging", "Measurement Averaging");
 
     // Register parameters
@@ -104,9 +103,9 @@ bool spDevSDP3X::onInitialize(TwoWire &wirePort)
 {
 
     SDP3X::stopContinuousMeasurement(address(), wirePort); // Make sure continuous measurements are stopped or .begin will fail
-    bool result = SDP3X::begin(address(), wirePort);
-    result &= (SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg) == SDP3X_SUCCESS);
-    return result;
+    _begun = SDP3X::begin(address(), wirePort);
+    _begun &= (SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg) == SDP3X_SUCCESS);
+    return _begun;
 }
 
 // GETTER methods for output params
@@ -142,19 +141,25 @@ uint8_t spDevSDP3X::get_temperature_compensation()
 
 void spDevSDP3X::set_temperature_compensation(uint8_t mode)
 {
-    SDP3X::stopContinuousMeasurement();
     _tempComp = mode;
-    SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);
+    if (_begun)
+    {
+        SDP3X::stopContinuousMeasurement();
+        SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);
+    }
 }
 
-bool spDevSDP3X::get_measurement_averaging()
+uint8_t spDevSDP3X::get_measurement_averaging()
 {
-    return _measAvg;
+    return (uint8_t)_measAvg;
 }
 
-void spDevSDP3X::set_measurement_averaging(bool enable)
+void spDevSDP3X::set_measurement_averaging(uint8_t enable)
 {
-    SDP3X::stopContinuousMeasurement();
-    _measAvg = enable;
-    SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);
+    _measAvg = (bool)enable;
+    if (_begun)
+    {
+        SDP3X::stopContinuousMeasurement();
+        SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);
+    }
 }

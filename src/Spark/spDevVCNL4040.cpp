@@ -42,15 +42,10 @@ spDevVCNL4040::spDevVCNL4040()
 
     // Register read-write properties
     spRegister(ledCurrent, "LED Current (mA)", "LED Current (mA)");
-    ledCurrent.setDataLimit(led_current_limit);
     spRegister(irDutyCycle, "IR Duty Cycle", "IR Duty Cycle");
-    irDutyCycle.setDataLimit(ir_duty_cycle_limit);
     spRegister(proximityIntegrationTime, "Proximity Integration Time", "Proximity Integration Time");
-    proximityIntegrationTime.setDataLimit(proximity_integration_limit);
     spRegister(proximityResolution, "Proximity Resolution", "Proximity Resolution");
-    proximityResolution.setDataLimit(proximity_resolution_limit);
     spRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "Ambient Integration Time (ms)");
-    ambientIntegrationTime.setDataLimit(ambient_integration_time_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -78,8 +73,8 @@ bool spDevVCNL4040::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevVCNL4040::onInitialize(TwoWire &wirePort)
 {
 
-    bool result = VCNL4040::begin(wirePort);
-    if (result)
+    _begun = VCNL4040::begin(wirePort);
+    if (_begun)
     {
         VCNL4040::powerOnAmbient(); //Turn on ambient sensing
         VCNL4040::setLEDCurrent(_ledCurrent);
@@ -88,7 +83,7 @@ bool spDevVCNL4040::onInitialize(TwoWire &wirePort)
         VCNL4040::setProxResolution(_proxRes);
         VCNL4040::setAmbientIntegrationTime(_ambIntTime);
     }
-    return result;
+    return _begun;
 }
 
 // GETTER methods for output params
@@ -111,7 +106,8 @@ uint8_t spDevVCNL4040::get_LED_current()
 void spDevVCNL4040::set_LED_current(uint8_t current)
 {
     _ledCurrent = current;
-    VCNL4040::setLEDCurrent(current);
+    if (_begun)
+        VCNL4040::setLEDCurrent(current);
 }
 
 uint16_t spDevVCNL4040::get_IR_duty_cycle()
@@ -122,7 +118,8 @@ uint16_t spDevVCNL4040::get_IR_duty_cycle()
 void spDevVCNL4040::set_IR_duty_cycle(uint16_t duty)
 {
     _irDutyCycle = duty;
-    VCNL4040::setIRDutyCycle(duty);
+    if (_begun)
+        VCNL4040::setIRDutyCycle(duty);
 }
 
 uint8_t spDevVCNL4040::get_proximity_integration_time()
@@ -133,7 +130,8 @@ uint8_t spDevVCNL4040::get_proximity_integration_time()
 void spDevVCNL4040::set_proximity_integration_time(uint8_t intTime)
 {
     _proxIntTime = intTime;
-    VCNL4040::setProxIntegrationTime(intTime);
+    if (_begun)
+        VCNL4040::setProxIntegrationTime(intTime);
 }
 
 uint8_t spDevVCNL4040::get_proximity_resolution()
@@ -144,7 +142,8 @@ uint8_t spDevVCNL4040::get_proximity_resolution()
 void spDevVCNL4040::set_proximity_resolution(uint8_t res)
 {
     _proxRes = res;
-    VCNL4040::setProxResolution(res);
+    if (_begun)
+        VCNL4040::setProxResolution(res);
 }
 
 uint16_t spDevVCNL4040::get_ambient_integration_time()
@@ -155,6 +154,7 @@ uint16_t spDevVCNL4040::get_ambient_integration_time()
 void spDevVCNL4040::set_ambient_integration_time(uint16_t intTime)
 {
     _ambIntTime = intTime;
-    VCNL4040::setAmbientIntegrationTime(intTime);
+    if (_begun)
+        VCNL4040::setAmbientIntegrationTime(intTime);
 }
 

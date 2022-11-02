@@ -35,20 +35,8 @@ spDevTwist::spDevTwist()
     setName(getDeviceName());
     setDescription("The SparkFun Qwiic Twist RGB Encoder");
     
-    _pressMode = true;
-    _last_count = 0;
-    _last_button_state = false;
-    _this_button_state = false;
-    _toggle_state = false;
-
-    _ledRed = 128;
-    _ledGreen = 0;
-    _ledBlue = 128;
-
     // Register Property
     spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
-    pressMode.setDataLimit(mode_limit);
-    pressMode = { 1 };
     spRegister(ledRed, "LED Red", "Set the red LED brightness");
     spRegister(ledGreen, "LED Green", "Set the green LED brightness");
     spRegister(ledBlue, "LED Blue", "Set the blue LED brightness");
