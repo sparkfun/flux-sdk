@@ -77,10 +77,8 @@ private:
 
 public:
     // Define our read-write properties
-    spPropertyRWInt<spDevBioHub, &spDevBioHub::get_reset_pin, &spDevBioHub::set_reset_pin> resetPin;
-    spDataLimitRangeInt reset_pin_limit = { -1, 255 } ;
-    spPropertyRWInt<spDevBioHub, &spDevBioHub::get_mfio_pin, &spDevBioHub::set_mfio_pin> mfioPin;
-    spDataLimitRangeInt mfio_pin_limit = { -1, 255 } ;
+    spPropertyRWInt<spDevBioHub, &spDevBioHub::get_reset_pin, &spDevBioHub::set_reset_pin> resetPin = { -1, -1, 255 } ;
+    spPropertyRWInt<spDevBioHub, &spDevBioHub::get_mfio_pin, &spDevBioHub::set_mfio_pin> mfioPin = { -1, -1, 255 } ;
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutUint16<spDevBioHub, &spDevBioHub::read_heart_rate> heartRate;    

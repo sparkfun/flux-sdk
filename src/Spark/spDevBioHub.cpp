@@ -49,9 +49,7 @@ spDevBioHub::spDevBioHub()
 
     // Register read-write properties
     spRegister(resetPin, "Reset Pin GPIO #", "Reset Pin GPIO #");
-    resetPin.setDataLimit(reset_pin_limit);
     spRegister(mfioPin, "MFIO Pin GPIO #", "MFIO Pin GPIO #");
-    mfioPin.setDataLimit(mfio_pin_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
