@@ -34,17 +34,8 @@ spDevButton::spDevButton()
     setName(getDeviceName());
     setDescription("The SparkFun Qwiic Button");
 
-    _pressMode = true;
-    _ledBrightness = 128;
-
     // Register Property
     spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
-    pressMode.setDataLimit(mode_limit);
-    pressMode = { 1 };
-    _last_button_state = false;
-    _this_button_state = false;
-    _toggle_state = false;
-
     spRegister(ledBrightness, "LED brightness", "Set the LED brightness");
 
     // Register parameters
