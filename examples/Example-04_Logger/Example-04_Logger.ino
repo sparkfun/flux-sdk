@@ -11,10 +11,18 @@
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
-// KDB TESTING
-#include <Spark/spDevBME280.h>
+// Testing for device calls
 #include <Spark/spDevButton.h>
 
+// SD Card output
+#include <Spark/spFSSDCard.h>
+#include <Spark/spFileRotate.h>
+
+#define OPENLOG_ESP32
+#ifdef OPENLOG_ESP32
+#define EN_3V3_SW 32
+#define LED_BUILTIN 25
+#endif
 
 
 //------------------------------------------
@@ -44,6 +52,12 @@ spLogger  logger;
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(kDefaultLogInterval);    // Timer 
 
+// SD Card Filesystem object
+spFSSDCard theSDCard;
+
+// A writer interface for the SD Card that also rotates files 
+spFileRotate  theOutputFile;
+
 //---------------------------------------------------------------------
 // Arduino Setup
 //
@@ -56,7 +70,11 @@ void setup() {
     Serial.begin(115200);  
     while (!Serial);
     Serial.println("\n---- Startup ----");
-    
+
+#ifdef OPENLOG_ESP32    
+    pinMode(EN_3V3_SW, OUTPUT); // Enable Qwiic power and I2C
+    digitalWrite(EN_3V3_SW, HIGH);
+#endif
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
     spark.start();  
@@ -73,6 +91,26 @@ void setup() {
     //  - Add the JSON and CVS format to the logger
     logger.add(fmtJSON);
     logger.add(fmtCSV);    
+
+    // setup output to the SD card 
+    if (theSDCard.initialize())
+    {
+        // SD card is available - lets setup output for it
+        // Add the filesystem to the file output/rotation object
+        theOutputFile.setFileSystem(theSDCard);
+
+        // setup our file rotation parameters
+        theOutputFile.filePrefix = "sfe";
+        theOutputFile.startNumber=1;
+        theOutputFile.rotatePeriod(24); // one day 
+
+        // add the fileoutput to the CSV output.
+        fmtCSV.add(theOutputFile);
+
+        Serial.println("SD card output enabled");
+    }
+    else
+        Serial.println("SD card output not available");
 
     // What devices has the system detected?
     // List them and add them to the logger
@@ -120,7 +158,6 @@ void setup() {
     }
 
     /// END TESTING
-    
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
     Serial.printf("\n\rLog Output:\n\r");
@@ -140,7 +177,7 @@ void loop() {
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 
-    delay(1000);                       
+    delay(1000); 
     digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
     delay(1000);
 }
