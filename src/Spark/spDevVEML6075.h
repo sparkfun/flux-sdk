@@ -56,13 +56,18 @@ private:
     uint8_t get_high_dynamic();
     void set_high_dynamic(uint8_t);
 
+    uint8_t _integrationTime = VEML6075::IT_100MS;
+    uint8_t _highDynamic = VEML6075::DYNAMIC_NORMAL;
+
+    bool _begun = false;
+
 public:
     // Define our read-write properties
-    spPropertyRWUint8<spDevVEML6075, &spDevVEML6075::get_integration_time, &spDevVEML6075::set_integration_time> integrationTime;
-    spDataLimitSetUint8 integration_time_limit = { { "50ms", VEML6075::IT_50MS }, { "100ms", VEML6075::IT_100MS },
-                                                   { "200ms", VEML6075::IT_200MS }, { "400ms", VEML6075::IT_400MS }, { "800ms", VEML6075::IT_800MS } };
-    spPropertyRWUint8<spDevVEML6075, &spDevVEML6075::get_high_dynamic, &spDevVEML6075::set_high_dynamic> highDynamic;
-    spDataLimitSetUint8 dynamic_limit = { { "Normal Dynamic", VEML6075::DYNAMIC_NORMAL }, { "High Dynamic", VEML6075::DYNAMIC_NORMAL } };
+    spPropertyRWUint8<spDevVEML6075, &spDevVEML6075::get_integration_time, &spDevVEML6075::set_integration_time> integrationTime
+        = { VEML6075::IT_100MS, { { "50ms", VEML6075::IT_50MS }, { "100ms", VEML6075::IT_100MS },
+                                  { "200ms", VEML6075::IT_200MS }, { "400ms", VEML6075::IT_400MS }, { "800ms", VEML6075::IT_800MS } } };
+    spPropertyRWUint8<spDevVEML6075, &spDevVEML6075::get_high_dynamic, &spDevVEML6075::set_high_dynamic> highDynamic
+        = { VEML6075::DYNAMIC_NORMAL, { { "Normal Dynamic", VEML6075::DYNAMIC_NORMAL }, { "High Dynamic", VEML6075::DYNAMIC_NORMAL } } };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevVEML6075, &spDevVEML6075::read_uva> uva;    

@@ -43,9 +43,7 @@ spDevVEML6075::spDevVEML6075()
 
     // Register read-write properties
     spRegister(integrationTime, "Integration Time (ms)", "Integration Time (ms)");
-    integrationTime.setDataLimit(integration_time_limit);
     spRegister(highDynamic, "Dynamic Range", "Dynamic Range");
-    highDynamic.setDataLimit(dynamic_limit);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -74,7 +72,8 @@ bool spDevVEML6075::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevVEML6075::onInitialize(TwoWire &wirePort)
 {
 
-    return VEML6075::begin(wirePort);
+    _begun =  VEML6075::begin(wirePort);
+    return _begun;
 }
 
 // GETTER methods for output params
@@ -96,20 +95,28 @@ float spDevVEML6075::read_uv_index()
 // methods for read-write properties
 uint8_t spDevVEML6075::get_integration_time()
 {
-    return VEML6075::getIntegrationTime();
+    if (_begun)
+        _integrationTime = VEML6075::getIntegrationTime();
+    return _integrationTime;
 }
 
 void spDevVEML6075::set_integration_time(uint8_t intTime)
 {
-    VEML6075::setIntegrationTime((VEML6075::veml6075_uv_it_t)intTime);
+    _integrationTime = intTime;
+    if (_begun)
+        VEML6075::setIntegrationTime((VEML6075::veml6075_uv_it_t)intTime);
 }
 
 uint8_t spDevVEML6075::get_high_dynamic()
 {
-    return VEML6075::getHighDynamic();
+    if (_begun)
+        _highDynamic = VEML6075::getHighDynamic();
+    return _highDynamic;
 }
 
 void spDevVEML6075::set_high_dynamic(uint8_t high)
 {
-    VEML6075::setHighDynamic((VEML6075::veml6075_hd_t)high);
+    _highDynamic = high;
+    if (_begun)
+        VEML6075::setHighDynamic((VEML6075::veml6075_hd_t)high);
 }
