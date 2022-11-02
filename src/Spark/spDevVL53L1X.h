@@ -61,6 +61,11 @@ private:
     void set_offset(uint16_t);
 
     bool _shortDistanceMode = true; // Default to short distance mode
+    uint16_t _intermeasurementPeriod = 100;
+    uint16_t _crosstalk = 0;
+    uint16_t _offset = 0;
+
+    bool _begun = false;
 
 public:
     // Define our read-write properties

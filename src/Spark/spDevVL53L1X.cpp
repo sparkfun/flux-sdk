@@ -76,8 +76,8 @@ bool spDevVL53L1X::isConnected(spDevI2C &i2cDriver, uint8_t address)
 bool spDevVL53L1X::onInitialize(TwoWire &wirePort)
 {
 
-    bool result = (SFEVL53L1X::begin(wirePort) == 0);
-    if (result)
+    _begun = (SFEVL53L1X::begin(wirePort) == 0);
+    if (_begun)
     {
         (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
         // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
@@ -88,7 +88,7 @@ bool spDevVL53L1X::onInitialize(TwoWire &wirePort)
                 SFEVL53L1X::setIntermeasurementPeriod(140);
         SFEVL53L1X::startRanging();
     }
-    return result;
+    return _begun;
 }
 
 // GETTER methods for output params
@@ -117,27 +117,30 @@ uint8_t spDevVL53L1X::get_distance_mode()
 
 void spDevVL53L1X::set_distance_mode(uint8_t mode)
 {
-    SFEVL53L1X::stopRanging();
     _shortDistanceMode = (mode == DISTANCE_SHORT);
-    (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
-    // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
-    (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
-    uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
-    if (!_shortDistanceMode)
-        if (imp < 140)
-            SFEVL53L1X::setIntermeasurementPeriod(140);
-    SFEVL53L1X::startRanging();
+    if (_begun)
+    {
+        SFEVL53L1X::stopRanging();
+        (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
+        // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
+        (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
+        uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
+        if (!_shortDistanceMode)
+            if (imp < 140)
+                SFEVL53L1X::setIntermeasurementPeriod(140);
+        SFEVL53L1X::startRanging();
+    }
 }
 
 uint16_t spDevVL53L1X::get_intermeasurment_period()
 {
-    return SFEVL53L1X::getIntermeasurementPeriod();
+    if (_begun)
+        _intermeasurementPeriod = SFEVL53L1X::getIntermeasurementPeriod();
+    return _intermeasurementPeriod;
 }
 
 void spDevVL53L1X::set_intermeasurment_period(uint16_t period)
 {
-    SFEVL53L1X::stopRanging();
-
     // Validate period. This is probably redundant - given the data limit range?
     if (period < 20)
         period = 20;
@@ -146,31 +149,48 @@ void spDevVL53L1X::set_intermeasurment_period(uint16_t period)
             period = 140;
     if (period > 1000)
         period = 1000;
+    _intermeasurementPeriod = period;
 
-    SFEVL53L1X::setIntermeasurementPeriod(period);
-    SFEVL53L1X::startRanging();
+    if (_begun)
+    {
+        SFEVL53L1X::stopRanging();
+        SFEVL53L1X::setIntermeasurementPeriod(period);
+        SFEVL53L1X::startRanging();
+    }
 }
 
 uint16_t spDevVL53L1X::get_crosstalk()
 {
-    return SFEVL53L1X::getXTalk();
+    if (_begun)
+        _crosstalk = SFEVL53L1X::getXTalk();
+    return _crosstalk;
 }
 
 void spDevVL53L1X::set_crosstalk(uint16_t level)
 {
-    SFEVL53L1X::stopRanging();
-    SFEVL53L1X::setXTalk(level);
-    SFEVL53L1X::startRanging();
+    _crosstalk = level;
+    if (_begun)
+    {
+        SFEVL53L1X::stopRanging();
+        SFEVL53L1X::setXTalk(level);
+        SFEVL53L1X::startRanging();
+    }
 }
 
 uint16_t spDevVL53L1X::get_offset()
 {
-    return SFEVL53L1X::getOffset();
+    if (_begun)
+        _offset = SFEVL53L1X::getOffset();
+    return _offset;
 }
 
 void spDevVL53L1X::set_offset(uint16_t offset)
 {
-    SFEVL53L1X::stopRanging();
-    SFEVL53L1X::setOffset(offset);
-    SFEVL53L1X::startRanging();
+    _offset = offset;
+    if (_begun)
+    {
+        SFEVL53L1X::stopRanging();
+        SFEVL53L1X::setOffset(offset);
+        SFEVL53L1X::startRanging();
+    }
 }
