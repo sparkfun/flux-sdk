@@ -51,9 +51,9 @@ private:
 
     // methods used to get values for our RW properties
     uint8_t get_temperature_compensation();
-    bool get_measurement_averaging();
+    uint8_t get_measurement_averaging();
     void set_temperature_compensation(uint8_t);
-    void set_measurement_averaging(bool);
+    void set_measurement_averaging(uint8_t);
 
     // flags to avoid calling readM<easurement multiple times
     float _temperature = -9999; // Mark temperature as stale
@@ -61,10 +61,13 @@ private:
     uint8_t _tempComp = 1; // Default to mass flow temperature compensation with no averaging
     bool _measAvg = false;
 
+    bool _begun = false;
+
 public:
-    spPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_temperature_compensation, &spDevSDP3X::set_temperature_compensation> temperatureCompensation;
-    spDataLimitSetUint8 temp_comp_limit = { { "Differential Pressure", 0 }, { "Mass Flow", 1 } };
-    spPropertyRWBool<spDevSDP3X, &spDevSDP3X::get_measurement_averaging, &spDevSDP3X::set_measurement_averaging> measurementAveraging;
+    spPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_temperature_compensation, &spDevSDP3X::set_temperature_compensation> temperatureCompensation
+        = { 1, { { "Differential Pressure", 0 }, { "Mass Flow", 1 } } };
+    spPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_measurement_averaging, &spDevSDP3X::set_measurement_averaging> measurementAveraging
+        = { 0, { { "Disabled", 0 }, { "Enabled", 1 } } };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevSDP3X, &spDevSDP3X::read_temperature_C> temperatureC;    
