@@ -274,6 +274,14 @@ class spFormatCSV : public spOutputFormat
         _bWriteHeader = true;
     }
 
+    // Used to register the event we want to listen to, which will trigger this
+    // the output of the CSV header next cycle.
+
+    void listenNewFile(spSignalVoid &theEvent)
+    {
+        theEvent.call(this, &spFormatCSV::output_header);
+    }
+
   private:
     //-----------------------------------------------------------------
     void clear_buffers()
