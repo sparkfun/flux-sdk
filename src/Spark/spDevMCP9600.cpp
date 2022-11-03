@@ -33,19 +33,19 @@ spDevMCP9600::spDevMCP9600()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("Microchip MCP9600 Thermocouple Amplifier.");
+    setDescription("Microchip MCP9600 Thermocouple Amplifier");
 
     // register properties
-    spRegister(ambient_resolution, "Ambient Resolution", "Ambient Resolution");
-    spRegister(thermocouple_resolution, "Thermocouple Resolution", "Thermocouple Resolution");
-    spRegister(thermocouple_type, "Thermocouple Type", "Thermocouple Type");
-    spRegister(filter_coefficent, "Filter Coefficient", "Filter Coefficient");
-    spRegister(burst_samples, "Burst Samples", "Burst Samples");
+    spRegister(ambient_resolution, "Ambient Resolution", "Ambient temperature resolution in fractions of degrees C");
+    spRegister(thermocouple_resolution, "Thermocouple Resolution", "Thermocouple temperature full-scale resolution in bits");
+    spRegister(thermocouple_type, "Thermocouple Type", "The thermocouple type");
+    spRegister(filter_coefficent, "Filter Coefficient", "The filter coefficient");
+    spRegister(burst_samples, "Burst Samples", "The number of samples in burst mode");
 
     // register parameters
-    spRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature (C)");
-    spRegister(ambient_temp, "Ambient temperature", "Ambient temperature (C)");
-    spRegister(temp_delta, "Temperature delta", "Difference between the thermocouple temperature and ambient (C)");
+    spRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature in degrees C");
+    spRegister(ambient_temp, "Ambient temperature", "Ambient temperature in degrees C");
+    spRegister(temp_delta, "Temperature delta", "Difference between the thermocouple temperature and ambient in degrees C");
 }
 
 //----------------------------------------------------------------------------------------------------------
