@@ -13,7 +13,7 @@
 #include "SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h"
 #include "spDevice.h"
 
-#define kMAX17048DeviceName "max17048"
+#define kMAX17048DeviceName "MAX17048"
 
 // Define our class
 class spDevMAX17048 : public spDeviceType<spDevMAX17048>, public SFE_MAX1704X

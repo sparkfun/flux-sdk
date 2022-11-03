@@ -23,9 +23,9 @@ spDevMAX17048::spDevMAX17048()
     setDescription("MAX17048 LiPo Battery Fuel Gauge");
 
     // Register output params
-    spRegister(voltageV, "Voltage (V)", "Voltage (V)");
-    spRegister(stateOfCharge, "State Of Charge (%)", "State Of Charge (%)");
-    spRegister(changeRate, "Change Rate (%/hr)", "Change Rate (%/hr)");
+    spRegister(voltageV, "Voltage (V)", "Battery voltage (Volts)");
+    spRegister(stateOfCharge, "State Of Charge (%)", "Battery state of charge (%)");
+    spRegister(changeRate, "Change Rate (%/hr)", "Battery charge change rate (%/hr)");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.
