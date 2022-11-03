@@ -38,10 +38,10 @@ spDevADS122C04::spDevADS122C04()
     spRegister(sampleRate, "Sample rate", "Sample rate");
 
     // Register output params
-    spRegister(temperatureC, "Probe temperature (C)", "Probe temperature (C)");
-    spRegister(temperatureF, "Probe temperature (F)", "Probe temperature (F)");
-    spRegister(internalTemperature, "Internal temperature (C)", "Internal temperature (C)");
-    spRegister(rawVoltage, "Raw voltage (V)", "Raw voltage (V)");
+    spRegister(temperatureC, "Probe temperature (C)", "The probe temperature in degrees C");
+    spRegister(temperatureF, "Probe temperature (F)", "The probe temperature in degrees F");
+    spRegister(internalTemperature, "Internal temperature (C)", "The ADS122C04 internal temperature (C)");
+    spRegister(rawVoltage, "Raw voltage (V)", "The raw ADC voltage (V)");
 
 }
 

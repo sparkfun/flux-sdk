@@ -15,7 +15,7 @@
 
 
 
-#define kADS122C04DeviceName "ads122c04"
+#define kADS122C04DeviceName "ADS122C04"
 
 // Define our class
 class spDevADS122C04 : public spDeviceType<spDevADS122C04>, public SFE_ADS122C04
