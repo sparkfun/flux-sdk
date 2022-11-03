@@ -16,7 +16,7 @@
 #include "SparkFun_SHTC3.h"
 
 // What is the name used to ID this device?
-#define kSHTC3DeviceName "shtc3"
+#define kSHTC3DeviceName "SHTC3"
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
