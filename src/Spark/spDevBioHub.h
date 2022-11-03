@@ -16,7 +16,7 @@
 #include "SparkFun_Bio_Sensor_Hub_Library.h"
 
 // What is the name used to ID this device?
-#define kBioHubDeviceName "bioHub"
+#define kBioHubDeviceName "BioHub"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevBioHub : public spDeviceType<spDevBioHub>, public SparkFun_Bio_Sensor_Hub
