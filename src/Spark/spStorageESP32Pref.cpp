@@ -420,7 +420,7 @@ spStorageESP32Block *spStorageESP32Pref::getBlock(const char *tag)
 
     return beginBlock(tag);
 }
-void spStorageESP32Pref::endBlock(spStorageBlock2 *)
+void spStorageESP32Pref::endBlock(spStorageBlock *)
 {
     _prefs.end();
 }

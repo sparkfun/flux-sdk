@@ -319,7 +319,7 @@ void spStorageEEPROM::endBlock(spStorageBlockEEPROM *dummy)
 }
 
 // interface method
-void spStorageEEPROM::endBlock(spStorageBlock *dummy)
+void spStorageEEPROM::endBlock(spStorageBlockOld *dummy)
 {
     endBlock((spStorageBlockEEPROM*)dummy);
 }

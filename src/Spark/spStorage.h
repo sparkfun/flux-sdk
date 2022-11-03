@@ -21,7 +21,8 @@
 // Define our storage block object. This is used as a FP like object when a bock is
 // written out interactively...
 
-class spStorageBlock
+// the "OLD" blocks are from the original prototype system that needs migration
+class spStorageBlockOld
 {
 
   public:
@@ -34,14 +35,14 @@ class spStorageBlock
 //
 // Interface for a storage system to persist state of a system
 
-class spStorage
+class spStorageOld
 {
 
   public:
     // public methods to manage a block
-    virtual spStorageBlock *beginBlock(uint16_t idBlock, size_t sz) = 0;
-    virtual spStorageBlock *getBlock(uint16_t idBlock) = 0;
-    virtual void endBlock(spStorageBlock *) = 0;
+    virtual spStorageBlockOld *beginBlock(uint16_t idBlock, size_t sz) = 0;
+    virtual spStorageBlockOld *getBlock(uint16_t idBlock) = 0;
+    virtual void endBlock(spStorageBlockOld *) = 0;
 
     virtual void resetStorage() = 0;
 };
@@ -50,7 +51,7 @@ class spStorage
 // Use tags to ID an item and move to use data types. Model after the
 // ESP32 preference library
 
-class spStorageBlock2
+class spStorageBlock
 {
 
   public:
@@ -165,19 +166,19 @@ class spStorageBlock2
 //
 // Interface for a storage system to persist state of a system
 
-class spStorage2
+class spStorage
 {
 
   public:
     // public methods to manage a block
-    virtual spStorageBlock2 *beginBlock(const char *tag) = 0;
+    virtual spStorageBlock *beginBlock(const char *tag) = 0;
 
     // NOTE: TODO - for eeprom version of this, the number of bytes written
     // should be kept in the block, then when it's close, written to the block
     // header -- note, you will need to delete all existing blocks when writing
     // new ...
-    virtual spStorageBlock2 *getBlock(const char *tag) = 0;
-    virtual void endBlock(spStorageBlock2 *) = 0;
+    virtual spStorageBlock *getBlock(const char *tag) = 0;
+    virtual void endBlock(spStorageBlock *) = 0;
 
     virtual void resetStorage() = 0;
 };

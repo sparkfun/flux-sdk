@@ -64,8 +64,8 @@ class spProperty : public spDescriptor
     }
     //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
-    virtual bool save(spStorageBlock2 *) = 0;
-    virtual bool restore(spStorageBlock2 *) = 0;
+    virtual bool save(spStorageBlock *) = 0;
+    virtual bool restore(spStorageBlock *) = 0;
 };
 
 // simple def - list of spProperty objects (it's a vector)
@@ -110,7 +110,7 @@ class _spPropertyContainer
     // expect this to be a "mix-in" class, we use a different interface
     // for the save/restore routines
 
-    bool saveProperties(spStorageBlock2 *stBlk)
+    bool saveProperties(spStorageBlock *stBlk)
     {
         bool rc = true;
         bool status;
@@ -123,7 +123,7 @@ class _spPropertyContainer
     };
 
     //---------------------------------------------------------------------------------
-    bool restoreProperties(spStorageBlock2 *stBlk)
+    bool restoreProperties(spStorageBlock *stBlk)
     {
         bool rc = true;
         bool status;
@@ -190,7 +190,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock2 *stBlk)
+    bool save(spStorageBlock *stBlk)
     {
         T c = get();
         bool status = stBlk->write(name(), c);
@@ -202,7 +202,7 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
     };
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock2 *stBlk)
+    bool restore(spStorageBlock *stBlk)
     {
         T c;
 
@@ -318,7 +318,7 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
     }
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock2 *stBlk)
+    bool save(spStorageBlock *stBlk)
     {
         // strings ... len, data
         std::string c = get();
@@ -330,7 +330,7 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
     }
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock2 *stBlk)
+    bool restore(spStorageBlock *stBlk)
     {
         char szBuffer[kMaxPropertyString];
 
@@ -1059,10 +1059,10 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     }
 
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorage2 *pStorage)
+    virtual bool save(spStorage *pStorage)
     {
 
-        spStorageBlock2 *stBlk = pStorage->beginBlock(name());
+        spStorageBlock *stBlk = pStorage->beginBlock(name());
         if (!stBlk)
             return false;
 
@@ -1076,10 +1076,10 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorage2 *pStorage)
+    virtual bool restore(spStorage *pStorage)
     {
         // Do we have this block in storage?
-        spStorageBlock2 *stBlk = pStorage->getBlock(name());
+        spStorageBlock *stBlk = pStorage->getBlock(name());
 
         if (!stBlk)
         {
@@ -1220,7 +1220,7 @@ template <class T> class spContainer : public spObject
     }
 
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorage2 *pStorage)
+    virtual bool save(spStorage *pStorage)
     {
         for (auto pObj : _vector)
             pObj->save(pStorage);
@@ -1229,7 +1229,7 @@ template <class T> class spContainer : public spObject
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorage2 *pStorage)
+    virtual bool restore(spStorage *pStorage)
     {
         for (auto pObj : _vector)
             pObj->restore(pStorage);

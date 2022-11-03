@@ -32,7 +32,7 @@ typedef struct
 // Define our storage block object. This is used as a FP like object when a bock is
 // written out interatively...
 
-class spStorageBlockEEPROM : public spStorageBlock
+class spStorageBlockEEPROM : public spStorageBlockOld
 {
 
   public:
@@ -58,7 +58,7 @@ class spStorageBlockEEPROM : public spStorageBlock
 };
 
 //------------------------------------------------------------------------------
-class spStorageEEPROM : public spStorage
+class spStorageEEPROM : public spStorageOld
 {
 
   public:
@@ -77,7 +77,7 @@ class spStorageEEPROM : public spStorage
     }    
 
     void endBlock(spStorageBlockEEPROM *);
-    void endBlock(spStorageBlock *);
+    void endBlock(spStorageBlockOld *);
 
     void resetStorage();
 

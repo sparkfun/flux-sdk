@@ -11,7 +11,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
 {
 
   private:
-    spStorage2 *_saveDest;
+    spStorage *_saveDest;
 
     //------------------------------------------------------------------------------
     void save_settings(void)
@@ -76,22 +76,22 @@ class spSettingsSave : public spActionType<spSettingsSave>
         spRegister(clearSettings, "Clear Settings", "Erase saved settings.");
     }
     //------------------------------------------------------------------------------
-    spSettingsSave(spStorage2 *theDevice) : spSettingsSave()
+    spSettingsSave(spStorage *theDevice) : spSettingsSave()
     {
         setSaveDestination(theDevice);
     }
     //------------------------------------------------------------------------------
-    spSettingsSave(spStorage2 &theDevice) : spSettingsSave(&theDevice)
+    spSettingsSave(spStorage &theDevice) : spSettingsSave(&theDevice)
     {
     }
     //------------------------------------------------------------------------------
     // Set up destination.
-    void setSaveDestination(spStorage2 *theDevice)
+    void setSaveDestination(spStorage *theDevice)
     {
         _saveDest = theDevice;
     }
     //------------------------------------------------------------------------------
-    void setSaveDestination(spStorage2 &theDevice)
+    void setSaveDestination(spStorage &theDevice)
     {
         setSaveDestination(&theDevice);
     }

@@ -19,7 +19,7 @@
 // ESP32 preference library
 class spStorageESP32Pref;
 
-class spStorageESP32Block : public spStorageBlock2
+class spStorageESP32Block : public spStorageBlock
 {
 
   public:
@@ -65,7 +65,7 @@ class spStorageESP32Block : public spStorageBlock2
 //
 // Interface for a storage system to persist state of a system
 
-class spStorageESP32Pref : public spStorage2
+class spStorageESP32Pref : public spStorage
 {
 
   public:
@@ -74,7 +74,7 @@ class spStorageESP32Pref : public spStorage2
     spStorageESP32Block *beginBlock(const char *tag);
 
     spStorageESP32Block *getBlock(const char *tag);
-    void endBlock(spStorageBlock2 *);
+    void endBlock(spStorageBlock *);
 
     void resetStorage();
 
