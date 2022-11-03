@@ -15,7 +15,7 @@
 #include <Spark/spDevButton.h>
 
 // SD Card output
-#include <Spark/spFSSDCard.h>
+#include <Spark/spFSSDMMCard.h>
 #include <Spark/spFileRotate.h>
 
 #define OPENLOG_ESP32
@@ -53,7 +53,7 @@ spLogger  logger;
 spTimer   timer(kDefaultLogInterval);    // Timer 
 
 // SD Card Filesystem object
-spFSSDCard theSDCard;
+spFSSDMMCard theSDCard;
 
 // A writer interface for the SD Card that also rotates files 
 spFileRotate  theOutputFile;
@@ -106,8 +106,11 @@ void setup() {
 
         // add the fileoutput to the CSV output.
         fmtCSV.add(theOutputFile);
+        // have the CSV formatter listen to the new file event. This 
+        // will cause a header to be written next cycle.
+        fmtCSV.listenNewFile(theOutputFile.on_newFile);
 
-        Serial.println("SD card output enabled");
+        Serial.printf("SD card connected. Card Type: %s, Size: %uMB\n\r", theSDCard.type(), theSDCard.size());
     }
     else
         Serial.println("SD card output not available");
