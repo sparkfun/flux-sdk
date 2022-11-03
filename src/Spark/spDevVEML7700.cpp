@@ -37,14 +37,14 @@ spDevVEML7700::spDevVEML7700()
     setDescription("VEML7700 Ambient Light Sensor");
 
     // Register parameters
-    spRegister(ambientLight, "Ambient Light Level", "Ambient Light Level");
-    spRegister(whiteLevel, "White Level", "White Level");
-    spRegister(lux, "Lux", "Lux");
+    spRegister(ambientLight, "Ambient Light Level", "The ambient light level");
+    spRegister(whiteLevel, "White Level", "The measured light white level");
+    spRegister(lux, "Lux", "The light level in lux");
 
     // Register read-write properties
-    spRegister(integrationTime, "Integration Time (ms)", "Integration Time (ms)");
-    spRegister(sensitivity, "Sensitivity", "Sensitivity");
-    spRegister(persistence, "Persistence", "Persistence");
+    spRegister(integrationTime, "Integration Time (ms)", "The measurement integration time in milliseconds");
+    spRegister(sensitivity, "Sensitivity", "The measurement sensitivity");
+    spRegister(persistence, "Persistence", "The measurement persistence");
 }
 
 //----------------------------------------------------------------------------------------------------------

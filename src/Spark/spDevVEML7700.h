@@ -16,7 +16,7 @@
 #include "SparkFun_VEML7700_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kVEML7700DeviceName "veml7700"
+#define kVEML7700DeviceName "VEML7700"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevVEML7700 : public spDeviceType<spDevVEML7700>, public VEML7700
