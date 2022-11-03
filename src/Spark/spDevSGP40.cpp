@@ -39,8 +39,8 @@ spDevSGP40::spDevSGP40()
     // Register parameters
     spRegister(vocIndex, "VOC Index", "Volatile Organic Compounds Index");
 
-    spRegister(rh, "Humidity (%RH)", "Relative Humidity (%RH)");
-    spRegister(temperature, "Temperature (C)", "Temperature (C)");
+    spRegister(rh, "Humidity (%RH)", "The relative humidity in %");
+    spRegister(temperature, "Temperature (C)", "The temperature in degrees C");
 }
 
 //----------------------------------------------------------------------------------------------------------
