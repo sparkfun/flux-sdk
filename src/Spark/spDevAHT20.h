@@ -13,7 +13,7 @@
 #include "SparkFun_Qwiic_Humidity_AHT20.h"
 #include "spDevice.h"
 
-#define kAHT20DeviceName "aht20"
+#define kAHT20DeviceName "AHT20"
 
 // Define our class
 class spDevAHT20 : public spDeviceType<spDevAHT20>, public AHT20

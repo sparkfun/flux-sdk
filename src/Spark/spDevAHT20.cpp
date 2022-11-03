@@ -23,8 +23,8 @@ spDevAHT20::spDevAHT20()
     setDescription("AHT20 Temperature and Humidity sensor");
 
     // Register output params
-    spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
-    spRegister(humidity, "Humidity (%RH)", "Humidity (%RH)");
+    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.
