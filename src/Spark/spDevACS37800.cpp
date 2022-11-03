@@ -43,8 +43,8 @@ spDevACS37800::spDevACS37800()
     spRegister(volts, "Voltage", "Volts (Instantaneous)");
     spRegister(amps, "Current", "Amps (Instantaneous)");
     spRegister(watts, "Power", "Watts (Instantaneous)");
-    spRegister(voltsRMS, "Voltage (RMS)", "Volts (RMS)");
-    spRegister(ampsRMS, "Current (RMS)", "Amps (RMS)");
+    spRegister(voltsRMS, "Voltage (RMS)", "Volts (Root Mean Square)");
+    spRegister(ampsRMS, "Current (RMS)", "Amps (Root Mean Square)");
     spRegister(powerActive, "Power (Active)", "Watts");
     spRegister(powerReactive, "Power (Reactive)", "VAR");
     spRegister(powerApparent, "Power (Apparent)", "VA");
@@ -53,11 +53,11 @@ spDevACS37800::spDevACS37800()
     spRegister(positivePowerFactor, "Power Factor Sign", "True: Consumed; False: Generated");
 
     // Register properties
-    spRegister(numberOfSamples, "Number of samples", "Number of samples");
-    spRegister(bypassNenable, "Bypass n enable", "Bypass n enable");
-    spRegister(senseResistance, "Sense resistance", "Sense resistance (Ohms)");
-    spRegister(dividerResistance, "Divider resistance", "Divider resistance (Ohms)");
-    spRegister(currentRange, "Current range", "Current range (Amps)");
+    spRegister(numberOfSamples, "Number of samples", "The number of samples used in RMS calculations. For DC measurement: set to 1023");
+    spRegister(bypassNenable, "Bypass n enable", "Defines how the RMS is calculated. For DC measurement: set to N Samples");
+    spRegister(senseResistance, "Sense resistance", "Define the voltage sense resistance (Ohms)");
+    spRegister(dividerResistance, "Divider resistance", "Define the voltage divider resistance (Ohms)");
+    spRegister(currentRange, "Current range", "Define the sensor current range (Amps)");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -102,12 +102,8 @@ bool spDevACS37800::isConnected(spDevI2C &i2cDriver, uint8_t address)
 //
 bool spDevACS37800::onInitialize(TwoWire &wirePort)
 {
-
-    bool result = ACS37800::begin(address(), wirePort);
-    result &= ACS37800::setNumberOfSamples(1023, true) == 0; // Set the number of samples in shadow memory and eeprom
-    result &= ACS37800::setBypassNenable(true, true) == 0; // Enable bypass_n in shadow memory and eeprom
-    _begun = result;
-    return result;
+    _begun = ACS37800::begin(address(), wirePort);
+    return _begun;
 }
 
 // GETTER methods for output params
@@ -259,27 +255,27 @@ bool spDevACS37800::read_pos_power_factor()
 
 uint spDevACS37800::get_number_of_samples()
 {
-    uint32_t numSamples = 0;
     if (_begun)
-        ACS37800::getNumberOfSamples(&numSamples);
-    return numSamples;
+        ACS37800::getNumberOfSamples(&_n);
+    return _n;
 }
 void spDevACS37800::set_number_of_samples(uint numSamples)
 {
+    _n = numSamples;
     if (_begun)
         ACS37800::setNumberOfSamples(numSamples, true); // Set in EEPROM too
 }
-bool spDevACS37800::get_bypass_n_enable()
+uint8_t spDevACS37800::get_bypass_n_enable()
 {
-    bool bypassN = false;
     if (_begun)
-        ACS37800::getBypassNenable(&bypassN);
-    return bypassN;
+        ACS37800::getBypassNenable(&_bypassNenable);
+    return ((uint8_t)_bypassNenable);
 }
-void spDevACS37800::set_bypass_n_enable(bool enable)
+void spDevACS37800::set_bypass_n_enable(uint8_t enable)
 {
+    _bypassNenable = (bool)enable;
     if (_begun)
-        ACS37800::setBypassNenable(enable, true); // Set in EEPROM too
+        ACS37800::setBypassNenable(_bypassNenable, true); // Set in EEPROM too
 }
 float spDevACS37800::get_sense_resistance()
 {
