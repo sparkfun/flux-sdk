@@ -5,6 +5,7 @@
 #include "spCore.h"
 #include "spDevI2C.h"
 #include "spDevice.h"
+#include "spStorage.h"
 #include <memory>
 
 // happy functions for happy users.
@@ -133,11 +134,79 @@ class spSpark : public spObjectContainer
         return Devices;
     }
 
-  private:
-    spDevI2C _i2cDriver;
+    //------------------------------------------------------------
+    // settings/storage things. 
+    //------------------------------------------------------------
+    //
+    // Storage device for settings - set this in the system.     
 
+    void setSettingsStorage(spStorage &theStorage)
+    {
+        setSettingsStorage(&theStorage);
+    }
+    void setSettingsStorage(spStorage *pStorage)
+    {
+        _settingsStorage = pStorage;
+    }
+
+    // Save settings - if no parameter is passed in, the entire system is saved
+
+    bool saveSettings(void)
+    {
+        if ( !_settingsStorage)
+            return false;
+
+        save(_settingsStorage);
+
+        return true;
+    }
+    // save a specific object
+    bool saveSettings(spObject &theObject)
+    {
+        return saveSettings(&theObject);
+    }
+    bool saveSettings(spObject *pObject)
+    {
+        if (!_settingsStorage)
+            return false;
+
+        pObject->save(_settingsStorage);
+        return true;
+    }
+
+    // Restore settings - if no parameter is passed in, the entire system is restored
+
+    bool restoreSettings(void)
+    {
+        if ( !_settingsStorage)
+            return false;
+
+        restore(_settingsStorage);
+
+        return true;
+    }
+    // restore a specific object
+    bool restoreSettings(spObject &theObject)
+    {
+        return restoreSettings(&theObject);
+    }
+    bool restoreSettings(spObject *pObject)
+    {
+        if (!_settingsStorage)
+            return false;
+
+        pObject->restore(_settingsStorage);
+        return true;
+    }
+
+  private:
+
+
+    spStorage *  _settingsStorage;
+
+    spDevI2C     _i2cDriver;
     // Note private constructor...
-    spSpark()
+    spSpark() : _settingsStorage{nullptr}
     {
 
         // setup some default heirarchy things ...

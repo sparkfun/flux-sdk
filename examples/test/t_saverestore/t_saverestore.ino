@@ -405,6 +405,7 @@ void setup() {
     while (!Serial);
     Serial.println("\n---- Startup of the Save/Restore tests ----");
 
+    spark.setSettingsStorage(myStorage);
     spark.add(myTest);
 
     Serial.println("object Added, reseting storage");
@@ -412,7 +413,7 @@ void setup() {
 
     test_setup();
     Serial.println("Saving...");    
-    spark.save(&myStorage);
+    spark.saveSettings();
 
     Serial.println("Save complete");
 
@@ -422,7 +423,7 @@ void setup() {
 
     test_check();
 
-    spark.restore(&myStorage);
+    spark.restoreSettings();
 
     Serial.println("\n\rValues restored - verify - everything should pass\n\r");    
 
