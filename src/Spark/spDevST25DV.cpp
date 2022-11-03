@@ -35,11 +35,11 @@ spDevST25DV::spDevST25DV()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("ST25DV RFID Tag");
+    setDescription("ST25DV Dynamic RFID Tag");
 
     // Register Properties
-    spRegister(ssid, "WiFi Record SSID", "WiFi Record SSID");
-    spRegister(password, "WiFi Record Key / Password", "WiFi Record Key / Password");
+    spRegister(ssid, "WiFi Record SSID", "The Service Set Identifier held in the WiFi record");
+    spRegister(password, "WiFi Record Key / Password", "The key (password) held in the WiFi record");
 }
 
 //----------------------------------------------------------------------------------------------------------
