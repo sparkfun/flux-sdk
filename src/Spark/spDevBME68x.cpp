@@ -38,11 +38,11 @@ spDevBME68x::spDevBME68x()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("The Bosch BME68x Atmospheric Sensor.");
+    setDescription("The Bosch BME68x Atmospheric Sensor");
 
     // Register parameters
     spRegister(humidity, "Humidity", "The sensed humidity value");
-    spRegister(temperatureC, "TemperatureC", "The sensed temperature in degrees Celsius");
+    spRegister(temperatureC, "TemperatureC", "The sensed temperature in degrees C");
     spRegister(pressure, "Pressure", "The sensed pressure");
     spRegister(gasResistance, "Gas Resistance", "The sensed gas resistance");
     spRegister(status, "Sensor Status", "The sensor status");
