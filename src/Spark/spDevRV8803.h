@@ -15,7 +15,7 @@
 
 
 
-#define kRV8803DeviceName "rv8803"
+#define kRV8803DeviceName "RV8803"
 
 // Define our class
 class spDevRV8803 : public spDeviceType<spDevRV8803>, public RV8803
