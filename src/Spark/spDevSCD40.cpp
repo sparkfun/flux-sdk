@@ -45,9 +45,9 @@ spDevSCD40::spDevSCD40()
     spRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
 
     // Register parameters
-    spRegister(co2PPM, "CO2 (PPM)", "CO2 (Parts Per Million)");
-    spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
-    spRegister(humidity, "Humidity (%RH)", "Humidity (%RH)");
+    spRegister(co2PPM, "CO2 (PPM)", "The CO2 concentration in Parts Per Million");
+    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    spRegister(humidity, "Humidity (%RH)", "The releative humidity in %");
 }
 
 //----------------------------------------------------------------------------------------------------------
