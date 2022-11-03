@@ -37,9 +37,9 @@ spDevTwist::spDevTwist()
     
     // Register Property
     spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
-    spRegister(ledRed, "LED Red", "Set the red LED brightness");
-    spRegister(ledGreen, "LED Green", "Set the green LED brightness");
-    spRegister(ledBlue, "LED Blue", "Set the blue LED brightness");
+    spRegister(ledRed, "LED Red", "Sets the red LED brightness");
+    spRegister(ledGreen, "LED Green", "Sets the green LED brightness");
+    spRegister(ledBlue, "LED Blue", "Sets the blue LED brightness");
 
     // Register parameters
     spRegister(buttonState);
