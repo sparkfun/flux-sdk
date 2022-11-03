@@ -16,7 +16,7 @@
 #include "SparkFun_Qwiic_Scale_NAU7802_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kNAU7802DeviceName "nau7802"
+#define kNAU7802DeviceName "NAU7802"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevNAU7802 : public spDeviceType<spDevNAU7802>, public NAU7802
