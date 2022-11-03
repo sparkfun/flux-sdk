@@ -16,7 +16,7 @@
 #include "SparkFun_STC3x_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kSTC31DeviceName "stc31"
+#define kSTC31DeviceName "STC31"
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library

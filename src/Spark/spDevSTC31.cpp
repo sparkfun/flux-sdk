@@ -35,14 +35,14 @@ spDevSTC31::spDevSTC31()
     setDescription("STC31 CO2 Sensor");
 
     // Register parameters
-    spRegister(co2, "CO2 (%)", "CO2 Concentration (%)");
-    spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
+    spRegister(co2, "CO2 (%)", "The CO2 concentration in %");
+    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
 
-    spRegister(rh, "Humidity (%RH)", "Humidity (%RH)");
-    spRegister(temperatureC_In, "Temperature (C)", "Temperature (C)");
-    spRegister(pressure, "Pressure (mbar)", "Pressure (mbar)");
+    spRegister(rh, "Humidity (%RH)", "Adjust the CO2 measurement using this humidity (%RH)");
+    spRegister(temperatureC_In, "Temperature (C)", "Adjust the CO2 measurement using this temperature (C)");
+    spRegister(pressure, "Pressure (mbar)", "Adjust the CO2 measurement using this atmospheric pressure (mbar)");
 
-    spRegister(binaryGas, "Binary Gas", "Binary Gas");
+    spRegister(binaryGas, "Binary Gas", "Define the binary gas mixture and full scale concentration");
 }
 
 //----------------------------------------------------------------------------------------------------------
