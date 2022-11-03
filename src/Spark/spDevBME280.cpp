@@ -37,7 +37,7 @@ spDevBME280::spDevBME280()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("The Bosch BME280 Atmospheric Sensor.");
+    setDescription("The Bosch BME280 Atmospheric Sensor");
 
     // Register parameters
     spRegister(humidity, "Humidity", "The sensed humidity value");
