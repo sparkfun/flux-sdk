@@ -3,26 +3,52 @@
 // Object wrapper around the SD Card object. This allows this object to
 // be part of the framework.
 
+#include "spFSSDMMCard.h"
 #include <string>
-#include "spFSSDCard.h"
 
 #include "FS.h"
 #include "SD_MMC.h"
 
-// Global object - for quick access to MMC FS.
-_spFSSDCard &_theFSSDCard = _spFSSDCard::get();
+//-----------------------------------------------------------------------
+// The SDMMC systems wants filenames with full paths. The callers
+// the his module could miss that. Add a function to check
+//
+// A proper filename is returned in destbuffer.
 
-bool _spFSSDCard::initialize()
+// Returns true on success.
+static bool checkForFullPath(const char *filename, char *destbuffer, size_t length)
+{
+
+    if (!filename || length < 5)
+        return false;
+
+    uint16_t offset = 0;
+
+    if (*filename != '/')
+    {
+        offset = 1;
+        *destbuffer = '/';
+    }
+    snprintf(destbuffer + offset, length - offset, "%s", filename);
+
+    return true;
+}
+
+// Global object - for quick access to MMC FS.
+_spFSSDMMCard &_theSDMMCard = _spFSSDMMCard::get();
+
+//-----------------------------------------------------------------------
+bool _spFSSDMMCard::initialize()
 {
     if (_isInitalized)
         return true;
 
     // do we have a power pin for the SD card?
-    if ( _pinPower)
-       pinMode(_pinPower, OUTPUT);
+    if (_pinPower)
+        pinMode(_pinPower, OUTPUT);
 
-//    pinMode(_pinCS, OUTPUT);
-//    digitalWrite(_pinCS, HIGH);
+    //    pinMode(_pinCS, OUTPUT);
+    //    digitalWrite(_pinCS, HIGH);
 
     setPower(true);
 
@@ -34,25 +60,11 @@ bool _spFSSDCard::initialize()
         return false;
     }
 
-    uint8_t cardType = SD_MMC.cardType();
-
-    if (cardType == CARD_NONE)
+    if (SD_MMC.cardType() == CARD_NONE)
     {
         spLog_W(F("No SD card attached. Please insert an SD card."));
         return false;
     }
-
-    std::string type = "UNKNOWN";
-    if (cardType == CARD_MMC)
-        type = "MMC";
-    else if (cardType == CARD_SD)
-        type = "SDSC";
-    else if (cardType == CARD_SDHC)
-        type = "SDHC";
-
-    uint64_t cardSize = SD_MMC.cardSize() / (1024 * 1024);
-
-    Serial.printf("SD Card type: %s, Size: %lluMB\n\r", type.c_str(), cardSize);
 
     _isInitalized = true;
 
@@ -62,7 +74,7 @@ bool _spFSSDCard::initialize()
 
 //-----------------------------------------------------------------------
 
-bool _spFSSDCard::initialize(uint8_t pinCS)
+bool _spFSSDMMCard::initialize(uint8_t pinCS)
 {
     if (!pinCS)
         return false;
@@ -72,7 +84,7 @@ bool _spFSSDCard::initialize(uint8_t pinCS)
 }
 
 //-----------------------------------------------------------------------
-bool _spFSSDCard::initialize(uint8_t pinCS, uint8_t pinPower)
+bool _spFSSDMMCard::initialize(uint8_t pinCS, uint8_t pinPower)
 {
     if (!pinCS || !pinPower)
         return false;
@@ -82,9 +94,9 @@ bool _spFSSDCard::initialize(uint8_t pinCS, uint8_t pinPower)
 
     return initialize();
 }
-
+//-----------------------------------------------------------------------
 // Power interface
-void _spFSSDCard::setPower(bool powerOn)
+void _spFSSDMMCard::setPower(bool powerOn)
 {
     if (!_pinPower || (_isInitalized && powerOn == _powerOn))
         return; // no need to continue
@@ -94,9 +106,10 @@ void _spFSSDCard::setPower(bool powerOn)
     _powerOn = powerOn;
 }
 
-spFSFile _spFSSDCard::open(const char *name, spFileOpenMode_t mode, bool create)
+//-----------------------------------------------------------------------
+spFSFile _spFSSDMMCard::open(const char *name, spFileOpenMode_t mode, bool create)
 {
-
+    // Framework file
     spFSFile theSPFile;
 
     if (!_isInitalized || !name || strlen(name) < 4)
@@ -112,70 +125,141 @@ spFSFile _spFSSDCard::open(const char *name, spFileOpenMode_t mode, bool create)
     // the MMC needs to have a full path - the filename must start with "/"
 
     char szBuffer[128];
-    uint8_t offset=0;
-    if (*name != '/')
-    {
-        offset=1;
-        szBuffer[0] = '/';
-    }
-    snprintf(szBuffer+offset, sizeof(szBuffer)-offset, "%s", name);
+
+    if (!checkForFullPath(name, szBuffer, sizeof(szBuffer)))
+        return theSPFile;
 
     File sdFile = SD_MMC.open(szBuffer, sdMode, create);
 
     if (sdFile)
-        theSPFile.setFile(sdFile);
+    {
+
+        // setup our MMC file object that implements spIFile interface
+        spFSSDMMCFile theMMCFile;
+
+        // set the File object in our file driver interface
+        theMMCFile.setFile(sdFile);
+
+        // Move our object to a smart pointer
+        std::shared_ptr<spIFile> pMMCFile = std::make_shared<spFSSDMMCFile>(std::move(theMMCFile));
+
+        // Now set our MMC driver, into the framework driver
+        theSPFile.setIFile(pMMCFile);
+    }
 
     return theSPFile;
 }
 
-bool _spFSSDCard::exists(const char *name)
+//-----------------------------------------------------------------------
+bool _spFSSDMMCard::exists(const char *name)
 {
     if (!_isInitalized)
         return false;
 
-    return SD_MMC.exists(name);
-}
-bool _spFSSDCard::remove(const char *name)
-{
-    if (!_isInitalized)
+    char szBuffer[128];
+    if (!checkForFullPath(name, szBuffer, sizeof(szBuffer)))
         return false;
 
-    return SD_MMC.remove(name);
-}
-bool _spFSSDCard::rename(const char *nameFrom, const char *nameTo)
-{
-    if (!_isInitalized)
-        return false;
-
-    return SD_MMC.rename(nameFrom, nameTo);
+    return SD_MMC.exists(szBuffer);
 }
 
-bool _spFSSDCard::mkdir(const char *path)
+//-----------------------------------------------------------------------
+bool _spFSSDMMCard::remove(const char *name)
 {
     if (!_isInitalized)
         return false;
 
-    return SD_MMC.mkdir(path);
+    char szBuffer[128];
+    if (!checkForFullPath(name, szBuffer, sizeof(szBuffer)))
+        return false;
+
+    return SD_MMC.remove(szBuffer);
 }
 
-bool _spFSSDCard::rmdir(const char *path)
+//-----------------------------------------------------------------------
+bool _spFSSDMMCard::rename(const char *nameFrom, const char *nameTo)
 {
     if (!_isInitalized)
         return false;
 
-    return SD_MMC.rmdir(path);
+    char szBuffFrom[128];
+    if (!checkForFullPath(nameFrom, szBuffFrom, sizeof(szBuffFrom)))
+        return false;
+
+    char szBuffTo[128];
+    if (!checkForFullPath(nameTo, szBuffTo, sizeof(szBuffTo)))
+        return false;
+
+    return SD_MMC.rename(szBuffFrom, szBuffTo);
+}
+
+//-----------------------------------------------------------------------
+bool _spFSSDMMCard::mkdir(const char *path)
+{
+    if (!_isInitalized)
+        return false;
+
+    char szBuffer[128];
+    if (!checkForFullPath(path, szBuffer, sizeof(szBuffer)))
+        return false;
+
+    return SD_MMC.mkdir(szBuffer);
+}
+
+//-----------------------------------------------------------------------
+bool _spFSSDMMCard::rmdir(const char *path)
+{
+    if (!_isInitalized)
+        return false;
+
+    char szBuffer[128];
+    if (!checkForFullPath(path, szBuffer, sizeof(szBuffer)))
+        return false;
+
+    return SD_MMC.rmdir(szBuffer);
+}
+
+//-----------------------------------------------------------------------
+uint _spFSSDMMCard::size(void)
+{
+    if (!_isInitalized)
+        return 0;
+
+    return SD_MMC.cardSize() / (1024 * 1024);
+}
+//-----------------------------------------------------------------------
+
+const char *_spFSSDMMCard::type(void)
+{
+    if (!_isInitalized)
+        return nullptr;
+
+    switch (SD_MMC.cardType())
+    {
+    case CARD_MMC:
+        return "MMC";
+    case CARD_SD:
+        return "SDSC";
+    case CARD_SDHC:
+        return "SDHC";
+    case CARD_NONE:
+        return "NO CARD";
+
+    default:
+        return "UNKNOWN";
+    }
 }
 
 // -------------------------------------------------------
 // File implementation
 
-spFSFile::operator bool() const
+bool spFSSDMMCFile::isValid()
 {
     // if  the file object exist, we exist
     return _file == true;
 }
 
-size_t spFSFile::write(const uint8_t *buf, size_t size)
+size_t spFSSDMMCFile::write(const uint8_t *buf, size_t size)
 {
     if (!_file)
         return false;
@@ -183,13 +267,13 @@ size_t spFSFile::write(const uint8_t *buf, size_t size)
     return _file.write(buf, size);
 }
 
-void spFSFile::close(void)
+void spFSSDMMCFile::close(void)
 {
     if (_file)
         _file.close();
 }
 
-void spFSFile::flush(void)
+void spFSSDMMCFile::flush(void)
 {
     if (_file)
         _file.flush();
