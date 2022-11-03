@@ -15,7 +15,7 @@
 
 
 
-#define kAMG8833DeviceName "amg8833"
+#define kAMG8833DeviceName "AMG8833"
 
 // Define our class
 class spDevAMG8833 : public spDeviceType<spDevAMG8833>, public GridEYE

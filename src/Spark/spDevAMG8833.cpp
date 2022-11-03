@@ -24,8 +24,8 @@ spDevAMG8833::spDevAMG8833()
     setDescription("AMG8833 Grid-EYE infrared array");
 
     // Register output params
-    spRegister(deviceTemperatureC, "Device Temperature (C)", "Device Temperature (C)");
-    spRegister(pixelTemperatures, "Pixel Temperatures (C)", "Pixel Temperatures (C)");
+    spRegister(deviceTemperatureC, "Device Temperature (C)", "The device temperature in degrees C");
+    spRegister(pixelTemperatures, "Pixel Temperatures (C)", "The 64 pixel temperatures in degrees C");
     pixelTemperatures.setPrecision(2);
 
     // Register property
