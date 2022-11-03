@@ -24,7 +24,7 @@ class spFormatCSV : public spOutputFormat
   private:
     void writeHeaderEntry(const std::string &tag)
     {
-        if (_bWriteHeader)
+        if ((_writeHeader & kHeaderWrite) == kHeaderWrite)
             if (!append_to_header(tag))
                 spLog_W("CSV - internal header buffer size exceeded.");
     }
@@ -216,8 +216,7 @@ class spFormatCSV : public spOutputFormat
 
     virtual void beginObservation(const char *szTitle = nullptr)
     {
-
-        // if(szTitle) // TODO TITLE?
+        _inObservation = true;
     }
 
     //-----------------------------------------------------------------
@@ -234,6 +233,7 @@ class spFormatCSV : public spOutputFormat
     //-----------------------------------------------------------------
     void endObservation(void)
     {
+        _inObservation = false;
     }
 
     //-----------------------------------------------------------------
@@ -241,7 +241,7 @@ class spFormatCSV : public spOutputFormat
     {
 
         // Write out the header?
-        if (_bWriteHeader && _header_buffer.length() > 0)
+        if ((_writeHeader & kHeaderWrite) == kHeaderWrite && _header_buffer.length() > 0)
             outputObservation(_header_buffer.c_str());
 
         outputObservation(_data_buffer.c_str());
@@ -252,16 +252,16 @@ class spFormatCSV : public spOutputFormat
     {
         clear_buffers();
         _section_name = nullptr;
-        if (_bWriteHeader)
-            _bWriteHeader = false;
+        _writeHeader = (_writeHeader & kHeaderPending) == kHeaderPending ? kHeaderWrite : kHeaderNone;
     }
 
     //-----------------------------------------------------------------
     void reset(void)
     {
         clear_buffers();
-        _bWriteHeader = true;
+        _writeHeader = kHeaderWrite;
         _section_name = nullptr;
+        _inObservation = false;
     }
 
     //-----------------------------------------------------------------
@@ -271,7 +271,15 @@ class spFormatCSV : public spOutputFormat
 
     void output_header(void)
     {
-        _bWriteHeader = true;
+        // For output to a file, this method is called by the new file event
+        // and is often triggered in the middle of a observation transaction.
+        // Given this, the writer header flag can't be set, since it's cleared at
+        // the end of the observation. So, if in an observation, set the pending bit
+
+        if (_inObservation)
+            _writeHeader = (spFmtCSVHeader_t)(_writeHeader | kHeaderPending);
+        else
+            _writeHeader = kHeaderWrite;
     }
 
     // Used to register the event we want to listen to, which will trigger this
@@ -405,5 +413,16 @@ class spFormatCSV : public spOutputFormat
 
     char *_section_name;
 
-    bool _bWriteHeader;
+    // Header status field values
+    typedef enum
+    {
+        kHeaderNone = 0,
+        kHeaderWrite = 1,
+        kHeaderPending = 2,
+        kHeaderWriteAndPending = 3
+    } spFmtCSVHeader_t;
+
+    spFmtCSVHeader_t _writeHeader;
+
+    bool _inObservation;
 };
