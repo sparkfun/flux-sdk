@@ -90,7 +90,7 @@ void spFileRotate::write(const char *value)
     // no file - system just starting up?
     if (!_currentFile)
     {
-        // open the next file - dont' send an event - th
+        // open the next file - dont' send an event
         if (!openNextLogFile(false))
             return;
     }
