@@ -423,7 +423,7 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19035">SPX-19035</a></td>
     </tr>
     <tr>
-        <td style="vertical-align:middle" align="center">0x55</td>
+        <td style="vertical-align:middle" align="center"><b>0x55</b></td>
         <td style="vertical-align:middle" align="center">Bio Sensor Hub</td>
         <td style="vertical-align:middle" align="center">MAX32664 Biometric Sensor Hub</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15291">SEN-15291</a></td>
@@ -489,7 +489,7 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14607">SEN-14607</a></td>
     </tr>
     <tr>
-        <td style="vertical-align:middle" align="center"><b>0x68</b>, <b>0x69</b>, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F</td>
+        <td style="vertical-align:middle" align="center"><b>0x68</b>, <b>0x69</b>, <b>0x6A</b>, <b>0x6B</b>, 0x6C, 0x6D, 0x6E, 0x6F</td>
         <td style="vertical-align:middle" align="center">Button</td>
         <td style="vertical-align:middle" align="center">SparkFun Qwiic Button</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15932">BOB-15932</a></td>
