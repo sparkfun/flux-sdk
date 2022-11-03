@@ -13,7 +13,7 @@
 #include "SparkFun_PHT_MS8607_Arduino_Library.h"
 #include "spDevice.h"
 
-#define kMS8607DeviceName "ms8607"
+#define kMS8607DeviceName "MS8607"
 
 // Define our class
 class spDevMS8607 : public spDeviceType<spDevMS8607>, public MS8607

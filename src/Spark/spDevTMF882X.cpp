@@ -36,18 +36,18 @@ spDevTMF882X::spDevTMF882X()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("TMF882X Time-Of-Flight Sensor");
+    setDescription("TMF882x Time-Of-Flight Sensor");
 
     // Register parameters
-    spRegister(confidence, "Confidence", "Confidence");
-    spRegister(distance, "Distance (mm)", "Distance (mm)");
-    spRegister(channel, "Channel", "Channel");
-    spRegister(subCapture, "Sub Capture", "Sub Capture");
-    spRegister(photonCount, "Photon Count", "Photon Count");
-    spRegister(refPhotonCount, "Ref Photon Count", "Reference Photon Count");
-    spRegister(ambientLight, "Ambient Light", "Ambient Light");
+    spRegister(confidence, "Confidence", "The distance measurement confidence");
+    spRegister(distance, "Distance (mm)", "The measured distance in mm");
+    spRegister(channel, "Channel", "The measurement channel");
+    spRegister(subCapture, "Sub Capture", "The measurement sub-capture");
+    spRegister(photonCount, "Photon Count", "The measurement photon count");
+    spRegister(refPhotonCount, "Ref Photon Count", "The reference photon count");
+    spRegister(ambientLight, "Ambient Light", "The ambient light level");
 
-    spRegister(reportPeriod, "Report Period (ms)", "Report Period (ms)");
+    spRegister(reportPeriod, "Report Period (ms)", "The reporting period in milliseconds)");
 
     spRegister(factoryCalibration, "Perform Factory Calibration", "Perform Factory Calibration - requires minimal ambient light and no target within 40 cm");
 }

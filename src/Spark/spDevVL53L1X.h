@@ -16,7 +16,7 @@
 #include "SparkFun_VL53L1X.h"
 
 // What is the name used to ID this device?
-#define kVL53L1XDeviceName "vl53l1x"
+#define kVL53L1XDeviceName "VL53L1x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevVL53L1X : public spDeviceType<spDevVL53L1X>, public SFEVL53L1X

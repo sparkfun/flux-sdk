@@ -34,7 +34,7 @@ spDevBioHub::spDevBioHub()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("Biometric Hub");
+    setDescription("MAX30101 Biometric Hub");
 
     _begun = false;
     _initialized = false;

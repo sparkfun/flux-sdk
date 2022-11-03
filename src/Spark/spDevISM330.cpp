@@ -47,7 +47,7 @@ spDevISM330::spDevISM330()
     spRegister(gyroX, "Gyro X (milli-dps)", "Gyro X (milli-dps)");
     spRegister(gyroY, "Gyro Y (milli-dps)", "Gyro Y (milli-dps)");
     spRegister(gyroZ, "Gyro Z (milli-dps)", "Gyro Z (milli-dps)");
-    spRegister(temperature, "Temperature (C)", "Temperature (C)");
+    spRegister(temperature, "Temperature (C)", "The gyro temperature in degrees C");
 
     // Register properties
     spRegister(accelDataRate, "Accel Data Rate (Hz)", "Accelerometer Data Rate (Hz)");

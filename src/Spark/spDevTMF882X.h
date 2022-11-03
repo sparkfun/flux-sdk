@@ -16,7 +16,7 @@
 #include "SparkFun_TMF882X_Library.h"
 
 // What is the name used to ID this device?
-#define kTMF882XDeviceName "tmf882x"
+#define kTMF882XDeviceName "TMF882x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevTMF882X : public spDeviceType<spDevTMF882X>, public SparkFun_TMF882X

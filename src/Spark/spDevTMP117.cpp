@@ -35,7 +35,7 @@ spDevTMP117::spDevTMP117()
     setDescription("TMP117 Precision Temperature Sensor");
 
     // Register parameters
-    spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
+    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
 }
 
 //----------------------------------------------------------------------------------------------------------

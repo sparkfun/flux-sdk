@@ -16,7 +16,7 @@
 #include "SparkFun_SGP30_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kSGP30DeviceName "sgp30"
+#define kSGP30DeviceName "SGP30"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevSGP30 : public spDeviceType<spDevSGP30>, public SGP30

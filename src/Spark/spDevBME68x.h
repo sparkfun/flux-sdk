@@ -16,7 +16,7 @@
 #include "bme68xLibrary.h"
 
 // What is the name used to ID this device?
-#define kBME68xDeviceName "bme68x"
+#define kBME68xDeviceName "BME68x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevBME68x : public spDeviceType<spDevBME68x>, public Bme68x

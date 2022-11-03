@@ -15,7 +15,7 @@
 #include "spDevice.h"
 
 // What is the name used to ID this device?
-#define kTwistDeviceName "twist"
+#define kTwistDeviceName "TWIST"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevTwist : public spDeviceType<spDevTwist>, public TWIST

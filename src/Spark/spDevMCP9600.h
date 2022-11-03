@@ -15,7 +15,7 @@
 #include "SparkFun_MCP9600.h"
 
 // What is the name used to ID this device?
-#define kMCP9600DeviceName "mcp9600"
+#define kMCP9600DeviceName "MCP9600"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevMCP9600 : public spDeviceType<spDevMCP9600>, public MCP9600

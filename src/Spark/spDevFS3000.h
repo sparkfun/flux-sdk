@@ -15,7 +15,7 @@
 
 
 
-#define kFS3000DeviceName "fs3000"
+#define kFS3000DeviceName "FS3000"
 
 // Define our class
 class spDevFS3000 : public spDeviceType<spDevFS3000>, public FS3000

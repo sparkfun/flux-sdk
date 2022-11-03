@@ -13,7 +13,7 @@
 #include "SparkFun_LPS25HB_Arduino_Library.h"
 #include "spDevice.h"
 
-#define kLPS25HBDeviceName "lps25hb"
+#define kLPS25HBDeviceName "LPS25HB"
 
 // Define our class
 class spDevLPS25HB : public spDeviceType<spDevLPS25HB>, public LPS25HB

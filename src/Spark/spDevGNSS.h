@@ -16,7 +16,7 @@
 #include "SparkFun_u-blox_GNSS_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kGNSSDeviceName "gnss"
+#define kGNSSDeviceName "GNSS"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevGNSS : public spDeviceType<spDevGNSS>, public SFE_UBLOX_GNSS

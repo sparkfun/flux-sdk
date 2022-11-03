@@ -16,7 +16,7 @@
 #include "SparkFun_MMC5983MA_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kMMC5983DeviceName "mmc5983"
+#define kMMC5983DeviceName "MMC5983"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevMMC5983 : public spDeviceType<spDevMMC5983>, public SFE_MMC5983MA

@@ -40,7 +40,7 @@ spDevNAU7802::spDevNAU7802()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(zeroOffset, "Zero Offset", "Zero Offset");
+    spRegister(zeroOffset, "Zero Offset", "The scale zero offset");
     spRegister(calibrationFactor, "Calibration Factor", "Used to convert the scale ADU into units");
 
     // Register parameters

@@ -32,18 +32,18 @@ spDevSDP3X::spDevSDP3X()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("SDP3X Differential Pressure Sensor");
+    setDescription("SDP3x Differential Pressure Sensor");
 
     // Register the properties with the system - this makes the connections needed
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(temperatureCompensation, "Temperature Compensation", "Temperature Compensation");
-    spRegister(measurementAveraging, "Measurement Averaging", "Measurement Averaging");
+    spRegister(temperatureCompensation, "Temperature Compensation", "Temperature compensation mode");
+    spRegister(measurementAveraging, "Measurement Averaging", "Measurement averaging");
 
     // Register parameters
-    spRegister(temperatureC, "Temperature (C)", "Temperature (C)");
-    spRegister(pressure, "Pressure (Pa)", "Pressure (Pa)");
+    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    spRegister(pressure, "Pressure (Pa)", "Atmospheric pressure in Pascals");
 }
 
 //----------------------------------------------------------------------------------------------------------

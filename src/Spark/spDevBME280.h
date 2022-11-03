@@ -16,7 +16,7 @@
 #include "SparkFunBME280.h"
 
 // What is the name used to ID this device?
-#define kBME280DeviceName "bme280"
+#define kBME280DeviceName "BME280"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevBME280 : public spDeviceType<spDevBME280>, public BME280

@@ -16,7 +16,7 @@
 #include "SparkFun_ACS37800_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kACS37800DeviceName "acs37800"
+#define kACS37800DeviceName "ACS37800"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevACS37800 : public spDeviceType<spDevACS37800>, public ACS37800
@@ -63,8 +63,8 @@ private:
     // methods used to get values for our RW properties
     uint get_number_of_samples();
     void set_number_of_samples(uint);
-    bool get_bypass_n_enable();
-    void set_bypass_n_enable(bool);
+    uint8_t get_bypass_n_enable();
+    void set_bypass_n_enable(uint8_t);
     void set_sense_resistance(float);
     float get_sense_resistance();
     void set_divider_resistance(float);
@@ -102,6 +102,9 @@ private:
     bool _thePosAngle =  false;
     bool _thePosPF = false;
 
+    bool _bypassNenable = true; // For DC measurement, bypass_n should be enabled
+    uint32_t _n = 1023; // Default to 1023 samples (at 32kHz, for DC measurement)
+
     float _senseResistance = ACS37800_DEFAULT_SENSE_RES;
     float _dividerResistance = ACS37800_DEFAULT_DIVIDER_RES;
     float _currentRange = ACS37800_DEFAULT_CURRENT_RANGE;
@@ -123,8 +126,9 @@ public:
     spParameterOutBool<spDevACS37800, &spDevACS37800::read_pos_power_factor> positivePowerFactor;
 
     // Define our read-write properties
-    spPropertyRWUint<spDevACS37800, &spDevACS37800::get_number_of_samples, &spDevACS37800::set_number_of_samples> numberOfSamples;
-    spPropertyRWBool<spDevACS37800, &spDevACS37800::get_bypass_n_enable, &spDevACS37800::set_bypass_n_enable> bypassNenable;
+    spPropertyRWUint<spDevACS37800, &spDevACS37800::get_number_of_samples, &spDevACS37800::set_number_of_samples> numberOfSamples = { 0, 0, 1023 };
+    spPropertyRWUint8<spDevACS37800, &spDevACS37800::get_bypass_n_enable, &spDevACS37800::set_bypass_n_enable> bypassNenable
+        = { 0, { {"RMS calculated using zero crossings", 0}, {"RMS calculated using n samples", 1} } };
     spPropertyRWFloat<spDevACS37800, &spDevACS37800::get_sense_resistance, &spDevACS37800::set_sense_resistance> senseResistance;
     spPropertyRWFloat<spDevACS37800, &spDevACS37800::get_divider_resistance, &spDevACS37800::set_divider_resistance> dividerResistance;
     spPropertyRWFloat<spDevACS37800, &spDevACS37800::get_current_range, &spDevACS37800::set_current_range> currentRange;

@@ -16,7 +16,7 @@
 #include "SparkFun_TMP117.h"
 
 // What is the name used to ID this device?
-#define kTMP117DeviceName "tmp117"
+#define kTMP117DeviceName "TMP117"
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library

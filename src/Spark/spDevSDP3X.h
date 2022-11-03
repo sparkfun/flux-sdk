@@ -16,7 +16,7 @@
 #include "SparkFun_SDP3x_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kSDP3XDeviceName "sdp3x"
+#define kSDP3XDeviceName "SDP3x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevSDP3X : public spDeviceType<spDevSDP3X>, public SDP3X

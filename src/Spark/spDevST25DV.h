@@ -15,7 +15,7 @@
 #include "spDevice.h"
 
 // What is the name used to ID this device?
-#define kST25DVDeviceName "st25dv"
+#define kST25DVDeviceName "ST25DV"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevST25DV : public spDeviceType<spDevST25DV>, public SFE_ST25DV64KC_NDEF

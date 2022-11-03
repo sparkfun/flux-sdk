@@ -37,7 +37,7 @@ spDevBMP384::spDevBMP384()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("The Bosch BMP384 Pressure and Temperature Sensor.");
+    setDescription("The Bosch BMP384 Pressure and Temperature Sensor");
 
     // Register parameters
     spRegister(temperatureC, "Temperature (C)", "The sensed temperature in degrees Celsius");
