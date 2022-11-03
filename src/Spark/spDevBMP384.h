@@ -16,7 +16,7 @@
 #include "SparkFunBMP384.h"
 
 // What is the name used to ID this device?
-#define kBMP384DeviceName "bmp384"
+#define kBMP384DeviceName "BMP384"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevBMP384 : public spDeviceType<spDevBMP384>, public BMP384
