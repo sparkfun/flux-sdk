@@ -38,14 +38,14 @@ spDevVCNL4040::spDevVCNL4040()
 
     // Register parameters
     spRegister(proximity, "Proximity", "Proximity : high values indicate close proximity");
-    spRegister(lux, "Lux", "Lux");
+    spRegister(lux, "Lux", "The light level in lux");
 
     // Register read-write properties
-    spRegister(ledCurrent, "LED Current (mA)", "LED Current (mA)");
-    spRegister(irDutyCycle, "IR Duty Cycle", "IR Duty Cycle");
-    spRegister(proximityIntegrationTime, "Proximity Integration Time", "Proximity Integration Time");
-    spRegister(proximityResolution, "Proximity Resolution", "Proximity Resolution");
-    spRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "Ambient Integration Time (ms)");
+    spRegister(ledCurrent, "LED Current (mA)", "The LED current in milliamps)");
+    spRegister(irDutyCycle, "IR Duty Cycle", "The InfraRed duty cycle");
+    spRegister(proximityIntegrationTime, "Proximity Integration Time", "The proximity measurement integration time");
+    spRegister(proximityResolution, "Proximity Resolution", "The proximity measurement resolution");
+    spRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "The ambient light level integration time in milliseconds");
 }
 
 //----------------------------------------------------------------------------------------------------------

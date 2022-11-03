@@ -16,7 +16,7 @@
 #include "SparkFun_VCNL4040_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kVCNL4040DeviceName "vcnl4040"
+#define kVCNL4040DeviceName "VCNL4040"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevVCNL4040 : public spDeviceType<spDevVCNL4040>, public VCNL4040
