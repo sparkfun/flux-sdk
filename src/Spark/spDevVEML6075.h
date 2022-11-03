@@ -16,7 +16,7 @@
 #include "SparkFun_VEML6075_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kVEML6075DeviceName "veml6075"
+#define kVEML6075DeviceName "VEML6075"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevVEML6075 : public spDeviceType<spDevVEML6075>, public VEML6075
@@ -67,7 +67,7 @@ public:
         = { VEML6075::IT_100MS, { { "50ms", VEML6075::IT_50MS }, { "100ms", VEML6075::IT_100MS },
                                   { "200ms", VEML6075::IT_200MS }, { "400ms", VEML6075::IT_400MS }, { "800ms", VEML6075::IT_800MS } } };
     spPropertyRWUint8<spDevVEML6075, &spDevVEML6075::get_high_dynamic, &spDevVEML6075::set_high_dynamic> highDynamic
-        = { VEML6075::DYNAMIC_NORMAL, { { "Normal Dynamic", VEML6075::DYNAMIC_NORMAL }, { "High Dynamic", VEML6075::DYNAMIC_NORMAL } } };
+        = { VEML6075::DYNAMIC_NORMAL, { { "Normal Dynamic", VEML6075::DYNAMIC_NORMAL }, { "High Dynamic", VEML6075::DYNAMIC_HIGH } } };
 
     // Define our output parameters - specify the get functions to call.
     spParameterOutFloat<spDevVEML6075, &spDevVEML6075::read_uva> uva;    

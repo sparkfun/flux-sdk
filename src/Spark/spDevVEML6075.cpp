@@ -37,13 +37,13 @@ spDevVEML6075::spDevVEML6075()
     setDescription("VEML6075 UV Sensor");
 
     // Register parameters
-    spRegister(uva, "UVA Level", "UVA Level");
-    spRegister(uvb, "UVB Level", "UVB Level");
-    spRegister(uvIndex, "UV Index", "UV Index");
+    spRegister(uva, "UVA Level", "The UVA light level");
+    spRegister(uvb, "UVB Level", "The UVB light level");
+    spRegister(uvIndex, "UV Index", "The combined UV index");
 
     // Register read-write properties
-    spRegister(integrationTime, "Integration Time (ms)", "Integration Time (ms)");
-    spRegister(highDynamic, "Dynamic Range", "Dynamic Range");
+    spRegister(integrationTime, "Integration Time (ms)", "The measurement integration time in milliseconds");
+    spRegister(highDynamic, "Dynamic Range", "The selected dynamic range: normal or high");
 }
 
 //----------------------------------------------------------------------------------------------------------
