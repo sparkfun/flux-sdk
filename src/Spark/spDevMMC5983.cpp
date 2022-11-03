@@ -40,16 +40,16 @@ spDevMMC5983::spDevMMC5983()
     // to support managed properties/public properties
 
     // Register parameters
-    spRegister(magX, "X Field (Gauss)", "X Field (Gauss)");
-    spRegister(magY, "Y Field (Gauss)", "Y Field (Gauss)");
-    spRegister(magZ, "Z Field (Gauss)", "Z Field (Gauss)");
+    spRegister(magX, "X Field (Gauss)", "The X field strength in Gauss");
+    spRegister(magY, "Y Field (Gauss)", "The Y field strength in Gauss");
+    spRegister(magZ, "Z Field (Gauss)", "The Z field strength in Gauss");
     magX.setPrecision(5);
     magY.setPrecision(5);
     magZ.setPrecision(5);
-    spRegister(temperature, "Temperature (C)", "Temperature (C)");
+    spRegister(temperature, "Temperature (C)", "The ambient temperature in degrees C");
 
     // Register properties
-    spRegister(filterBandwidth, "Filter Bandwidth (Hz)", "Filter Bandwidth (Hz)");
+    spRegister(filterBandwidth, "Filter Bandwidth (Hz)", "The filter bandwidth in Hz");
     spRegister(autoReset, "Auto-Reset", "Auto-Reset");
 }
 
