@@ -16,7 +16,7 @@
 #include "SparkFun_BMP581_Arduino_Library.h"
 
 // What is the name used to ID this device?
-#define kBMP581DeviceName "bmp581"
+#define kBMP581DeviceName "BMP581"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class spDevBMP581 : public spDeviceType<spDevBMP581>, public BMP581
