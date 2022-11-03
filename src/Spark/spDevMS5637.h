@@ -13,7 +13,7 @@
 #include "SparkFun_MS5637_Arduino_Library.h"
 #include "spDevice.h"
 
-#define kMS5637DeviceName "ms5637"
+#define kMS5637DeviceName "MS5637"
 
 // Define our class
 class spDevMS5637 : public spDeviceType<spDevMS5637>, public MS5637
