@@ -199,6 +199,12 @@ class spSpark : public spObjectContainer
         return true;
     }
 
+    void resetSettings(void)
+    {
+        if (_settingsStorage)
+            _settingsStorage->resetStorage();
+    }
+
   private:
 
 
