@@ -38,7 +38,8 @@ bool spFileRotate::openNextLogFile(bool bSendEvent)
     if (_currentFile)
     {
         _currentFile.close();
-        _currentFile = spFSFile();
+        _currentFile = spFSFile(); // "null file"
+        _currentFilename="";
     }
     // Open the next file
     std::string nextFile;
