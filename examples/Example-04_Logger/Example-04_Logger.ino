@@ -11,12 +11,21 @@
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
+
+// settings storage
+#include <Spark/spStorageESP32Pref.h>
+#include <Spark/spSettingsSave.h>
+#include <Spark/spSettingsSerial.h>
+
 // Testing for device calls
 #include <Spark/spDevButton.h>
 
 // SD Card output
 #include <Spark/spFSSDMMCard.h>
 #include <Spark/spFileRotate.h>
+
+// WiFi Testing
+#include <Spark/spWiFiESP32.h>
 
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
@@ -58,6 +67,13 @@ spFSSDMMCard theSDCard;
 // A writer interface for the SD Card that also rotates files 
 spFileRotate  theOutputFile;
 
+// settings things
+spStorageESP32Pref  myStorage;
+spSettingsSerial    serialSettings;
+spSettingsSave      saveSettings;
+
+spWiFiESP32 wifiConnection;
+
 //---------------------------------------------------------------------
 // Arduino Setup
 //
@@ -75,9 +91,37 @@ void setup() {
     pinMode(EN_3V3_SW, OUTPUT); // Enable Qwiic power and I2C
     digitalWrite(EN_3V3_SW, HIGH);
 #endif
+
+    // If not using settings, can use the following lines to test WiFi manually
+    // Try WiFi
+    //wifiConnection.SSID = "<WIFI SSID>";
+    //wifiConnection.password = "<WIFI_PASSWORD>";
+
+    // set the settings storage system for spark
+    spark.setSettingsStorage(myStorage);
+
+    // Have settings save when editing is complete.
+    saveSettings.listenForSave(serialSettings.on_finished);
+
+    // Set the settings system to start at root of the spark system.
+    serialSettings.setSystemRoot(&spark);
+
+    // Add serial settings to spark - the spark loop call will take care
+    // of everything else.
+    spark.add(serialSettings);
+
+    // Add the save system to the app
+    spark.add(saveSettings);
+
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
     spark.start();  
+
+    if (wifiConnection.isConnected())
+    {
+        Serial.println("Connected to Wifi!");
+    }else
+        Serial.println("Unable to connect to WiFi!");
 
     // Logging is done at an interval - using an interval timer. 
     // Connect logger to the timer event
@@ -104,7 +148,7 @@ void setup() {
         theOutputFile.startNumber=1;
         theOutputFile.rotatePeriod(24); // one day 
 
-        // add the fileoutput to the CSV output.
+        // add the file output to the CSV output.
         fmtCSV.add(theOutputFile);
         // have the CSV formatter listen to the new file event. This 
         // will cause a header to be written next cycle.
@@ -114,6 +158,9 @@ void setup() {
     }
     else
         Serial.println("SD card output not available");
+
+
+    
 
     // What devices has the system detected?
     // List them and add them to the logger
