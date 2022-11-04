@@ -1169,6 +1169,12 @@ using spOperationContainer = spContainer<spOperation *>;
 // spAction - just to enable grouping of actions
 class spAction : public spOperation
 {
+public:
+    virtual bool initialize(void)
+    {
+        return true;
+    }
+
 };
 // Container for actions
 using spActionContainer = spContainer<spAction *>;

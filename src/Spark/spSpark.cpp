@@ -21,6 +21,7 @@ bool spSpark::start(bool bAutoLoad)
     // setup our logging system.
     _logDriver.setOutput(spSerial());
     spLog.setLogDriver(_logDriver);
+    spLog.setLogLevel(spLogInfo);  // TODO - adjust?
 
     // Init our I2C driver
     _i2cDriver.begin();
@@ -36,6 +37,13 @@ bool spSpark::start(bool bAutoLoad)
         // restore();
     }
 
+    // initialize actions
+
+    for ( auto pAction : Actions )
+    {
+        if ( !pAction->initialize())
+            spLog_W(F("Startup - Action %s initialize failed."), pAction->name());
+    }
     return true;
 }
 
