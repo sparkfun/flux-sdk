@@ -11,39 +11,24 @@ class spSettingsSave : public spActionType<spSettingsSave>
 {
 
   private:
-    spStorage *_saveDest;
 
     //------------------------------------------------------------------------------
     void save_settings(void)
     {
-        if (!_saveDest)
-        {
-            spLog_E("Save Settings - no destination provided.");
-            return;
-        }
-        spark.save(_saveDest);
+        spark.saveSettings();
     };
 
     //------------------------------------------------------------------------------
     void restore_settings(void)
     {
-        if (!_saveDest)
-        {
-            spLog_E("Restore Settings - no destination provided.");
-            return;
-        }
-        spark.restore(_saveDest);
+        spark.restoreSettings();
     };
 
     //------------------------------------------------------------------------------
     void clear_settings(void)
     {
-        if (!_saveDest)
-        {
-            spLog_E("Reset Settings - no destination provided.");
-            return;
-        }
-        _saveDest->resetStorage();
+   
+         spark.resetSettings();
     }
 
     void saveEvent_CB(void)
@@ -60,7 +45,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
     }
 
   public:
-    spSettingsSave() : _saveDest{nullptr}
+    spSettingsSave() 
     {
 
         // Set name and description
@@ -75,26 +60,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
         spRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
         spRegister(clearSettings, "Clear Settings", "Erase saved settings.");
     }
-    //------------------------------------------------------------------------------
-    spSettingsSave(spStorage *theDevice) : spSettingsSave()
-    {
-        setSaveDestination(theDevice);
-    }
-    //------------------------------------------------------------------------------
-    spSettingsSave(spStorage &theDevice) : spSettingsSave(&theDevice)
-    {
-    }
-    //------------------------------------------------------------------------------
-    // Set up destination.
-    void setSaveDestination(spStorage *theDevice)
-    {
-        _saveDest = theDevice;
-    }
-    //------------------------------------------------------------------------------
-    void setSaveDestination(spStorage &theDevice)
-    {
-        setSaveDestination(&theDevice);
-    }
+    
     //------------------------------------------------------------------------------
     // Slots for signals - Enables saving and restoring settings base on events
     void listenForSave(spSignalVoid &theEvent)
