@@ -13,7 +13,7 @@
 
 #include <Spark/spSettingsSerial.h>
 #include <Spark/spSettingsSave.h>
-#include <Spark/spStorageESP32Pref.h>
+
 
 
 class test_properties : public spActionType<test_properties>
@@ -320,8 +320,7 @@ spSettingsSerial    serialSettings;
 // Create a save settings action, passing in the ESP32 Pref object
 // as a storage destination
 
-spStorageESP32Pref  settingsStorage;
-spSettingsSave      saveSettings(settingsStorage);
+spSettingsSave      saveSettings;;
 
 test_params testParams;
 test_properties testProps;
