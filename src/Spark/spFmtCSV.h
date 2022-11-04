@@ -233,7 +233,7 @@ class spFormatCSV : public spOutputFormat
     //-----------------------------------------------------------------
     void endObservation(void)
     {
-        _inObservation = false;
+        // ends the data collection - no op here
     }
 
     //-----------------------------------------------------------------
@@ -253,6 +253,9 @@ class spFormatCSV : public spOutputFormat
         clear_buffers();
         _section_name = nullptr;
         _writeHeader = (_writeHeader & kHeaderPending) == kHeaderPending ? kHeaderWrite : kHeaderNone;
+
+        // This ends the Observation transaction...
+        _inObservation= false;
     }
 
     //-----------------------------------------------------------------
