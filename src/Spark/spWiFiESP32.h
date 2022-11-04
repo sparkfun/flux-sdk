@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 
-#include "spCore.h"
+#include "spSpark.h"
 
 
 // WiFi client for EsP32 boards
@@ -27,6 +27,8 @@ public:
 
 
         setName("WiFi", "WiFi network connection");
+
+        spark.add(this);
     };
 
 
