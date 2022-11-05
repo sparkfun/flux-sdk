@@ -5,6 +5,7 @@
 #ifdef ESP32
 
 #include "spSpark.h"
+#include "spNetwork.h"
 
 
 // Use the NTP client on the ESP32 to sync the onboard clock
@@ -20,7 +21,7 @@ private:
     void onConnectionChange(bool bConnected);
 
 public:
-    spNTPESP32() : _isEnabled{true}
+    spNTPESP32() : _isEnabled{true}, _theNetwork{nullptr}
     {
         spRegister(enabled, "Enabled", "Enable or Disable the NTP Client");
 
@@ -43,6 +44,12 @@ public:
         theEvent.call(this, &spNTPESP32::onConnectionChange);
     }
 
+    void setNetwork(spNetwork *theNetwork)
+    {
+        _theNetwork = theNetwork;
+
+        listenToConnection(theNetwork->on_connectionChange);
+    }
     // Properties 
 
     // Enabled/Disabled
@@ -54,6 +61,8 @@ public:
 
 private:
 	bool  _isEnabled;
+
+    spNetwork *_theNetwork;
 };
 
 #endif

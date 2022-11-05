@@ -55,6 +55,13 @@ bool spNTPESP32::start(void)
     if(sntp_enabled())
         return true;
 
+    // do we have a network and is it connected
+    if ( !_theNetwork || !_theNetwork->isConnected())
+    {
+        spLog_W(F("NTP Client - Unable to start, no network connection"));
+        return false;
+    }
+    
     // Leverage ESP32 Arduino setup
     configTime(gmtOffsetMinutes()*60, daylightOffsetMinutes()*60, kNTPServerAddress);
 

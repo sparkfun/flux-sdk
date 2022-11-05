@@ -5,6 +5,8 @@
 // Core interfaces for the system....
 
 #include <string>
+
+
 //----------------------------------------------------------------------
 // spDataEditor()
 //
@@ -49,3 +51,4 @@ class spWriter
         write(value.c_str());
     };
 };
+

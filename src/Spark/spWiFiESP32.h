@@ -5,11 +5,11 @@
 #ifdef ESP32
 
 #include "spSpark.h"
-
+#include "spNetwork.h"
 
 // WiFi client for EsP32 boards
 
-class spWiFiESP32 : public spActionType<spWiFiESP32>
+class spWiFiESP32 : public spActionType<spWiFiESP32>, public spNetwork
 {
 private:
 
@@ -30,10 +30,6 @@ public:
 
         spark.add(this);
     };
-
-
-    // Event - triggered on connection changes
-    spSignalBool on_connectionChange;
 
     // Properties 
     spPropertyString<spWiFiESP32>      	SSID;
