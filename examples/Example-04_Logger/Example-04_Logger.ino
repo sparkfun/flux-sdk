@@ -27,7 +27,10 @@
 // WiFi Testing
 #include <Spark/spWiFiESP32.h>
 
-#define OPENLOG_ESP32
+//NTP
+#include <Spark/spNTPESP32.h>
+
+//#define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
 #define EN_3V3_SW 32
 #define LED_BUILTIN 25
@@ -73,6 +76,7 @@ spSettingsSerial    serialSettings;
 spSettingsSave      saveSettings;
 
 spWiFiESP32 wifiConnection;
+spNTPESP32  ntpClient;
 
 //---------------------------------------------------------------------
 // Arduino Setup
@@ -112,6 +116,9 @@ void setup() {
 
     // Add the save system to the app
     spark.add(saveSettings);
+
+    // wire up the NTP to the wifi connect event. So it will turn off/on as needed
+    ntpClient.listenToConnection(wifiConnection.on_connectionChange);
 
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
