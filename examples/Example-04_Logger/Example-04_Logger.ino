@@ -117,8 +117,8 @@ void setup() {
     // Add the save system to the app
     spark.add(saveSettings);
 
-    // wire up the NTP to the wifi connect event. So it will turn off/on as needed
-    ntpClient.listenToConnection(wifiConnection.on_connectionChange);
+    // wire up the NTP to the wifi network object
+    ntpClient.setNetwork(&wifiConnection);
 
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
