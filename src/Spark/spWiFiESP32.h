@@ -26,7 +26,7 @@ public:
         spRegister(enabled, "Enabled", "Enable or Disable the WiFi Network connection");
 
 
-        setName("WiFi", "WiFi network connection");
+        setName("WiFi Network", "WiFi network connection for the system");
 
         spark.add(this);
     };
