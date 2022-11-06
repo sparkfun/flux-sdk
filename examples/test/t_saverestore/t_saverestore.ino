@@ -10,6 +10,7 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/spStorageESP32Pref.h>
+#include <Spark/spSettings.h>
 
 #include <math.h>
 
@@ -405,15 +406,15 @@ void setup() {
     while (!Serial);
     Serial.println("\n---- Startup of the Save/Restore tests ----");
 
-    spark.setSettingsStorage(myStorage);
+    spSettings.setStorage(myStorage);
     spark.add(myTest);
 
     Serial.println("object Added, reseting storage");
-    myStorage.resetStorage();
+    spSettings.reset();
 
     test_setup();
     Serial.println("Saving...");    
-    spark.saveSettings();
+    spSettings.saveSystem();
 
     Serial.println("Save complete");
 
@@ -423,7 +424,7 @@ void setup() {
 
     test_check();
 
-    spark.restoreSettings();
+    spSettings.restoreSystem();
 
     Serial.println("\n\rValues restored - verify - everything should pass\n\r");    
 

@@ -11,8 +11,9 @@
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
+#include <Spark/spStorageESP32Pref.h>
 #include <Spark/spSettingsSerial.h>
-#include <Spark/spSettingsSave.h>
+#include <Spark/spSettings.h>
 
 
 
@@ -315,12 +316,9 @@ spLogger  logger;
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(3000);    // Timer 
 
+spStorageESP32Pref  myStorage;
 spSettingsSerial    serialSettings;
 
-// Create a save settings action, passing in the ESP32 Pref object
-// as a storage destination
-
-spSettingsSave      saveSettings;;
 
 test_params testParams;
 test_properties testProps;
@@ -338,12 +336,10 @@ void setup() {
     Serial.println("\n---- Startup Serial Settings Test ----");
     
 
+    spSettings.setStorage(myStorage);
     // Have settings save when editing is complete.
-    saveSettings.listenForSave(serialSettings.on_finished);
+    spSettings.listenForSave(serialSettings.on_finished);
 
-    // Add the save system to the app
-    spark.add(saveSettings);
-    
     // Start Spark 
     spark.start();  
 
@@ -360,14 +356,10 @@ void setup() {
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-        Serial.printf("Device: %s, Output Number: %d\n\r", device->name(), device->nOutputParameters());
-        
+        Serial.printf("Device: %s, Output Number: %d\n\r", device->name(), device->nOutputParameters()); 
     }
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
-
-    // Set the settings system to start at root of the spark system.
-    serialSettings.setSystemRoot(&spark);
 
     // Add serial settings to spark - the spark loop call will take care
     // of everything else.
