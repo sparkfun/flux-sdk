@@ -14,7 +14,7 @@
 
 // settings storage
 #include <Spark/spStorageESP32Pref.h>
-#include <Spark/spSettingsSave.h>
+#include <Spark/spSettings.h>
 #include <Spark/spSettingsSerial.h>
 
 // Testing for device calls
@@ -73,7 +73,6 @@ spFileRotate  theOutputFile;
 // settings things
 spStorageESP32Pref  myStorage;
 spSettingsSerial    serialSettings;
-spSettingsSave      saveSettings;
 
 spWiFiESP32 wifiConnection;
 spNTPESP32  ntpClient;
@@ -102,20 +101,14 @@ void setup() {
     //wifiConnection.password = "<WIFI_PASSWORD>";
 
     // set the settings storage system for spark
-    spark.setSettingsStorage(myStorage);
+    spSettings.setStorage(myStorage);
 
-    // Have settings save when editing is complete.
-    saveSettings.listenForSave(serialSettings.on_finished);
-
-    // Set the settings system to start at root of the spark system.
-    serialSettings.setSystemRoot(&spark);
+    // Have settings saved when editing is complete.
+    spSettings.listenForSave(serialSettings.on_finished);
 
     // Add serial settings to spark - the spark loop call will take care
     // of everything else.
     spark.add(serialSettings);
-
-    // Add the save system to the app
-    spark.add(saveSettings);
 
     // wire up the NTP to the wifi network object
     ntpClient.setNetwork(&wifiConnection);
@@ -125,9 +118,8 @@ void setup() {
     spark.start();  
 
     if (wifiConnection.isConnected())
-    {
         Serial.println("Connected to Wifi!");
-    }else
+    else
         Serial.println("Unable to connect to WiFi!");
 
     // Logging is done at an interval - using an interval timer. 
