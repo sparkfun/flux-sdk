@@ -28,7 +28,7 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
     }
 
   public:
-    spFileRotate() : _currentFilename{""}, _theFS{nullptr}, _flushCount{0}, _ticksFileOpen{0}, _ticksRotPeriod{0}
+    spFileRotate() : _currentFilename{""}, _theFS{nullptr}, _flushCount{0}, _ticksRotPeriod{0}
     {
 
         setName("File Rotate",
@@ -37,6 +37,9 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
         spRegister(rotatePeriod, "Rotate Period", "Time between file rotation.");
         spRegister(startNumber, "File Start Number", "The Number the filename rotation starts with");
         spRegister(filePrefix, "Filename Prefix", "The prefix string for the generated filenames");
+
+        // hidden prop
+        spRegister(_ticksFileOpen);
 
         // at startup, current file count == startNumber-1
         _currentFileNumber = startNumber.get() - 1;
@@ -67,6 +70,10 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
     spSignalVoid on_newFile;
 
   private:
+
+    // Hidden property
+    spPropertyHiddenUint<spFileRotate> _ticksFileOpen= {0};
+
     static constexpr uint kTicksPerHour = 3600000;
 
     bool getNextFilename(std::string &strFile);
@@ -75,7 +82,6 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
     std::string _currentFilename;
     spIFileSystem *_theFS;
     uint8_t _flushCount;
-    uint32_t _ticksFileOpen;
     uint32_t _ticksRotPeriod;
     uint _currentFileNumber;
 

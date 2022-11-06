@@ -101,7 +101,7 @@ void spFileRotate::write(const char *value)
     _currentFile.write((uint8_t *)"\n", 1);
 
     // Will we need to rotate?
-    if (millis() - _ticksFileOpen > _ticksRotPeriod)
+    if (millis() - _ticksFileOpen() > _ticksRotPeriod)
     {
         // open the next file, send the new file event. This will cause
         // the next line out to be a "start of the file line" (i.e. header)

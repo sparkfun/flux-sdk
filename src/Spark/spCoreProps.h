@@ -44,6 +44,8 @@ class spProperty : public spDescriptor
     virtual spDataLimit *dataLimit(void) = 0;
     virtual bool setValue(spDataVariable &) = 0;
 
+    virtual bool hidden(void) = 0;
+    virtual bool secure(void) = 0;
     //---------------------------------------------------------------------------------
     virtual size_t size(void)
     {
@@ -159,10 +161,23 @@ class _spPropertyContainer
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
+template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
 {
 
   public:
+    _spPropertyBase() : _isHidden{HIDDEN}, _isSecure{SECURE}
+    {
+
+    }
+
+    bool hidden()
+    {
+        return _isHidden;
+    }
+    bool secure()
+    {
+        return _isSecure;
+    }
     //---------------------------------------------------------------------------------
     spDataType_t type()
     {
@@ -258,6 +273,9 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
     {
         return _spDataIn<T>::dataLimit();
     }
+private:
+    bool _isHidden;
+    bool _isSecure;
 };
 
 //----------------------------------------------------------------------------------------
@@ -269,15 +287,26 @@ template <class T> class _spPropertyBase : public spProperty, public _spDataIn<T
 // are different, so they require a unique implementation. I'm sure there's some
 // magic that could reduce the code duplication - but this isn't happening today ...
 //
+template <bool HIDDEN, bool SECURE>
 class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
 {
   protected:
     spDataLimitType<std::string> *_dataLimit;
 
   public:
-    _spPropertyBaseString() : _dataLimit{nullptr}
+    _spPropertyBaseString() : _dataLimit{nullptr}, _isHidden{HIDDEN}, _isSecure{SECURE}
     {
     }
+
+    bool hidden()
+    {
+        return _isHidden;
+    }
+    bool secure()
+    {
+        return _isSecure;
+    }
+
     spDataType_t type()
     {
         return spTypeString;
@@ -377,6 +406,9 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
         }
         return false;
     };
+private:
+    bool _isHidden;
+    bool _isSecure;
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -392,8 +424,8 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
 // A read/write property base class that takes a getter and a setter method and the target object
 //
 //
-template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T)>
-class _spPropertyTypedRW : public _spPropertyBase<T>
+template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T), bool HIDDEN=false, bool SECURE=false>
+class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
 {
     Object *my_object; // Pointer to the containing object
 
@@ -537,7 +569,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T>
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
 
-    _spPropertyTypedRW<T, Object, _getter, _setter> &operator=(T const &value)
+    _spPropertyTypedRW<T, Object, _getter, _setter, HIDDEN, SECURE> &operator=(T const &value)
     {
         set(value);
         return *this;
@@ -582,6 +614,83 @@ using spPropertyRWFloat = _spPropertyTypedRW<float, Object, _getter, _setter>;
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 
+
+// HIDDEN
+// bool
+template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
+using spPropertyRWHiddenBool = _spPropertyTypedRW<bool, Object, _getter, _setter, true>;
+
+// int8
+template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
+using spPropertyRWHiddenInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter, true>;
+
+// int16
+template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
+using spPropertyRWHiddenInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter, true>;
+
+// int
+template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
+using spPropertyRWHiddenInt = _spPropertyTypedRW<int, Object, _getter, _setter, true>;
+
+// unsigned int 8
+template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
+using spPropertyRWHiddenUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter, true>;
+
+// unsigned int 16
+template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
+using spPropertyRWHiddenUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter, true>;
+
+// unsigned int
+template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
+using spPropertyRWHiddenUint = _spPropertyTypedRW<uint, Object, _getter, _setter, true>;
+
+// float
+template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
+using spPropertyRWHiddenFloat = _spPropertyTypedRW<float, Object, _getter, _setter, true>;
+
+// double
+template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
+using spPropertyRWHiddenDouble = _spPropertyTypedRW<double, Object, _getter, _setter, true>;
+
+
+// Secure
+// bool
+template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
+using spPropertyRWSecureBool = _spPropertyTypedRW<bool, Object, _getter, _setter, false, true>;
+
+// int8
+template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
+using spPropertyRWSecureInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter, false, true>;
+
+// int16
+template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
+using spPropertyRWSecureInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter, false, true>;
+
+// int
+template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
+using spPropertyRWSecureInt = _spPropertyTypedRW<int, Object, _getter, _setter, false, true>;
+
+// unsigned int 8
+template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
+using spPropertyRWSecureUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter, false, true>;
+
+// unsigned int 16
+template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
+using spPropertyRWSecureUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter, false, true>;
+
+// unsigned int
+template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
+using spPropertyRWSecureUint = _spPropertyTypedRW<uint, Object, _getter, _setter, false, true>;
+
+// float
+template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
+using spPropertyRWSecureFloat = _spPropertyTypedRW<float, Object, _getter, _setter, false, true>;
+
+// double
+template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
+using spPropertyRWSecureDouble = _spPropertyTypedRW<double, Object, _getter, _setter, false, true>;
+
+
 //---------------------------------------------------------------------------------
 // spPropertyRWString
 //
@@ -589,8 +698,8 @@ using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
 //
 // A read/write property string class that takes a getter and a setter method and the target object
 //
-template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
-class spPropertyRWString : public _spPropertyBaseString
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string), bool HIDDEN=false, bool SECURE=false>
+class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
 {
     Object *my_object;
 
@@ -639,7 +748,7 @@ class spPropertyRWString : public _spPropertyBaseString
     {
         // set the name of the property on init
         if (name)
-            setName(name);
+            spDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -649,7 +758,7 @@ class spPropertyRWString : public _spPropertyBaseString
     {
         // Description of the object
         if (desc)
-            setDescription(desc);
+            spDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -724,18 +833,28 @@ class spPropertyRWString : public _spPropertyBaseString
 
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
-    spPropertyRWString<Object, _getter, _setter> &operator=(std::string const &value)
+    spPropertyRWString<Object, _getter, _setter, HIDDEN, SECURE> &operator=(std::string const &value)
     {
         set(value);
         return *this;
     };
 };
+
+// HIDDEN
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
+using spPropertyRWHiddenString = spPropertyRWString<Object, _getter, _setter, true, false>;
+
+// SECURE
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
+using spPropertyRWSecureString = spPropertyRWString<Object, _getter, _setter, false, true>;
+
 //----------------------------------------------------------------------------------------------------
 // spPropertyTyped
 //
 // Template class for a property object that contains storage for the property.
 //
-template <class Object, class T> class _spPropertyTyped : public _spPropertyBase<T>
+template <class Object, class T, bool HIDDEN=false, bool SECURE=false> 
+class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
 {
   public:
     _spPropertyTyped()
@@ -856,7 +975,7 @@ template <class Object, class T> class _spPropertyTyped : public _spPropertyBase
 
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
-    _spPropertyTyped<Object, T> &operator=(T const &value)
+    _spPropertyTyped<Object, T, HIDDEN, SECURE> &operator=(T const &value)
     {
         set(value);
         return *this;
@@ -877,6 +996,27 @@ template <class Object> using spPropertyUint = _spPropertyTyped<Object, uint>;
 template <class Object> using spPropertyFloat = _spPropertyTyped<Object, float>;
 template <class Object> using spPropertyDouble = _spPropertyTyped<Object, double>;
 
+// Define typed properties - HIDDEN
+template <class Object> using spPropertyHiddenBool = _spPropertyTyped<Object, bool, true>;
+template <class Object> using spPropertyHiddenInt8 = _spPropertyTyped<Object, int8_t, true>;
+template <class Object> using spPropertyHiddenInt16 = _spPropertyTyped<Object, int16_t, true>;
+template <class Object> using spPropertyHiddenInt = _spPropertyTyped<Object, int, true>;
+template <class Object> using spPropertyHiddenUint8 = _spPropertyTyped<Object, uint8_t, true>;
+template <class Object> using spPropertyHiddenUint16 = _spPropertyTyped<Object, uint16_t, true>;
+template <class Object> using spPropertyHiddenUint = _spPropertyTyped<Object, uint, true>;
+template <class Object> using spPropertyHiddenFloat = _spPropertyTyped<Object, float, true>;
+template <class Object> using spPropertyHiddenDouble = _spPropertyTyped<Object, double, true>;
+
+// Define typed properties - SECURE
+template <class Object> using spPropertySecureBool = _spPropertyTyped<Object, bool, false, true>;
+template <class Object> using spPropertySecureInt8 = _spPropertyTyped<Object, int8_t, false, true>;
+template <class Object> using spPropertySecureInt16 = _spPropertyTyped<Object, int16_t, false, true>;
+template <class Object> using spPropertySecureInt = _spPropertyTyped<Object, int, false, true>;
+template <class Object> using spPropertySecureUint8 = _spPropertyTyped<Object, uint8_t, false, true>;
+template <class Object> using spPropertySecureUint16 = _spPropertyTyped<Object, uint16_t, false, true>;
+template <class Object> using spPropertySecureUint = _spPropertyTyped<Object, uint, false, true>;
+template <class Object> using spPropertySecureFloat = _spPropertyTyped<Object, float, false, true>;
+template <class Object> using spPropertySecureDouble = _spPropertyTyped<Object, double, false, true>;
 //----------------------------------------------------------------------------------------------------
 // spPropertyString
 //
@@ -884,7 +1024,8 @@ template <class Object> using spPropertyDouble = _spPropertyTyped<Object, double
 //
 // Implements the property, but uses string specific logic
 
-template <class Object> class spPropertyString : public _spPropertyBaseString
+template <class Object, bool HIDDEN=false, bool SECURE=false> 
+class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
 {
 
   public:
@@ -920,7 +1061,7 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     void operator()(Object *obj, const char *name)
     {
         if (name)
-            setName(name);
+            spDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -931,7 +1072,7 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
     {
         // Description of the object
         if (desc)
-            setDescription(desc);
+            spDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -994,7 +1135,7 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
 
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
-    spPropertyString<Object> &operator=(std::string const &value)
+    spPropertyString<Object, HIDDEN, SECURE> &operator=(std::string const &value)
     {
         set(value);
         return *this;
@@ -1003,6 +1144,14 @@ template <class Object> class spPropertyString : public _spPropertyBaseString
   private:
     std::string data; // storage for the property
 };
+
+// HIDDEN
+template <class Object>
+using spPropertyHiddenString = spPropertyRWString<Object, true, false>;
+
+// SECURE
+template <class Object>
+using spPropertySecureString = spPropertyRWString<Object, false, true>;
 
 //----------------------------------------------------------------------------------------------------
 // spObject
