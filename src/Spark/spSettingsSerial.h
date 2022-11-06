@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "spSpark.h"
 #include "spCore.h"
 #include "spDevice.h"
 
@@ -20,6 +21,9 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     {
 
         setName("Serial System Settings", "Set system settings via the Serial Console");
+
+        // Default root is our system
+        setSystemRoot(&spark);
     }
 
     void setSystemRoot(spObjectContainer *theRoot)

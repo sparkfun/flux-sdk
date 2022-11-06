@@ -5,7 +5,6 @@
 #include "spCore.h"
 #include "spDevI2C.h"
 #include "spDevice.h"
-#include "spStorage.h"
 #include <memory>
 
 // happy functions for happy users.
@@ -132,77 +131,6 @@ class spSpark : public spObjectContainer
     spDeviceContainer &connectedDevices(void)
     {
         return Devices;
-    }
-
-    //------------------------------------------------------------
-    // settings/storage things. 
-    //------------------------------------------------------------
-    //
-    // Storage device for settings - set this in the system.     
-
-    void setSettingsStorage(spStorage &theStorage)
-    {
-        setSettingsStorage(&theStorage);
-    }
-    void setSettingsStorage(spStorage *pStorage)
-    {
-        _settingsStorage = pStorage;
-    }
-
-    // Save settings - if no parameter is passed in, the entire system is saved
-
-    bool saveSettings(void)
-    {
-        if ( !_settingsStorage)
-            return false;
-
-        save(_settingsStorage);
-
-        return true;
-    }
-    // save a specific object
-    bool saveSettings(spObject &theObject)
-    {
-        return saveSettings(&theObject);
-    }
-    bool saveSettings(spObject *pObject)
-    {
-        if (!_settingsStorage)
-            return false;
-
-        pObject->save(_settingsStorage);
-        return true;
-    }
-
-    // Restore settings - if no parameter is passed in, the entire system is restored
-
-    bool restoreSettings(void)
-    {
-        if ( !_settingsStorage)
-            return false;
-
-        restore(_settingsStorage);
-
-        return true;
-    }
-    // restore a specific object
-    bool restoreSettings(spObject &theObject)
-    {
-        return restoreSettings(&theObject);
-    }
-    bool restoreSettings(spObject *pObject)
-    {
-        if (!_settingsStorage)
-            return false;
-
-        pObject->restore(_settingsStorage);
-        return true;
-    }
-
-    void resetSettings(void)
-    {
-        if (_settingsStorage)
-            _settingsStorage->resetStorage();
     }
 
   private:
