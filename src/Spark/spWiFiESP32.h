@@ -21,7 +21,7 @@ public:
     spWiFiESP32() : _wasConnected{false}, _isEnabled{true}
     {
 
-        spRegister(SSID, "SSID", "The SSID of the WiFi network");
+        spRegister(SSID, "Network Name", "The SSID of the WiFi network");
         spRegister(password, "Password", "The Password to connect to the WiFi network");
         spRegister(enabled, "Enabled", "Enable or Disable the WiFi Network connection");
 
