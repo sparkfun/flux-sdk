@@ -12,7 +12,7 @@
 
 #define kESP32HashTagSize 16
 
-#define kESP32MinTagLen 4
+#define kESP32MinTagLen 3
 
 // Storage system that leverages the ESP32 Preferences Arduino library
 //
