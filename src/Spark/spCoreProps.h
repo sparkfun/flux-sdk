@@ -84,10 +84,34 @@ class _spPropertyContainer
 {
 
   public:
+    _spPropertyContainer() : _nProperties{0}{}
     //---------------------------------------------------------------------------------
     void addProperty(spProperty *newProperty)
     {
-        _properties.push_back(newProperty);
+
+        if ( !newProperty)
+            return;
+
+        // We store hidden properties at the end of the list, all others at the
+        // head.
+        if (newProperty->hidden())
+           _properties.push_back(newProperty);
+        else
+        {
+            // find the location to insert the property...
+            auto itProp = _properties.begin(); // get the iterator
+
+            while (itProp != _properties.end())
+            {
+                // is the current prop hidden? If so, we will insert here, which
+                // pushes the hidden values just past this value
+                if ((*itProp)->hidden()) 
+                    break;
+                itProp++;
+            }
+            _nProperties++;
+            _properties.insert(itProp, newProperty);
+        }
     };
 
     //---------------------------------------------------------------------------------
@@ -105,7 +129,7 @@ class _spPropertyContainer
     uint nProperties(void)
     {
 
-        return _properties.size();
+        return _nProperties;
     }
     //---------------------------------------------------------------------------------
     // save/restore for properties in this container. Note, since we
@@ -150,6 +174,9 @@ class _spPropertyContainer
 
   private:
     spPropertyList _properties;
+
+    // The number of "visible" (not hidden) properties
+    uint  _nProperties;  
 };
 
 //----------------------------------------------------------------------------------------
