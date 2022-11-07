@@ -4,7 +4,7 @@
 
 #include "spSerial.h"
 #include "spSpark.h"
-#include "spStorage.h"
+#include "spSettings.h"
 
 // for logging - define output driver on the stack
 
@@ -36,6 +36,15 @@ bool spSpark::start(bool bAutoLoad)
         // 6/10 TODO - Something is broken with restore and container crap
         // restore();
     }
+
+    // Everything should be loaded -- restore settings from storage
+    if ( spSettings.isAvailable())
+    {
+        spLog_I(F("Restoring System Settings ..."));
+        if (!spSettings.restoreSystem())
+            spLog_W(F("Error encountered restoring system settings..."));
+    }else
+        spLog_I(F("Restore of System Settings unavailable."));
 
     // initialize actions
 
