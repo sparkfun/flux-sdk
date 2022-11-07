@@ -112,6 +112,7 @@ void setup() {
 
     // wire up the NTP to the wifi network object
     ntpClient.setNetwork(&wifiConnection);
+    ntpClient.setStartupDelay(5);  // Give the NTP server some time to start
 
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
