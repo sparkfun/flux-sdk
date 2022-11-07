@@ -37,7 +37,6 @@ uint32_t _spClock::epoch()
         return _defaultClock->epoch();
 
     // We need something ...
-
     return millis() / 1000; // TODO - Revisit
 }
 //----------------------------------------------------------------
@@ -66,7 +65,7 @@ void _spClock::setClockReference(spIClock *clock)
 void _spClock::updateClock()
 {
 
-    // refersh our clock
+    // refresh our clock
     if (_bInitialized && _defaultClock && _referenceClock)
     {
         uint32_t epoch = _referenceClock->epoch();
