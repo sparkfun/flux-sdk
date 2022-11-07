@@ -30,7 +30,7 @@
 //NTP
 #include <Spark/spNTPESP32.h>
 
-//#define OPENLOG_ESP32
+#define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
 #define EN_3V3_SW 32
 #define LED_BUILTIN 25
@@ -97,8 +97,8 @@ void setup() {
 
     // If not using settings, can use the following lines to test WiFi manually
     // Try WiFi
-    //wifiConnection.SSID = "<WIFI SSID>";
-    //wifiConnection.password = "<WIFI_PASSWORD>";
+    //wifiConnection.SSID = "";
+    //wifiConnection.password = "";
 
     // set the settings storage system for spark
     spSettings.setStorage(myStorage);
@@ -110,7 +110,8 @@ void setup() {
     // of everything else.
     spark.add(serialSettings);
 
-    // wire up the NTP to the wifi network object
+    // wire up the NTP to the wifi network object. When the connection status changes, 
+    // the NTP client will start and stop.
     ntpClient.setNetwork(&wifiConnection);
     ntpClient.setStartupDelay(5);  // Give the NTP server some time to start
 
@@ -181,7 +182,7 @@ void setup() {
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-        Serial.printf("Device: %s, Output Number: %d", device->name(), device->nOutputParameters());
+        Serial.printf("\tDevice: %s, Output Number: %d", device->name(), device->nOutputParameters());
         if ( device->nOutputParameters() > 0)
         {
             Serial.printf("  - Adding to logger\r\n");
