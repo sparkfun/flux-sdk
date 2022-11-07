@@ -33,7 +33,7 @@ public:
 
     // Properties 
     spPropertyString<spWiFiESP32>      	SSID;
-    spPropertyString<spWiFiESP32>		password;
+    spPropertySecureString<spWiFiESP32>		password;
     spPropertyRWBool<spWiFiESP32, &spWiFiESP32::get_isEnabled, &spWiFiESP32::set_isEnabled> enabled;
 
     bool loop(void);
