@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "spSpark.h"
 #include "spCore.h"
 #include "spCoreInterface.h"
 #include "spFS.h"
@@ -43,6 +44,8 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
 
         // at startup, current file count == startNumber-1
         _currentFileNumber = startNumber.get() - 1;
+
+        spark.add(this);
     };
 
     void write(int);
