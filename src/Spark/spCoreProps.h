@@ -352,7 +352,7 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
         // strings ... len, data
         std::string c = get();
 
-        bool status = stBlk->writeString(name(), c.c_str()) == c.length();
+        bool status = stBlk->writeString(name(), c.c_str());
         if (!status)
             spLog_E("Error saving string for property: %s", name());
         return status;
