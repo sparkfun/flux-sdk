@@ -51,6 +51,7 @@ void spNTPESP32::onConnectionChange(bool bConnected)
 
 bool spNTPESP32::start(void)
 {
+    spLog_I(F("Starting NTP..."));
     // already running?
     if(sntp_enabled())
         return true;
@@ -65,6 +66,25 @@ bool spNTPESP32::start(void)
     // Leverage ESP32 Arduino setup
     configTime(gmtOffsetMinutes()*60, daylightOffsetMinutes()*60, kNTPServerAddress);
 
+    // wait for time to sync if a delay is set. 
+    // The indication that NTP is working is time moves to a current year
+    if (_startupDelay)
+    {
+        uint32_t start = millis();
+        struct tm *tm_now;
+        time_t now;
+
+        spLog_I(F("Waiting on NTP startup [%u secs]..."), _startupDelay);
+
+        while (millis() - start < _startupDelay*1000)
+        {
+            time(&now);
+            tm_now = localtime(&now);
+            if (tm_now && tm_now->tm_year > (2020 - 1900))
+                break; // synched
+        }
+        delay(20);
+    }
     return sntp_enabled();
 }
 

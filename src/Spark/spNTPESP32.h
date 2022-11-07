@@ -21,7 +21,7 @@ private:
     void onConnectionChange(bool bConnected);
 
 public:
-    spNTPESP32() : _isEnabled{true}, _theNetwork{nullptr}
+    spNTPESP32() : _isEnabled{true}, _theNetwork{nullptr}, _startupDelay{0}
     {
         spRegister(enabled, "Enabled", "Enable or Disable the NTP Client");
 
@@ -50,6 +50,14 @@ public:
 
         listenToConnection(theNetwork->on_connectionChange);
     }
+    void setStartupDelay(uint delay)
+    {
+        _startupDelay=delay;
+    }
+    uint startupDelay(void)
+    {
+        return _startupDelay;
+    }
     // Properties 
 
     // Enabled/Disabled
@@ -63,6 +71,8 @@ private:
 	bool  _isEnabled;
 
     spNetwork *_theNetwork;
+
+    uint _startupDelay;
 };
 
 #endif
