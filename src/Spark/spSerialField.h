@@ -12,70 +12,70 @@ class spSerialField : public spDataEditor
 {
 
   public:
-    bool editField(char *value, size_t lenValue, uint32_t timeout = 60)
+    bool editField(char *value, size_t lenValue, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldCString(value, lenValue, timeout);
+        return editFieldCString(value, lenValue, hidden, timeout);
     }
 
-    bool editField(bool &value, uint32_t timeout = 60)
+    bool editField(bool &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldBool(value, timeout);
+        return editFieldBool(value, hidden, timeout);
     }
 
-    bool editField(std::string &value, uint32_t timeout = 60)
+    bool editField(std::string &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldString(value, timeout);
+        return editFieldString(value, hidden, timeout);
     }
-    bool editField(int8_t &value, uint32_t timeout = 60)
+    bool editField(int8_t &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldInt8(value, timeout);
+        return editFieldInt8(value, hidden, timeout);
     }
-    bool editField(int16_t &value, uint32_t timeout = 60)
+    bool editField(int16_t &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldInt16(value, timeout);
-    }
-
-    bool editField(int32_t &value, uint32_t timeout = 60)
-    {
-        return editFieldInt(value, timeout);
+        return editFieldInt16(value, hidden, timeout);
     }
 
-    bool editField(uint8_t &value, uint32_t timeout = 60)
+    bool editField(int32_t &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldUInt8(value, timeout);
+        return editFieldInt(value, hidden, timeout);
     }
 
-    bool editField(uint16_t &value, uint32_t timeout = 60)
+    bool editField(uint8_t &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldUInt16(value, timeout);
+        return editFieldUInt8(value, hidden, timeout);
     }
 
-    bool editField(uint32_t &value, uint32_t timeout = 60)
+    bool editField(uint16_t &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldUInt(value, timeout);
+        return editFieldUInt16(value, hidden, timeout);
     }
 
-    bool editField(float &value, uint32_t timeout = 60)
+    bool editField(uint32_t &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldFloat(value, timeout);
+        return editFieldUInt(value, hidden, timeout);
     }
 
-    bool editField(double &value, uint32_t timeout = 60)
+    bool editField(float &value, bool hidden=false, uint32_t timeout = 60)
     {
-        return editFieldDouble(value, timeout);
+        return editFieldFloat(value, hidden, timeout);
     }
 
-    bool editFieldBool(bool &value, uint32_t timeout = 60);
-    bool editFieldInt8(int8_t &value, uint32_t timeout = 60);
-    bool editFieldInt16(int16_t &value, uint32_t timeout = 60);    
-    bool editFieldInt(int32_t &value, uint32_t timeout = 60);
-    bool editFieldUInt8(uint8_t &value, uint32_t timeout = 60);
-    bool editFieldUInt16(uint16_t &value, uint32_t timeout = 60);    
-    bool editFieldUInt(uint32_t &value, uint32_t timeout = 60);
-    bool editFieldFloat(float &value, uint32_t timeout = 60);
-    bool editFieldDouble(double &value, uint32_t timeout = 60);
-    bool editFieldString(std::string &value, uint32_t timeout = 60);
-    bool editFieldCString(char *value, size_t lenValue, uint32_t timeout = 60);
+    bool editField(double &value, bool hidden=false, uint32_t timeout = 60)
+    {
+        return editFieldDouble(value, hidden, timeout);
+    }
+
+    bool editFieldBool(bool &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldInt8(int8_t &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldInt16(int16_t &value, bool hidden=false, uint32_t timeout = 60);    
+    bool editFieldInt(int32_t &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldUInt8(uint8_t &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldUInt16(uint16_t &value, bool hidden=false, uint32_t timeout = 60);    
+    bool editFieldUInt(uint32_t &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldFloat(float &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldDouble(double &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldString(std::string &value, bool hidden=false, uint32_t timeout = 60);
+    bool editFieldCString(char *value, size_t lenValue, bool hidden=false, uint32_t timeout = 60);
     void beep();
     
   private:
@@ -88,6 +88,7 @@ class spSerialField : public spDataEditor
         uint cursor;
         uint bcursor;
         bool (*validator)(char *value);
+        bool hidden;
     } FieldContext_t;
 
     void drawTrailing(FieldContext_t &ctxEdit, bool isDelete = false);

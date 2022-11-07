@@ -88,7 +88,7 @@
 #define kCodeBOL 1
 #define kCodeKillEOL 11
 #define kCodeESC 27
-
+#define kCodeAsterisk 42
 #define kCodeESCExtend 91
 #define kCodeArrowRight 67
 #define kCodeArrowLeft 68
@@ -250,8 +250,12 @@ void spSerialField::drawTrailing(FieldContext_t &ctx, bool isDelete)
 
     if (ctx.bcursor < kEditBufferMax - 1)
     {
-
-        Serial.write(ctx.tail + ctx.bcursor, kBCursorZero - ctx.bcursor);
+        if (ctx.hidden)
+        {
+            for (int i=0; i <= kBCursorZero - ctx.bcursor; i++)
+                Serial.write(kCodeAsterisk);
+        }else
+            Serial.write(ctx.tail + ctx.bcursor, kBCursorZero - ctx.bcursor);
         nBack = kBCursorZero - ctx.bcursor; // number of chars written
     }
     // Is delete set? If so, we need to end the line with a space to
@@ -280,6 +284,7 @@ void spSerialField::resetContext(FieldContext_t &ctx)
     memset(&ctx, '\0', sizeof(FieldContext_t));
     ctx.cursor = 0;
     ctx.bcursor = kBCursorZero;
+
 }
 //--------------------------------------------------------------------------
 // processArrowKeys()
@@ -502,6 +507,12 @@ void spSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint
         }
         // For Chars - just write
         Serial.write(inputBuffer[i]);
+        if (ctxEdit.hidden)
+        {
+            delay(300);
+            Serial.write(kCodeBS);
+            Serial.write(kCodeAsterisk);
+        }
     }
     // And text after the insertion point?
     drawTrailing(ctxEdit, false);
@@ -533,7 +544,15 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 
     // if there is an existing value in head, write it out
     if (ctxEdit.cursor > 0)
-        Serial.write(ctxEdit.head, ctxEdit.cursor);
+    {
+        if (ctxEdit.hidden)
+        {   
+            for(int i=0; i <= ctxEdit.cursor; i++)
+                Serial.write(kCodeAsterisk);
+        }
+        else
+            Serial.write(ctxEdit.head, ctxEdit.cursor);
+    }
 
     while (true)
     {
@@ -621,7 +640,7 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 //
 // editing operation with the provided character string as input
 
-bool spSerialField::editFieldCString(char *value, size_t lenValue, uint32_t timeout)
+bool spSerialField::editFieldCString(char *value, size_t lenValue, bool hidden, uint32_t timeout)
 {
 
     if (!value || lenValue == 0)
@@ -632,6 +651,7 @@ bool spSerialField::editFieldCString(char *value, size_t lenValue, uint32_t time
 
     resetContext(ctxEdit);
     ctxEdit.validator = isTrue; // always true/always blue(SV) for text
+    ctxEdit.hidden=hidden;
 
     // copy in our initial value.
     ctxEdit.cursor = strlen(value);
@@ -651,13 +671,14 @@ bool spSerialField::editFieldCString(char *value, size_t lenValue, uint32_t time
     return false;
 }
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldString(std::string &value, uint32_t timeout)
+bool spSerialField::editFieldString(std::string &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isTrue; // always true for text
+    ctxEdit.hidden = hidden;
 
     // copy in our initial value.
     ctxEdit.cursor = value.length();
@@ -680,7 +701,7 @@ bool spSerialField::editFieldString(std::string &value, uint32_t timeout)
 
 //--------------------------------------------------------------------------
 // Bool editor - 
-bool spSerialField::editFieldBool(bool &value, uint32_t timeout)
+bool spSerialField::editFieldBool(bool &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -693,6 +714,7 @@ bool spSerialField::editFieldBool(bool &value, uint32_t timeout)
     //  true   = <anything else> - ideally 1
 
     ctxEdit.validator = isTrue;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value ? 1 : 0);
@@ -718,13 +740,14 @@ bool spSerialField::editFieldBool(bool &value, uint32_t timeout)
     return false;
 }
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldInt8(int8_t &value, uint32_t timeout)
+bool spSerialField::editFieldInt8(int8_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isInt8;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
@@ -743,13 +766,14 @@ bool spSerialField::editFieldInt8(int8_t &value, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldInt16(int16_t &value, uint32_t timeout)
+bool spSerialField::editFieldInt16(int16_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isInt16;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
@@ -768,13 +792,14 @@ bool spSerialField::editFieldInt16(int16_t &value, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldInt(int32_t &value, uint32_t timeout)
+bool spSerialField::editFieldInt(int32_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isInt;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
@@ -793,13 +818,14 @@ bool spSerialField::editFieldInt(int32_t &value, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldUInt8(uint8_t &value, uint32_t timeout)
+bool spSerialField::editFieldUInt8(uint8_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isUInt8;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
 
@@ -820,13 +846,14 @@ bool spSerialField::editFieldUInt8(uint8_t &value, uint32_t timeout)
 
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldUInt16(uint16_t &value, uint32_t timeout)
+bool spSerialField::editFieldUInt16(uint16_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isUInt16;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
 
@@ -846,13 +873,14 @@ bool spSerialField::editFieldUInt16(uint16_t &value, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldUInt(uint32_t &value, uint32_t timeout)
+bool spSerialField::editFieldUInt(uint32_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isUInt;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
 
@@ -872,13 +900,14 @@ bool spSerialField::editFieldUInt(uint32_t &value, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldFloat(float &value, uint32_t timeout)
+bool spSerialField::editFieldFloat(float &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isFloat;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
 
@@ -898,13 +927,14 @@ bool spSerialField::editFieldFloat(float &value, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldDouble(double &value, uint32_t timeout)
+bool spSerialField::editFieldDouble(double &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
 
     resetContext(ctxEdit);
     ctxEdit.validator = isDouble;
+    ctxEdit.hidden = hidden;
 
     // jam the current value into context head
 

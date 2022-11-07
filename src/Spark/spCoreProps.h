@@ -243,7 +243,7 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
 
         T value = get();
 
-        bool bSuccess = theEditor.editField(value);
+        bool bSuccess = theEditor.editField(value, secure());
 
         if (bSuccess) // success
         {
@@ -379,7 +379,7 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
 
         std::string value = get();
 
-        bool bSuccess = theEditor.editField(value);
+        bool bSuccess = theEditor.editField(value, secure());
 
         if (bSuccess) // success
             set(value);
@@ -1147,11 +1147,11 @@ class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
 
 // HIDDEN
 template <class Object>
-using spPropertyHiddenString = spPropertyRWString<Object, true, false>;
+using spPropertyHiddenString = spPropertyString<Object, true, false>;
 
 // SECURE
 template <class Object>
-using spPropertySecureString = spPropertyRWString<Object, false, true>;
+using spPropertySecureString = spPropertyString<Object, false, true>;
 
 //----------------------------------------------------------------------------------------------------
 // spObject
