@@ -140,6 +140,9 @@ void setup() {
     // setup output to the SD card 
     if (theSDCard.initialize())
     {
+        
+        theOutputFile.setName("Data File", "Output file rotation manager");
+
         // SD card is available - lets setup output for it
         // Add the filesystem to the file output/rotation object
         theOutputFile.setFileSystem(theSDCard);
