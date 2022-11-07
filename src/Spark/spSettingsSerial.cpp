@@ -519,6 +519,8 @@ int spSettingsSerial::drawMenu(spObject *pCurrent, uint level)
     Serial.println("Settings:");
     for (auto prop : pCurrent->getProperties())
     {
+        if (prop->hidden())
+            break; 
         level++;
         drawMenuEntry(level, prop);
     }
