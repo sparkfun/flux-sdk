@@ -28,7 +28,10 @@ class spSettingsSave : public spActionType<spSettingsSave>
     {
         // Enabled?
         if (saveOnEvent())
+        {
+            spLog_I(F("Saving System Settings."));
             save_settings();
+        }
     }
     void restoreEvent_CB(void)
     {
@@ -79,7 +82,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
     {
         return _settingsStorage != nullptr;
     }
-    
+
     //------------------------------------------------------------------------------
     // Slots for signals - Enables saving and restoring settings base on events
     void listenForSave(spSignalVoid &theEvent);
