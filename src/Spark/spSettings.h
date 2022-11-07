@@ -15,13 +15,13 @@ class spSettingsSave : public spActionType<spSettingsSave>
     //------------------------------------------------------------------------------
     void save_settings(void)
     {
-        saveSettings();
+        saveSystem();
     };
 
     //------------------------------------------------------------------------------
     void restore_settings(void)
     {
-        restoreSettings();
+        restoreSystem();
     };
 
     void saveEvent_CB(void)
@@ -74,14 +74,20 @@ class spSettingsSave : public spActionType<spSettingsSave>
     bool restore(spObject *pObject);
     void reset(void);
 
+
+    bool isAvailable()
+    {
+        return _settingsStorage != nullptr;
+    }
+    
     //------------------------------------------------------------------------------
     // Slots for signals - Enables saving and restoring settings base on events
     void listenForSave(spSignalVoid &theEvent);
     void listenForRestore(spSignalVoid &theEvent);
 
     // Properties.
-    spPropertyBool<spSettingsSave> saveOnEvent;
-    spPropertyBool<spSettingsSave> restoreOnEvent;
+    spPropertyBool<spSettingsSave> saveOnEvent = {true};
+    spPropertyBool<spSettingsSave> restoreOnEvent = {true};
 
     // Our input parameters
     spParameterInVoid<spSettingsSave, &spSettingsSave::save_settings> saveSettings;
@@ -97,9 +103,7 @@ private:
         setName("Save Settings", "Save, Restore and Reset System settings.");
 
         spRegister(saveOnEvent, "Save Events", "Save settings on save events.");
-        saveOnEvent = true;
         spRegister(restoreOnEvent, "Restore Events", "Restore settings on restore events.");
-        restoreOnEvent = true;
 
         spRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
         spRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
