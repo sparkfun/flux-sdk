@@ -20,15 +20,15 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
     // rotation period setter/getter
     uint get_RotatePeriod(void)
     {
-        return _ticksRotPeriod / kTicksPerHour;
+        return _secsRotPeriod / kSecsPerHour;
     }
     void set_RotatePeriod(uint hours)
     {
-        _ticksRotPeriod = hours * kTicksPerHour;
+        _secsRotPeriod = hours * kSecsPerHour;
     }
 
   public:
-    spFileRotate() : _currentFilename{""}, _theFS{nullptr}, _flushCount{0}, _ticksRotPeriod{0}
+    spFileRotate() : _currentFilename{""}, _theFS{nullptr}, _flushCount{0}, _secsRotPeriod{0}
     {
 
         setName("File Rotate",
@@ -39,7 +39,7 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
         spRegister(filePrefix, "Filename Prefix", "The prefix string for the generated filenames");
 
         // hidden prop
-        spRegister(_ticksFileOpen);
+        spRegister(_secsFileOpen);
 
         // at startup, current file count == startNumber-1
         _currentFileNumber = startNumber.get() - 1;
@@ -71,10 +71,10 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
 
   private:
 
-    // Hidden property
-    spPropertyHiddenUint<spFileRotate> _ticksFileOpen= {0};
+    // Hidden property - epoch when file was opened...
+    spPropertyHiddenUint<spFileRotate> _secsFileOpen= {0};
 
-    static constexpr uint kTicksPerHour = 3600000;
+    static constexpr uint kSecsPerHour = 3600;
 
     bool getNextFilename(std::string &strFile);
     bool openNextLogFile(bool bSendEvent = true);
@@ -82,7 +82,7 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
     std::string _currentFilename;
     spIFileSystem *_theFS;
     uint8_t _flushCount;
-    uint32_t _ticksRotPeriod;
+    uint32_t _secsRotPeriod;
     uint _currentFileNumber;
 
     spFSFile _currentFile;
