@@ -51,7 +51,7 @@ bool spWiFiESP32::connect(void)
     if ( WiFi.isConnected() )
         return true;
 
-    // Do we have creditials?
+    // Do we have credentials?
     if (SSID().length() == 0 || password().length() == 0 )
     {
         spLog_E(F("WiFi: No credentials provided. Unable to connect"));
@@ -71,7 +71,7 @@ bool spWiFiESP32::connect(void)
         i++;
         if ( i > kMaxConnectionTries)
         {
-            spLog_E(F("Error connected to WiFi access point - %s"), SSID().c_str());
+            spLog_E(F("Error connecting to WiFi access point - %s"), SSID().c_str());
             WiFi.disconnect(true);
             return false;
         }
