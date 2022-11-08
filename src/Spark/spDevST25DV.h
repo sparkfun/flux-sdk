@@ -14,11 +14,14 @@
 #include "SparkFun_ST25DV64KC_Arduino_Library.h"
 #include "spDevice.h"
 
+// For WiFi updating of credentials
+#include "spWiFi.h"
+
 // What is the name used to ID this device?
 #define kST25DVDeviceName "ST25DV"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevST25DV : public spDeviceType<spDevST25DV>, public SFE_ST25DV64KC_NDEF
+class spDevST25DV : public spDeviceType<spDevST25DV>, public SFE_ST25DV64KC_NDEF, public spIWiFiCredentialSource
 {
 
   public:
@@ -45,6 +48,23 @@ class spDevST25DV : public spDeviceType<spDevST25DV>, public SFE_ST25DV64KC_NDEF
     spSignalVoid new_WiFi_record;
 
     bool loop(void);
+
+    // Methods for the IWiFiCredentialSource interface ...
+
+    std::string getSSID(void)
+    {
+        return get_ssid();
+    }
+
+    std::string getPassword(void)
+    {
+        return get_password();
+    }
+
+    spSignalVoid & getUpdateEvent(void)
+    {
+        return new_WiFi_record;
+    }
 
   private:
     #define MAX_SSID_PASSWORD_LEN 64
