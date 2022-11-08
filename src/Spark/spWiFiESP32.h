@@ -6,10 +6,11 @@
 
 #include "spSpark.h"
 #include "spNetwork.h"
+#include "spWiFi.h"
 
 // WiFi client for EsP32 boards
 
-class spWiFiESP32 : public spActionType<spWiFiESP32>, public spNetwork
+class spWiFiESP32 : public spActionType<spWiFiESP32>, public spNetwork, public spIWiFiDevice
 {
 private:
 
@@ -45,6 +46,15 @@ public:
 
     bool initialize(void);
 
+    void setSSID(std::string & theSSID)
+    {
+        SSID = theSSID;
+    }
+
+    void setPassword(std::string & thePassword)
+    {
+        password = thePassword;
+    }
 private:
 
 	// flag used to help with connection changes. 
