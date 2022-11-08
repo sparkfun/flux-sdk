@@ -7,11 +7,8 @@
 #include "spDevice.h"
 #include "spSpark.h"
 
-spDevice::spDevice()
+spDevice::spDevice() : _address{kSparkDeviceAddressNull}, _autoload{false}
 {
-
-    _address = kSparkDeviceAddressNull;
-    _autoload = false;
 }
 
 bool spDevice::initialize(TwoWire &wirePort)
