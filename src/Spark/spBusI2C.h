@@ -1,6 +1,6 @@
 /*
  *
- * spDevI2C.h
+ * spBusI2C.h
  *
  * Class to encapsulate I2C operations in support of qwiic operations
  *
@@ -13,11 +13,11 @@
 #include "Arduino.h"
 #include <Wire.h>
 
-class spDevI2C
+class spBusI2C
 {
 
   public:
-    spDevI2C(void);
+    spBusI2C(void);
 
     void begin(TwoWire &wirePort = Wire);
 

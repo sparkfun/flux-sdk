@@ -50,7 +50,7 @@ bool spDeviceFactory::addressInUse(uint8_t address)
 //    The count of devices connected and the driver was successfully created...
 //-------------------------------------------------------------------------------
 
-int spDeviceFactory::buildDevices(spDevI2C &i2cDriver)
+int spDeviceFactory::buildDevices(spBusI2C &i2cDriver)
 {
 
     // walk the list of registered drivers

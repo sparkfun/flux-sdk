@@ -43,7 +43,7 @@ float spDevFS3000::read_mph()
 
 // Static method used to determine if this device is connected
 
-bool spDevFS3000::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevFS3000::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

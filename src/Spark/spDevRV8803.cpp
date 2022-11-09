@@ -54,7 +54,7 @@ spDevRV8803::spDevRV8803()
 
 // Static method used to determine if this device is connected
 
-bool spDevRV8803::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevRV8803::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

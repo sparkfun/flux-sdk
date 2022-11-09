@@ -24,7 +24,7 @@ class spDevFS3000 : public spDeviceI2CType<spDevFS3000>, public FS3000
 public:
     spDevFS3000();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

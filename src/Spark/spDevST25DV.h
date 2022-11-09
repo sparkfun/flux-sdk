@@ -29,7 +29,7 @@ class spDevST25DV : public spDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_N
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kST25DVDeviceName;

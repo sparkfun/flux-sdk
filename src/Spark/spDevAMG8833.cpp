@@ -34,7 +34,7 @@ spDevAMG8833::spDevAMG8833()
 
 // Static method used to determine if this device is connected
 
-bool spDevAMG8833::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevAMG8833::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

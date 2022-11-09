@@ -22,7 +22,7 @@ class spDevAHT20 : public spDeviceI2CType<spDevAHT20>, public AHT20
   public:
     spDevAHT20();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

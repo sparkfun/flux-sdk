@@ -51,7 +51,7 @@ spDevNAU7802::spDevNAU7802()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevNAU7802::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevNAU7802::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     // Ping it twice. The first one often fails...

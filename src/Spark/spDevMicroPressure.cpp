@@ -65,7 +65,7 @@ float spDevMicroPressure::read_pressure_bar()
 
 // Static method used to determine if this device is connected
 
-bool spDevMicroPressure::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevMicroPressure::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

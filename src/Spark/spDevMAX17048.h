@@ -22,7 +22,7 @@ class spDevMAX17048 : public spDeviceI2CType<spDevMAX17048>, public SFE_MAX1704X
   public:
     spDevMAX17048();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

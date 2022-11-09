@@ -3,7 +3,7 @@
 #pragma once
 
 #include "spCore.h"
-#include "spDevI2C.h"
+#include "spBusI2C.h"
 #include "spDevice.h"
 #include <memory>
 
@@ -138,7 +138,7 @@ class spSpark : public spObjectContainer
 
     spStorage *  _settingsStorage;
 
-    spDevI2C     _i2cDriver;
+    spBusI2C     _i2cDriver;
     // Note private constructor...
     spSpark() : _settingsStorage{nullptr}
     {

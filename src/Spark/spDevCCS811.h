@@ -22,7 +22,7 @@ class spDevCCS811 : public spDeviceI2CType<spDevCCS811>, public CCS811
   public:
     spDevCCS811();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

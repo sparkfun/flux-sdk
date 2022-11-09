@@ -22,7 +22,7 @@ class spDevLPS25HB : public spDeviceI2CType<spDevLPS25HB>, public LPS25HB
   public:
     spDevLPS25HB();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

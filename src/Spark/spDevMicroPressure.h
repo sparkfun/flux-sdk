@@ -22,7 +22,7 @@ class spDevMicroPressure : public spDeviceI2CType<spDevMicroPressure>, public Sp
   public:
     spDevMicroPressure();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

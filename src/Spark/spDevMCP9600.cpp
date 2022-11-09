@@ -50,7 +50,7 @@ spDevMCP9600::spDevMCP9600()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevMCP9600::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevMCP9600::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
 
     // The MCP9600 is a fussy device. If we call isConnected twice in succession, the second call fails

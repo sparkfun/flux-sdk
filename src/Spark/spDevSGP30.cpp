@@ -45,7 +45,7 @@ spDevSGP30::spDevSGP30()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevSGP30::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevSGP30::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

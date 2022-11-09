@@ -66,7 +66,7 @@ float spDevADS122C04::read_raw_voltage()
 
 // Static method used to determine if this device is connected
 
-bool spDevADS122C04::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevADS122C04::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // 0x40 clashes with the humidity sensor on the MS8607 PHT sensor...
     // We need to do something clever here to make sure we don't detect an MS8607 as an ADS122C04

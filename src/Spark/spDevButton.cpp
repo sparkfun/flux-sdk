@@ -44,7 +44,7 @@ spDevButton::spDevButton()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevButton::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevButton::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

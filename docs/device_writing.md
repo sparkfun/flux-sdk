@@ -36,7 +36,7 @@ To accomplish this task, class level (static) methods and data are implemented b
 
 |Item | Description|
 |----|--|
- ```bool isConnected(spDevI2C, address)``` | Returns true if the device is connected |
+ ```bool isConnected(spBusI2C, address)``` | Returns true if the device is connected |
  ```char* getDeviceName()``` | Returns the Device Name |
 |```uint8_t *getDefaultAddresses()``` | Return a list of addresses for the device. This list terminates with the value of ```kSparkDeviceAddressNull``` |
 
@@ -60,7 +60,7 @@ How the driver determines if a device is connected is determined by the implemen
 
 ##### Method Signature
 ```C++
-static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 ```
 
 ##### Arguments
@@ -94,7 +94,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
     spDevBME280();
 
     // Device is connected methods
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBME280DeviceName;
@@ -162,7 +162,7 @@ Notes
 
 The isConnected() method for this example is:
 ```C++
-bool spDevBME280::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevBME280::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
 
     uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); 

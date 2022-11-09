@@ -44,7 +44,7 @@ spDevSHTC3::spDevSHTC3()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevSHTC3::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevSHTC3::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

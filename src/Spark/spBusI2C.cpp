@@ -1,24 +1,24 @@
 
 
-#include "spDevI2C.h"
+#include "spBusI2C.h"
 
 // Constructor
 
-spDevI2C::spDevI2C(void)
+spBusI2C::spBusI2C(void)
 {
 
     _i2cPort = nullptr;
 }
 
 // Note - SoftwareWire is a subclass of TwoWire
-void spDevI2C::begin(TwoWire &wirePort)
+void spBusI2C::begin(TwoWire &wirePort)
 {
 
     wirePort.begin();
     _i2cPort = &wirePort; // Default to Wire Port. Note - hard and soft wire supported ...
 }
 
-int spDevI2C::receiveResponse(uint8_t i2c_address, uint8_t *outputPointer, uint8_t length)
+int spBusI2C::receiveResponse(uint8_t i2c_address, uint8_t *outputPointer, uint8_t length)
 {
     int nData;
 
@@ -30,7 +30,7 @@ int spDevI2C::receiveResponse(uint8_t i2c_address, uint8_t *outputPointer, uint8
 
     return nData;
 }
-bool spDevI2C::readRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *outputPointer, uint8_t length)
+bool spBusI2C::readRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *outputPointer, uint8_t length)
 {
 
     _i2cPort->beginTransmission(i2c_address);
@@ -41,7 +41,7 @@ bool spDevI2C::readRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *
     return receiveResponse(i2c_address, outputPointer, length) == length;
 }
 
-uint8_t spDevI2C::readRegister(uint8_t i2c_address, uint8_t offset)
+uint8_t spBusI2C::readRegister(uint8_t i2c_address, uint8_t offset)
 {
 
     // Return value
@@ -52,7 +52,7 @@ uint8_t spDevI2C::readRegister(uint8_t i2c_address, uint8_t offset)
     return result;
 }
 
-bool spDevI2C::readRegister(uint8_t i2c_address, uint8_t offset, uint8_t *outputPointer)
+bool spBusI2C::readRegister(uint8_t i2c_address, uint8_t offset, uint8_t *outputPointer)
 {
 
     // Return value
@@ -77,7 +77,7 @@ bool spDevI2C::readRegister(uint8_t i2c_address, uint8_t offset, uint8_t *output
     return (nData == 1);
 }
 
-uint16_t spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset, bool littleEndian)
+uint16_t spBusI2C::readRegister16(uint8_t i2c_address, uint8_t offset, bool littleEndian)
 {
 
     uint16_t myBuffer = 0;
@@ -86,7 +86,7 @@ uint16_t spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset, bool litt
     return myBuffer;
 }
 
-bool spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset, uint16_t *value, bool littleEndian)
+bool spBusI2C::readRegister16(uint8_t i2c_address, uint8_t offset, uint16_t *value, bool littleEndian)
 {
 
     uint8_t myBuffer[2];
@@ -99,21 +99,21 @@ bool spDevI2C::readRegister16(uint8_t i2c_address, uint8_t offset, uint16_t *val
 }
 
 //////////////////////////////////////
-bool spDevI2C::ping(uint8_t i2c_address)
+bool spBusI2C::ping(uint8_t i2c_address)
 {
 
     _i2cPort->beginTransmission(i2c_address);
     return _i2cPort->endTransmission() == 0;
 }
 
-bool spDevI2C::write(uint8_t i2c_address, uint8_t offset)
+bool spBusI2C::write(uint8_t i2c_address, uint8_t offset)
 {
 
     _i2cPort->beginTransmission(i2c_address);
     _i2cPort->write(offset);
     return _i2cPort->endTransmission() == 0;
 }
-bool spDevI2C::write(uint8_t i2c_address, uint8_t *pData, uint8_t length)
+bool spBusI2C::write(uint8_t i2c_address, uint8_t *pData, uint8_t length)
 {
 
     _i2cPort->beginTransmission(i2c_address);
@@ -121,7 +121,7 @@ bool spDevI2C::write(uint8_t i2c_address, uint8_t *pData, uint8_t length)
     return _i2cPort->endTransmission() == 0;
 }
 
-bool spDevI2C::writeRegister(uint8_t i2c_address, uint8_t offset, uint8_t dataToWrite)
+bool spBusI2C::writeRegister(uint8_t i2c_address, uint8_t offset, uint8_t dataToWrite)
 {
 
     _i2cPort->beginTransmission(i2c_address);
@@ -130,7 +130,7 @@ bool spDevI2C::writeRegister(uint8_t i2c_address, uint8_t offset, uint8_t dataTo
     return _i2cPort->endTransmission() == 0;
 }
 
-bool spDevI2C::writeRegister16(uint8_t i2c_address, uint8_t offset, uint16_t dataToWrite)
+bool spBusI2C::writeRegister16(uint8_t i2c_address, uint8_t offset, uint16_t dataToWrite)
 {
 
     uint8_t buffer[2] = {(uint8_t)(dataToWrite & 0xFF), (uint8_t)(dataToWrite >> 8)};
@@ -138,14 +138,14 @@ bool spDevI2C::writeRegister16(uint8_t i2c_address, uint8_t offset, uint16_t dat
     return writeRegisterRegion(i2c_address, offset, buffer, 3);
 }
 
-bool spDevI2C::writeRegister24(uint8_t i2c_address, uint8_t offset, uint32_t value)
+bool spBusI2C::writeRegister24(uint8_t i2c_address, uint8_t offset, uint32_t value)
 {
 
     uint8_t buffer[3] = {(uint8_t)(value >> 16), (uint8_t)((value >> 8) & 0xFF), (uint8_t)(value & 0xFF)};
 
     return writeRegisterRegion(i2c_address, offset, buffer, 3);
 }
-bool spDevI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *inputPointer, uint8_t length)
+bool spBusI2C::writeRegisterRegion(uint8_t i2c_address, uint8_t offset, uint8_t *inputPointer, uint8_t length)
 {
 
     _i2cPort->beginTransmission(i2c_address);

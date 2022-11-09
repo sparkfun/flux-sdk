@@ -24,7 +24,7 @@ class spDevADS122C04 : public spDeviceI2CType<spDevADS122C04>, public SFE_ADS122
   public:
     spDevADS122C04();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

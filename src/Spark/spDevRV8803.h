@@ -24,7 +24,7 @@ class spDevRV8803 : public spDeviceI2CType<spDevRV8803>, public RV8803
 public:
     spDevRV8803();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

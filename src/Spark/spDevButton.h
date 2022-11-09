@@ -26,7 +26,7 @@ class spDevButton : public spDeviceI2CType<spDevButton>, public QwiicButton
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kButtonDeviceName;

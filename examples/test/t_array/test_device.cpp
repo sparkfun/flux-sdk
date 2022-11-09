@@ -44,7 +44,7 @@ test_device::test_device()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool test_device::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool test_device::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // the test device is always connected
     return true;

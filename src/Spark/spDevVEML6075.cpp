@@ -48,7 +48,7 @@ spDevVEML6075::spDevVEML6075()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevVEML6075::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevVEML6075::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

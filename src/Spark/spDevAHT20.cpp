@@ -39,7 +39,7 @@ float spDevAHT20::read_humidity()
 
 // Static method used to determine if this device is connected
 
-bool spDevAHT20::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevAHT20::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

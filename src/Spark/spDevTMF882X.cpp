@@ -54,7 +54,7 @@ spDevTMF882X::spDevTMF882X()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevTMF882X::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevTMF882X::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

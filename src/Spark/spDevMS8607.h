@@ -22,7 +22,7 @@ class spDevMS8607 : public spDeviceI2CType<spDevMS8607>, public MS8607
   public:
     spDevMS8607();
     // Interface
-    static bool isConnected(spDevI2C &i2cDriver, uint8_t address);
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {

@@ -44,7 +44,7 @@ spDevST25DV::spDevST25DV()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevST25DV::isConnected(spDevI2C &i2cDriver, uint8_t address)
+bool spDevST25DV::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

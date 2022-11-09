@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "spCore.h"
-#include "spDevI2C.h"
+#include "spBusI2C.h"
 #include "spUtils.h"
 
 // define a value that marks the end of a device address/id list
@@ -117,7 +117,7 @@ public:
 
     friend class spDeviceFactory;
 
-    bool initialize(spDevI2C &i2cDriver)
+    bool initialize(spBusI2C &i2cDriver)
     {
 
         // call the superclasses begin method.
@@ -261,7 +261,7 @@ class spDeviceFactory
     };
 
     // Called to build a list of device objects for the devices connected to the system.
-    int buildDevices(spDevI2C &);
+    int buildDevices(spBusI2C &);
 
     void purneAutoload(spDevice *, spDeviceContainer &);
 
@@ -285,7 +285,7 @@ class spDeviceBuilderI2C
 {
   public:
     virtual spDeviceI2C *create(void) = 0;                                 // create the underlying device obj.
-    virtual bool isConnected(spDevI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
+    virtual bool isConnected(spBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
     virtual spDeviceKind_t getDeviceKind(void) = 0;
@@ -312,7 +312,7 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilderI2C
         return new DeviceType();
     }
 
-    bool isConnected(spDevI2C &i2cDriver, uint8_t address)
+    bool isConnected(spBusI2C &i2cDriver, uint8_t address)
     {
         return DeviceType::isConnected(i2cDriver, address); // calls device object static isConnected method()
     }
