@@ -60,11 +60,36 @@ class spDevice : public spOperation
 {
 
   public:
-    spDevice();
+    spDevice() : _address{kSparkDeviceAddressNull}{};
 
     virtual ~spDevice()
     {
     }
+    void setAddress(uint8_t address)
+    {
+        _address = address;
+    }
+
+    uint8_t address(void)
+    {
+        return _address;
+    }
+
+    virtual bool autoload(void)
+    {
+        return false;
+    }
+private:
+    uint8_t _address;
+};
+
+using spDeviceContainer = spContainer<spDevice *>;
+
+class spDeviceI2C : public spDevice
+{
+public:
+    spDeviceI2C();
+
     // Interface
 
     // Methods for Sub-class to override - for device activities.
@@ -80,16 +105,6 @@ class spDevice : public spOperation
     };
 
     bool initialize(TwoWire &wirePort = Wire);
-
-    void setAddress(uint8_t address)
-    {
-        _address = address;
-    }
-
-    uint8_t address(void)
-    {
-        return _address;
-    }
 
     bool autoload()
     {
@@ -117,13 +132,9 @@ class spDevice : public spOperation
         _autoload = true;
     }
 
-    uint8_t _address;
     bool _autoload;
 };
 
-// using spDeviceContainer = spContainer<_spDevice>;
-// using spDeviceContainer = _spOperationContainer<_spDevice>;
-using spDeviceContainer = spContainer<spDevice *>;
 
 // Macro used to simplify device setup
 #define spSetupDeviceIdent(_name_) this->setName(_name_);
@@ -139,7 +150,7 @@ using spDeviceContainer = spContainer<spDevice *>;
 //
 //   class <classname> : spDeviceI2CType<classname>, ...
 //
-template <typename T> class spDeviceI2CType : public spDevice
+template <typename T> class spDeviceI2CType : public spDeviceI2C
 {
   public:
     // get the default address for the device. If none exists,
@@ -223,7 +234,7 @@ template <typename T> class spDeviceI2CType : public spDevice
 //
 
 // it's c++ - you have to do this
-class spDeviceBuilder;
+class spDeviceBuilderI2C;
 
 // Our factory class
 class spDeviceFactory
@@ -238,7 +249,7 @@ class spDeviceFactory
         return instance;
     }
     // The callback Builders use to register themselves.
-    bool registerDevice(spDeviceBuilder *deviceBuilder)
+    bool registerDevice(spDeviceBuilderI2C *deviceBuilder)
     {
         _Builders.push_back(deviceBuilder);
         return true;
@@ -262,7 +273,7 @@ class spDeviceFactory
     bool addressInUse(uint8_t);
     spDeviceFactory(){}; // hide constructor - this is a singleton
 
-    std::vector<spDeviceBuilder *> _Builders;
+    std::vector<spDeviceBuilderI2C *> _Builders;
 };
 
 //----------------------------------------------------------------------------------
@@ -270,10 +281,10 @@ class spDeviceFactory
 
 // Base class - defines the builder interface.
 //
-class spDeviceBuilder
+class spDeviceBuilderI2C
 {
   public:
-    virtual spDevice *create(void) = 0;                                 // create the underlying device obj.
+    virtual spDeviceI2C *create(void) = 0;                                 // create the underlying device obj.
     virtual bool isConnected(spDevI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
@@ -288,7 +299,7 @@ class spDeviceBuilder
 // and the constructor of the class registers the builder in the factory class.
 //
 
-template <class DeviceType> class DeviceBuilder : public spDeviceBuilder
+template <class DeviceType> class DeviceBuilder : public spDeviceBuilderI2C
 {
   public:
     DeviceBuilder()
