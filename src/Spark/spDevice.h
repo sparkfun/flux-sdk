@@ -22,6 +22,7 @@
 
 #include "spCore.h"
 #include "spBusI2C.h"
+#include "spBusSPI.h"
 #include "spUtils.h"
 
 // define a value that marks the end of a device address/id list
@@ -62,6 +63,9 @@ class spDevice : public spOperation
   public:
     spDevice() : _address{kSparkDeviceAddressNull}{};
 
+    // Pass in the default address for the device 
+    spDevice(uint8_t address) : _address{address}{};
+
     virtual ~spDevice()
     {
     }
@@ -84,6 +88,13 @@ private:
 };
 
 using spDeviceContainer = spContainer<spDevice *>;
+
+// Macro used to simplify device setup
+#define spSetupDeviceIdent(_name_) this->setName(_name_);
+
+//----------------------------------------------------------------------------------
+// I2C device classes
+//----------------------------------------------------------------------------------
 
 class spDeviceI2C : public spDevice
 {
@@ -136,8 +147,6 @@ public:
 };
 
 
-// Macro used to simplify device setup
-#define spSetupDeviceIdent(_name_) this->setName(_name_);
 
 //------------------------------------------------------------------------
 // spDeviceI2CType()
@@ -181,11 +190,6 @@ template <typename T> class spDeviceI2CType : public spDeviceI2C
         return _myTypeID;
     }
 
-    // Device Kind Typing
-    static spDeviceKind_t kind(void)
-    {
-        return spDeviceKindI2C;
-    }
     // Return the type ID of this
     spTypeID getType(void)
     {
@@ -196,7 +200,124 @@ template <typename T> class spDeviceI2CType : public spDeviceI2C
     {
         return type == getType();
     }
+
+    // Device Kind Typing
+    static spDeviceKind_t kind(void)
+    {
+        return spDeviceKindI2C;
+    }
+
+    spDeviceKind_t getKind(void)
+    {
+        return kind();
+    }
 };
+
+//----------------------------------------------------------------------------------
+// SPI device classes
+//----------------------------------------------------------------------------------
+
+class spDeviceSPI : public spDevice
+{
+public:
+    spDeviceSPI(): _autoload{false}{};
+
+    // Interface
+
+    // Methods for Sub-class to override - for device activities.
+    // Method called on initialize
+    virtual bool onInitialize(SPIClass &)
+    {
+        return true;
+    };
+
+    bool initialize(SPIClass &spiPort = SPI);
+
+    bool autoload()
+    {
+        return _autoload;
+    }
+
+    void setChipSelect(uint8_t cs)
+    {
+        setAddress(cs);
+    }
+
+    uint8_t chipSelect(void)
+    {
+        return address();
+    }
+  private:
+    // not sure if this is needed for the system, but will leave in for now. 
+
+    friend class spDeviceFactory;
+
+    bool initialize(spBusSPI &spiDriver)
+    {
+
+        // call the superclasses begin method.
+        SPIClass *spiPort = spiDriver.getSPIPort();
+        if (!spiPort)
+            return false;
+
+        return this->initialize(*spiPort); // call subclass virtual init routine.
+    }
+    void setAutoload()
+    {
+        _autoload = true;
+    }
+
+    bool _autoload;
+};
+
+
+
+//------------------------------------------------------------------------
+// spDeviceSPIType()
+//
+//
+template <typename T> class spDeviceSPIType : public spDeviceSPI
+{
+  public:
+    
+    // Typing system for devices
+    //
+    // Defines a type specific static method - so can be called outside
+    // of an instance.
+    //
+    // The typeID is determined by hashing the name of the class.
+    // This way the type ID is consistant across invocations
+
+    static spTypeID type(void)
+    {
+        static spTypeID _myTypeID = spGetClassTypeID<T>();
+
+        return _myTypeID;
+    }
+
+    // Return the type ID of this
+    spTypeID getType(void)
+    {
+        return type();
+    }
+
+    bool isType(spTypeID type)
+    {
+        return type == getType();
+    }
+
+    // Device Kind Typing
+    static spDeviceKind_t kind(void)
+    {
+        return spDeviceKindSPI;
+    }
+
+    spDeviceKind_t getKind(void)
+    {
+        return kind();
+    }
+};
+
 
 //----------------------------------------------------------------------------------
 // Factory/Builder pattern to dynamically register devices at runtime.

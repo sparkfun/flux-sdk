@@ -21,6 +21,14 @@ bool spDeviceI2C::initialize(TwoWire &wirePort)
 
     return onInitialize(wirePort);
 }
+
+bool spDeviceSPI::initialize(SPIClass &spiPort)
+{
+    // Add this device to the system
+    spark.add(this);
+
+    return onInitialize(spiPort);
+}
 //----------------------------------------------------------------
 // Device Factory
 //----------------------------------------------------------------
