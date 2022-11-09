@@ -19,7 +19,7 @@
 #define kTMF882XDeviceName "TMF882x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevTMF882X : public spDeviceType<spDevTMF882X>, public SparkFun_TMF882X
+class spDevTMF882X : public spDeviceI2CType<spDevTMF882X>, public SparkFun_TMF882X
 {
 
 public:

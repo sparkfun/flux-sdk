@@ -21,7 +21,7 @@
 #define kST25DVDeviceName "ST25DV"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevST25DV : public spDeviceType<spDevST25DV>, public SFE_ST25DV64KC_NDEF, public spIWiFiCredentialSource
+class spDevST25DV : public spDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_NDEF, public spIWiFiCredentialSource
 {
 
   public:

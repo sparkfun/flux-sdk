@@ -16,7 +16,7 @@
 #define kAHT20DeviceName "AHT20"
 
 // Define our class
-class spDevAHT20 : public spDeviceType<spDevAHT20>, public AHT20
+class spDevAHT20 : public spDeviceI2CType<spDevAHT20>, public AHT20
 {
 
   public:

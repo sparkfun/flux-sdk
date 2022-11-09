@@ -19,7 +19,7 @@
 #define kBME68xDeviceName "BME68x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBME68x : public spDeviceType<spDevBME68x>, public Bme68x
+class spDevBME68x : public spDeviceI2CType<spDevBME68x>, public Bme68x
 {
 
 public:

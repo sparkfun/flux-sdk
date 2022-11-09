@@ -16,7 +16,7 @@
 #define kLPS25HBDeviceName "LPS25HB"
 
 // Define our class
-class spDevLPS25HB : public spDeviceType<spDevLPS25HB>, public LPS25HB
+class spDevLPS25HB : public spDeviceI2CType<spDevLPS25HB>, public LPS25HB
 {
 
   public:

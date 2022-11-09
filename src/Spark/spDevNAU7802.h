@@ -19,7 +19,7 @@
 #define kNAU7802DeviceName "NAU7802"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevNAU7802 : public spDeviceType<spDevNAU7802>, public NAU7802
+class spDevNAU7802 : public spDeviceI2CType<spDevNAU7802>, public NAU7802
 {
 
 public:

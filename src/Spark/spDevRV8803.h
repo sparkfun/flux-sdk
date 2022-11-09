@@ -18,7 +18,7 @@
 #define kRV8803DeviceName "RV8803"
 
 // Define our class
-class spDevRV8803 : public spDeviceType<spDevRV8803>, public RV8803
+class spDevRV8803 : public spDeviceI2CType<spDevRV8803>, public RV8803
 {
 
 public:

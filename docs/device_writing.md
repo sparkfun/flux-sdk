@@ -15,14 +15,14 @@ The device class should following the naming patter `spDev[Name]`, where Name is
 
 The implementation requires separate header and implementation files, since a several class variables and a global object are defined that required the use of an implementation file.  
 
-The new device class should subclass from the frameworks ```spDevice``` class, using the ```spDeviceType<DeviceName>``` template. Additionally, the device class subclasses from the underlying driver class. This allows the descriptor class to support the existing driver's interface. 
+The new device class should subclass from the frameworks ```spDevice``` class, using the ```spDeviceI2CType<DeviceName>``` template. Additionally, the device class subclasses from the underlying driver class. This allows the descriptor class to support the existing driver's interface. 
 
 ##### Example of a class definition
 
 Implementing a driver for the `BME280` Device.
 
 ```C++
-class spDevBME280 : public spDeviceType<spDevBME280>, public BME280
+class spDevBME280 : public spDeviceI2CType<spDevBME280>, public BME280
 {
 
 };

@@ -19,7 +19,7 @@
 #define kVCNL4040DeviceName "VCNL4040"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevVCNL4040 : public spDeviceType<spDevVCNL4040>, public VCNL4040
+class spDevVCNL4040 : public spDeviceI2CType<spDevVCNL4040>, public VCNL4040
 {
 
 public:

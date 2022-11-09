@@ -16,7 +16,7 @@
 #define kMAX17048DeviceName "MAX17048"
 
 // Define our class
-class spDevMAX17048 : public spDeviceType<spDevMAX17048>, public SFE_MAX1704X
+class spDevMAX17048 : public spDeviceI2CType<spDevMAX17048>, public SFE_MAX1704X
 {
 
   public:

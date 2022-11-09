@@ -19,7 +19,7 @@
 #define kMMC5983DeviceName "MMC5983"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevMMC5983 : public spDeviceType<spDevMMC5983>, public SFE_MMC5983MA
+class spDevMMC5983 : public spDeviceI2CType<spDevMMC5983>, public SFE_MMC5983MA
 {
 
 public:

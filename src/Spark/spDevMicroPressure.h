@@ -16,7 +16,7 @@
 #define kMicroPressureDeviceName "MicroPressure"
 
 // Define our class
-class spDevMicroPressure : public spDeviceType<spDevMicroPressure>, public SparkFun_MicroPressure
+class spDevMicroPressure : public spDeviceI2CType<spDevMicroPressure>, public SparkFun_MicroPressure
 {
 
   public:

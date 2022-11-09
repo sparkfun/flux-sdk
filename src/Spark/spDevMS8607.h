@@ -16,7 +16,7 @@
 #define kMS8607DeviceName "MS8607"
 
 // Define our class
-class spDevMS8607 : public spDeviceType<spDevMS8607>, public MS8607
+class spDevMS8607 : public spDeviceI2CType<spDevMS8607>, public MS8607
 {
 
   public:

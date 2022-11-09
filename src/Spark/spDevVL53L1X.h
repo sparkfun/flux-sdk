@@ -19,7 +19,7 @@
 #define kVL53L1XDeviceName "VL53L1x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevVL53L1X : public spDeviceType<spDevVL53L1X>, public SFEVL53L1X
+class spDevVL53L1X : public spDeviceI2CType<spDevVL53L1X>, public SFEVL53L1X
 {
 
 public:

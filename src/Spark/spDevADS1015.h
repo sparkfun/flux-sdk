@@ -18,7 +18,7 @@
 #define kADS1015DeviceName "ADS1015"
 
 // Define our class
-class spDevADS1015 : public spDeviceType<spDevADS1015>, public ADS1015
+class spDevADS1015 : public spDeviceI2CType<spDevADS1015>, public ADS1015
 {
 
   public:

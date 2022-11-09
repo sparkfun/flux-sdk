@@ -19,7 +19,7 @@
 #define kGNSSDeviceName "GNSS"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevGNSS : public spDeviceType<spDevGNSS>, public SFE_UBLOX_GNSS
+class spDevGNSS : public spDeviceI2CType<spDevGNSS>, public SFE_UBLOX_GNSS
 {
 
 public:

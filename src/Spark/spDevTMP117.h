@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevTMP117 : public spDeviceType<spDevTMP117>, public TMP117
+class spDevTMP117 : public spDeviceI2CType<spDevTMP117>, public TMP117
 {
 
 public:

@@ -19,7 +19,7 @@
 #define kSCD30DeviceName "SCD30"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSCD30 : public spDeviceType<spDevSCD30>, public SCD30
+class spDevSCD30 : public spDeviceI2CType<spDevSCD30>, public SCD30
 {
 
 public:

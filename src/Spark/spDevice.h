@@ -28,6 +28,11 @@
 
 #define kSparkDeviceAddressNull 0
 
+typedef enum {
+    spDeviceKindI2C,
+    spDeviceKindSPI
+}spDeviceKind_t;
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // spDevice()
@@ -124,7 +129,7 @@ using spDeviceContainer = spContainer<spDevice *>;
 #define spSetupDeviceIdent(_name_) this->setName(_name_);
 
 //------------------------------------------------------------------------
-// spDeviceType()
+// spDeviceI2CType()
 //
 // This subclass of spDevice via template allows the core device class to
 // access the static list of addresses to get the default address without
@@ -132,9 +137,9 @@ using spDeviceContainer = spContainer<spDevice *>;
 //
 // Devices should subclass from this object using the following pattern:
 //
-//   class <classname> : spDeviceType<classname>, ...
+//   class <classname> : spDeviceI2CType<classname>, ...
 //
-template <typename T> class spDeviceType : public spDevice
+template <typename T> class spDeviceI2CType : public spDevice
 {
   public:
     // get the default address for the device. If none exists,
@@ -165,6 +170,11 @@ template <typename T> class spDeviceType : public spDevice
         return _myTypeID;
     }
 
+    // Device Kind Typing
+    static spDeviceKind_t kind(void)
+    {
+        return spDeviceKindI2C;
+    }
     // Return the type ID of this
     spTypeID getType(void)
     {
@@ -267,6 +277,7 @@ class spDeviceBuilder
     virtual bool isConnected(spDevI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
+    virtual spDeviceKind_t getDeviceKind(void) = 0;
 };
 
 // Define a class template used to register a device, then use this template to
@@ -303,6 +314,11 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilder
     const uint8_t *getDefaultAddresses(void)
     {
         return DeviceType::getDefaultAddresses();
+    }
+
+    spDeviceKind_t getDeviceKind(void)
+    {
+        return DeviceType::kind();
     }
 };
 

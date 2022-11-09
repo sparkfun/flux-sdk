@@ -19,7 +19,7 @@
 #define kACS37800DeviceName "ACS37800"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevACS37800 : public spDeviceType<spDevACS37800>, public ACS37800
+class spDevACS37800 : public spDeviceI2CType<spDevACS37800>, public ACS37800
 {
 
 public:

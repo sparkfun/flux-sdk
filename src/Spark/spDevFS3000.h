@@ -18,7 +18,7 @@
 #define kFS3000DeviceName "FS3000"
 
 // Define our class
-class spDevFS3000 : public spDeviceType<spDevFS3000>, public FS3000
+class spDevFS3000 : public spDeviceI2CType<spDevFS3000>, public FS3000
 {
 
 public:

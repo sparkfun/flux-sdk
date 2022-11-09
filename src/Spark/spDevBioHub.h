@@ -19,7 +19,7 @@
 #define kBioHubDeviceName "BioHub"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBioHub : public spDeviceType<spDevBioHub>, public SparkFun_Bio_Sensor_Hub
+class spDevBioHub : public spDeviceI2CType<spDevBioHub>, public SparkFun_Bio_Sensor_Hub
 {
 
 public:

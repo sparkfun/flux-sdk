@@ -19,7 +19,7 @@
 #define kISM330DeviceName "ISM330"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevISM330 : public spDeviceType<spDevISM330>, public SparkFun_ISM330DHCX
+class spDevISM330 : public spDeviceI2CType<spDevISM330>, public SparkFun_ISM330DHCX
 {
 
 public:

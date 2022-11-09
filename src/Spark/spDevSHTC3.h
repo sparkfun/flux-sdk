@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSHTC3 : public spDeviceType<spDevSHTC3>, public SHTC3
+class spDevSHTC3 : public spDeviceI2CType<spDevSHTC3>, public SHTC3
 {
 
 public:

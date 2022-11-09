@@ -18,7 +18,7 @@
 #define kButtonDeviceName "BUTTON"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevButton : public spDeviceType<spDevButton>, public QwiicButton
+class spDevButton : public spDeviceI2CType<spDevButton>, public QwiicButton
 {
 
   public:

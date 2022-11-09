@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSTC31 : public spDeviceType<spDevSTC31>, public STC3x
+class spDevSTC31 : public spDeviceI2CType<spDevSTC31>, public STC3x
 {
 
 public:

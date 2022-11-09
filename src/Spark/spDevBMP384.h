@@ -19,7 +19,7 @@
 #define kBMP384DeviceName "BMP384"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBMP384 : public spDeviceType<spDevBMP384>, public BMP384
+class spDevBMP384 : public spDeviceI2CType<spDevBMP384>, public BMP384
 {
 
 public:

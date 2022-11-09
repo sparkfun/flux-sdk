@@ -13,7 +13,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class test_device : public spDeviceType<test_device>
+class test_device : public spDeviceI2CType<test_device>
 {
 
 public:

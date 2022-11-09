@@ -19,7 +19,7 @@
 #define kVEML7700DeviceName "VEML7700"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevVEML7700 : public spDeviceType<spDevVEML7700>, public VEML7700
+class spDevVEML7700 : public spDeviceI2CType<spDevVEML7700>, public VEML7700
 {
 
 public:

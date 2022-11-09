@@ -16,7 +16,7 @@
 #define kCCS811DeviceName "CCS811"
 
 // Define our class
-class spDevCCS811 : public spDeviceType<spDevCCS811>, public CCS811
+class spDevCCS811 : public spDeviceI2CType<spDevCCS811>, public CCS811
 {
 
   public:

@@ -18,7 +18,7 @@
 #define kAMG8833DeviceName "AMG8833"
 
 // Define our class
-class spDevAMG8833 : public spDeviceType<spDevAMG8833>, public GridEYE
+class spDevAMG8833 : public spDeviceI2CType<spDevAMG8833>, public GridEYE
 {
 
 public:

@@ -19,7 +19,7 @@
 #define kSDP3XDeviceName "SDP3x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSDP3X : public spDeviceType<spDevSDP3X>, public SDP3X
+class spDevSDP3X : public spDeviceI2CType<spDevSDP3X>, public SDP3X
 {
 
 public:
