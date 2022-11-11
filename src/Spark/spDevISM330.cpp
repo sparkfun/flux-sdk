@@ -59,7 +59,7 @@ spDevISM330Base::spDevISM330Base()
     spRegister(gyroLP1Bandwidth, "Gyro LP1 Filter Bandwidth", "Gyro LP1 Filter Bandwidth");
 }
 
-// Base version of on Intialize
+// Base version of on Initialize
 
 bool spDevISM330Base::onInitialize(void)
 {
