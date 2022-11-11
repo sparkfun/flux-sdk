@@ -37,8 +37,10 @@
 #include <Spark/spBusSPI.h>
 // The onboard IMU 
 #include <Spark/spDevISM330.h>
-
 static const uint8_t IMU_CS = 5;
+// The onboard Magnetometer
+#include <Spark/spDevMMC5983.h>
+static const uint8_t MAG_CS = 27;
 
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
@@ -91,6 +93,7 @@ spNTPESP32  ntpClient;
 spBusSPI spiDriver;
 // the onboard IMU 
 spDevISM330_SPI onboardIMU;
+spDevMMC5983_SPI onboardMag;
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -151,6 +154,7 @@ void setupNFC(void)
     pCreds->setName("WiFi Login From NFC", "Set the devices WiFi Credentials from an attached NFC source.");
 
 }
+//---------------------------------------------------------------------
 void setupSPIDevices()
 {
     // init our driver
@@ -159,6 +163,8 @@ void setupSPIDevices()
         Serial.println("Error starting the SPI bus");
         return;
     }
+
+    // IMU
     pinMode(IMU_CS, OUTPUT);
     digitalWrite(IMU_CS, HIGH);
     onboardIMU.setChipSelect(IMU_CS);
@@ -169,6 +175,18 @@ void setupSPIDevices()
     }
     else 
         Serial.println("Error starting onboard IMU");
+
+    // Magnetometer
+    pinMode(MAG_CS, OUTPUT);
+    digitalWrite(MAG_CS, HIGH);
+    onboardMag.setChipSelect(MAG_CS);
+    if (onboardMag.initialize(spiDriver))
+    {
+        Serial.println("Onboard Magnetometer is enabled");
+        logger.add(onboardMag);
+    }
+    else 
+        Serial.println("Error starting onboard Magnetometer");
 }
 //---------------------------------------------------------------------
 // Arduino Setup
