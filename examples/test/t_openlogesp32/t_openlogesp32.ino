@@ -191,6 +191,8 @@ void setup() {
     digitalWrite(EN_3V3_SW, HIGH);
 #endif
 
+    // Lets set the application name?!
+    spark.setName("OpenLog ESP32", "Framework example for the OpenLog ESP32 board");
     // If not using settings, can use the following lines to test WiFi manually
     // Try WiFi
     //wifiConnection.SSID = "";
