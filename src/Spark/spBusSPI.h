@@ -19,6 +19,11 @@ class spBusSPI
         return _spiPort;
     }
 
+    bool initialized()
+    {
+        return _spiPort != nullptr;
+    }
+
     bool begin(bool bInit = false);
 
     bool begin(SPIClass &spiPort, SPISettings &spiSettings, bool bInit = false);

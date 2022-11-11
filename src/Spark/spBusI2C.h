@@ -21,6 +21,10 @@ class spBusI2C
 
     void begin(TwoWire &wirePort = Wire);
 
+    bool initialized()
+    {
+        return _i2cPort != nullptr;
+    }
     TwoWire *getWirePort(void)
     {
         return _i2cPort;
