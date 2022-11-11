@@ -7,28 +7,15 @@
 #include "spDevice.h"
 #include "spSpark.h"
 
-spDeviceI2C::spDeviceI2C() :  _autoload{false}
-{
-}
 
-bool spDeviceI2C::initialize(TwoWire &wirePort)
+bool spDevice::initialize()
 {
-    if (address() == kSparkDeviceAddressNull)
-        setAddress(getDefaultAddress());
-
-    // Add this device to the system
     spark.add(this);
 
-    return onInitialize(wirePort);
+    return true;
 }
 
-bool spDeviceSPI::initialize(SPIClass &spiPort)
-{
-    // Add this device to the system
-    spark.add(this);
 
-    return onInitialize(spiPort);
-}
 //----------------------------------------------------------------
 // Device Factory
 //----------------------------------------------------------------
@@ -69,6 +56,10 @@ int spDeviceFactory::buildDevices(spBusI2C &i2cDriver)
     for (auto deviceBuilder : _Builders)
     {
 
+        // Only autoload i2c devices
+        if ( deviceBuilder->getDeviceKind() != spDeviceKindI2C)
+            continue;
+
         deviceAddresses = deviceBuilder->getDefaultAddresses();
         if (!deviceAddresses)
             break;
@@ -82,7 +73,7 @@ int spDeviceFactory::buildDevices(spBusI2C &i2cDriver)
             // See if the device is connected
             if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
             {
-                spDeviceI2C *pDevice = deviceBuilder->create();
+                spDevice *pDevice = deviceBuilder->create();
                 if (!pDevice)
                 {
                     spLog_E("Device create failed - %s", deviceBuilder->getDeviceName());

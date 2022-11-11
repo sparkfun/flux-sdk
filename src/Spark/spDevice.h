@@ -61,13 +61,33 @@ class spDevice : public spOperation
 {
 
   public:
-    spDevice() : _address{kSparkDeviceAddressNull}{};
 
+    spDevice() : _autoload{false}, _address{kSparkDeviceAddressNull}{};
     // Pass in the default address for the device 
     spDevice(uint8_t address) : _address{address}{};
 
     virtual ~spDevice()
     {
+    }
+
+    // Methods called on initialize
+    bool initialize();
+    virtual bool initialize(spBusI2C &)
+    {
+        return initialize();
+    };
+    virtual bool initialize(spBusSPI &)
+    {
+        return initialize();
+    };
+
+    bool autoload(void)
+    {
+        return false;
+    }
+    void setAutoload()
+    {
+        _autoload=true;
     }
     void setAddress(uint8_t address)
     {
@@ -78,13 +98,9 @@ class spDevice : public spOperation
     {
         return _address;
     }
-
-    virtual bool autoload(void)
-    {
-        return false;
-    }
 private:
-    uint8_t _address;
+    bool    _autoload;
+    uint8_t _address;    
 };
 
 using spDeviceContainer = spContainer<spDevice *>;
@@ -95,58 +111,6 @@ using spDeviceContainer = spContainer<spDevice *>;
 //----------------------------------------------------------------------------------
 // I2C device classes
 //----------------------------------------------------------------------------------
-
-class spDeviceI2C : public spDevice
-{
-public:
-    spDeviceI2C();
-
-    // Interface
-
-    // Methods for Sub-class to override - for device activities.
-    // Method called on initialize
-    virtual bool onInitialize(TwoWire &)
-    {
-        return true;
-    };
-
-    virtual uint8_t getDefaultAddress(void)
-    {
-        return kSparkDeviceAddressNull;
-    };
-
-    bool initialize(TwoWire &wirePort = Wire);
-
-    bool autoload()
-    {
-        return _autoload;
-    }
-
-  private:
-    // want to prevent sub-classes calling methods here, but want an
-    // entry point call for the system ....
-
-    friend class spDeviceFactory;
-
-    bool initialize(spBusI2C &i2cDriver)
-    {
-
-        // call the superclasses begin method.
-        TwoWire *wirePort = i2cDriver.getWirePort();
-        if (!wirePort)
-            return false;
-
-        return this->initialize(*wirePort); // call subclass virtual init routine.
-    }
-    void setAutoload()
-    {
-        _autoload = true;
-    }
-
-    bool _autoload;
-};
-
-
 
 //------------------------------------------------------------------------
 // spDeviceI2CType()
@@ -159,7 +123,8 @@ public:
 //
 //   class <classname> : spDeviceI2CType<classname>, ...
 //
-template <typename T> class spDeviceI2CType : public spDeviceI2C
+template <typename T, typename B=spDevice> 
+class spDeviceI2CType :  public B
 {
   public:
     // get the default address for the device. If none exists,
@@ -174,6 +139,31 @@ template <typename T> class spDeviceI2CType : public spDeviceI2C
 
         return addresses[0];
     }
+    bool initialize(TwoWire &wirePort)
+    {
+        if (B::address() == kSparkDeviceAddressNull)
+            B::setAddress(getDefaultAddress());
+
+        return onInitialize(wirePort);
+    }
+    bool initialize(spBusI2C &i2cDriver)
+    {
+
+        // call the superclasses begin method.
+        TwoWire *wirePort = i2cDriver.getWirePort();
+        if (!wirePort)
+            return false;
+
+        // Add this device to the system
+        B::initialize(i2cDriver);
+        
+        return this->initialize(*wirePort); // call  init routine.
+    }
+    // For our sub-classes to overload
+    virtual bool onInitialize(TwoWire &)
+    {
+        return true;
+    };
 
     // Typing system for devices
     //
@@ -217,41 +207,22 @@ template <typename T> class spDeviceI2CType : public spDeviceI2C
 // SPI device classes
 //----------------------------------------------------------------------------------
 
-class spDeviceSPI : public spDevice
+
+
+//------------------------------------------------------------------------
+// spDeviceSPIType()
+//
+//
+template <typename T, typename B=spDevice> 
+class spDeviceSPIType : public B
 {
-public:
-    spDeviceSPI(): _autoload{false}{};
-
-    // Interface
-
-    // Methods for Sub-class to override - for device activities.
-    // Method called on initialize
-    virtual bool onInitialize(SPIClass &)
+  public:
+    
+    bool initialize(SPIClass &spiPort) // Default Port?
     {
-        return true;
-    };
 
-    bool initialize(SPIClass &spiPort = SPI);
-
-    bool autoload()
-    {
-        return _autoload;
+        return onInitialize(spiPort);
     }
-
-    void setChipSelect(uint8_t cs)
-    {
-        setAddress(cs);
-    }
-
-    uint8_t chipSelect(void)
-    {
-        return address();
-    }
-  private:
-    // not sure if this is needed for the system, but will leave in for now. 
-
-    friend class spDeviceFactory;
-
     bool initialize(spBusSPI &spiDriver)
     {
 
@@ -260,26 +231,24 @@ public:
         if (!spiPort)
             return false;
 
+        B::initialize(spiDriver);
+
         return this->initialize(*spiPort); // call subclass virtual init routine.
     }
-    void setAutoload()
+    // For our sub-classes to overload
+    virtual bool onInitialize(SPIClass &)
     {
-        _autoload = true;
+        return true;
+    };
+    void setChipSelect(uint8_t cs)
+    {
+        B::setAddress(cs);
     }
 
-    bool _autoload;
-};
-
-
-
-//------------------------------------------------------------------------
-// spDeviceSPIType()
-//
-//
-template <typename T> class spDeviceSPIType : public spDeviceSPI
-{
-  public:
-    
+    uint8_t chipSelect(void)
+    {
+        return B::address();
+    }
     // Typing system for devices
     //
     // Defines a type specific static method - so can be called outside
@@ -405,7 +374,7 @@ class spDeviceFactory
 class spDeviceBuilderI2C
 {
   public:
-    virtual spDeviceI2C *create(void) = 0;                                 // create the underlying device obj.
+    virtual spDevice *create(void) = 0;                                 // create the underlying device obj.
     virtual bool isConnected(spBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
