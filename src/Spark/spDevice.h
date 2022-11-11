@@ -63,8 +63,7 @@ class spDevice : public spOperation
   public:
 
     spDevice() : _autoload{false}, _address{kSparkDeviceAddressNull}{};
-    // Pass in the default address for the device 
-    spDevice(uint8_t address) : _address{address}{};
+    
 
     virtual ~spDevice()
     {
@@ -217,8 +216,8 @@ template <typename T, typename B=spDevice>
 class spDeviceSPIType : public B
 {
   public:
-    
-    bool initialize(SPIClass &spiPort) // Default Port?
+
+    bool initialize(SPIClass &spiPort= SPI) // Default Port?
     {
 
         return onInitialize(spiPort);
