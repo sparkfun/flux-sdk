@@ -12,41 +12,23 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
 #include "SparkFun_ISM330DHCX.h"
+#include "spDevice.h"
 
 // What is the name used to ID this device?
 #define kISM330DeviceName "ISM330"
+
 //----------------------------------------------------------------------------------------------------------
-// Define our class - note we are sub-classing from the Qwiic Library
-class spDevISM330 : public spDeviceI2CType<spDevISM330>, public SparkFun_ISM330DHCX
+// Define a base framework device class. Then subclass from this for I2C and SPI version
+// of the device driver
+
+class spDevISM330Base : public spDevice, public QwDevISM330DHCX
 {
 
-public:
-    spDevISM330();
+  public:
+    spDevISM330Base();
 
-    // Static Interface - used by the system to determine if this device is
-    // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
-    static const char *getDeviceName()
-    {
-        return kISM330DeviceName;
-    };
-
-    static const uint8_t *getDefaultAddresses()
-    {
-        return defaultDeviceAddress;
-    }
-    // holds the class list of possible addresses/IDs for this objects
-    static uint8_t defaultDeviceAddress[];
-
-    // Method called to initialize the class
-    bool onInitialize(TwoWire &);
-
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
-private:
+  private:
     // methods used to get values for our output parameters
     float read_accel_x();
     float read_accel_y();
@@ -84,7 +66,7 @@ private:
     bool _gyroY = false;
     bool _gyroZ = false;
 
-    sfe_ism_data_t _accelData; 
+    sfe_ism_data_t _accelData;
     sfe_ism_data_t _gyroData;
 
     uint8_t _accel_data_rate = ISM_XL_ODR_104Hz;
@@ -98,36 +80,143 @@ private:
 
     bool _begun = false;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevISM330, &spDevISM330::read_accel_x> accelX;
-    spParameterOutFloat<spDevISM330, &spDevISM330::read_accel_y> accelY;
-    spParameterOutFloat<spDevISM330, &spDevISM330::read_accel_z> accelZ;
-    spParameterOutFloat<spDevISM330, &spDevISM330::read_gyro_x> gyroX;
-    spParameterOutFloat<spDevISM330, &spDevISM330::read_gyro_y> gyroY;
-    spParameterOutFloat<spDevISM330, &spDevISM330::read_gyro_z> gyroZ;
-    spParameterOutFloat<spDevISM330, &spDevISM330::read_temperature> temperature;
+    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_x> accelX;
+    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_y> accelY;
+    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_z> accelZ;
+    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_x> gyroX;
+    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_y> gyroY;
+    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_z> gyroZ;
+    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_temperature> temperature;
 
     // Define our read-write properties
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_data_rate, &spDevISM330::set_accel_data_rate> accelDataRate
-        = { ISM_XL_ODR_104Hz, { {"Off", ISM_XL_ODR_OFF}, {"12.5 Hz", ISM_XL_ODR_12Hz5}, {"26 Hz", ISM_XL_ODR_26Hz}, {"52 Hz", ISM_XL_ODR_52Hz}, {"104 Hz", ISM_XL_ODR_104Hz}, {"208 Hz", ISM_XL_ODR_208Hz}, 
-            {"416 Hz", ISM_XL_ODR_416Hz}, {"833 Hz", ISM_XL_ODR_833Hz}, {"1666 Hz", ISM_XL_ODR_1666Hz}, {"3332 Hz", ISM_XL_ODR_3332Hz}, {"6667 Hz", ISM_XL_ODR_6667Hz},
-            {"1.6 Hz", ISM_XL_ODR_1Hz6} } };
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_full_scale, &spDevISM330::set_accel_full_scale> accelFullScale
-        = { ISM_4g, { {"2 g", ISM_2g}, {"16 g", ISM_16g}, {"4 g", ISM_4g}, {"8 g", ISM_8g} } };
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_data_rate, &spDevISM330::set_gyro_data_rate> gyroDataRate
-        = { ISM_GY_ODR_104Hz, { {"Off", ISM_GY_ODR_OFF}, {"12 Hz", ISM_GY_ODR_12Hz}, {"26 Hz", ISM_GY_ODR_26Hz}, {"52 Hz", ISM_GY_ODR_52Hz}, {"104 Hz", ISM_GY_ODR_104Hz}, {"208 Hz", ISM_GY_ODR_208Hz}, 
-            {"416 Hz", ISM_GY_ODR_416Hz}, {"833 Hz", ISM_GY_ODR_833Hz}, {"1666 Hz", ISM_GY_ODR_1666Hz}, {"3332 Hz", ISM_GY_ODR_3332Hz}, {"6667 Hz", ISM_GY_ODR_6667Hz} } };
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_full_scale, &spDevISM330::set_gyro_full_scale> gyroFullScale
-        = { ISM_500dps, { {"125 dps", ISM_125dps}, {"250 dps", ISM_250dps}, {"500 dps", ISM_500dps}, {"1000 dps", ISM_1000dps}, {"2000 dps", ISM_2000dps}, {"4000 dps", ISM_4000dps} } };
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_filter_lp2, &spDevISM330::set_accel_filter_lp2> accelFilterLP2
-        = { 1, { {"Enabled", 1}, {"Disabled", 0} } };
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_filter_lp1, &spDevISM330::set_gyro_filter_lp1> gyroFilterLP1
-        = { 1, { {"Enabled", 1}, {"Disabled", 0} } };
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_accel_slope_filter, &spDevISM330::set_accel_slope_filter> accelSlopeFilter
-        = { ISM_LP_ODR_DIV_100, { {"ODR/4", 0}, {"ODR/10", ISM_LP_ODR_DIV_10}, {"ODR/20", ISM_LP_ODR_DIV_20}, {"ODR/45", ISM_LP_ODR_DIV_45},
-            {"ODR/100", ISM_LP_ODR_DIV_100}, {"ODR/200", ISM_LP_ODR_DIV_200}, {"ODR/400", ISM_LP_ODR_DIV_400}, {"ODR/800", ISM_LP_ODR_DIV_800} } };
-    spPropertyRWUint8<spDevISM330, &spDevISM330::get_gyro_lp1_bandwidth, &spDevISM330::set_gyro_lp1_bandwidth> gyroLP1Bandwidth
-        = { ISM_MEDIUM, { {"Ultra Light", ISM_ULTRA_LIGHT}, {"Very Light", ISM_VERY_LIGHT}, {"Light", ISM_LIGHT}, {"Medium", ISM_MEDIUM},
-            {"Strong", ISM_STRONG}, {"Very Strong", ISM_VERY_STRONG}, {"Aggressive", ISM_AGGRESSIVE}, {"Extreme", ISM_XTREME} } };
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_data_rate, &spDevISM330Base::set_accel_data_rate>
+        accelDataRate = {ISM_XL_ODR_104Hz,
+                         {{"Off", ISM_XL_ODR_OFF},
+                          {"12.5 Hz", ISM_XL_ODR_12Hz5},
+                          {"26 Hz", ISM_XL_ODR_26Hz},
+                          {"52 Hz", ISM_XL_ODR_52Hz},
+                          {"104 Hz", ISM_XL_ODR_104Hz},
+                          {"208 Hz", ISM_XL_ODR_208Hz},
+                          {"416 Hz", ISM_XL_ODR_416Hz},
+                          {"833 Hz", ISM_XL_ODR_833Hz},
+                          {"1666 Hz", ISM_XL_ODR_1666Hz},
+                          {"3332 Hz", ISM_XL_ODR_3332Hz},
+                          {"6667 Hz", ISM_XL_ODR_6667Hz},
+                          {"1.6 Hz", ISM_XL_ODR_1Hz6}}};
+
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_full_scale, &spDevISM330Base::set_accel_full_scale>
+        accelFullScale = {ISM_4g, {{"2 g", ISM_2g}, {"16 g", ISM_16g}, {"4 g", ISM_4g}, {"8 g", ISM_8g}}};
+
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_data_rate, &spDevISM330Base::set_gyro_data_rate>
+        gyroDataRate = {ISM_GY_ODR_104Hz,
+                        {{"Off", ISM_GY_ODR_OFF},
+                         {"12 Hz", ISM_GY_ODR_12Hz},
+                         {"26 Hz", ISM_GY_ODR_26Hz},
+                         {"52 Hz", ISM_GY_ODR_52Hz},
+                         {"104 Hz", ISM_GY_ODR_104Hz},
+                         {"208 Hz", ISM_GY_ODR_208Hz},
+                         {"416 Hz", ISM_GY_ODR_416Hz},
+                         {"833 Hz", ISM_GY_ODR_833Hz},
+                         {"1666 Hz", ISM_GY_ODR_1666Hz},
+                         {"3332 Hz", ISM_GY_ODR_3332Hz},
+                         {"6667 Hz", ISM_GY_ODR_6667Hz}}};
+
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_full_scale, &spDevISM330Base::set_gyro_full_scale>
+        gyroFullScale = {ISM_500dps,
+                         {{"125 dps", ISM_125dps},
+                          {"250 dps", ISM_250dps},
+                          {"500 dps", ISM_500dps},
+                          {"1000 dps", ISM_1000dps},
+                          {"2000 dps", ISM_2000dps},
+                          {"4000 dps", ISM_4000dps}}};
+
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_filter_lp2, &spDevISM330Base::set_accel_filter_lp2>
+        accelFilterLP2 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
+
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_filter_lp1, &spDevISM330Base::set_gyro_filter_lp1>
+        gyroFilterLP1 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
+
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_slope_filter,
+                      &spDevISM330Base::set_accel_slope_filter>
+        accelSlopeFilter = {ISM_LP_ODR_DIV_100,
+                            {{"ODR/4", 0},
+                             {"ODR/10", ISM_LP_ODR_DIV_10},
+                             {"ODR/20", ISM_LP_ODR_DIV_20},
+                             {"ODR/45", ISM_LP_ODR_DIV_45},
+                             {"ODR/100", ISM_LP_ODR_DIV_100},
+                             {"ODR/200", ISM_LP_ODR_DIV_200},
+                             {"ODR/400", ISM_LP_ODR_DIV_400},
+                             {"ODR/800", ISM_LP_ODR_DIV_800}}};
+
+    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_lp1_bandwidth,
+                      &spDevISM330Base::set_gyro_lp1_bandwidth>
+        gyroLP1Bandwidth = {ISM_MEDIUM,
+                            {{"Ultra Light", ISM_ULTRA_LIGHT},
+                             {"Very Light", ISM_VERY_LIGHT},
+                             {"Light", ISM_LIGHT},
+                             {"Medium", ISM_MEDIUM},
+                             {"Strong", ISM_STRONG},
+                             {"Very Strong", ISM_VERY_STRONG},
+                             {"Aggressive", ISM_AGGRESSIVE},
+                             {"Extreme", ISM_XTREME}}};
+
+  protected:
+    bool onInitialize(void);
+};
+
+//----------------------------------------------------------------------------------------------------------
+// I2C version of the driver
+//----------------------------------------------------------------------------------------------------------
+//
+// Define our I2C version of the class. NOTE: We add our base class to the template call
+
+class spDevISM330 : public spDeviceI2CType<spDevISM330, spDevISM330Base>
+{
+
+  public:
+    spDevISM330(){};
+
+    // Static Interface - used by the system to determine if this device is
+    // connected before the object is instantiated.
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static const char *getDeviceName()
+    {
+        return kISM330DeviceName;
+    };
+
+    static const uint8_t *getDefaultAddresses()
+    {
+        return defaultDeviceAddress;
+    }
+    // holds the class list of possible addresses/IDs for this objects
+    static uint8_t defaultDeviceAddress[];
+
+    // Method called to initialize the class
+    bool onInitialize(TwoWire &);
+
+  private:
+    // The low-level driver I2C bus class
+    sfe_ISM330DHCX::QwI2C _i2cBus;
+};
+
+//----------------------------------------------------------------------------------------------------------
+// SPI version of the driver
+//----------------------------------------------------------------------------------------------------------
+//
+// Define our SPI version of the class. NOTE: We add our base class to the template call
+
+class spDevISM330_SPI : public spDeviceSPIType<spDevISM330_SPI, spDevISM330Base>
+{
+
+  public:
+    spDevISM330_SPI(){};
+
+    // Method called to initialize the class
+    bool onInitialize(SPIClass &);
+
+  private:
+    // The low-level driver SPI bus class
+    sfe_ISM330DHCX::SfeSPI _spiBus;
 };
