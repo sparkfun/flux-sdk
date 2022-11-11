@@ -33,8 +33,7 @@
 // NFC device
 #include <Spark/spDevsT25DV.h>
 
-// SPI things
-#include <Spark/spBusSPI.h>
+// SPI Devices
 // The onboard IMU 
 #include <Spark/spDevISM330.h>
 static const uint8_t IMU_CS = 5;
@@ -157,18 +156,11 @@ void setupNFC(void)
 //---------------------------------------------------------------------
 void setupSPIDevices()
 {
-    // init our driver
-    if( !spiDriver.begin(true) )
-    {
-        Serial.println("Error starting the SPI bus");
-        return;
-    }
-
     // IMU
     pinMode(IMU_CS, OUTPUT);
     digitalWrite(IMU_CS, HIGH);
     onboardIMU.setChipSelect(IMU_CS);
-    if (onboardIMU.initialize(spiDriver))
+    if (onboardIMU.initialize())
     {
         Serial.println("Onboard IMU is enabled");
         logger.add(onboardIMU);
@@ -180,7 +172,7 @@ void setupSPIDevices()
     pinMode(MAG_CS, OUTPUT);
     digitalWrite(MAG_CS, HIGH);
     onboardMag.setChipSelect(MAG_CS);
-    if (onboardMag.initialize(spiDriver))
+    if (onboardMag.initialize())
     {
         Serial.println("Onboard Magnetometer is enabled");
         logger.add(onboardMag);
