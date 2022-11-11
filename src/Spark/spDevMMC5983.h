@@ -12,41 +12,20 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
 #include "SparkFun_MMC5983MA_Arduino_Library.h"
+#include "spDevice.h"
 
 // What is the name used to ID this device?
 #define kMMC5983DeviceName "MMC5983"
 //----------------------------------------------------------------------------------------------------------
-// Define our class - note we are sub-classing from the Qwiic Library
-class spDevMMC5983 : public spDeviceI2CType<spDevMMC5983>, public SFE_MMC5983MA
+// Define our base class - I2C and SPI version sub-class from this class
+class spDevMMC5983Base : public spDevice, public SFE_MMC5983MA
 {
 
-public:
-    spDevMMC5983();
+  public:
+    spDevMMC5983Base();
 
-    // Static Interface - used by the system to determine if this device is
-    // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
-    static const char *getDeviceName()
-    {
-        return kMMC5983DeviceName;
-    };
-
-    static const uint8_t *getDefaultAddresses()
-    {
-        return defaultDeviceAddress;
-    }
-    // holds the class list of possible addresses/IDs for this objects
-    static uint8_t defaultDeviceAddress[];
-
-    // Method called to initialize the class
-    bool onInitialize(TwoWire &);
-
-    // Called when a managed property is updated
-    void onPropertyUpdate(const char *);
-
-private:
+  private:
     // methods used to get values for our output parameters
     double read_x();
     double read_y();
@@ -73,16 +52,59 @@ private:
     uint32_t _rawY = 0;
     uint32_t _rawZ = 0;
 
-public:
+  protected:
+    bool onInitialize(void);
+
+  public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutDouble<spDevMMC5983, &spDevMMC5983::read_x> magX;
-    spParameterOutDouble<spDevMMC5983, &spDevMMC5983::read_y> magY;
-    spParameterOutDouble<spDevMMC5983, &spDevMMC5983::read_z> magZ;
-    spParameterOutInt<spDevMMC5983, &spDevMMC5983::read_temperature> temperature;
+    spParameterOutDouble<spDevMMC5983Base, &spDevMMC5983Base::read_x> magX;
+    spParameterOutDouble<spDevMMC5983Base, &spDevMMC5983Base::read_y> magY;
+    spParameterOutDouble<spDevMMC5983Base, &spDevMMC5983Base::read_z> magZ;
+    spParameterOutInt<spDevMMC5983Base, &spDevMMC5983Base::read_temperature> temperature;
 
     // Define our read-write properties
-    spPropertyRWUint16<spDevMMC5983, &spDevMMC5983::get_filter_bandwidth, &spDevMMC5983::set_filter_bandwidth> filterBandwidth
-        = { 100, { {"100 Hz", 100}, {"200 Hz", 200}, {"400 Hz", 400}, {"800 Hz", 800} } };
-    spPropertyRWUint8<spDevMMC5983, &spDevMMC5983::get_auto_reset, &spDevMMC5983::set_auto_reset> autoReset
-        = { 1, { {"Enabled", 1}, {"Disabled", 0} } };
+    spPropertyRWUint16<spDevMMC5983Base, &spDevMMC5983Base::get_filter_bandwidth,
+                       &spDevMMC5983Base::set_filter_bandwidth>
+        filterBandwidth = {100, {{"100 Hz", 100}, {"200 Hz", 200}, {"400 Hz", 400}, {"800 Hz", 800}}};
+    spPropertyRWUint8<spDevMMC5983Base, &spDevMMC5983Base::get_auto_reset, &spDevMMC5983Base::set_auto_reset>
+        autoReset = {1, {{"Enabled", 1}, {"Disabled", 0}}};
+};
+
+//----------------------------------------------------------------------------------------------------------
+// I2C class definition
+//----------------------------------------------------------------------------------------------------------
+// Define our class - note we are sub-classing from the Qwiic Library
+class spDevMMC5983 : public spDeviceI2CType<spDevMMC5983, spDevMMC5983Base>
+{
+
+  public:
+    // Static Interface - used by the system to determine if this device is
+    // connected before the object is instantiated.
+    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static const char *getDeviceName()
+    {
+        return kMMC5983DeviceName;
+    };
+
+    static const uint8_t *getDefaultAddresses()
+    {
+        return defaultDeviceAddress;
+    }
+    // holds the class list of possible addresses/IDs for this objects
+    static uint8_t defaultDeviceAddress[];
+
+    // Method called to initialize the class
+    bool onInitialize(TwoWire &);
+};
+
+//----------------------------------------------------------------------------------------------------------
+// SPI class definition
+//----------------------------------------------------------------------------------------------------------
+// Define our class - note we are sub-classing from the Qwiic Library
+class spDevMMC5983_SPI : public spDeviceSPIType<spDevMMC5983_SPI, spDevMMC5983Base>
+{
+
+  public:
+    // Method called to initialize the class
+    bool onInitialize(SPIClass &);
 };
