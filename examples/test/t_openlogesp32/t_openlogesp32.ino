@@ -154,9 +154,8 @@ void setupNFC(void)
 //---------------------------------------------------------------------
 void setupSPIDevices()
 {
+    // Note - framework is setting up the pins ...
     // IMU
-    pinMode(IMU_CS, OUTPUT);
-    digitalWrite(IMU_CS, HIGH);
     if (onboardIMU.initialize(IMU_CS))
     {
         Serial.println("Onboard IMU is enabled");
@@ -166,8 +165,6 @@ void setupSPIDevices()
         Serial.println("Error starting onboard IMU");
 
     // Magnetometer
-    pinMode(MAG_CS, OUTPUT);
-    digitalWrite(MAG_CS, HIGH);
     if (onboardMag.initialize(MAG_CS))
     {
         Serial.println("Onboard Magnetometer is enabled");
