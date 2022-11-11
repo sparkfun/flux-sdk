@@ -174,6 +174,12 @@ bool spStorageESP32Block::writeString(const char *tag, const char *value)
     if (!tag_is_valid(tag) || !_prefs)
         return false;
 
+    // the value length is 0, just return true. Otherwise the esp pref system
+    // returns an error.
+    
+    if (!value || strlen(value) == 0)
+        return true;
+
     char szHash[kESP32HashTagSize] = {0};
 
     if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
@@ -367,7 +373,7 @@ size_t spStorageESP32Block::readString(const char *tag, char *data, size_t len)
         return 0;
 
     if (!_prefs->isKey(szHash))
-        return false;
+        return 0;
 
     return _prefs->getString(szHash, data, len);
 }
