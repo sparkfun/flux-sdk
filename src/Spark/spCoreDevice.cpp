@@ -4,7 +4,7 @@
  *
  */
 
-#include "spDevice.h"
+#include "spCoreDevice.h"
 #include "spSpark.h"
 
 
