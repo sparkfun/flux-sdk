@@ -33,6 +33,13 @@
 // NFC device
 #include <Spark/spDevsT25DV.h>
 
+// SPI things
+#include <Spark/spBusSPI.h>
+// The onboard IMU 
+#include <Spark/spDevISM330.h>
+
+static const uint8_t IMU_CS = 5;
+
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
 #define EN_3V3_SW 32
@@ -79,6 +86,11 @@ spSettingsSerial    serialSettings;
 
 spWiFiESP32 wifiConnection;
 spNTPESP32  ntpClient;
+
+// SPI bus 
+spBusSPI spiDriver;
+// the onboard IMU 
+spDevISM330_SPI onboardIMU;
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -138,6 +150,25 @@ void setupNFC(void)
 
     pCreds->setName("WiFi Login From NFC", "Set the devices WiFi Credentials from an attached NFC source.");
 
+}
+void setupSPIDevices()
+{
+    // init our driver
+    if( !spiDriver.begin(true) )
+    {
+        Serial.println("Error starting the SPI bus");
+        return;
+    }
+    pinMode(IMU_CS, OUTPUT);
+    digitalWrite(IMU_CS, HIGH);
+    onboardIMU.setChipSelect(IMU_CS);
+    if (onboardIMU.initialize(spiDriver))
+    {
+        Serial.println("Onboard IMU is enabled");
+        logger.add(onboardIMU);
+    }
+    else 
+        Serial.println("Error starting onboard IMU");
 }
 //---------------------------------------------------------------------
 // Arduino Setup
@@ -230,6 +261,10 @@ void setup() {
         else
             Serial.printf(" - Not adding to logger \r\n");
     }
+
+    // Setup the Onboard IMU
+    setupSPIDevices();
+    
 
     ////////////
     // getAll() testing
