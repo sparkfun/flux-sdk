@@ -3,12 +3,15 @@
 #include <Arduino.h>
 
 #include "spSerial.h"
-#include "spSpark.h"
 #include "spSettings.h"
+#include "spSpark.h"
+#include "spStorage.h"
 
 // for logging - define output driver on the stack
 
 static spLoggingDrvDefault _logDriver;
+
+#define kApplicationHashIDTag "Application ID"
 
 // Global object - for quick access to Spark.
 spSpark &spark = spSpark::get();
@@ -21,8 +24,7 @@ bool spSpark::start(bool bAutoLoad)
     // setup our logging system.
     _logDriver.setOutput(spSerial());
     spLog.setLogDriver(_logDriver);
-    spLog.setLogLevel(spLogInfo);  // TODO - adjust?
-
+    spLog.setLogLevel(spLogInfo); // TODO - adjust?
 
     if (bAutoLoad)
     {
@@ -36,19 +38,20 @@ bool spSpark::start(bool bAutoLoad)
     }
 
     // Everything should be loaded -- restore settings from storage
-    if ( spSettings.isAvailable())
+    if (spSettings.isAvailable())
     {
         spLog_I(F("Restoring System Settings ..."));
         if (!spSettings.restoreSystem())
             spLog_W(F("Error encountered restoring system settings..."));
-    }else
+    }
+    else
         spLog_I(F("Restore of System Settings unavailable."));
 
     // initialize actions
 
-    for ( auto pAction : Actions )
+    for (auto pAction : Actions)
     {
-        if ( !pAction->initialize())
+        if (!pAction->initialize())
             spLog_W(F("Startup - Action %s initialize failed."), pAction->name());
     }
     return true;
@@ -102,16 +105,89 @@ void spSpark::add(spDevice *theDevice)
     Devices.push_back(theDevice);
 }
 
-// functions for external access - lifecycle things.
-// These are syntactically easier to call (I think) from a user standpont.
+#define kApplicationHashIDSize 24
 
-bool spark_start(bool bAutoLoad)
+//---------------------------------------------------------------------------------
+bool spSpark::save(spStorage *pStorage)
 {
+    // Write a block to the storage system that has a has of or name/desc
+    // Use this to validate that the settings in the storage system are ours
+    spStorageBlock *stBlk = pStorage->beginBlock(name());
+    if (!stBlk)
+        return false;
 
-    return spSpark::get().start(bAutoLoad);
-}
-bool spark_loop()
+    char szBuffer[128] = {0};
+    strlcpy(szBuffer, name(), sizeof(szBuffer));
+    strlcat(szBuffer, description(), sizeof(szBuffer));
+
+    char szHash[kApplicationHashIDSize];
+
+    bool status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
+
+    // Write out the ID tag
+    if (status)
+        status = stBlk->write(kApplicationHashIDTag, szHash);
+
+    // // TODO - fix VAlue Exists on ESP32
+    // if (stBlk->valueExists(kApplicationHashIDTag) )
+    //     Serial.println("Save Check exists");
+    // else
+    //     Serial.println("Save Check FAIL");
+
+    pStorage->endBlock(stBlk);
+
+    // everything go okay?
+    if (!status)
+    {
+        spLog_D(F("Unable to store application ID key"));
+        return false;
+    }
+
+    // call super class
+    return spObjectContainer::save(pStorage);
+};
+
+//---------------------------------------------------------------------------------
+bool spSpark::restore(spStorage *pStorage)
 {
+    // Do we have our ID block in storage? If not, then there's no need to continue
+    // since the data isn't for this app
 
-    return spSpark::get().loop();
+    spStorageBlock *stBlk = pStorage->beginBlock(name());
+    if (!stBlk)
+        return false;
+
+    // Issue with valueExists() on ESP32 - TODO 11/2022
+    bool status = true;
+    // bool status = stBlk->valueExists(kApplicationHashIDTag);
+    if (status)
+    {
+        char szBuffer[128] = {0};
+        strlcpy(szBuffer, name(), sizeof(szBuffer));
+        strlcat(szBuffer, description(), sizeof(szBuffer));
+
+        char szHash[kApplicationHashIDSize];
+
+        status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
+
+        if (status)
+        {
+            // okay, read in the tag, see what we find
+            status = stBlk->readString(kApplicationHashIDTag, szBuffer, sizeof(szBuffer)) > 0;
+
+            if (status)
+                status = strncmp(szHash, szBuffer, strlen(szHash)) == 0;
+        }
+    }
+
+    pStorage->endBlock(stBlk);
+
+    // everything go okay?
+    if (!status)
+    {
+        spLog_I(F("System settings not available for restoration"));
+        return false;
+    }
+    // call superclass
+    return spObjectContainer::restore(pStorage);
 }

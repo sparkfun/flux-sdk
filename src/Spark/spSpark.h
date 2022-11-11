@@ -52,6 +52,13 @@ class spSpark : public spObjectContainer
     spDeviceContainer Devices;
     spActionContainer Actions;
 
+
+    //---------------------------------------------------------------------------------
+    bool save(spStorage *pStorage);
+
+    //---------------------------------------------------------------------------------
+    bool restore(spStorage *pStorage);
+
     //--------------------------------------------------------
     // get/find a device by type template.
     //
@@ -145,7 +152,7 @@ class spSpark : public spObjectContainer
         // has the driver been initialized?
         if (!_i2cDriver.initialized())
             _i2cDriver.begin();
-        
+
         return _i2cDriver;
     }
   private:
@@ -161,7 +168,7 @@ class spSpark : public spObjectContainer
     {
 
         // setup some default heirarchy things ...
-        this->setName("spark");
+        this->setName("spark", "The SparkFun Spark Framework");
         Devices.setName("Devices", "The devices connected to this system.");
         Actions.setName("Actions", "The operations/actions registered with this system.");
 
