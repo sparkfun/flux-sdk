@@ -23,7 +23,6 @@
 #include "spCoreDevice.h"
 #include "spSpark.h"
 
-
 //----------------------------------------------------------------------------------
 // I2C device classes
 //----------------------------------------------------------------------------------
@@ -76,9 +75,9 @@ template <typename T, typename B = spDevice> class spDeviceI2CType : public B
     }
     bool initialize(void)
     {
-       return initialize(spark.i2cDriver());
+        return initialize(spark.i2cDriver());
     }
-    // version where a address is passed in 
+    // version where a address is passed in
     bool initialize(uint8_t address)
     {
         if (!address)
@@ -142,8 +141,15 @@ template <typename T, typename B = spDevice> class spDeviceI2CType : public B
 template <typename T, typename B = spDevice> class spDeviceSPIType : public B
 {
   public:
-    bool initialize(SPIClass &spiPort) 
+    bool initialize(SPIClass &spiPort)
     {
+
+        // Everything is ready to have the driver start talking to the SPI BUS.
+        // Last step, setup ings
+        // Magnetometer
+        uint8_t cs = chipSelect();
+        pinMode(cs, OUTPUT);
+        digitalWrite(cs, HIGH);
 
         return onInitialize(spiPort);
     }
@@ -162,7 +168,7 @@ template <typename T, typename B = spDevice> class spDeviceSPIType : public B
 
     bool initialize(void)
     {
-       return initialize(spark.spiDriver());
+        return initialize(spark.spiDriver());
     }
     // version where a CS pin is passed in
     bool initialize(uint8_t cs)
