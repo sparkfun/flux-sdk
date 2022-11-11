@@ -47,7 +47,7 @@ uint8_t spBusI2C::readRegister(uint8_t i2c_address, uint8_t offset)
     // Return value
     uint8_t result = 0;
 
-    readRegister( i2c_address, offset, &result );
+    readRegister(i2c_address, offset, &result);
 
     return result;
 }
@@ -65,7 +65,7 @@ bool spBusI2C::readRegister(uint8_t i2c_address, uint8_t offset, uint8_t *output
     _i2cPort->endTransmission();
     _i2cPort->requestFrom(i2c_address, (uint8_t)1);
 
-    while (_i2cPort->available())  // slave may send less than requested
+    while (_i2cPort->available()) // slave may send less than requested
     {
         result = _i2cPort->read(); // receive a byte as a proper uint8_t
         nData++;
@@ -93,7 +93,8 @@ bool spBusI2C::readRegister16(uint8_t i2c_address, uint8_t offset, uint16_t *val
     bool result = readRegisterRegion(i2c_address, offset, myBuffer, 2); // Does memory transfer
 
     if (result)
-        *value = littleEndian ? (uint16_t)myBuffer[0] | (uint16_t)myBuffer[1] << 8 : (uint16_t)myBuffer[0] << 8 | (uint16_t)myBuffer[1];
+        *value = littleEndian ? (uint16_t)myBuffer[0] | (uint16_t)myBuffer[1] << 8
+                              : (uint16_t)myBuffer[0] << 8 | (uint16_t)myBuffer[1];
 
     return result;
 }
