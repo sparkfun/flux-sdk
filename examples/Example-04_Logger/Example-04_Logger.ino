@@ -30,7 +30,7 @@
 //NTP
 #include <Spark/spNTPESP32.h>
 
-#define OPENLOG_ESP32
+//#define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
 #define EN_3V3_SW 32
 #define LED_BUILTIN 25
