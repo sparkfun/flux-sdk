@@ -26,6 +26,9 @@ bool spSpark::start(bool bAutoLoad)
     // Init our I2C driver
     _i2cDriver.begin();
 
+    // Init our SPI driver
+    _spiDriver.begin(true);
+
     if (bAutoLoad)
     {
         // Build drivers for the registered devices connected to the system

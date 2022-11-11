@@ -3,8 +3,7 @@
 #pragma once
 
 #include "spCore.h"
-#include "spBusI2C.h"
-#include "spDevice.h"
+#include "spCoreDevice.h"
 #include <memory>
 
 // happy functions for happy users.
@@ -133,12 +132,22 @@ class spSpark : public spObjectContainer
         return Devices;
     }
 
+    spBusSPI & spiDriver()
+    {
+        return _spiDriver;
+    }
+    spBusI2C & i2cDriver()
+    {
+        return _i2cDriver;
+    }
   private:
 
 
     spStorage *  _settingsStorage;
 
     spBusI2C     _i2cDriver;
+    spBusSPI     _spiDriver;
+
     // Note private constructor...
     spSpark() : _settingsStorage{nullptr}
     {
