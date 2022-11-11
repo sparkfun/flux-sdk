@@ -78,7 +78,15 @@ template <typename T, typename B = spDevice> class spDeviceI2CType : public B
     {
        return initialize(spark.i2cDriver());
     }
+    // version where a address is passed in 
+    bool initialize(uint8_t address)
+    {
+        if (!address)
+            return false;
 
+        B::setAddress(address);
+        return initialize();
+    }
     // For our sub-classes to overload
     virtual bool onInitialize(TwoWire &)
     {
