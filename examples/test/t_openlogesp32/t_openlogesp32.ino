@@ -88,8 +88,6 @@ spSettingsSerial    serialSettings;
 spWiFiESP32 wifiConnection;
 spNTPESP32  ntpClient;
 
-// SPI bus 
-spBusSPI spiDriver;
 // the onboard IMU 
 spDevISM330_SPI onboardIMU;
 spDevMMC5983_SPI onboardMag;
@@ -159,8 +157,7 @@ void setupSPIDevices()
     // IMU
     pinMode(IMU_CS, OUTPUT);
     digitalWrite(IMU_CS, HIGH);
-    onboardIMU.setChipSelect(IMU_CS);
-    if (onboardIMU.initialize())
+    if (onboardIMU.initialize(IMU_CS))
     {
         Serial.println("Onboard IMU is enabled");
         logger.add(onboardIMU);
@@ -171,8 +168,7 @@ void setupSPIDevices()
     // Magnetometer
     pinMode(MAG_CS, OUTPUT);
     digitalWrite(MAG_CS, HIGH);
-    onboardMag.setChipSelect(MAG_CS);
-    if (onboardMag.initialize())
+    if (onboardMag.initialize(MAG_CS))
     {
         Serial.println("Onboard Magnetometer is enabled");
         logger.add(onboardMag);
