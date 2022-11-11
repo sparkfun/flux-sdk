@@ -20,19 +20,20 @@
 #include <Arduino.h>
 #include <vector>
 
-#include "spCore.h"
 #include "spBusI2C.h"
 #include "spBusSPI.h"
+#include "spCore.h"
 #include "spUtils.h"
 
 // define a value that marks the end of a device address/id list
 
 #define kSparkDeviceAddressNull 0
 
-typedef enum {
+typedef enum
+{
     spDeviceKindI2C,
     spDeviceKindSPI
-}spDeviceKind_t;
+} spDeviceKind_t;
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -61,9 +62,7 @@ class spDevice : public spOperation
 {
 
   public:
-
-    spDevice() : _autoload{false}, _address{kSparkDeviceAddressNull}{};
-    
+    spDevice() : _autoload{false}, _address{kSparkDeviceAddressNull} {};
 
     virtual ~spDevice()
     {
@@ -86,7 +85,7 @@ class spDevice : public spOperation
     }
     void setAutoload()
     {
-        _autoload=true;
+        _autoload = true;
     }
     void setAddress(uint8_t address)
     {
@@ -97,9 +96,10 @@ class spDevice : public spOperation
     {
         return _address;
     }
-private:
-    bool    _autoload;
-    uint8_t _address;    
+
+  private:
+    bool _autoload;
+    uint8_t _address;
 };
 
 using spDeviceContainer = spContainer<spDevice *>;
@@ -122,8 +122,7 @@ using spDeviceContainer = spContainer<spDevice *>;
 //
 //   class <classname> : spDeviceI2CType<classname>, ...
 //
-template <typename T, typename B=spDevice> 
-class spDeviceI2CType :  public B
+template <typename T, typename B = spDevice> class spDeviceI2CType : public B
 {
   public:
     // get the default address for the device. If none exists,
@@ -155,7 +154,7 @@ class spDeviceI2CType :  public B
 
         // Add this device to the system
         B::initialize(i2cDriver);
-        
+
         return this->initialize(*wirePort); // call  init routine.
     }
     // For our sub-classes to overload
@@ -206,18 +205,14 @@ class spDeviceI2CType :  public B
 // SPI device classes
 //----------------------------------------------------------------------------------
 
-
-
 //------------------------------------------------------------------------
 // spDeviceSPIType()
 //
 //
-template <typename T, typename B=spDevice> 
-class spDeviceSPIType : public B
+template <typename T, typename B = spDevice> class spDeviceSPIType : public B
 {
   public:
-
-    bool initialize(SPIClass &spiPort= SPI) // Default Port?
+    bool initialize(SPIClass &spiPort = SPI) // Default Port?
     {
 
         return onInitialize(spiPort);
@@ -285,7 +280,6 @@ class spDeviceSPIType : public B
         return kind();
     }
 };
-
 
 //----------------------------------------------------------------------------------
 // Factory/Builder pattern to dynamically register devices at runtime.
