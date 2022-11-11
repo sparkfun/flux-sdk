@@ -156,7 +156,15 @@ template <typename T, typename B = spDevice> class spDeviceSPIType : public B
     {
        return initialize(spark.spiDriver());
     }
+    // version where a CS pin is passed in
+    bool initialize(uint8_t cs)
+    {
+        if (!cs)
+            return false;
 
+        setChipSelect(cs);
+        return initialize();
+    }
     // For our sub-classes to overload
     virtual bool onInitialize(SPIClass &)
     {
