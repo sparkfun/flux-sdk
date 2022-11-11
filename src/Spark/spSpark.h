@@ -134,10 +134,18 @@ class spSpark : public spObjectContainer
 
     spBusSPI & spiDriver()
     {
+        // has the driver been initialized?
+        if (!_spiDriver.initialized())
+            _spiDriver.begin(true);
+
         return _spiDriver;
     }
     spBusI2C & i2cDriver()
     {
+        // has the driver been initialized?
+        if (!_i2cDriver.initialized())
+            _i2cDriver.begin();
+        
         return _i2cDriver;
     }
   private:

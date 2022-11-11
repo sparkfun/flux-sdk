@@ -23,16 +23,11 @@ bool spSpark::start(bool bAutoLoad)
     spLog.setLogDriver(_logDriver);
     spLog.setLogLevel(spLogInfo);  // TODO - adjust?
 
-    // Init our I2C driver
-    _i2cDriver.begin();
-
-    // Init our SPI driver
-    _spiDriver.begin(true);
 
     if (bAutoLoad)
     {
         // Build drivers for the registered devices connected to the system
-        spDeviceFactory::get().buildDevices(_i2cDriver);
+        spDeviceFactory::get().buildDevices(i2cDriver());
 
         // restore state - loads save property values for this object and
         // connected devices.
