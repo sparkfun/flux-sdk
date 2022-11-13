@@ -128,12 +128,6 @@ bool spSpark::save(spStorage *pStorage)
     if (status)
         status = stBlk->write(kApplicationHashIDTag, szHash);
 
-    // // TODO - fix VAlue Exists on ESP32
-    // if (stBlk->valueExists(kApplicationHashIDTag) )
-    //     Serial.println("Save Check exists");
-    // else
-    //     Serial.println("Save Check FAIL");
-
     pStorage->endBlock(stBlk);
 
     // everything go okay?
@@ -157,9 +151,7 @@ bool spSpark::restore(spStorage *pStorage)
     if (!stBlk)
         return false;
 
-    // Issue with valueExists() on ESP32 - TODO 11/2022
-    bool status = true;
-    // bool status = stBlk->valueExists(kApplicationHashIDTag);
+    bool status = stBlk->valueExists(kApplicationHashIDTag);
     if (status)
     {
         char szBuffer[128] = {0};
