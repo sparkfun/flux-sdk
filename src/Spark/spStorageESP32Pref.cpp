@@ -389,7 +389,7 @@ bool spStorageESP32Block::valueExists(const char *tag)
     if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
-    return _prefs->isKey(tag);
+    return _prefs->isKey(szHash);
 }
 //------------------------------------------------------------------------------
 // spStorage
