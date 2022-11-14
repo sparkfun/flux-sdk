@@ -269,6 +269,18 @@ Supported devices are:
         <td style="vertical-align:middle" align="center">0x29</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14722">SEN-14722</a></td>
     </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">VL53L4</td>
+        <td style="vertical-align:middle" align="center">Distance sensor (appears as VL53L1)</td>
+        <td style="vertical-align:middle" align="center">0x29</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18993">SEN-18993</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center">VL53L5</td>
+        <td style="vertical-align:middle" align="center">Distance sensor</td>
+        <td style="vertical-align:middle" align="center">0x29</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18642">SEN-18642</a></td>
+    </tr>
 </table>
 
 ## Allocated / Supported I<sup>2</sup>C Addresses
@@ -331,6 +343,18 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">VL53L1X</td>
         <td style="vertical-align:middle" align="center">Distance sensor</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/14722">SEN-14722</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x29</b></td>
+        <td style="vertical-align:middle" align="center">VL53L4</td>
+        <td style="vertical-align:middle" align="center">Distance sensor (appears as VL53L1)</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18993">SEN-18993</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x29</b></td>
+        <td style="vertical-align:middle" align="center">VL53L5</td>
+        <td style="vertical-align:middle" align="center">Distance sensor</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/18642">SEN-18642</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x2A</b></td>
