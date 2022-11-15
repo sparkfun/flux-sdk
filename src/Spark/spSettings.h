@@ -62,7 +62,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
     void setStorage(spStorage &theStorage);
     void setStorage(spStorage *pStorage);
 
-    // Save settings - if no parameter is passed in, the entire system is saved
+    // Save settings for the system
     bool saveSystem(void);
 
     // save a specific object
