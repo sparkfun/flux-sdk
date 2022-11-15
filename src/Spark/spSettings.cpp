@@ -26,7 +26,14 @@ bool spSettingsSave::saveSystem(void)
     if (!_settingsStorage)
         return false;
 
+    if (!_settingsStorage->begin())
+    {
+        spLog_E(F("Unable to save settings."));
+        return false;
+    }
     spark.save(_settingsStorage);
+
+    _settingsStorage->end();
 
     return true;
 }
@@ -40,7 +47,15 @@ bool spSettingsSave::save(spObject *pObject)
     if (!_settingsStorage)
         return false;
 
+    if (!_settingsStorage->begin())
+    {
+        spLog_E(F("Unable to save object settings."));
+        return false;
+    }
     pObject->save(_settingsStorage);
+
+    _settingsStorage->end();
+
     return true;
 }
 
@@ -51,7 +66,15 @@ bool spSettingsSave::restoreSystem(void)
     if (!_settingsStorage)
         return false;
 
+    // open settings in read only mode
+    if (!_settingsStorage->begin(true))
+    {
+        spLog_D(F("Error loading settings"));
+        return false;
+    }
     spark.restore(_settingsStorage);
+
+    _settingsStorage->end();
 
     return true;
 }
@@ -65,7 +88,13 @@ bool spSettingsSave::restore(spObject *pObject)
     if (!_settingsStorage)
         return false;
 
+    // open settings in read only mode
+    if (!_settingsStorage->begin(true))
+        return false;
+
     pObject->restore(_settingsStorage);
+
+    _settingsStorage->end();
     return true;
 }
 
