@@ -114,8 +114,10 @@ bool spDevAMG8833::read_pixel_temperatures(spDataArrayFloat *temps)
 {
     static float theTemps[64] = {-99.0};
 
-    for (uint8_t i = 0; i < 64; i++)
-        theTemps[i] = GridEYE::getPixelTemperature(i);
+    int i = 0;
+    for (int y = 0; y < 8; y++)
+        for (int x = 0; x < 64; x += 8)
+            theTemps[i++] = GridEYE::getPixelTemperature(x+y);
 
     temps->set(theTemps, 8, 8, true); // don't copy
 
