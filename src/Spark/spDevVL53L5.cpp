@@ -82,7 +82,7 @@ bool spDevVL53L5::onInitialize(TwoWire &wirePort)
 {
     spLog_W("VL53L5 is being initialized. This could take 10 seconds...");
 
-    _begun = SparkFun_VL53L5CX::begin(address(), wirePort);
+    _begun = SparkFun_VL53L5CX::begin(spDevice::address(), wirePort);
     if (_begun)
     {
         SparkFun_VL53L5CX::setResolution(8*8);
