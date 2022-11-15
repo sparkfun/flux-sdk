@@ -24,6 +24,8 @@ class spFSSDMMCFile : public spIFile
 
     void flush(void);
 
+    size_t size(void);
+
   private:
     friend _spFSSDMMCard;
 

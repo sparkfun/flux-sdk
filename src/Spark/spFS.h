@@ -19,6 +19,8 @@ class spIFile
     virtual bool isValid(void) = 0;
 
     virtual void flush(void) = 0;
+
+    virtual size_t size(void) = 0;
 };
 
 

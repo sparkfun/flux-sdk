@@ -278,3 +278,11 @@ void spFSSDMMCFile::flush(void)
     if (_file)
         _file.flush();
 }
+
+size_t spFSSDMMCFile::size(void)
+{
+    if (_file)
+        return _file.size();
+
+    return 0;
+}
