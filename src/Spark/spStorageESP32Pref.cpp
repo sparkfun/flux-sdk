@@ -35,7 +35,7 @@ static bool tag_is_valid(const char *tag)
 // Write out a bool value
 bool spStorageESP32Block::writeBool(const char *tag, bool value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -50,7 +50,7 @@ bool spStorageESP32Block::writeBool(const char *tag, bool value)
 
 bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -66,7 +66,7 @@ bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
 
 bool spStorageESP32Block::writeInt16(const char *tag, int16_t value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -82,7 +82,7 @@ bool spStorageESP32Block::writeInt16(const char *tag, int16_t value)
 
 bool spStorageESP32Block::writeInt32(const char *tag, int32_t value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -97,7 +97,7 @@ bool spStorageESP32Block::writeInt32(const char *tag, int32_t value)
 
 bool spStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -113,7 +113,7 @@ bool spStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
 
 bool spStorageESP32Block::writeUInt16(const char *tag, uint16_t value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -127,7 +127,7 @@ bool spStorageESP32Block::writeUInt16(const char *tag, uint16_t value)
 //------------------------------------------------------------------------
 bool spStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -142,7 +142,7 @@ bool spStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 
 bool spStorageESP32Block::writeFloat(const char *tag, float value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -157,7 +157,7 @@ bool spStorageESP32Block::writeFloat(const char *tag, float value)
 
 bool spStorageESP32Block::writeDouble(const char *tag, double value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     char szHash[kESP32HashTagSize];
@@ -171,7 +171,7 @@ bool spStorageESP32Block::writeDouble(const char *tag, double value)
 // Write out a c string
 bool spStorageESP32Block::writeString(const char *tag, const char *value)
 {
-    if (!tag_is_valid(tag) || !_prefs)
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
 
     // the value length is 0, just return true. Otherwise the esp pref system
@@ -396,7 +396,7 @@ bool spStorageESP32Block::valueExists(const char *tag)
 //
 // Interface for a storage system to persist state of a system
 
-spStorageESP32Pref::spStorageESP32Pref()
+spStorageESP32Pref::spStorageESP32Pref() : _readOnly{false}
 {
     _theBlock.setPrefs(&_prefs);
 }
@@ -417,6 +417,7 @@ spStorageESP32Block *spStorageESP32Pref::beginBlock(const char *tag)
         spLog_E("Error creating settings storage");
         return nullptr;
     }
+    _theBlock.setReadOnly(_readOnly);
 
     return &_theBlock;
 }

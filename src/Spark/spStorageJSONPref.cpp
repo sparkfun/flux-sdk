@@ -17,7 +17,7 @@
 // Write out a bool value
 bool spStorageJSONBlock::writeBool(const char *tag, bool value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -29,7 +29,7 @@ bool spStorageJSONBlock::writeBool(const char *tag, bool value)
 
 bool spStorageJSONBlock::writeInt8(const char *tag, int8_t value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -42,7 +42,7 @@ bool spStorageJSONBlock::writeInt8(const char *tag, int8_t value)
 
 bool spStorageJSONBlock::writeInt16(const char *tag, int16_t value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -55,7 +55,7 @@ bool spStorageJSONBlock::writeInt16(const char *tag, int16_t value)
 
 bool spStorageJSONBlock::writeInt32(const char *tag, int32_t value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -67,7 +67,7 @@ bool spStorageJSONBlock::writeInt32(const char *tag, int32_t value)
 
 bool spStorageJSONBlock::writeUInt8(const char *tag, uint8_t value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -80,7 +80,7 @@ bool spStorageJSONBlock::writeUInt8(const char *tag, uint8_t value)
 
 bool spStorageJSONBlock::writeUInt16(const char *tag, uint16_t value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -91,7 +91,7 @@ bool spStorageJSONBlock::writeUInt16(const char *tag, uint16_t value)
 //------------------------------------------------------------------------
 bool spStorageJSONBlock::writeUInt32(const char *tag, uint32_t value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -103,7 +103,7 @@ bool spStorageJSONBlock::writeUInt32(const char *tag, uint32_t value)
 
 bool spStorageJSONBlock::writeFloat(const char *tag, float value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -115,7 +115,7 @@ bool spStorageJSONBlock::writeFloat(const char *tag, float value)
 
 bool spStorageJSONBlock::writeDouble(const char *tag, double value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -127,7 +127,7 @@ bool spStorageJSONBlock::writeDouble(const char *tag, double value)
 bool spStorageJSONBlock::writeString(const char *tag, const char *value)
 {
 
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && !_readOnly)
     {
         (_jSection)[tag] = value;
         return true;
@@ -266,7 +266,7 @@ bool spStorageJSONBlock::valueExists(const char *tag)
 //
 // Interface for a storage system to persist state of a system
 
-bool spStorageJSONPref::begin(void)
+bool spStorageJSONPref::begin(bool readonly)
 {
 
     _pDocument = new DynamicJsonDocument(kJsonDocumentSize);
@@ -276,20 +276,23 @@ bool spStorageJSONPref::begin(void)
         spLog_E(F("Unable to create JSON object for preferences."));
         return false;
     }
-
+    _readOnly = readonly;
 }
 
 void spStorageJSONPref::end(void)
 {
-    // TODO - write out the data
-    std::string value;
-
-    if (!serializeJsonPretty(*_pDocument, value))
-        spLog_E(F("Unable to generate settings JSON string"));
-    else
+    if (!_readOnly)
     {
-        // TODO - output to file...
-        Serial.println(value.c_str());
+        // TODO - write out the data
+        std::string value;
+
+        if (!serializeJsonPretty(*_pDocument, value))
+            spLog_E(F("Unable to generate settings JSON string"));
+        else
+        {
+            // TODO - output to file...
+            Serial.println(value.c_str());
+        }
     }
     // Clear memory
     if (_pDocument)
@@ -297,6 +300,7 @@ void spStorageJSONPref::end(void)
         delete _pDocument;
         _pDocument = nullptr;
     }
+    _readOnly = false;
 }
 
 // public methods to manage a block
@@ -314,6 +318,7 @@ spStorageJSONBlock *spStorageJSONPref::beginBlock(const char *tag)
         jObj = _pDocument->createNestedObject(tag)
 
     _theBlock.setObject(jObj);
+    _theBlock.setReadOnly(_readOnly);
 
     return &_theBlock;
 }

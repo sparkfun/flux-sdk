@@ -172,7 +172,7 @@ class spStorage
   public:
 
     // Methods used to bracket the save/restore transaction
-    virtual bool begin(void) = 0;
+    virtual bool begin(bool readonly=false) = 0;
     virtual void end(void) = 0;
     // public methods to manage a block
     virtual spStorageBlock *beginBlock(const char *tag) = 0;

@@ -22,8 +22,7 @@ class spStorageESP32Pref;
 class spStorageESP32Block : public spStorageBlock {
 
 public:
-    spStorageESP32Block()
-        : _prefs { nullptr } {};
+    spStorageESP32Block(): _prefs { nullptr }, _readOnly{false} {};
 
     bool writeBool(const char* tag, bool data);
     bool writeInt8(const char* tag, int8_t data);
@@ -53,10 +52,16 @@ private:
     friend spStorageESP32Pref;
 
     Preferences* _prefs;
+    bool         _readOnly;
 
     void setPrefs(Preferences* pPrefs)
     {
         _prefs = pPrefs;
+    }
+
+    void setReadOnly(bool readonly)
+    {
+        _readOnly=readonly;
     }
 };
 
@@ -71,15 +76,16 @@ public:
     spStorageESP32Pref();
 
     // add begin, end stubs - the Esp32 prefs system doesn't required trasaction brackets
-    bool begin(void)
+    bool begin(bool readonly=false)
     {
+        _readOnly=readonly;
         return true;
     }
     void end(void)
     {
-        // nothing
+        _readOnly=false;
     }
-    
+
     // public methods to manage a block
     spStorageESP32Block* beginBlock(const char* tag);
 
@@ -92,6 +98,8 @@ private:
     // The block used to interface with the system
     spStorageESP32Block _theBlock;
     Preferences _prefs;
+
+    bool _readOnly;
 };
 
 #endif

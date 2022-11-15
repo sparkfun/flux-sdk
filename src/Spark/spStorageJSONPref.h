@@ -19,7 +19,7 @@ class spStorageJSONPref;
 class spStorageJSONBlock : public spStorageBlock {
 
 public:
-    spStorageJSONBlock(){}
+    spStorageJSONBlock(): _readOnly{false}{}
 
     bool writeBool(const char* tag, bool data);
     bool writeInt8(const char* tag, int8_t data);
@@ -50,9 +50,16 @@ private:
 
     JsonObject _jsonSection;
 
+    bool _readOnly;
+
     void setObject(JsonObject &jsonSection)
     {
         _jsonSection = JsonObject;
+    }
+
+    void setReadOnly(bool readonly)
+    {
+        _readOnly=readonly;
     }
 };
 
@@ -64,10 +71,10 @@ private:
 class spStorageJSONPref : public spStorage {
 
 public:
-    spStorageJSONPref() : _pDocument{nullptr}{}
+    spStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}{}
 
     // add begin, end stubs - the Esp32 prefs system doesn't required trasaction brackets
-    bool begin(void);
+    bool begin(bool readonly=false);
 
     void end(void);
     
@@ -86,5 +93,7 @@ private:
     // Pointer to the json documement 
 
     JsonDocument  * _pDocument;
+
+    bool _readOnly;
 };
 
