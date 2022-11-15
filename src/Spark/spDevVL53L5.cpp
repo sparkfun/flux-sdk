@@ -80,6 +80,7 @@ bool spDevVL53L5::isConnected(spBusI2C &i2cDriver, uint8_t address)
 //
 bool spDevVL53L5::onInitialize(TwoWire &wirePort)
 {
+    spLog_W("VL53L5 is being initialized. This could take 10 seconds...");
 
     _begun = SparkFun_VL53L5CX::begin(address(), wirePort);
     if (_begun)
@@ -127,7 +128,9 @@ void spDevVL53L5::set_integration_time(uint32_t intTime)
     _integrationTime = intTime;
     if (_begun)
     {
+        SparkFun_VL53L5CX::stopRanging();
         SparkFun_VL53L5CX::setIntegrationTime(intTime);
+        SparkFun_VL53L5CX::startRanging();
     }
 }
 
@@ -144,7 +147,9 @@ void spDevVL53L5::set_sharpener_percent(uint8_t percent)
 
     if (_begun)
     {
+        SparkFun_VL53L5CX::stopRanging();
         SparkFun_VL53L5CX::setSharpenerPercent(percent);
+        SparkFun_VL53L5CX::startRanging();
     }
 }
 
@@ -160,6 +165,8 @@ void spDevVL53L5::set_target_order(uint8_t order)
     _targetOrder = order;
     if (_begun)
     {
+        SparkFun_VL53L5CX::stopRanging();
         SparkFun_VL53L5CX::setTargetOrder((SF_VL53L5CX_TARGET_ORDER)order);
+        SparkFun_VL53L5CX::startRanging();
     }
 }
