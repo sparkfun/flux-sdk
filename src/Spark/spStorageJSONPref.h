@@ -7,7 +7,7 @@
 #pragma once
 
 #include "spStorage.h"
-
+#include "spFS.h"
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -73,7 +73,7 @@ private:
 class spStorageJSONPref : public spStorage {
 
 public:
-    spStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}
+    spStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}, _fileSystem{nullptr}, _filename{""}
     {
         setName("JSON Preference", "Device setting storage using a JSON File");
     }
@@ -91,6 +91,15 @@ public:
 
     void resetStorage();
 
+    void setFileSystem(spIFileSystem *);
+    void setFilename(std::string &name);
+    void setFilename(const char *name)
+    {
+        std::string strName = name;
+        setFilename(strName);
+    }
+
+
 private:
     // The block used to interface with the system
     spStorageJSONBlock _theBlock;
@@ -100,5 +109,8 @@ private:
     DynamicJsonDocument  * _pDocument;
 
     bool _readOnly;
+
+    spIFileSystem * _fileSystem;
+    std::string _filename;
 };
 

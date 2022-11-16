@@ -269,13 +269,57 @@ bool spStorageJSONBlock::valueExists(const char *tag)
 bool spStorageJSONPref::begin(bool readonly)
 {
 
-    _pDocument = new DynamicJsonDocument(kJsonDocumentSize);
+    if (!_fileSystem || _filename.length() == 0)
+    {
+        spLog_E(F("JSON Settings unavailable - no filesystem provided"));
+        return false;
+    }
 
-    if (!_pDocument)
+    _pDocument = new DynamicJsonDocument(kJsonDocumentSize);
+     if (!_pDocument)
     {
         spLog_E(F("Unable to create JSON object for preferences."));
         return false;
     }
+
+
+    
+    if ( _fileSystem->exists(_filename.c_str()))
+    {
+        bool status = false;
+        // read in the file, parse the json
+
+        spFSFile theFile = _fileSystem->open(_filename.c_str(), spIFileSystem::kFileRead);
+
+        if (theFile)
+        {
+            size_t nBytes = theFile.size();
+
+            if (nBytes > 0)
+            {
+                char * pBuffer = new char[nBytes];
+
+                if (pBuffer)
+                {
+                    size_t nRead = theFile.read((uint8_t*)pBuffer, nBytes);
+
+                    if (nRead == nBytes)
+                    {
+                        if (deserializeJson(*_pDocument, (const char*)pBuffer, nBytes) == DeserializationError::Ok)
+                            status = true;
+                    }
+                }
+
+                delete pBuffer;
+            }
+
+            theFile.close();
+        }
+        if (status == false)
+            spLog_E(F("Error reading json settings file. Ignoring"));
+
+    }
+   
     _readOnly = readonly;
 
     return true;
@@ -285,15 +329,25 @@ void spStorageJSONPref::end(void)
 {
     if (!_readOnly)
     {
-        // TODO - write out the data
-        std::string value;
 
+        // Create a json string and write to the filesystem
+        std::string value;
         if (!serializeJsonPretty(*_pDocument, value))
-            spLog_E(F("Unable to generate settings JSON string"));
-        else
         {
-            // TODO - output to file...
-            Serial.println(value.c_str());
+            spLog_E(F("Unable to generate settings JSON string"));
+        }
+        else if (_fileSystem && _filename.length() > 0)
+        {
+            spFSFile theFile = _fileSystem->open(_filename.c_str(), spIFileSystem::kFileWrite, true);
+
+            if (theFile)
+            {
+                if (theFile.write((uint8_t*)value.c_str(), value.length()) == 0)
+                    spLog_E(F("Error writing JSON settings file"));
+                theFile.close();
+
+            }else
+                spLog_E(F("Error opening settings file - is file system available?"));
         }
     }
     // Clear memory
@@ -341,4 +395,14 @@ void spStorageJSONPref::endBlock(spStorageBlock *)
 void spStorageJSONPref::resetStorage()
 {
     
+}
+
+void spStorageJSONPref::setFileSystem(spIFileSystem *theFilesystem)
+{
+    _fileSystem = theFilesystem;
+}
+
+void spStorageJSONPref::setFilename(std::string &filename)
+{
+    _filename = filename;
 }
