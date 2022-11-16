@@ -24,7 +24,7 @@ void spSettingsSave::setStorage(spStorage *pStorage)
 
 bool spSettingsSave::saveSystem(void)
 {
-    if (_vStorage.size() ==0)
+    if (_vStorage.size() == 0)
         return false;
 
     auto itStorage = _vStorage.begin();
@@ -50,7 +50,7 @@ bool spSettingsSave::save(spObject &theObject)
 }
 bool spSettingsSave::save(spObject *pObject)
 {
-    if (_vStorage.size() ==0)
+    if (_vStorage.size() == 0)
         return false;
 
     auto itStorage = _vStorage.begin();
@@ -74,7 +74,7 @@ bool spSettingsSave::save(spObject *pObject)
 
 bool spSettingsSave::restoreSystem(void)
 {
-    if (_vStorage.size() ==0)
+    if (_vStorage.size() == 0)
         return false;
 
     bool status = false;
@@ -113,7 +113,7 @@ bool spSettingsSave::restore(spObject &theObject)
 }
 bool spSettingsSave::restore(spObject *pObject)
 {
-    if (_vStorage.size() ==0)
+    if (_vStorage.size() == 0)
         return false;
 
     bool status = false;
@@ -153,6 +153,25 @@ void spSettingsSave::reset(void)
         theStorage->resetStorage();
 }
 
+void spSettingsSave::restore_secondary(void)
+{
+    if (_vStorage.size() < 2)
+        return;
+
+    spStorage *pStorage = _vStorage.at(1);
+
+    if (!pStorage)
+        return;
+
+    bool status = pStorage->begin(true);
+    if (!status)
+    {
+        spLog_E(F("Error starting file restore"));
+        return;
+    } 
+    status = spark.restore(pStorage);
+    pStorage->end();
+}
 //------------------------------------------------------------------------------
 // Slots for signals - Enables saving and restoring settings base on events
 void spSettingsSave::listenForSave(spSignalVoid &theEvent)

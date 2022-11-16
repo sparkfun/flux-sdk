@@ -26,6 +26,8 @@ class spSettingsSave : public spActionType<spSettingsSave>
         restoreSystem();
     };
 
+    void restore_secondary(void);
+    
     void saveEvent_CB(void)
     {
         // Enabled?
@@ -106,6 +108,9 @@ class spSettingsSave : public spActionType<spSettingsSave>
     spParameterInVoid<spSettingsSave, &spSettingsSave::restore_settings> restoreSettings;
     spParameterInVoid<spSettingsSave, &spSettingsSave::reset> clearSettings;
 
+    spParameterInVoid<spSettingsSave, &spSettingsSave::restore_secondary> restoreSecondary;
+
+
 private:
 
     spSettingsSave() 
@@ -122,6 +127,7 @@ private:
         spRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
         spRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
         spRegister(clearSettings, "Clear Settings", "Erase saved settings.");
+        spRegister(restoreSettings, "Restore From JSON", "Restore system settings from a JSON file.");        
 
         spark.add(this);
     }
