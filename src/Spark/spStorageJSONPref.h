@@ -73,7 +73,10 @@ private:
 class spStorageJSONPref : public spStorage {
 
 public:
-    spStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}{}
+    spStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}
+    {
+        setName("JSON Preference", "Device setting storage using a JSON File");
+    }
 
     // add begin, end stubs - the Esp32 prefs system doesn't required trasaction brackets
     bool begin(bool readonly=false);
@@ -94,7 +97,7 @@ private:
 
     // Pointer to the json documement 
 
-    JsonDocument  * _pDocument;
+    DynamicJsonDocument  * _pDocument;
 
     bool _readOnly;
 };
