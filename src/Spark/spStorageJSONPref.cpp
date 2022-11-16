@@ -127,7 +127,9 @@ bool spStorageJSONBlock::writeString(const char *tag, const char *value)
 
     if (!_jSection.isNull() && !_readOnly)
     {
-        (_jSection)[tag] = value;
+        // note - using std::string() to copy the input string. The Json library 
+        // assumes the pass in string is const/static - it is not
+        (_jSection)[tag] = std::string(value);
         return true;
     }
     return false;
@@ -297,7 +299,8 @@ void spStorageJSONPref::end(void)
     // Clear memory
     if (_pDocument)
     {
-        // TODO FIX delete _pDocument;
+        _pDocument->clear();
+        delete _pDocument;
         _pDocument = nullptr;
     }
     _readOnly = false;
