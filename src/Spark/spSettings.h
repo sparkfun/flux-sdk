@@ -99,6 +99,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
     // Properties.
     spPropertyBool<spSettingsSave> saveOnEvent = {true};
     spPropertyBool<spSettingsSave> restoreOnEvent = {true};
+    spPropertyBool<spSettingsSave> useSecondarySources = {true};
 
     // Our input parameters
     spParameterInVoid<spSettingsSave, &spSettingsSave::save_settings> saveSettings;
@@ -115,6 +116,8 @@ private:
 
         spRegister(saveOnEvent, "Save Events", "Save settings on save events.");
         spRegister(restoreOnEvent, "Restore Events", "Restore settings on restore events.");
+
+        spRegister(useSecondarySources, "All Devices", "Use all available devices to store settings");
 
         spRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
         spRegister(restoreSettings, "Restore Settings", "Restore saved settings.");

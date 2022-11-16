@@ -16,24 +16,30 @@ void spSettingsSave::setStorage(spStorage &theStorage)
 }
 void spSettingsSave::setStorage(spStorage *pStorage)
 {
-    _settingsStorage = pStorage;
+    _vStorage.insert(_vStorage.begin(), pStorage);
+
 }
 
 // Save settings - if no parameter is passed in, the entire system is saved
 
 bool spSettingsSave::saveSystem(void)
 {
-    if (!_settingsStorage)
+    if (_vStorage.size() ==0)
         return false;
 
-    if (!_settingsStorage->begin())
+    auto itStorage = _vStorage.begin();
+
+    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
     {
-        spLog_E(F("Unable to save settings."));
-        return false;
+        // Start storage transaction
+        if (!(*itStorage)->begin())
+        {
+            spLog_E(F("Unable to save settings to %s."), (*itStorage)->name());
+            continue;
+        }
+        spark.save((*itStorage));
+        (*itStorage)->end();
     }
-    spark.save(_settingsStorage);
-
-    _settingsStorage->end();
 
     return true;
 }
@@ -44,17 +50,22 @@ bool spSettingsSave::save(spObject &theObject)
 }
 bool spSettingsSave::save(spObject *pObject)
 {
-    if (!_settingsStorage)
+    if (_vStorage.size() ==0)
         return false;
 
-    if (!_settingsStorage->begin())
+    auto itStorage = _vStorage.begin();
+
+    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
     {
-        spLog_E(F("Unable to save object settings."));
-        return false;
+        // Start storage transaction
+        if (!(*itStorage)->begin())
+        {
+            spLog_E(F("Unable to save settings to %s."), (*itStorage)->name());
+            continue;
+        }
+        pObject->save((*itStorage));
+        (*itStorage)->end();
     }
-    pObject->save(_settingsStorage);
-
-    _settingsStorage->end();
 
     return true;
 }
@@ -63,20 +74,37 @@ bool spSettingsSave::save(spObject *pObject)
 
 bool spSettingsSave::restoreSystem(void)
 {
-    if (!_settingsStorage)
+    if (_vStorage.size() ==0)
         return false;
 
-    // open settings in read only mode
-    if (!_settingsStorage->begin(true))
+    bool status = false;
+    auto itStorage = _vStorage.begin();
+    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
     {
-        spLog_D(F("Error loading settings"));
-        return false;
-    }
-    spark.restore(_settingsStorage);
+        // begin - set system in readonly mode 
+        status = (*itStorage)->begin(true);
 
-    _settingsStorage->end();
+        if ( status )
+        {
+            status = spark.restore((*itStorage));
 
-    return true;
+            (*itStorage)->end();
+        }
+
+        // success?
+        if (status)
+            break;
+        
+        spLog_D(F("Error loading settings from %s storage"), (*itStorage)->name());
+
+        // if we are here, the read failed for the current device.
+
+        // if this is the first iteration, and the use of secondary sources is disabled,
+        // break out
+        if ( i ==0 && useSecondarySources() == false)
+            break;
+     }   
+    return status;
 }
 // restore a specific object
 bool spSettingsSave::restore(spObject &theObject)
@@ -85,23 +113,44 @@ bool spSettingsSave::restore(spObject &theObject)
 }
 bool spSettingsSave::restore(spObject *pObject)
 {
-    if (!_settingsStorage)
+    if (_vStorage.size() ==0)
         return false;
 
-    // open settings in read only mode
-    if (!_settingsStorage->begin(true))
-        return false;
+    bool status = false;
+    auto itStorage = _vStorage.begin();
+    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
+    {
+        // begin - set system in readonly mode 
+        status = (*itStorage)->begin(true);
 
-    pObject->restore(_settingsStorage);
+        if ( status )
+        {
+            status = pObject->restore((*itStorage));
 
-    _settingsStorage->end();
-    return true;
+            (*itStorage)->end();
+        }
+
+        // success?
+        if (status)
+            break;
+        
+        spLog_D(F("Error loading settings from %s storage"), (*itStorage)->name());
+
+        // if we are here, the read failed for the current device.
+
+        // if this is the first iteration, and the use of secondary sources is disabled,
+        // break out
+        if ( i ==0 && useSecondarySources() == false)
+            break;
+     }   
+    return status;
+
 }
 
 void spSettingsSave::reset(void)
 {
-    if (_settingsStorage)
-        _settingsStorage->resetStorage();
+    for (auto theStorage : _vStorage)
+        theStorage->resetStorage();
 }
 
 //------------------------------------------------------------------------------
