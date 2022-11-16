@@ -21,6 +21,8 @@ class spStorageJSONBlock : public spStorageBlock {
 public:
     spStorageJSONBlock(): _readOnly{false}{}
 
+
+
     bool writeBool(const char* tag, bool data);
     bool writeInt8(const char* tag, int8_t data);
     bool writeInt16(const char* tag, int16_t data);
@@ -48,13 +50,13 @@ public:
 private:
     friend spStorageJSONPref;
 
-    JsonObject _jsonSection;
+    JsonObject _jSection;
 
     bool _readOnly;
 
     void setObject(JsonObject &jsonSection)
     {
-        _jsonSection = JsonObject;
+        _jSection = jsonSection;
     }
 
     void setReadOnly(bool readonly)

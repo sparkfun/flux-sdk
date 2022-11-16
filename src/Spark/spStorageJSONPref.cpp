@@ -2,8 +2,6 @@
 #
  */
 
-#ifdef JSON
-
 #include "spStorageJSONPref.h"
 #include "spCoreLog.h"
 #include "spUtils.h"
@@ -142,7 +140,7 @@ bool spStorageJSONBlock::writeString(const char *tag, const char *value)
 bool spStorageJSONBlock::readBool(const char *tag, bool &value, bool defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -152,7 +150,7 @@ bool spStorageJSONBlock::readBool(const char *tag, bool &value, bool defaultValu
 bool spStorageJSONBlock::readInt8(const char *tag, int8_t &value, int8_t defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -164,7 +162,7 @@ bool spStorageJSONBlock::readInt8(const char *tag, int8_t &value, int8_t default
 bool spStorageJSONBlock::readInt16(const char *tag, int16_t &value, int16_t defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -175,7 +173,7 @@ bool spStorageJSONBlock::readInt16(const char *tag, int16_t &value, int16_t defa
 bool spStorageJSONBlock::readInt32(const char *tag, int32_t &value, int32_t defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -186,7 +184,7 @@ bool spStorageJSONBlock::readInt32(const char *tag, int32_t &value, int32_t defa
 bool spStorageJSONBlock::readUInt8(const char *tag, uint8_t &value, uint8_t defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -197,7 +195,7 @@ bool spStorageJSONBlock::readUInt8(const char *tag, uint8_t &value, uint8_t defa
 bool spStorageJSONBlock::readUInt16(const char *tag, uint16_t &value, uint16_t defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -208,7 +206,7 @@ bool spStorageJSONBlock::readUInt16(const char *tag, uint16_t &value, uint16_t d
 bool spStorageJSONBlock::readUInt32(const char *tag, uint32_t &value, uint32_t defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -219,7 +217,7 @@ bool spStorageJSONBlock::readUInt32(const char *tag, uint32_t &value, uint32_t d
 bool spStorageJSONBlock::readFloat(const char *tag, float &value, float defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -230,7 +228,7 @@ bool spStorageJSONBlock::readFloat(const char *tag, float &value, float defaultV
 bool spStorageJSONBlock::readDouble(const char *tag, double &value, double defaultValue)
 {
     if (!_jSection.isNull())
-        vlaue = (_jSection)[tag];
+        value = (_jSection)[tag];
     else
         value = defaultValue;
 
@@ -243,7 +241,7 @@ size_t spStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 
 
     if (_jSection.isNull())
-        return 0
+        return 0;
 
     std::string value = (_jSection)[tag];
 
@@ -277,6 +275,8 @@ bool spStorageJSONPref::begin(bool readonly)
         return false;
     }
     _readOnly = readonly;
+
+    return true;
 }
 
 void spStorageJSONPref::end(void)
@@ -297,7 +297,7 @@ void spStorageJSONPref::end(void)
     // Clear memory
     if (_pDocument)
     {
-        delete _pDocument;
+        // TODO FIX delete _pDocument;
         _pDocument = nullptr;
     }
     _readOnly = false;
@@ -313,9 +313,9 @@ spStorageJSONBlock *spStorageJSONPref::beginBlock(const char *tag)
     JsonObject jObj;
 
     // Does the object already exists?
-    _jObj = _pDocument->[tag];
+    jObj = (*_pDocument)[tag];
     if (jObj.isNull())
-        jObj = _pDocument->createNestedObject(tag)
+        jObj = _pDocument->createNestedObject(tag);
 
     _theBlock.setObject(jObj);
     _theBlock.setReadOnly(_readOnly);
@@ -332,14 +332,10 @@ spStorageJSONBlock *spStorageJSONPref::getBlock(const char *tag)
 }
 void spStorageJSONPref::endBlock(spStorageBlock *)
 {
-    _prefs.end();
+
 }
 
 void spStorageJSONPref::resetStorage()
 {
-    // call low level ESP IDF functions to do this - as recommended by JSON docs ...
-    nvs_flash_erase();
-    nvs_flash_init();
+    
 }
-
-#endif
