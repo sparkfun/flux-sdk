@@ -7,6 +7,8 @@
 #include "spSpark.h"
 #include "spStorage.h"
 
+#include <vector>
+
 class spSettingsSave : public spActionType<spSettingsSave>
 {
 
@@ -62,6 +64,12 @@ class spSettingsSave : public spActionType<spSettingsSave>
     void setStorage(spStorage &theStorage);
     void setStorage(spStorage *pStorage);
 
+    void addStorage(spStorage *pStorage)
+    {
+        if (pStorage)
+            _vStorage.push_back(pStorage);
+    }
+
     // Save settings for the system
     bool saveSystem(void);
 
@@ -116,5 +124,7 @@ private:
     }
 
     spStorage *  _settingsStorage;
+
+    std::vector<spStorage*> _vStorage;
 };
 extern spSettingsSave &spSettings;
