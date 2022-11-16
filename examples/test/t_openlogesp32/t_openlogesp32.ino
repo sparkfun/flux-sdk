@@ -14,6 +14,7 @@
 
 // settings storage
 #include <Spark/spStorageESP32Pref.h>
+#include <Spark/spStorageJSONPref.h>
 #include <Spark/spSettings.h>
 #include <Spark/spSettingsSerial.h>
 
@@ -84,6 +85,7 @@ spFileRotate  theOutputFile;
 // settings things
 spStorageESP32Pref  myStorage;
 spSettingsSerial    serialSettings;
+spStorageJSONPref   jsonStorage;
 
 spWiFiESP32 wifiConnection;
 spNTPESP32  ntpClient;
@@ -200,6 +202,7 @@ void setup() {
 
     // set the settings storage system for spark
     spSettings.setStorage(myStorage);
+    spSettings.addStorage(&jsonStorage);
 
     // Have settings saved when editing is complete.
     spSettings.listenForSave(serialSettings.on_finished);
