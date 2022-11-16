@@ -203,6 +203,8 @@ void setup() {
     // set the settings storage system for spark
     spSettings.setStorage(myStorage);
     spSettings.addStorage(&jsonStorage);
+    jsonStorage.setFileSystem(&theSDCard);
+    jsonStorage.setFilename("openlog.json");
 
     // Have settings saved when editing is complete.
     spSettings.listenForSave(serialSettings.on_finished);
