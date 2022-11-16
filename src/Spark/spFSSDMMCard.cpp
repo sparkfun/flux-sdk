@@ -267,6 +267,13 @@ size_t spFSSDMMCFile::write(const uint8_t *buf, size_t size)
     return _file.write(buf, size);
 }
 
+size_t spFSSDMMCFile::read( uint8_t *buf, size_t size)
+{
+    if (!_file)
+        return false;
+
+    return _file.read(buf, size);
+}
 void spFSSDMMCFile::close(void)
 {
     if (_file)

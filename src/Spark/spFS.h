@@ -21,6 +21,8 @@ class spIFile
     virtual void flush(void) = 0;
 
     virtual size_t size(void) = 0;
+
+    virtual size_t read(uint8_t *buf, size_t size) = 0;
 };
 
 
@@ -65,6 +67,22 @@ class spFSFile
         return (_file && _file->isValid());
     }
 
+    size_t read(uint8_t *buf, size_t size)
+    {
+        if (_file && _file->isValid())
+            return _file->read(buf, size);
+
+        return 0;
+    }
+
+    size_t size()
+    {
+        if (_file && _file->isValid())
+            return _file->size();
+
+        return 0;
+    }
+    
   private:
     // note use of smart pointer for the file
     std::shared_ptr<spIFile> _file;

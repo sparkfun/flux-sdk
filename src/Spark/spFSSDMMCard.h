@@ -18,6 +18,8 @@ class spFSSDMMCFile : public spIFile
 
     size_t write(const uint8_t *buf, size_t size);
 
+    size_t read(uint8_t *buf, size_t size);
+
     void close(void);
 
     bool isValid(void);
