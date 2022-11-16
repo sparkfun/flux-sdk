@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "spCoreTypes.h"
 #include <cstdint>
 #include <stddef.h>
 #include <math.h>
@@ -51,7 +52,7 @@ class spStorageOld
 // Use tags to ID an item and move to use data types. Model after the
 // ESP32 preference library
 
-class spStorageBlock
+class spStorageBlock 
 {
 
   public:
@@ -166,7 +167,7 @@ class spStorageBlock
 //
 // Interface for a storage system to persist state of a system
 
-class spStorage
+class spStorage : public spDescriptor
 {
 
   public:
