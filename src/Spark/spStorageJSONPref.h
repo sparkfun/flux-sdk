@@ -78,7 +78,7 @@ public:
         setName("JSON Preference", "Device setting storage using a JSON File");
     }
 
-    // add begin, end stubs - the Esp32 prefs system doesn't required trasaction brackets
+    // add begin, end stubs - the Esp32 prefs system doesn't required transaction brackets
     bool begin(bool readonly=false);
 
     void end(void);
@@ -95,7 +95,7 @@ private:
     // The block used to interface with the system
     spStorageJSONBlock _theBlock;
 
-    // Pointer to the json documement 
+    // Pointer to the json document 
 
     DynamicJsonDocument  * _pDocument;
 
