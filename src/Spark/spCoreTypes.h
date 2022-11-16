@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "spCoreLog.h"
-#include "spStorage.h"
 #include "spUtils.h"
 
 #include "Arduino.h"
@@ -621,6 +620,8 @@ class spDataArrayString : public spDataArrayType<char *>
     };
 };
 
+//----------------------------------------------------------------------------------------
+class spStorage;
 //----------------------------------------------------------------------------------------
 struct spPersist
 {
