@@ -75,6 +75,11 @@ class spStorageESP32Pref : public spStorage {
 public:
     spStorageESP32Pref();
 
+    spStorageKind_t kind(void)
+    {
+        return spStorage::spStorageKindInternal;
+    }
+    
     // add begin, end stubs - the Esp32 prefs system doesn't required trasaction brackets
     bool begin(bool readonly=false)
     {
