@@ -157,14 +157,11 @@ class spSpark : public spObjectContainer
     }
   private:
 
-
-    spStorage *  _settingsStorage;
-
     spBusI2C     _i2cDriver;
     spBusSPI     _spiDriver;
 
     // Note private constructor...
-    spSpark() : _settingsStorage{nullptr}
+    spSpark() 
     {
 
         // setup some default heirarchy things ...
