@@ -157,6 +157,10 @@ class _spPropertyContainer
         for (auto property : _properties)
         {
             status = property->restore(stBlk);
+            // KDB Testing
+            if ( !status ){
+                Serial.printf("Error restoring property %s\n\r", property->name());
+            }
             rc = rc && status;
         }
         return rc;
@@ -253,7 +257,8 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
         if (status)
             set(c);
 
-        return status;
+        // If the value wasn't there, this is not a failure. So always return true
+        return true;
     };
 
     // use this to route the call to our dataOut base class
@@ -1259,18 +1264,18 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
 
         if (!stBlk)
         {
-            spLog_E("Object Restore - error getting storage block");
+            spLog_I("Object Restore - error getting storage block");
             return true; // nothing to restore
         }
 
         // restore props
         bool status = restoreProperties(stBlk);
         if (!status)
-            spLog_W("Error restoring a property for %s", name());
+            spLog_D("Error restoring a property for %s", name());
 
         pStorage->endBlock(stBlk);
 
-        return status;
+        return true;
     };
     //---------------------------------------------------------------------------------
     // Return the type ID of this
