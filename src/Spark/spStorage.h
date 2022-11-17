@@ -172,6 +172,14 @@ class spStorage : public spDescriptor
 
   public:
 
+    typedef enum
+    {
+        spStorageKindInternal,
+        spStorageKindExternal
+    }spStorageKind_t;
+
+    virtual spStorageKind_t kind(void)=0;
+    
     // Methods used to bracket the save/restore transaction
     virtual bool begin(bool readonly=false) = 0;
     virtual void end(void) = 0;
