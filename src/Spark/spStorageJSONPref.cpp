@@ -281,8 +281,6 @@ bool spStorageJSONPref::begin(bool readonly)
         spLog_E(F("Unable to create JSON object for preferences."));
         return false;
     }
-
-
     
     if ( _fileSystem->exists(_filename.c_str()))
     {
@@ -311,10 +309,13 @@ bool spStorageJSONPref::begin(bool readonly)
                 }
 
                 delete pBuffer;
-            }
+            }else
+                spLog_D(F("JSON Settings Begin - Empty file"));
 
             theFile.close();
-        }
+        }else
+            spLog_D(F("JSON Settings Begin: File does not exist: %s"), _filename.c_str());
+
         if (status == false)
             spLog_E(F("Error reading json settings file. Ignoring"));
 
