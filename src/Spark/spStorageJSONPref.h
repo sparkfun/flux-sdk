@@ -78,6 +78,10 @@ public:
         setName("JSON Preference", "Device setting storage using a JSON File");
     }
 
+    spStorageKind_t kind(void)
+    {
+        return spStorage::spStorageKindExternal;
+    }
     // add begin, end stubs - the Esp32 prefs system doesn't required transaction brackets
     bool begin(bool readonly=false);
 
