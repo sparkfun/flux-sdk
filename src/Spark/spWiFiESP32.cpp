@@ -76,6 +76,7 @@ bool spWiFiESP32::connect(void)
             return false;
         }
     }
+    spLog_I(F("Connected to %s"), SSID().c_str());
     // okay, we're connected.
     _wasConnected = true;
     on_connectionChange.emit(true);
