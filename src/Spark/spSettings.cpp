@@ -39,6 +39,10 @@ bool spSettingsSave::saveSystem(void)
         }
         spark.save((*itStorage));
         (*itStorage)->end();
+
+        // For now, we only save the main, primary storage item (TODO - revisit)
+        if (i == 0)
+            break;
     }
 
     return true;
@@ -170,6 +174,7 @@ void spSettingsSave::restore_secondary(void)
         return;
     } 
     status = spark.restore(pStorage);
+
     pStorage->end();
 }
 //------------------------------------------------------------------------------

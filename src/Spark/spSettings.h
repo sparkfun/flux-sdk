@@ -27,7 +27,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
     };
 
     void restore_secondary(void);
-    
+
     void saveEvent_CB(void)
     {
         // Enabled?
@@ -90,7 +90,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
 
     bool isAvailable()
     {
-        return _settingsStorage != nullptr;
+        return _vStorage.size() > 0;
     }
 
     //------------------------------------------------------------------------------
@@ -127,12 +127,10 @@ private:
         spRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
         spRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
         spRegister(clearSettings, "Clear Settings", "Erase saved settings.");
-        spRegister(restoreSettings, "Restore From JSON", "Restore system settings from a JSON file.");        
+        spRegister(restoreSecondary, "Restore From JSON", "Restore system settings from a JSON file.");        
 
         spark.add(this);
     }
-
-    spStorage *  _settingsStorage;
 
     std::vector<spStorage*> _vStorage;
 };
