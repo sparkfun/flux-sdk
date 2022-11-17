@@ -116,19 +116,27 @@ bool spSpark::save(spStorage *pStorage)
     if (!stBlk)
         return false;
 
-    char szBuffer[128] = {0};
-    strlcpy(szBuffer, name(), sizeof(szBuffer));
-    strlcat(szBuffer, description(), sizeof(szBuffer));
+    bool status;
 
-    char szHash[kApplicationHashIDSize];
+    // If the storage medium is *internal* to the system, save our app hash tag.
+    // This allows rapid ID of a valid storage source
+    if (pStorage->kind() == spStorage::spStorageKindInternal)
+    {
+        char szBuffer[128] = {0};
+        strlcpy(szBuffer, name(), sizeof(szBuffer));
+        strlcat(szBuffer, description(), sizeof(szBuffer));
 
-    bool status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
+        char szHash[kApplicationHashIDSize];
 
-    // Write out the ID tag
-    if (status)
-        status = stBlk->write(kApplicationHashIDTag, szHash);
+        status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
 
-    pStorage->endBlock(stBlk);
+        // Write out the ID tag
+        if (status)
+            status = stBlk->write(kApplicationHashIDTag, szHash);
+
+        pStorage->endBlock(stBlk);
+    }else 
+        status = true;   // external storage - so continue with save ...
 
     // everything go okay?
     if (!status)
@@ -151,33 +159,43 @@ bool spSpark::restore(spStorage *pStorage)
     if (!stBlk)
         return false;
 
-    bool status = stBlk->valueExists(kApplicationHashIDTag);
-    if (status)
+    // If the storage kind is *internal*, check for our app hash key. This provides
+    // a quick check to validate the storage source. 
+    //
+    // Note for external sources (files...etc), we load in and validate based on 
+    // source name. This makes it easlier to manually write out a settings file
+    bool status;
+    if (pStorage->kind() == spStorage::spStorageKindInternal)
     {
-        char szBuffer[128] = {0};
-        strlcpy(szBuffer, name(), sizeof(szBuffer));
-        strlcat(szBuffer, description(), sizeof(szBuffer));
-
-        char szHash[kApplicationHashIDSize];
-
-        status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
-
+        status = stBlk->valueExists(kApplicationHashIDTag);
         if (status)
         {
-            // okay, read in the tag, see what we find
-            status = stBlk->readString(kApplicationHashIDTag, szBuffer, sizeof(szBuffer)) > 0;
+            char szBuffer[128] = {0};
+            strlcpy(szBuffer, name(), sizeof(szBuffer));
+            strlcat(szBuffer, description(), sizeof(szBuffer));
+
+            char szHash[kApplicationHashIDSize];
+
+            status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
 
             if (status)
-                status = strncmp(szHash, szBuffer, strlen(szHash)) == 0;
-        }
-    }
+            {
+                // okay, read in the tag, see what we find
+                status = stBlk->readString(kApplicationHashIDTag, szBuffer, sizeof(szBuffer)) > 0;
 
-    pStorage->endBlock(stBlk);
+                if (status)
+                    status = strncmp(szHash, szBuffer, strlen(szHash)) == 0;
+            }
+        }
+
+        pStorage->endBlock(stBlk);
+    }else
+       status = true;  // restoring form an external source
 
     // everything go okay?
     if (!status)
     {
-        spLog_I(F("System settings not available for restoration"));
+        spLog_I(F("System settings not available for restoration from %s"), pStorage->name());
         return false;
     }
     // call superclass
