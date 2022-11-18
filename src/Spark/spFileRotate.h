@@ -46,6 +46,7 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
         _currentFileNumber = startNumber.get() - 1;
 
         spark.add(this);
+
     };
 
     void write(int);
