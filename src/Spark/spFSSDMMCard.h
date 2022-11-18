@@ -95,6 +95,11 @@ class _spFSSDMMCard : public spIFileSystem
 
     const char *type(void);
 
+    bool enabled(void)
+    {
+        return _isInitalized;
+    }
+
   private:
     // private constructor
     _spFSSDMMCard() : _isInitalized{false}, _pinCS{0}, _pinPower{0}, _powerOn{false}
@@ -115,6 +120,10 @@ class spFSSDMMCard : public spIFileSystem, public spSystemType<spFSSDMMCard>
 {
 
   public:
+    spFSSDMMCard()
+    {
+        spIFileSystem::setName("SD Card", "A SD Card file system using the SDMMC interface on an ESP32");
+    }
     bool initialize()
     {
         return _theSDMMCard.initialize();
@@ -188,4 +197,10 @@ class spFSSDMMCard : public spIFileSystem, public spSystemType<spFSSDMMCard>
     {
         return _theSDMMCard.type();
     }
+
+    bool enabled(void)
+    {
+        return _theSDMMCard.enabled();
+    };
+
 };
