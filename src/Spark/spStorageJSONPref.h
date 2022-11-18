@@ -47,6 +47,10 @@ public:
 
     bool valueExists(const char* tag);
 
+    spStorage::spStorageKind_t kind(void)
+    {
+        return spStorage::spStorageKindExternal;
+    }
 private:
     friend spStorageJSONPref;
 
@@ -75,7 +79,7 @@ class spStorageJSONPref : public spStorage {
 public:
     spStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}, _fileSystem{nullptr}, _filename{""}
     {
-        setName("JSON Preference", "Device setting storage using a JSON File");
+        setName("JSON File", "Device setting storage using a JSON File");
     }
 
     spStorageKind_t kind(void)
@@ -105,6 +109,8 @@ public:
 
 
 private:
+
+    void checkName();
     // The block used to interface with the system
     spStorageJSONBlock _theBlock;
 
