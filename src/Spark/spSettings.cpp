@@ -10,174 +10,182 @@ spSettingsSave &spSettings = spSettingsSave::get();
 //
 // Storage device for settings - set this in the system.
 
-void spSettingsSave::setStorage(spStorage &theStorage)
-{
-    setStorage(&theStorage);
-}
 void spSettingsSave::setStorage(spStorage *pStorage)
 {
-    _vStorage.insert(_vStorage.begin(), pStorage);
+    _primaryStorage = pStorage;
 
 }
 
-// Save settings - if no parameter is passed in, the entire system is saved
+
+void spSettingsSave::setFallback(spStorage *pStorage)
+{
+    _fallbackStorage = pStorage;
+
+}
+
+
+//----------------------------------------------------------------------------------
+// Save section
+//----------------------------------------------------------------------------------
+
+// General save routine
+bool spSettingsSave::saveObjectToStorage(spObject* pObject, spStorage *pStorage)
+{
+    if (!pStorage)
+        return false;
+    
+    // Start storage transaction
+    if (!pStorage->begin())
+        return false;
+
+    bool status = pObject->save(pStorage);
+
+    pStorage->end();
+
+    return status;
+}
+
+//----------------------------------------------------------------------------------
+// Save system
 
 bool spSettingsSave::saveSystem(void)
 {
-    if (_vStorage.size() == 0)
-        return false;
-
-    auto itStorage = _vStorage.begin();
-
-    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
-    {
-        // Start storage transaction
-        if (!(*itStorage)->begin())
-        {
-            spLog_E(F("Unable to save settings to %s."), (*itStorage)->name());
-            continue;
-        }
-        spark.save((*itStorage));
-        (*itStorage)->end();
-
-        // For now, we only save the main, primary storage item (TODO - revisit)
-        if (i == 0)
-            break;
-    }
-
-    return true;
+    return save(&spark);
 }
+//----------------------------------------------------------------------------------
 // save a specific object
 bool spSettingsSave::save(spObject &theObject)
 {
     return save(&theObject);
 }
+
+//----------------------------------------------------------------------------------
+// Save settings for a object
 bool spSettingsSave::save(spObject *pObject)
 {
-    if (_vStorage.size() == 0)
+    if (!_primaryStorage)
         return false;
 
-    auto itStorage = _vStorage.begin();
+    bool status = saveObjectToStorage(pObject, _primaryStorage);
 
-    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
+    if(!status)
+        spLog_E(F("Unable to save %s to %s"), pObject->name(), _primaryStorage->name());
+
+    // Save to secondary ? 
+    if (fallbackSave() && _fallbackStorage !=nullptr)
     {
-        // Start storage transaction
-        if (!(*itStorage)->begin())
-        {
-            spLog_E(F("Unable to save settings to %s."), (*itStorage)->name());
-            continue;
-        }
-        pObject->save((*itStorage));
-        (*itStorage)->end();
+        if (!saveObjectToStorage(pObject, _fallbackStorage))
+            spLog_W(F("Unable to save %s to the fallback system, %s"), pObject->name(), _fallbackStorage->name());
     }
 
-    return true;
+    return status;
+
 }
 
-// Restore settings - if no parameter is passed in, the entire system is restored
-
-bool spSettingsSave::restoreSystem(void)
+//----------------------------------------------------------------------------------
+// Restore section
+//----------------------------------------------------------------------------------
+bool spSettingsSave::restoreObjectFromStorage(spObject* pObject, spStorage *pStorage)
 {
-    if (_vStorage.size() == 0)
+    if (!pStorage)
+        return false;
+    
+    // Start storage transaction = read-only
+    if (!pStorage->begin(true))
         return false;
 
-    bool status = false;
-    auto itStorage = _vStorage.begin();
-    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
-    {
-        // begin - set system in readonly mode 
-        status = (*itStorage)->begin(true);
+    bool status = pObject->restore(pStorage);
 
-        if ( status )
-        {
-            status = spark.restore((*itStorage));
+    pStorage->end();
 
-            (*itStorage)->end();
-        }
-
-        // success?
-        if (status)
-            break;
-        
-        spLog_D(F("Error loading settings from %s storage"), (*itStorage)->name());
-
-        // if we are here, the read failed for the current device.
-
-        // if this is the first iteration, and the use of secondary sources is disabled,
-        // break out
-        if ( i ==0 && useSecondarySources() == false)
-            break;
-     }   
     return status;
 }
+
+//----------------------------------------------------------------------------------
+bool spSettingsSave::restoreSystem(void)
+{
+    return restore(&spark);
+}
+
+//----------------------------------------------------------------------------------
 // restore a specific object
 bool spSettingsSave::restore(spObject &theObject)
 {
     return restore(&theObject);
 }
+
+//----------------------------------------------------------------------------------
+// pointer version
 bool spSettingsSave::restore(spObject *pObject)
 {
-    if (_vStorage.size() == 0)
+
+    if (!_primaryStorage)
         return false;
 
-    bool status = false;
-    auto itStorage = _vStorage.begin();
-    for(int i=0; itStorage != _vStorage.end(); itStorage++, i++)
+    bool status = restoreObjectFromStorage(pObject, _primaryStorage);
+
+    if(!status)
     {
-        // begin - set system in readonly mode 
-        status = (*itStorage)->begin(true);
+        spLog_E(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
 
-        if ( status )
+
+        // Save to secondary ? 
+        if (fallbackRestore() && _fallbackStorage !=nullptr)
         {
-            status = pObject->restore((*itStorage));
-
-            (*itStorage)->end();
+            status = restoreObjectFromStorage(pObject, _fallbackStorage);
+            if (!status)
+                spLog_W(F("Unable to restore %s from the fallback system, %s"), pObject->name(), _fallbackStorage->name());
+            else 
+            {
+                spLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
+                // We restored from fallback, now save to main storage -- TODO - should this be a setting
+                spLogI(F("Saving settings to %s"), _primaryStorage->name());
+                bool tmp = fallbackSave();
+                fallbackSave=false;
+                save(pObject);
+                fallbackSave = tmp;
+            }
         }
+    }
 
-        // success?
-        if (status)
-            break;
-        
-        spLog_D(F("Error loading settings from %s storage"), (*itStorage)->name());
-
-        // if we are here, the read failed for the current device.
-
-        // if this is the first iteration, and the use of secondary sources is disabled,
-        // break out
-        if ( i ==0 && useSecondarySources() == false)
-            break;
-     }   
     return status;
 
 }
 
+//----------------------------------------------------------------------------------
+
 void spSettingsSave::reset(void)
 {
-    for (auto theStorage : _vStorage)
-        theStorage->resetStorage();
+    if (_primaryStorage)
+        _primaryStorage->resetStorage();
+
+    if (_fallbackStorage)
+        _fallbackStorage->resetStorage();
+
 }
 
-void spSettingsSave::restore_secondary(void)
+//----------------------------------------------------------------------------------
+// Callbacks for input parameters
+//----------------------------------------------------------------------------------
+void spSettingsSave::restore_fallback(void)
 {
-    if (_vStorage.size() < 2)
+    if (!_fallbackStorage)
         return;
 
-    spStorage *pStorage = _vStorage.at(1);
-
-    if (!pStorage)
+    if (!restoreObjectFromStorage(&spark, _fallbackStorage))
+        spLog_E(F("Unable to restore settings from %s"), _fallbackStorage->name());
+}
+//----------------------------------------------------------------------------------
+void spSettingsSave::save_fallback(void)
+{
+    if (!_fallbackStorage)
         return;
 
-    bool status = pStorage->begin(true);
-    if (!status)
-    {
-        spLog_E(F("Error starting file restore"));
-        return;
-    } 
-    status = spark.restore(pStorage);
-
-    pStorage->end();
+    if (!saveObjectToStorage(&spark, _fallbackStorage))
+        spLog_E(F("Unable to save settings to %s"), _fallbackStorage->name());
 }
 //------------------------------------------------------------------------------
+// Events
 // Slots for signals - Enables saving and restoring settings base on events
 void spSettingsSave::listenForSave(spSignalVoid &theEvent)
 {

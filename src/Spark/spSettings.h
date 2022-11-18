@@ -7,8 +7,6 @@
 #include "spSpark.h"
 #include "spStorage.h"
 
-#include <vector>
-
 class spSettingsSave : public spActionType<spSettingsSave>
 {
 
@@ -26,7 +24,8 @@ class spSettingsSave : public spActionType<spSettingsSave>
         restoreSystem();
     };
 
-    void restore_secondary(void);
+    void restore_fallback(void);
+    void save_fallback(void);    
 
     void saveEvent_CB(void)
     {
@@ -63,14 +62,8 @@ class spSettingsSave : public spActionType<spSettingsSave>
     //
     // Storage device for settings - set this in the system.     
 
-    void setStorage(spStorage &theStorage);
     void setStorage(spStorage *pStorage);
-
-    void addStorage(spStorage *pStorage)
-    {
-        if (pStorage)
-            _vStorage.push_back(pStorage);
-    }
+    void setFallback(spStorage *pStorage);
 
     // Save settings for the system
     bool saveSystem(void);
@@ -90,7 +83,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
 
     bool isAvailable()
     {
-        return _vStorage.size() > 0;
+        return _primaryStorage != nullptr;
     }
 
     //------------------------------------------------------------------------------
@@ -101,19 +94,22 @@ class spSettingsSave : public spActionType<spSettingsSave>
     // Properties.
     spPropertyBool<spSettingsSave> saveOnEvent = {true};
     spPropertyBool<spSettingsSave> restoreOnEvent = {true};
-    spPropertyBool<spSettingsSave> useSecondarySources = {true};
+
+    spPropertyBool<spSettingsSave> fallbackSave = {false};    
+    spPropertyBool<spSettingsSave> fallbackRestore = {true};
 
     // Our input parameters
     spParameterInVoid<spSettingsSave, &spSettingsSave::save_settings> saveSettings;
     spParameterInVoid<spSettingsSave, &spSettingsSave::restore_settings> restoreSettings;
     spParameterInVoid<spSettingsSave, &spSettingsSave::reset> clearSettings;
 
-    spParameterInVoid<spSettingsSave, &spSettingsSave::restore_secondary> restoreSecondary;
+    spParameterInVoid<spSettingsSave, &spSettingsSave::restore_fallback> restoreFallback;
+    spParameterInVoid<spSettingsSave, &spSettingsSave::save_fallback> saveFallback;    
 
 
 private:
 
-    spSettingsSave() 
+    spSettingsSave() : _primaryStorage{nullptr}, _fallbackStorage{nullptr}
     {
 
         // Set name and description
@@ -122,16 +118,25 @@ private:
         spRegister(saveOnEvent, "Save Events", "Save settings on save events.");
         spRegister(restoreOnEvent, "Restore Events", "Restore settings on restore events.");
 
-        spRegister(useSecondarySources, "All Devices", "Use all available devices to store settings");
+        spRegister(fallbackRestore, "Fallback Restore", "If unable to restore settings, use the fallback source.");
+        spRegister(fallbackSave, "Fallback Save", "Save settings also saves the fallback storage.");        
+
 
         spRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
         spRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
         spRegister(clearSettings, "Clear Settings", "Erase saved settings.");
-        spRegister(restoreSecondary, "Restore From JSON", "Restore system settings from a JSON file.");        
+
+        spRegister(saveFallback, "Save to Fallback", "Save system settings the the fallback storage.");                
+        spRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage.");        
+
 
         spark.add(this);
     }
 
-    std::vector<spStorage*> _vStorage;
+    bool saveObjectToStorage(spObject*, spStorage *);
+    bool restoreObjectFromStorage(spObject*, spStorage *);    
+
+    spStorage * _primaryStorage;
+    spStorage * _fallbackStorage;
 };
 extern spSettingsSave &spSettings;
