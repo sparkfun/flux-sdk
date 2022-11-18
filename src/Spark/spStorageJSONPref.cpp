@@ -269,19 +269,19 @@ bool spStorageJSONBlock::valueExists(const char *tag)
 bool spStorageJSONPref::begin(bool readonly)
 {
 
-    if (!_fileSystem || _filename.length() == 0)
+    if (!_fileSystem || _filename.length() == 0 || !_fileSystem->enabled())
     {
-        spLog_E(F("JSON Settings unavailable - no filesystem provided"));
+        spLog_E(F("JSON Settings unavailable - no filesystem available."));
         return false;
     }
 
     _pDocument = new DynamicJsonDocument(kJsonDocumentSize);
-     if (!_pDocument)
+    if (!_pDocument)
     {
         spLog_E(F("Unable to create JSON object for preferences."));
         return false;
     }
-    
+
     if ( _fileSystem->exists(_filename.c_str()))
     {
         bool status = false;
@@ -302,7 +302,7 @@ bool spStorageJSONPref::begin(bool readonly)
                     size_t nRead = theFile.read((uint8_t*)pBuffer, nBytes);
 
                     if (nRead == nBytes)
-                    {
+                    {   
                         if (deserializeJson(*_pDocument, (const char*)pBuffer, nBytes) == DeserializationError::Ok)
                             status = true;
                     }
@@ -314,7 +314,7 @@ bool spStorageJSONPref::begin(bool readonly)
 
             theFile.close();
         }else
-            spLog_D(F("JSON Settings Begin: File does not exist: %s"), _filename.c_str());
+            spLog_I(F("JSON Settings - the file failed to open: %s"), _filename.c_str());
 
         if (status == false)
             spLog_E(F("Error reading json settings file. Ignoring"));
@@ -398,12 +398,25 @@ void spStorageJSONPref::resetStorage()
     
 }
 
+void spStorageJSONPref::checkName()
+{
+    if (_filename.length() == 0 || !_fileSystem)
+        return;
+
+    // make a better name that includes the destination  
+    char szBuffer[128];
+    snprintf(szBuffer, sizeof(szBuffer), "%s on the %s", _filename.c_str(), _fileSystem->name());
+    setName(szBuffer);
+
+}
 void spStorageJSONPref::setFileSystem(spIFileSystem *theFilesystem)
 {
     _fileSystem = theFilesystem;
+    checkName();
 }
 
 void spStorageJSONPref::setFilename(std::string &filename)
 {
     _filename = filename;
+    checkName();
 }
