@@ -238,12 +238,17 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
     // serialization methods
     bool save(spStorageBlock *stBlk)
     {
-        T c = get();
-        bool status = stBlk->write(name(), c);
+        bool status = true;
 
-        if (!status)
-            spLog_E("Error when saving property %s", name());
+        // We don't save hidden or secure properties if this is an external source
+        if ( stBlk->kind() == spStorage::spStorageKindInternal || (!_isHidden && !_isSecure))
+        {
+            T c = get();
+            bool status = stBlk->write(name(), c);
 
+            if (!status)
+                spLog_E("Error when saving property %s", name());
+        }
         return status;
     };
 
@@ -381,12 +386,23 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
     // serialization methods
     bool save(spStorageBlock *stBlk)
     {
-        // strings ... len, data
-        std::string c = get();
+        bool status = true;
 
-        bool status = stBlk->writeString(name(), c.c_str());
-        if (!status)
-            spLog_E("Error saving string for property: %s", name());
+        // If we are saving to an external source, we don't save hidden values or secure values.
+        //
+        // But, for secure props, we to write the key and a blank string (makes it easlier to enter values)
+        // later on... 
+
+        // We don't save hidden or secure properties if this is an external source
+        if ( stBlk->kind() == spStorage::spStorageKindInternal || !_isHidden)
+        {
+            // if a secure property and external storage, set value to an empty string
+            std::string c = ( stBlk->kind() == spStorage::spStorageKindExternal && _isSecure) ? "" : get();
+
+            status = stBlk->writeString(name(), c.c_str());
+            if (!status)
+                spLog_E("Error saving string for property: %s", name());
+        }
         return status;
     }
 
@@ -1324,6 +1340,10 @@ template <class T> class spContainer : public spObject
     }
     void push_back(T *value)
     {
+        // make sure the value isn't already in the list...
+        if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
+            return;
+
         _vector.push_back(value);
         value->setParent(this);
     }
