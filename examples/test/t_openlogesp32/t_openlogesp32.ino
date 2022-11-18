@@ -201,8 +201,8 @@ void setup() {
     //wifiConnection.password = "";
 
     // set the settings storage system for spark
-    spSettings.setStorage(myStorage);
-    spSettings.addStorage(&jsonStorage);
+    spSettings.setStorage(&myStorage);
+    spSettings.setFallback(&jsonStorage);
     jsonStorage.setFileSystem(&theSDCard);
     jsonStorage.setFilename("openlog.json");
 
@@ -218,6 +218,9 @@ void setup() {
     ntpClient.setNetwork(&wifiConnection);
     ntpClient.setStartupDelay(5);  // Give the NTP server some time to start
 
+    // setup SD card. Do this before calling start - so prefs can be read off SD if needed
+
+    setupSDCard();
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
     spark.start();  
@@ -239,8 +242,6 @@ void setup() {
     //  - Add the JSON and CVS format to the logger
     logger.add(fmtJSON);
     logger.add(fmtCSV);    
-
-    setupSDCard();
 
     setupNFC();
     // What devices has the system detected?
