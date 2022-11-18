@@ -52,7 +52,7 @@ bool spSpark::start(bool bAutoLoad)
     for (auto pAction : Actions)
     {
         if (!pAction->initialize())
-            spLog_W(F("Startup - Action %s initialize failed."), pAction->name());
+            spLog_W(F("[Startup] %s failed to initialize."), pAction->name());
     }
     return true;
 }
