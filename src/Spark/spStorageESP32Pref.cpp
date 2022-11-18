@@ -399,7 +399,7 @@ bool spStorageESP32Block::valueExists(const char *tag)
 spStorageESP32Pref::spStorageESP32Pref() : _readOnly{false}
 {
     _theBlock.setPrefs(&_prefs);
-    setName("ESP32 Preference", "Device setting storage using the ESP32 Preferences");
+    setName("ESP32 Preferences", "Device setting storage using the ESP32 Preferences");
 }
 
 // public methods to manage a block
