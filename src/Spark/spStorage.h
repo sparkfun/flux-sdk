@@ -48,6 +48,43 @@ class spStorageOld
     virtual void resetStorage() = 0;
 };
 
+
+
+class spStorageBlock;
+//------------------------------------------------------------------------------
+// spStorage
+//
+// Interface for a storage system to persist state of a system
+
+class spStorage : public spDescriptor
+{
+
+  public:
+
+    typedef enum
+    {
+        spStorageKindInternal,
+        spStorageKindExternal
+    }spStorageKind_t;
+
+    virtual spStorageKind_t kind(void)=0;
+    
+    // Methods used to bracket the save/restore transaction
+    virtual bool begin(bool readonly=false) = 0;
+    virtual void end(void) = 0;
+    // public methods to manage a block
+    virtual spStorageBlock *beginBlock(const char *tag) = 0;
+
+    // NOTE: TODO - for eeprom version of this, the number of bytes written
+    // should be kept in the block, then when it's close, written to the block
+    // header -- note, you will need to delete all existing blocks when writing
+    // new ...
+    virtual spStorageBlock *getBlock(const char *tag) = 0;
+    virtual void endBlock(spStorageBlock *) = 0;
+
+    virtual void resetStorage() = 0;
+};
+
 //------------------------------------------------------------------------------
 // Use tags to ID an item and move to use data types. Model after the
 // ESP32 preference library
@@ -66,7 +103,8 @@ class spStorageBlock
     virtual bool writeFloat(const char *tag, float data) = 0;
     virtual bool writeDouble(const char *tag, double data) = 0;
     virtual bool writeString(const char *tag, const char *data) = 0;
-
+    virtual spStorage::spStorageKind_t kind(void)=0;
+    
     // Overloaded versions
     bool write(const char *tag, bool data)
     {
@@ -162,36 +200,3 @@ class spStorageBlock
 
 };
 
-//------------------------------------------------------------------------------
-// spStorage
-//
-// Interface for a storage system to persist state of a system
-
-class spStorage : public spDescriptor
-{
-
-  public:
-
-    typedef enum
-    {
-        spStorageKindInternal,
-        spStorageKindExternal
-    }spStorageKind_t;
-
-    virtual spStorageKind_t kind(void)=0;
-    
-    // Methods used to bracket the save/restore transaction
-    virtual bool begin(bool readonly=false) = 0;
-    virtual void end(void) = 0;
-    // public methods to manage a block
-    virtual spStorageBlock *beginBlock(const char *tag) = 0;
-
-    // NOTE: TODO - for eeprom version of this, the number of bytes written
-    // should be kept in the block, then when it's close, written to the block
-    // header -- note, you will need to delete all existing blocks when writing
-    // new ...
-    virtual spStorageBlock *getBlock(const char *tag) = 0;
-    virtual void endBlock(spStorageBlock *) = 0;
-
-    virtual void resetStorage() = 0;
-};
