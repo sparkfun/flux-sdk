@@ -48,6 +48,11 @@ public:
 
     bool valueExists(const char* tag);
 
+    spStorage::spStorageKind_t kind(void)
+    {
+        return spStorage::spStorageKindInternal;
+    }
+
 private:
     friend spStorageESP32Pref;
 
