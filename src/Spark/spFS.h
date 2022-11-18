@@ -3,7 +3,7 @@
 #pragma once
 
 #include <memory>
-
+#include "spCoreTypes.h"
 // FS Interfaces
 
 //-----------------------------------------------------------------------
@@ -91,7 +91,7 @@ class spFSFile
 //-----------------------------------------------------------------------
 // Interface that defines the interaction with a filesystem.
 
-class spIFileSystem
+class spIFileSystem : public spDescriptor
 {
   public:
     // open file types
@@ -118,4 +118,6 @@ class spIFileSystem
     virtual uint size(void) = 0;
 
     virtual const char *type(void) = 0;
+
+    virtual bool enabled(void) =0;
 };
