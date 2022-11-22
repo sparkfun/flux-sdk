@@ -112,16 +112,34 @@ class _spParameterContainer
 
   public:
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterIn *newParam)
+    void addParameter(spParameterIn *newParam, bool head=false)
     {
-        _input_parameters.push_back(newParam);
+        // Insert at the head?
+        if (head)
+            _input_parameters.insert(_input_parameters.begin(), newParam);
+        else 
+            _input_parameters.push_back(newParam);
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterIn &newParam)
+    void addParameter(spParameterIn &newParam, bool head=false)
     {
-        addParameter(&newParam);
+        addParameter(&newParam, head);
     };
+    //---------------------------------------------------------------------------------
+    void removeParameter(spParameterIn *rmParam)
+    {
+        auto iter = std::find(_input_parameters.begin(), _input_parameters.end(), rmParam);
+
+        if (iter != _input_parameters.end())
+            _input_parameters.erase(iter);
+    }
+
+    //---------------------------------------------------------------------------------    
+    void removeParameter(spParameterIn &rmParam)
+    {
+        removeParameter(&rmParam);
+    } 
 
     //---------------------------------------------------------------------------------
     size_t nInputParameters()
@@ -130,17 +148,35 @@ class _spParameterContainer
     }
 
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterOut *newParam)
+    void addParameter(spParameterOut *newParam, bool head=false)
     {
-        _output_parameters.push_back(newParam);
+        // Insert at the head?
+        if (head)
+            _output_parameters.insert(_output_parameters.begin(), newParam);
+        else
+            _output_parameters.push_back(newParam);
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterOut &newParam)
+    void addParameter(spParameterOut &newParam, bool head=false)
     {
-        addParameter(&newParam);
+        addParameter(&newParam, head);
     };
 
+    //---------------------------------------------------------------------------------
+    void removeParameter(spParameterOut *rmParam)
+    {
+        auto iter = std::find(_output_parameters.begin(), _output_parameters.end(), rmParam);
+
+        if (iter != _output_parameters.end())
+            _output_parameters.erase(iter);
+    }
+
+    //---------------------------------------------------------------------------------    
+    void removeParameter(spParameterOut &rmParam)
+    {
+        removeParameter(&rmParam);
+    }    
     //---------------------------------------------------------------------------------
     size_t nOutputParameters()
     {
