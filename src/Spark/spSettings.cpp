@@ -139,7 +139,7 @@ bool spSettingsSave::restore(spObject *pObject)
             {
                 spLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
                 // We restored from fallback, now save to main storage -- TODO - should this be a setting
-                spLogI(F("Saving settings to %s"), _primaryStorage->name());
+                spLog_I(F("Saving settings to %s"), _primaryStorage->name());
                 bool tmp = fallbackSave();
                 fallbackSave=false;
                 save(pObject);
