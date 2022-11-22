@@ -121,6 +121,20 @@ class _spPropertyContainer
     };
 
     //---------------------------------------------------------------------------------
+    void removeProperty(spProperty *rmProp)
+    {
+        auto iter = std::find(_properties.begin(), _properties.end(), rmProp);
+
+        if (iter != _properties.end())
+            _properties.erase(iter);
+    }
+
+    //---------------------------------------------------------------------------------    
+    void removeProperty(spProperty &rmProp)
+    {
+        removeProperty(&rmProp);
+    } 
+    //---------------------------------------------------------------------------------
     spPropertyList &getProperties(void)
     {
         return _properties;
