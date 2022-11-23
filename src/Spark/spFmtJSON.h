@@ -87,7 +87,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     void logValue(const std::string &tag, const char *value)
     {
         if (!_jSection.isNull())
-            (_jSection)[tag] = value;
+            (_jSection)[tag] = (char*)value;
     }
 
     //-----------------------------------------------------------------
