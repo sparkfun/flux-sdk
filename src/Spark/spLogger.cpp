@@ -9,7 +9,7 @@
 #include <string.h>
 #include <time.h>
 
-spLogger::spLogger() : _timestampType{TimeStampNone}
+spLogger::spLogger() : _timestampType{TimeStampNone}, _sampleNumberMode{SampleNumberNone}, _currentSampleNumber{0}
 {
     setName("Logger", "Data logging action");
 
@@ -19,6 +19,15 @@ spLogger::spLogger() : _timestampType{TimeStampNone}
     // from the menu system. We register to connect the parameter to this instance.
     spRegister(timestamp, "Time");
     removeParameter(timestamp);
+
+    // Sample number things
+
+    spRegister(numberMode, "Sample Numbering", "An incremental count of the current log entry.");
+    spRegister(numberIncrement, "Numbering Increment", "Increment amount for Sample Numbering");
+
+    // Register and remove the output parameter in a simplar manner as the Timestamp
+    spRegister(sampleNumber, "Entry");
+    removeParameter(sampleNumber);
 
     spark.add(this);
 }
@@ -208,8 +217,14 @@ void spLogger::set_ts_type(uint newType)
     }
     else if (_timestampType == TimeStampNone)
     {
+        // We want the sample number to always the first item in the log line, so make check
+
+        auto iter = _paramsToLog.begin();
+        if (!_paramsToLog.empty() && _paramsToLog.front() == &sampleNumber)
+            iter++;
+
         // insert the timestamp parameter at the start of our parameters to log list
-        _paramsToLog.insert(_paramsToLog.begin(), &timestamp);
+        _paramsToLog.insert(iter, &timestamp);
     }
 
     _timestampType = (Timestamp_t)newType;
@@ -277,4 +292,54 @@ std::string spLogger::get_timestamp(void)
     timestamp.setName(sTitle.c_str());
     sTitle = szBuffer;
     return sTitle;
+}
+
+//----------------------------------------------------------------------------
+// Log sample number property get/set
+//----------------------------------------------------------------------------
+uint8_t spLogger::get_num_mode(void)
+{
+    return (uint8_t)_sampleNumberMode;
+}
+//----------------------------------------------------------------------------
+void spLogger::set_num_mode(uint8_t newMode)
+{
+    if ((SampleNumberMode_t)newMode == _sampleNumberMode)
+        return;
+
+    // Are we going from having a number to not having a number?
+    if ((SampleNumberMode_t)newMode == SampleNumberNone)
+    {
+        // Remove the sample number parameter from our internal timestamp list
+        auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &sampleNumber);
+
+        if (iter != _paramsToLog.end())
+            _paramsToLog.erase(iter);
+    }
+    else if (_sampleNumberMode == SampleNumberNone)
+    {
+        // Add the sample number parameter to our output list. It should be position 0
+        _paramsToLog.insert(_paramsToLog.begin(), &sampleNumber);
+
+        // reset sample number on enable.
+        resetSampleNumber();
+    }
+    _sampleNumberMode = (SampleNumberMode_t)newMode;
+}
+//----------------------------------------------------------------------------
+//
+// Reset the sample number to the provided number. Note, the parameter is optional with a
+// default value of 0
+void spLogger::resetSampleNumber(uint number)
+{
+    _currentSampleNumber = 0;
+}
+//----------------------------------------------------------------------------
+// Increment and return the current number
+uint spLogger::get_sample_number(void)
+{
+
+    _currentSampleNumber = _currentSampleNumber + numberIncrement();
+
+    return _currentSampleNumber;
 }
