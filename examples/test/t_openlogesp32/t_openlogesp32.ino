@@ -68,7 +68,7 @@ static const uint8_t MAG_CS = 27;
 
 // Create a JSON and CSV output formatters. 
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
-spFormatJSON<1000> fmtJSON;
+spFormatJSON<1200> fmtJSON;
 spFormatCSV fmtCSV;
 
 spLogger  logger;
@@ -313,7 +313,7 @@ void loop() {
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 
-    delay(1000); 
+    delay(500); 
     digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
     delay(1000);
 }
