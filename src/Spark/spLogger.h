@@ -29,13 +29,14 @@ class spLogger : public spActionType<spLogger>
 
     std::string get_timestamp(void);
 
-    uint8_t get_num_mode(void);
-    void set_num_mode(uint8_t);
+    bool get_num_mode(void);
+    void set_num_mode(bool);
 
     uint get_sample_number(void);
 
-    void resetSampleNumber(uint number = 0);
+    void reset_sample_number(const uint &number = 0);
 
+    
   public:
     spLogger();
 
@@ -227,22 +228,13 @@ class spLogger : public spActionType<spLogger>
     spParameterOutString<spLogger, &spLogger::get_timestamp> timestamp;
 
     // Sample number - this increments and outputs a number for each sample taken.
+    spPropertyRWBool<spLogger, &spLogger::get_num_mode, &spLogger::set_num_mode> numberMode = {false};
 
-    typedef enum
-    {
-        SampleNumberNone = 0,
-        SampleNumberEnabled = 1,
-        SampleNumberResetOnFile = 3
-    } SampleNumberMode_t;
-
-    spPropertyRWUint8<spLogger, &spLogger::get_num_mode, &spLogger::set_num_mode> numberMode = {
-        SampleNumberNone,
-        {{"No Sample Number", SampleNumberNone},
-         {"Sample Number", SampleNumberEnabled},
-         {"Sample Number - Reset on New File", SampleNumberResetOnFile}}};
     spParameterOutUint<spLogger, &spLogger::get_sample_number> sampleNumber;
 
     spPropertyUint<spLogger> numberIncrement = {1, 1, 10000};
+
+    spParameterInUint<spLogger, &spLogger::reset_sample_number> resetSampleNumber = {0, 10000};
 
   private:
     // Output devices
@@ -259,7 +251,7 @@ class spLogger : public spActionType<spLogger>
     // Timestamp things
     Timestamp_t _timestampType;
 
-    SampleNumberMode_t _sampleNumberMode;
+    bool _sampleNumberEnabled;
     uint32_t _currentSampleNumber;
 
     // Templates used to manage array logging based on type.

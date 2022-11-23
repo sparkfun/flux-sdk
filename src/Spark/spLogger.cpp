@@ -9,7 +9,7 @@
 #include <string.h>
 #include <time.h>
 
-spLogger::spLogger() : _timestampType{TimeStampNone}, _sampleNumberMode{SampleNumberNone}, _currentSampleNumber{0}
+spLogger::spLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
 {
     setName("Logger", "Data logging action");
 
@@ -25,9 +25,11 @@ spLogger::spLogger() : _timestampType{TimeStampNone}, _sampleNumberMode{SampleNu
     spRegister(numberMode, "Sample Numbering", "An incremental count of the current log entry.");
     spRegister(numberIncrement, "Numbering Increment", "Increment amount for Sample Numbering");
 
-    // Register and remove the output parameter in a simplar manner as the Timestamp
+    // Register and remove the output parameter in a simpler manner as the Timestamp
     spRegister(sampleNumber, "Entry");
     removeParameter(sampleNumber);
+
+    spRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
 
     spark.add(this);
 }
@@ -297,18 +299,18 @@ std::string spLogger::get_timestamp(void)
 //----------------------------------------------------------------------------
 // Log sample number property get/set
 //----------------------------------------------------------------------------
-uint8_t spLogger::get_num_mode(void)
+bool spLogger::get_num_mode(void)
 {
-    return (uint8_t)_sampleNumberMode;
+    return _sampleNumberEnabled;
 }
 //----------------------------------------------------------------------------
-void spLogger::set_num_mode(uint8_t newMode)
+void spLogger::set_num_mode(bool newMode)
 {
-    if ((SampleNumberMode_t)newMode == _sampleNumberMode)
+    if (newMode == _sampleNumberEnabled)
         return;
 
     // Are we going from having a number to not having a number?
-    if ((SampleNumberMode_t)newMode == SampleNumberNone)
+    if (!newMode )
     {
         // Remove the sample number parameter from our internal timestamp list
         auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &sampleNumber);
@@ -316,29 +318,28 @@ void spLogger::set_num_mode(uint8_t newMode)
         if (iter != _paramsToLog.end())
             _paramsToLog.erase(iter);
     }
-    else if (_sampleNumberMode == SampleNumberNone)
+    else 
     {
         // Add the sample number parameter to our output list. It should be position 0
         _paramsToLog.insert(_paramsToLog.begin(), &sampleNumber);
 
         // reset sample number on enable.
-        resetSampleNumber();
+        reset_sample_number();
     }
-    _sampleNumberMode = (SampleNumberMode_t)newMode;
+    _sampleNumberEnabled = newMode;
 }
 //----------------------------------------------------------------------------
 //
 // Reset the sample number to the provided number. Note, the parameter is optional with a
 // default value of 0
-void spLogger::resetSampleNumber(uint number)
+void spLogger::reset_sample_number(const uint & number)
 {
-    _currentSampleNumber = 0;
+    _currentSampleNumber = number;
 }
 //----------------------------------------------------------------------------
 // Increment and return the current number
 uint spLogger::get_sample_number(void)
 {
-
     _currentSampleNumber = _currentSampleNumber + numberIncrement();
 
     return _currentSampleNumber;
