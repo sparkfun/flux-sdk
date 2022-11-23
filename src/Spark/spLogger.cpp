@@ -5,7 +5,23 @@
  */
 
 #include "spLogger.h"
+#include "spSpark.h"
+#include <string.h>
+#include <time.h>
 
+spLogger::spLogger() : _timestampType{TimeStampNone}
+{
+    setName("Logger", "Data logging action");
+
+    spRegister(timestampMode, "Timestamp Mode", "Enable the output and set the format of a log entry timestamp.");
+
+    // Register the timestamp output parameter, then remove it from the action parameter list - we want this hidden
+    // from the menu system. We register to connect the parameter to this instance.
+    spRegister(timestamp, "Time");
+    removeParameter(timestamp);
+
+    spark.add(this);
+}
 //----------------------------------------------------------------------------
 // logScalar()
 //
@@ -167,4 +183,98 @@ void spLogger::logObservation(void)
         theFormatter->writeObservation();
         theFormatter->clearObservation();
     }
+}
+//----------------------------------------------------------------------------
+// Timestamp type property get/set
+//----------------------------------------------------------------------------
+uint spLogger::get_ts_type(void)
+{
+    return _timestampType;
+}
+//----------------------------------------------------------------------------
+void spLogger::set_ts_type(uint newType)
+{
+    if ((Timestamp_t)newType == _timestampType)
+        return;
+
+    // Are we going from having a timestamp to not having a timestamp?
+    if ((Timestamp_t)newType == TimeStampNone)
+    {
+        // Remove the timestamp parameter from our internal timestamp list
+        auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &timestamp);
+
+        if (iter != _paramsToLog.end())
+            _paramsToLog.erase(iter);
+    }
+    else if (_timestampType == TimeStampNone)
+    {
+        // insert the timestamp parameter at the start of our parameters to log list
+        _paramsToLog.insert(_paramsToLog.begin(), &timestamp);
+    }
+
+    _timestampType = (Timestamp_t)newType;
+}
+//----------------------------------------------------------------------------
+// Return the current timestamp, as outlined in the timestamp mode.
+std::string spLogger::get_timestamp(void)
+{
+
+    char szBuffer[64];
+
+    memset(szBuffer, '\0', sizeof(szBuffer));
+
+    std::string sTitle = "Time";
+
+    time_t t_now;
+    time(&t_now);
+    struct tm *tmLocal = localtime(&t_now);
+    switch (_timestampType)
+    {
+    case TimeStampMillis:
+        snprintf(szBuffer, sizeof(szBuffer), "%lu", millis());
+        sTitle += "(millis)";
+        break;
+
+    case TimeStampEpoch:
+        snprintf(szBuffer, sizeof(szBuffer), "%ld", t_now);
+        sTitle += "(Epoch)";
+        break;
+
+    case TimeStampDateTimeUSA:
+        strftime(szBuffer, sizeof(szBuffer), "%m-%d-%G %T", tmLocal);
+        break;
+
+    case TimeStampDateTime:
+        strftime(szBuffer, sizeof(szBuffer), "%d-%m-%G %T", tmLocal);
+        break;
+
+    case TimeStampISO8601:
+    case TimeStampISO8601TZ:
+        strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
+
+        if (_timestampType == TimeStampISO8601TZ)
+        {
+            time_t t_gmt = mktime(gmtime(&t_now));
+            uint32_t deltaT = t_now - t_gmt;
+
+            char szTmp[24] = {0};
+
+            int tz_hrs = deltaT / 3600;
+            int tz_min = (deltaT % 3600) / 60;
+            if (tz_min < 0)
+                tz_min *= -1;
+
+            snprintf(szTmp, sizeof(szTmp), "%c%02d:%02d", tz_hrs < 0 ? '-' : '+', tz_hrs, tz_min);
+
+            strlcat(szBuffer, szTmp, sizeof(szBuffer));
+        }
+        break;
+
+    case TimeStampNone:
+    default:
+        break;
+    }
+    timestamp.setName(sTitle.c_str());
+    sTitle = szBuffer;
+    return sTitle;
 }

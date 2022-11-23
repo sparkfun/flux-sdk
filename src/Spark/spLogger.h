@@ -22,11 +22,15 @@
 class spLogger : public spActionType<spLogger>
 {
 
+  private:
+    // Timestamp type property get/set
+    uint get_ts_type(void);
+    void set_ts_type(uint);
+
+    std::string get_timestamp(void);
+
   public:
-    spLogger()
-    {
-        setName("Logger");
-    }
+    spLogger();
 
     // Template trick - use template varargs to allow multiple objs to be
     // added as part of the constructor call. Note, first arg is a writer,
@@ -188,6 +192,33 @@ class spLogger : public spActionType<spLogger>
         va_add(a1, args...);
     }
 
+    // Enum for timestamp types.
+    typedef enum
+    {
+        TimeStampNone,
+        TimeStampMillis,
+        TimeStampEpoch,
+        TimeStampDateTimeUSA,
+        TimeStampDateTime,
+        TimeStampISO8601,
+        TimeStampISO8601TZ,
+    } Timestamp_t;
+
+    // Timestamp property
+
+    spPropertyRWUint<spLogger, &spLogger::get_ts_type, &spLogger::set_ts_type> timestampMode = {
+        TimeStampNone,
+        {{"No Timestamp", TimeStampNone},
+         {"Milliseconds since program start", TimeStampMillis},
+         {"Seconds since Epoch", TimeStampEpoch},
+         {"Date Time - USA Date format", TimeStampDateTimeUSA},
+         {"Date Time", TimeStampDateTime},
+         {"ISO8601 Timestamp", TimeStampISO8601},
+         {"ISO8601 Timestamp with Time Zone", TimeStampISO8601TZ}}};
+
+    // output parameter for the timestamp
+    spParameterOutString<spLogger, &spLogger::get_timestamp> timestamp;
+
   private:
     // Output devices
     std::vector<spOutputFormat *> _Formatters;
@@ -200,7 +231,10 @@ class spLogger : public spActionType<spLogger>
     void logScalar(spParameterOutScalar *);
     void logArray(spParameterOutArray *);
 
-    // Templates used to manage array logging based on type. 
+    // Timestamp things
+    Timestamp_t _timestampType;
+
+    // Templates used to manage array logging based on type.
     //
     // Note - the array object is dynamically allocated.
 
