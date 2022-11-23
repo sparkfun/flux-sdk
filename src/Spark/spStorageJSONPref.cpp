@@ -139,102 +139,110 @@ bool spStorageJSONBlock::writeString(const char *tag, const char *value)
 // Read value section
 //------------------------------------------------------------------------
 
-bool spStorageJSONBlock::readBool(const char *tag, bool &value, bool defaultValue)
+bool spStorageJSONBlock::readBool(const char *tag, bool &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
+        return true;
+    }
 
-    return true;
+    return false;
 }
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readInt8(const char *tag, int8_t &value, int8_t defaultValue)
+bool spStorageJSONBlock::readInt8(const char *tag, int8_t &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag) )
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
-
-    return true;
+        return true;
+    }
+    return false;
 }
 
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readInt16(const char *tag, int16_t &value, int16_t defaultValue)
+bool spStorageJSONBlock::readInt16(const char *tag, int16_t &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
+        return true;
+    }
 
-    return true;
-}
-
-//------------------------------------------------------------------------
-bool spStorageJSONBlock::readInt32(const char *tag, int32_t &value, int32_t defaultValue)
-{
-    if (!_jSection.isNull())
-        value = (_jSection)[tag];
-    else
-        value = defaultValue;
-
-    return true;
+    return false;
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readUInt8(const char *tag, uint8_t &value, uint8_t defaultValue)
+bool spStorageJSONBlock::readInt32(const char *tag, int32_t &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readUInt16(const char *tag, uint16_t &value, uint16_t defaultValue)
+bool spStorageJSONBlock::readUInt8(const char *tag, uint8_t &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readUInt32(const char *tag, uint32_t &value, uint32_t defaultValue)
+bool spStorageJSONBlock::readUInt16(const char *tag, uint16_t &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readFloat(const char *tag, float &value, float defaultValue)
+bool spStorageJSONBlock::readUInt32(const char *tag, uint32_t &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readDouble(const char *tag, double &value, double defaultValue)
+bool spStorageJSONBlock::readFloat(const char *tag, float &value)
 {
-    if (!_jSection.isNull())
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
         value = (_jSection)[tag];
-    else
-        value = defaultValue;
+        return true;
+    }
 
-    return true;
+    return false;
+}
+
+//------------------------------------------------------------------------
+bool spStorageJSONBlock::readDouble(const char *tag, double &value)
+{
+    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    {
+        value = (_jSection)[tag];
+        return true;
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------
@@ -242,7 +250,7 @@ size_t spStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 {
 
 
-    if (_jSection.isNull())
+    if (_jSection.isNull() || !_jSection.containsKey(tag))
         return 0;
 
     std::string value = (_jSection)[tag];

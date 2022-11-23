@@ -148,15 +148,15 @@ class spStorageBlock
     }
 
     virtual bool valueExists(const char *tag) = 0;
-    virtual bool readBool(const char *tag,  bool &value, bool defaultValue = false) = 0;
-    virtual bool readInt8(const char *tag, int8_t &value, int8_t defaultValue = 0) = 0;
-    virtual bool readInt16(const char *tag, int16_t &value, int16_t defaultValue = 0) = 0;    
-    virtual bool readInt32(const char *tag, int32_t &value, int32_t defaultValue = 0) = 0;
-    virtual bool readUInt8(const char *tag, uint8_t &value, uint8_t defaultValue = 0) = 0;
-    virtual bool readUInt16(const char *tag, uint16_t &value, uint16_t defaultValue = 0) = 0;    
-    virtual bool readUInt32(const char *tag, uint32_t &value, uint32_t defaultValue = 0) = 0;
-    virtual bool readFloat(const char *tag, float &value, float defaultValue = NAN) = 0;
-    virtual bool readDouble(const char *tag, double &value, double defaultValue = NAN) = 0;
+    virtual bool readBool(const char *tag,  bool &value) = 0;
+    virtual bool readInt8(const char *tag, int8_t &value) = 0;
+    virtual bool readInt16(const char *tag, int16_t &value) = 0;
+    virtual bool readInt32(const char *tag, int32_t &value) = 0;
+    virtual bool readUInt8(const char *tag, uint8_t &value) = 0;
+    virtual bool readUInt16(const char *tag, uint16_t &value) = 0;
+    virtual bool readUInt32(const char *tag, uint32_t &value) = 0;
+    virtual bool readFloat(const char *tag, float &value) = 0;
+    virtual bool readDouble(const char *tag, double &value) = 0;
     virtual size_t readString(const char *tag, char *data, size_t len) = 0;
 
     // overload reads
