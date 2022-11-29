@@ -42,6 +42,11 @@ static const uint8_t IMU_CS = 5;
 #include <Spark/spDevMMC5983.h>
 static const uint8_t MAG_CS = 27;
 
+// Biometric Hub
+#include <Spark/spDevBioHub.h>
+static const uint8_t BIO_HUB_RESET = 17; // Use the TXD pin as the bio hub reset pin
+static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio pin
+
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
 #define EN_3V3_SW 32
@@ -93,6 +98,10 @@ spNTPESP32  ntpClient;
 // the onboard IMU 
 spDevISM330_SPI onboardIMU;
 spDevMMC5983_SPI onboardMag;
+
+// a biometric sensor hub
+spDevBioHub bioHub;
+
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -174,6 +183,17 @@ void setupSPIDevices()
     }
     else 
         Serial.println("Error starting onboard Magnetometer");
+}
+//---------------------------------------------------------------------
+void setupBioHub()
+{
+    if (bioHub.initialize(BIO_HUB_RESET, BIO_HUB_MFIO)) // Initialize the bio hub using the reset and mfio pins, 
+    {
+        Serial.println("Bio Hub is enabled");
+        logger.add(bioHub);
+    }
+    else 
+        Serial.println("Error starting Bio Hub");
 }
 //---------------------------------------------------------------------
 // Arduino Setup
@@ -275,7 +295,9 @@ void setup() {
 
     // Setup the Onboard IMU
     setupSPIDevices();
-    
+
+    // Setup the Bio Hub
+    setupBioHub();
 
     ////////////
     // getAll() testing
