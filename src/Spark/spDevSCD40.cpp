@@ -73,7 +73,7 @@ bool spDevSCD40::isConnected(spBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.write(address, serialNoRegBytes, 2))
         return false;
     delay(3);
-    if (!i2cDriver.receiveResponse(address, serialNo, 9))
+    if (i2cDriver.receiveResponse(address, serialNo, 9) != 9)
         return false;
 
     // Check only the third CRC (there are three in total)

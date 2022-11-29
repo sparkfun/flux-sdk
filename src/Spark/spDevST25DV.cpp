@@ -58,7 +58,7 @@ bool spDevST25DV::isConnected(spBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.write(address, icRefReg, 2))
         return false;
     uint8_t icRef = 0;
-    if (!i2cDriver.receiveResponse(address, &icRef, 1))
+    if (i2cDriver.receiveResponse(address, &icRef, 1) != 1)
         return false;
 
     if ((icRef == 0x50) || (icRef == 0x51))

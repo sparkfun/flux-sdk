@@ -61,7 +61,7 @@ bool spDevSHTC3::isConnected(spBusI2C &i2cDriver, uint8_t address)
         return false;
 
     uint8_t response[3]; // Two bytes plus CRC
-    if (!i2cDriver.receiveResponse(address, response, 3))
+    if (i2cDriver.receiveResponse(address, response, 3) != 3)
         return false;
 
     // Check the CRC

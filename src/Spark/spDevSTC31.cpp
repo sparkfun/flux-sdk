@@ -62,7 +62,7 @@ bool spDevSTC31::isConnected(spBusI2C &i2cDriver, uint8_t address)
         return false;
 
     uint8_t response[18]; // 6 * (Two bytes plus CRC)
-    if (!i2cDriver.receiveResponse(address, response, 18))
+    if (i2cDriver.receiveResponse(address, response, 18) != 18)
         return false;
 
     // Check the final CRC

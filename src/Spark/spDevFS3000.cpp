@@ -52,7 +52,7 @@ bool spDevFS3000::isConnected(spBusI2C &i2cDriver, uint8_t address)
     // Initialize checksumData to something non-zero.
     // If checksumData is initialized to zero and the read fails, sum will also be zero and taken as valid.
     uint8_t checksumData[5] = {0xFF};
-    if (!i2cDriver.receiveResponse(address, checksumData, 5)) // The FS3000 has no registers..
+    if (i2cDriver.receiveResponse(address, checksumData, 5) != 5) // The FS3000 has no registers..
         return false;
 
     uint8_t sum = 0;

@@ -56,7 +56,7 @@ bool spDevSGP30::isConnected(spBusI2C &i2cDriver, uint8_t address)
     delay(1);
 
     uint8_t serialNo[9]; // 3 * (Two bytes plus CRC)
-    if (!i2cDriver.receiveResponse(address, serialNo, 9))
+    if (i2cDriver.receiveResponse(address, serialNo, 9) != 9)
         return false;
 
     // Check only the 3rd CRC (there are three in total)
