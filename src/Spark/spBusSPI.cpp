@@ -96,6 +96,10 @@ int spBusSPI::readRegisterRegion(uint8_t cs, uint8_t reg, uint8_t *data, uint16_
     digitalWrite(cs, LOW);
 
     // Note: A leading "1" must be added to transfer with register to indicate a "read"
+    // Note to our future selves:
+    //   This works / is required on both the ISM330 and MMC5983,
+    //   but will cause badness with other SPI devices.
+    //   We may need to add an alternate method if we ever add another SPI device.
     _spiPort->transfer(reg | 0x80);
 
     for (int i = 0; i < length; i++)
