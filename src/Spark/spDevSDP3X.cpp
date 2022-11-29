@@ -67,7 +67,7 @@ bool spDevSDP3X::isConnected(spBusI2C &i2cDriver, uint8_t address)
     delay(1);
 
     uint8_t serialNo[18]; // 6 * (Two bytes plus CRC)
-    if (!i2cDriver.receiveResponse(address, serialNo, 18))
+    if (i2cDriver.receiveResponse(address, serialNo, 18) != 18)
         return false;
 
     // Check only the 6th CRC (there are six in total)

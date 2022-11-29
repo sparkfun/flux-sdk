@@ -59,7 +59,7 @@ bool spDevVL53L1X::isConnected(spBusI2C &i2cDriver, uint8_t address)
     uint8_t modelId[2] = { (uint8_t)(VL53L1_IDENTIFICATION__MODEL_ID >> 8) , (uint8_t)(VL53L1_IDENTIFICATION__MODEL_ID & 0xFF) };
     bool couldBeVL53L = i2cDriver.write(address, modelId, 2);
     uint8_t idReg[3];
-    couldBeVL53L &= i2cDriver.receiveResponse(address, idReg, 3);
+    couldBeVL53L &= i2cDriver.receiveResponse(address, idReg, 3) == 3;
     uint16_t idReg16 = (((uint16_t)idReg[0]) << 8) | idReg[1];
     couldBeVL53L &= ((idReg16 == 0xEACC) || (idReg16 == 0xEBAA));
 

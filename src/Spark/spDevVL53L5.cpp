@@ -58,11 +58,11 @@ bool spDevVL53L5::isConnected(spBusI2C &i2cDriver, uint8_t address)
     uint8_t devIdPrep[2] = { 0x00, 0x00 };
     couldBeVL53L &= i2cDriver.write(address, devIdPrep, 2);
     uint8_t devID = 0;
-    couldBeVL53L &= i2cDriver.receiveResponse(address, &devID, 1);
+    couldBeVL53L &= i2cDriver.receiveResponse(address, &devID, 1) == 1;
     uint8_t revIdPrep[2] = { 0x00, 0x01 };
     couldBeVL53L &= i2cDriver.write(address, revIdPrep, 2);
     uint8_t revID = 0;
-    couldBeVL53L &= i2cDriver.receiveResponse(address, &revID, 1);
+    couldBeVL53L &= i2cDriver.receiveResponse(address, &revID, 1) == 1;
     uint8_t postPrep[3] = { 0x7f, 0xff, 0x02 };
     couldBeVL53L &= i2cDriver.write(address, postPrep, 3);
     

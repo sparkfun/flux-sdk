@@ -115,7 +115,7 @@ bool spDevGNSS::isConnected(spBusI2C &i2cDriver, uint8_t address)
         return false; // Bail if there are less than 8 bytes in the buffer
 
     uint8_t buffer[8];
-    i2cOK = i2cDriver.receiveResponse(address, buffer, 8); // Will read from address 0xFF
+    i2cOK = i2cDriver.receiveResponse(address, buffer, 8) == 8; // Will read from address 0xFF
     i2cOK &= i2cDriver.readRegister16(address, 0xFD, &bufferWaiting, false); // Big Endian
     trafficSeen = (bufferWaiting != firstBufferWaiting);
 

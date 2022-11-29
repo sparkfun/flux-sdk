@@ -53,7 +53,7 @@ bool spDevAHT20::isConnected(spBusI2C &i2cDriver, uint8_t address)
     }
     delay(80);
     uint8_t results[7];
-    if (!i2cDriver.receiveResponse(address, results, 7))
+    if (i2cDriver.receiveResponse(address, results, 7) != 7)
     {
         spLog_E("AHT20 isConnected receiveResponse failed");
         return false;

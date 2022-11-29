@@ -27,7 +27,15 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected( spBusI2C &i2cDriver, uint8_t address, int connectResetPin = -1, int connectMfioPin = -1 );
+
+    // The Bio Hub is a special case. We need to know the reset and mfio pins in order to
+    // check if it is connected and to initialize it. During auto-detect the pins aren't known,
+    // so auto-detect will fail. We need to manually create an instance of the spDevBioHub,
+    // initialize the pin numbers with `initialize`, check if it is connected, call onInitialize
+    // and then add it to the logger.
+    bool initialize( int connectResetPin, int connectMfioPin );
+
+    static bool isConnected( spBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBioHubDeviceName;
@@ -41,7 +49,7 @@ public:
     static uint8_t defaultDeviceAddress[];
 
     // Method called to initialize the class
-    bool onInitialize( TwoWire &, int connectResetPin = -1, int connectMfioPin = -1 );
+    bool onInitialize( TwoWire &);
 
 private:
 
@@ -54,16 +62,9 @@ private:
     int8_t read_extended_status();
     float read_r_value();
 
-    // methods to get/set our read-write properties
-    int get_reset_pin();
-    void set_reset_pin(int);
-    int get_mfio_pin();
-    void set_mfio_pin(int);
-
     int _resetPin = -1;
     int _mfioPin = -1;
     bool _begun = false;
-    bool _initialized = false;
 
     // flags to prevent readBpm being called multiple times
     bool _heartRate = false;
@@ -73,13 +74,7 @@ private:
     bool _eStatus = false;
     bool _o2r = false;
 
-    TwoWire *_bioI2cPort; // Cheat... Keep a local record of which wirePort is being used, so we can call begin again
-
 public:
-    // Define our read-write properties
-    spPropertyRWInt<spDevBioHub, &spDevBioHub::get_reset_pin, &spDevBioHub::set_reset_pin> resetPin = { -1, -1, 255 } ;
-    spPropertyRWInt<spDevBioHub, &spDevBioHub::get_mfio_pin, &spDevBioHub::set_mfio_pin> mfioPin = { -1, -1, 255 } ;
-
     // Define our output parameters - specify the get functions to call.
     spParameterOutUint16<spDevBioHub, &spDevBioHub::read_heart_rate> heartRate;    
     spParameterOutUint8<spDevBioHub, &spDevBioHub::read_confidence> confidence;    

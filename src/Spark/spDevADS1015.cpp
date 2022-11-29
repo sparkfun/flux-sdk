@@ -88,7 +88,7 @@ bool spDevADS1015::isConnected(spBusI2C &i2cDriver, uint8_t address)
         return false;
     // Read Hi_Thresh Register
     uint8_t hiThresh[2] = {0};
-    if (!i2cDriver.receiveResponse(address, hiThresh, 2))
+    if (i2cDriver.receiveResponse(address, hiThresh, 2) != 2)
         return false;
     delay(1);
     // Update Hi_Thresh Register
@@ -101,7 +101,7 @@ bool spDevADS1015::isConnected(spBusI2C &i2cDriver, uint8_t address)
         return false;
     // Re-read Hi_Thresh Register
     uint8_t newHiThresh[2] = {0};
-    if (!i2cDriver.receiveResponse(address, newHiThresh, 2))
+    if (i2cDriver.receiveResponse(address, newHiThresh, 2) != 2)
         return false;
     delay(1);
     // Restore Hi_Thresh Register

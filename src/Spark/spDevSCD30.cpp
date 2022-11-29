@@ -64,7 +64,7 @@ bool spDevSCD30::isConnected(spBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.write(address, versionRegBytes, 2))
         return false;
     delay(3);
-    if (!i2cDriver.receiveResponse(address, version, 3))
+    if (i2cDriver.receiveResponse(address, version, 3) != 3)
         return false;
 
     // Check CRC
