@@ -64,7 +64,7 @@ bool spNTPESP32::start(void)
     }
     
     // Leverage ESP32 Arduino setup
-    configTime(gmtOffsetMinutes()*60, daylightOffsetMinutes()*60, kNTPServerAddress);
+    configTzTime(timeZone().c_str(), ntpServerOne().c_str(), ntpServerTwo().c_str());
 
     // wait for time to sync if a delay is set. 
     // The indication that NTP is working is time moves to a current year

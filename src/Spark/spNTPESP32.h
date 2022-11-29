@@ -8,6 +8,11 @@
 #include "spNetwork.h"
 
 
+#define kNTPServerAddress1 "pool.ntp.org"
+#define kNTPServerAddress2 "time.nist.gov"
+
+#define kNTPTimeZoneSparkFun "MST7MDT,M3.2.0,M11.1.0"
+
 // Use the NTP client on the ESP32 to sync the onboard clock
 
 class spNTPESP32 : public spActionType<spNTPESP32>
@@ -25,8 +30,13 @@ public:
     {
         spRegister(enabled, "Enabled", "Enable or Disable the NTP Client");
 
-        spRegister(gmtOffsetMinutes, "GMT Offset", "GMT offset in minutes for timezone settings");
-        spRegister(daylightOffsetMinutes, "Daylight Offset", "Daylight Savings offset in minutes for timezone settings");        
+
+        // NTP servers
+        spRegister(ntpServerOne, "NTP Server One", "The primary NTP server to use");
+        spRegister(ntpServerTwo, "NTP Server Two", "The secondary NTP server to use");
+
+        // Timezone
+        spRegister(timeZone, "The Time Zone", "Time zone setting string for the device");
 
         setName("NTP Client", "NTP Time Synch Client");
 
@@ -63,9 +73,12 @@ public:
     // Enabled/Disabled
     spPropertyRWBool<spNTPESP32, &spNTPESP32::get_isEnabled, &spNTPESP32::set_isEnabled> enabled;
 
-    // Time offsets
-    spPropertyUint<spNTPESP32>       gmtOffsetMinutes = {0};
-    spPropertyUint<spNTPESP32>       daylightOffsetMinutes = {0};
+    // NTP servers
+    spPropertyString<spNTPESP32>     ntpServerOne = {kNTPServerAddress1};
+    spPropertyString<spNTPESP32>     ntpServerTwo = {kNTPServerAddress2};
+
+    // TimeZone string
+    spPropertyString<spNTPESP32>     timeZone = {kNTPTimeZoneSparkFun};
 
 private:
 	bool  _isEnabled;
