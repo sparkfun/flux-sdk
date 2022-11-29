@@ -15,15 +15,12 @@ void spMQTTESP32::set_isEnabled(bool bEnabled)
     if (_isEnabled == bEnabled)
         return;
 
-    // changing state ...
-    // TODO - Should this control connection state?
-
     _isEnabled = bEnabled;
 
-    // if ( _isEnabled)
-    //     (void)start();
-    // else
-    //     stop();
+    if (_isEnabled)
+        (void)connect();
+    else
+        disconnect();
 }
 
 //----------------------------------------------------------------
@@ -40,12 +37,28 @@ void spMQTTESP32::onConnectionChange(bool bConnected)
     if (!_isEnabled)
         return;
 
-    // if (bConnected)
-    //     start();
-    // else
-    //     stop();
+    if (bConnected)
+    {
+        spLog_I(F("Connected to MQTT endpoint %s ..."), clientName().c_str());
+        if (connect())
+            spLog_I(F("\tConnected"));
+        else
+            spLog_E(F("\tFailed to connect"));
+    }
+    else
+    {
+        spLog_I(F("Disconnecting from MQTT endpoint %s"), clientName().c_str());
+        disconnect();
+    }
+}
+//----------------------------------------------------------------------------
+
+bool spMQTTESP32::connected()
+{
+    return (_isEnabled && _wifiClient && _wifiClient->connected() != 0 && _mqttClient && _mqttClient->connected() != 0);
 }
 
+//----------------------------------------------------------------------------
 void spMQTTESP32::disconnect(void)
 {
     if (_mqttClient && _mqttClient->connected() != 0)
@@ -55,14 +68,12 @@ void spMQTTESP32::disconnect(void)
         _wifiClient->stop();
 }
 
+//----------------------------------------------------------------------------
 bool spMQTTESP32::connect(void)
 {
 
-    if (!_isEnabled)
+    if (!connected())
         return false;
-
-    if (_wifiClient && _wifiClient->connected() != 0 && _mqttClient && _mqttClient->connected() != 0)
-        return true;
 
     if (!_wifiClient)
     {
@@ -86,6 +97,23 @@ bool spMQTTESP32::connect(void)
             _wifiClient->setPrivateKey(clientKey().c_str());
     }
 
+    // do we have all the parameters we need?
+    if (clientName().length() == 0)
+    {
+        spLog_E(F("%s : No Thing/Client name set. Unable to connect"), name());
+        return false;
+    }
+    if (server().length() == 0)
+    {
+        spLog_E(F("%s : No server/endpoint set. Unable to connect"), name());
+        return false;
+    }
+    if (port() < 1024)
+    {
+        spLog_E(F("%s : A valid port is not set %d. Unable to connect"), name(), port());
+        return false;
+    }
+
     // mqtt time
 
     if (!_mqttClient)
@@ -106,7 +134,7 @@ bool spMQTTESP32::connect(void)
     // Connect
     if (!_mqttClient->connect(server().c_str(), port()))
     {
-        spLog_E(F("%s: MQTT connection failed. Error: %d"), _mqttClient->connectError());
+        spLog_E(F("%s: MQTT connection failed. Error Code: %d"), _mqttClient->connectError());
         return false;
     }
 

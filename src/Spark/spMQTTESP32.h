@@ -69,6 +69,9 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>
 
     bool connect();
     void disconnect();
+
+    bool connected();
+
     // Properties
 
     // Enabled/Disabled
