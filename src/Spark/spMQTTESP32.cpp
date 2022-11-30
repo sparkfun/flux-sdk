@@ -4,9 +4,6 @@
 
 #include "spMQTTESP32.h"
 
-#define kMQTTClientBufferSize 1024
-#define kMQTTConnectionTries 10
-
 //----------------------------------------------------------------
 // Enabled Property setter/getters
 void spMQTTESP32::set_isEnabled(bool bEnabled)
@@ -17,6 +14,7 @@ void spMQTTESP32::set_isEnabled(bool bEnabled)
 
     _isEnabled = bEnabled;
 
+    // TODO chech network connection availablity ...
     if (_isEnabled)
         (void)connect();
     else
@@ -37,9 +35,13 @@ void spMQTTESP32::onConnectionChange(bool bConnected)
     if (!_isEnabled)
         return;
 
+    // Anything change?
+    if (bConnected == connected())
+        return; 
+
     if (bConnected)
     {
-        spLog_I(F("Connected to MQTT endpoint %s ..."), clientName().c_str());
+        spLog_I(F("Connecting to MQTT endpoint %s:%u ..."), server().c_str(), port());
         if (connect())
             spLog_I(F("\tConnected"));
         else
@@ -55,47 +57,47 @@ void spMQTTESP32::onConnectionChange(bool bConnected)
 
 bool spMQTTESP32::connected()
 {
-    return (_isEnabled && _wifiClient && _wifiClient->connected() != 0 && _mqttClient && _mqttClient->connected() != 0);
+//    return (_isEnabled && _wifiClient.connected() != 0 && _mqttClient && _mqttClient->connected() != 0);
+    return (_isEnabled && _wifiClient.connected() != 0 && _mqttClient.connected() != 0);    
 }
 
 //----------------------------------------------------------------------------
 void spMQTTESP32::disconnect(void)
 {
-    if (_mqttClient && _mqttClient->connected() != 0)
-        _mqttClient->stop();
+    if (_mqttClient.connected() != 0)
+        _mqttClient.stop();
 
-    if (_wifiClient && _wifiClient->connected() != 0)
-        _wifiClient->stop();
+    if (_wifiClient.connected() != 0)
+        _wifiClient.stop();
 }
 
 //----------------------------------------------------------------------------
 bool spMQTTESP32::connect(void)
 {
-
-    if (!connected())
+    // Already connected?
+    if (connected())
         return false;
 
-    if (!_wifiClient)
-    {
-        _wifiClient = new WiFiClientSecure;
-        if (!_wifiClient)
-        {
-            spLog_E(F("%s: Unable to allocate a WiFi client."), name());
-            return false;
-        }
-    }
-    // Is this a secure connection?
-    if (caCertificate().length() == 0)
-        _wifiClient->setInsecure();
-    else
-    {
-        _wifiClient->setCACert(caCertificate().c_str());
-        if (clientCertificate().length() > 0)
-            _wifiClient->setCertificate(clientCertificate().c_str());
+    // NOTE: For future impl of secure clients connections
+    //       The Secure WiFi connection, when in InSecure() mode crashes
+    //       MQTT - so for now using a simple connection. Will debug 
+    //
+    // // Is this a secure connection?
+    // if (caCertificate().length() == 0)
+    // {
+    //     Serial.println("DEBUG : MQTT - Insecure connection");
+    //     _wifiClient.setInsecure();
+    // }
+    // else
+    // {
+    //     _wifiClient.setCACert(caCertificate().c_str());
 
-        if (clientKey().length() > 0)
-            _wifiClient->setPrivateKey(clientKey().c_str());
-    }
+    //     if (clientCertificate().length() > 0)
+    //         _wifiClient.setCertificate(clientCertificate().c_str());
+
+    //     if (clientKey().length() > 0)
+    //         _wifiClient.setPrivateKey(clientKey().c_str());
+    // }
 
     // do we have all the parameters we need?
     if (clientName().length() == 0)
@@ -116,25 +118,14 @@ bool spMQTTESP32::connect(void)
 
     // mqtt time
 
-    if (!_mqttClient)
-    {
-        _mqttClient = new MqttClient(_wifiClient);
-
-        if (!_mqttClient)
-        {
-            spLog_E(F("%s: Unable to create a MQTT connection."), name());
-            return false;
-        }
-    }
-    // setup mqtt client
-    _mqttClient->setId(clientName().c_str());
-    _mqttClient->setKeepAliveInterval(60 * 1000);
-    _mqttClient->setConnectionTimeout(5 * 1000);
+    _mqttClient.setId(clientName().c_str());
+    _mqttClient.setKeepAliveInterval(60 * 1000);
+    _mqttClient.setConnectionTimeout(5 * 1000);
 
     // Connect
-    if (!_mqttClient->connect(server().c_str(), port()))
+   if (!_mqttClient.connect(server().c_str(), port())) 
     {
-        spLog_E(F("%s: MQTT connection failed. Error Code: %d"), _mqttClient->connectError());
+        spLog_E(F("%s: MQTT connection failed. Error Code: %d"), _mqttClient.connectError());
         return false;
     }
 
@@ -142,4 +133,53 @@ bool spMQTTESP32::connect(void)
     return true;
 }
 
+//----------------------------------------------------------------------------
+
+void spMQTTESP32::set_bufferSize(uint16_t buffSize)
+{
+    if (buffSize > 0)
+    {
+        _mqttClient.setTxPayloadSize(buffSize);
+        _dynamicBufferSize = buffSize;
+    }
+    _txBufferSize = buffSize;
+}
+//----------------------------------------------------------------------------
+uint16_t spMQTTESP32::get_bufferSize(void)
+{
+    return _txBufferSize;
+}
+
+//----------------------------------------------------------------------------
+// spWriter interface method
+void spMQTTESP32::write(const char * value)
+{
+    // if we are not connected, ignore
+    if (!connected() || !value)
+        return;
+
+    // do we have a topic?
+    if ( topic().length() == 0 )
+    {
+        spLog_E(F("%s : No MQTT topic provided."), name());
+        return;
+    }
+
+    // the mqtt object has a limited transmitt buffer size (256) that doesn't adapt, 
+    // but you can set the size (which performs a malloc and free)
+    //
+    // Openlog payloads can be large, so if in dynamic mode we keep track of the 
+    // allocated size and increase when needed if in dynamic buffer size mode ..
+
+    if (_txBufferSize == 0 && _dynamicBufferSize < strlen(value))
+    {
+        _dynamicBufferSize = strlen(value);
+        _mqttClient.setTxPayloadSize(_dynamicBufferSize);
+    }
+
+    // send the message
+    _mqttClient.beginMessage(topic().c_str());
+    _mqttClient.print(value);
+    _mqttClient.endMessage();
+}
 #endif

@@ -6,6 +6,7 @@
 
 
 #include "spSpark.h"
+#include "spCoreInterface.h"
 #include "spNetwork.h"
 
 #include <ArduinoMqttClient.h>
@@ -13,18 +14,23 @@
 
 // A General MQTT client for the framework - for use on the ESP32
 
-class spMQTTESP32 : public spActionType<spMQTTESP32>
+class spMQTTESP32 : public spActionType<spMQTTESP32>, public spWriter
 {
   private:
     void set_isEnabled(bool bEnabled);
     bool get_isEnabled(void);
+
+    void set_bufferSize(uint16_t);
+    uint16_t get_bufferSize(void);
+
 
     // Event callback
     //----------------------------------------------------------------------------
     void onConnectionChange(bool bConnected);
 
   public:
-    spMQTTESP32() : _isEnabled{true}, _theNetwork{nullptr}, _wifiClient{nullptr}, _mqttClient{nullptr}
+    spMQTTESP32() : _isEnabled{true}, _theNetwork{nullptr}, _mqttClient(_wifiClient), 
+        _txBufferSize{0}, _dynamicBufferSize{0}
     {
         spRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
 
@@ -33,10 +39,13 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>
         spRegister(topic, "MQTT Topic", "The MQTT topic to publish to.");
         spRegister(clientName, "Client Name", "Name of this device used for MQTT Communications");
 
-        spRegister(caCertificate, "CA Certificate",
+        spRegister(caCertificate, "CA Certificate", 
                    "The Certificate Authority certificate. If set, the connection is secure");
         spRegister(clientCertificate, "Client Certificate", "The certificate for the client connection");
         spRegister(clientKey, "Client Key", "The secure key used for client verification");
+
+
+        spRegister(bufferSize, "Buffer Size", "MQTT payload buffer size. If 0, the buffer size is dynamic");
 
         setName("MQTT Client", "A MQTT Client for ESP32 Systems");
 
@@ -46,11 +55,7 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>
     ~spMQTTESP32()
     {
         disconnect();
-        if (_mqttClient)
-            delete _mqttClient;
-
-        if (_wifiClient)
-            delete _wifiClient;
+        
     }
     // Used to register the event we want to listen to, which will trigger this
     // activity.
@@ -72,6 +77,16 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>
 
     bool connected();
 
+    // for the Writer interface
+    void write(int data)
+    {
+        // noop
+    }
+    void write(float data)
+    {
+        //noop
+    }
+    void write(const char *);
     // Properties
 
     // Enabled/Disabled
@@ -81,6 +96,9 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>
     spPropertyString<spMQTTESP32> server;
     spPropertyString<spMQTTESP32> topic;
     spPropertyString<spMQTTESP32> clientName;
+
+    // Buffer size property
+    spPropertyRWUint16<spMQTTESP32, &spMQTTESP32::get_bufferSize, &spMQTTESP32::set_bufferSize> bufferSize = {0};
 
     // Security certs/keys
     spPropertySecureString<spMQTTESP32> caCertificate;
@@ -92,9 +110,14 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>
 
     spNetwork *_theNetwork;
 
-    WiFiClientSecure *_wifiClient;
+    //WiFiClientSecure _wifiClient;
 
-    MqttClient *_mqttClient;
+    WiFiClient  _wifiClient;
+
+    MqttClient  _mqttClient;
+
+    uint16_t    _txBufferSize;
+    uint16_t    _dynamicBufferSize;
 };
 
 #endif
