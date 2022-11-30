@@ -39,6 +39,9 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>, public spWriter
         spRegister(topic, "MQTT Topic", "The MQTT topic to publish to.");
         spRegister(clientName, "Client Name", "Name of this device used for MQTT Communications");
 
+        spRegister(username, "Username", "Username to connect to an MQTT broker, if required");
+        spRegister(password, "Password", "Password to connect to an MQTT broker, if required");
+
         spRegister(caCertificate, "CA Certificate", 
                    "The Certificate Authority certificate. If set, the connection is secure");
         spRegister(clientCertificate, "Client Certificate", "The certificate for the client connection");
@@ -99,6 +102,11 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>, public spWriter
 
     // Buffer size property
     spPropertyRWUint16<spMQTTESP32, &spMQTTESP32::get_bufferSize, &spMQTTESP32::set_bufferSize> bufferSize = {0};
+
+
+    // username and password properties - some brokers requires this 
+    spPropertyString<spMQTTESP32> username;
+    spPropertySecureString<spMQTTESP32> password;
 
     // Security certs/keys
     spPropertySecureString<spMQTTESP32> caCertificate;

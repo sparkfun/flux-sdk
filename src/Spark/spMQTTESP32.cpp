@@ -122,6 +122,11 @@ bool spMQTTESP32::connect(void)
     _mqttClient.setKeepAliveInterval(60 * 1000);
     _mqttClient.setConnectionTimeout(5 * 1000);
 
+    // Username/passworkd provided?
+
+    if (username().length() > 0 && password().length() > 0)
+        _mqttClient.setUsernamePassword(username().c_str(), password().c_str());
+
     // Connect
    if (!_mqttClient.connect(server().c_str(), port())) 
     {
