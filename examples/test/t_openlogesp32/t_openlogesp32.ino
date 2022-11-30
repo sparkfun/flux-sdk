@@ -47,6 +47,11 @@ static const uint8_t MAG_CS = 27;
 static const uint8_t BIO_HUB_RESET = 17; // Use the TXD pin as the bio hub reset pin
 static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio pin
 
+
+// MQTT
+#include <Spark/spMQTTESP32.h>
+
+
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
 #define EN_3V3_SW 32
@@ -56,7 +61,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 //------------------------------------------
 // Default log interval in milli secs
-#define kDefaultLogInterval 6000
+#define kDefaultLogInterval 10000
 
 /////////////////////////////////////////////////////////////////////////
 // Spark Framework
@@ -102,6 +107,9 @@ spDevMMC5983_SPI onboardMag;
 // a biometric sensor hub
 spDevBioHub bioHub;
 
+// An MQTT client 
+
+spMQTTESP32 mqttClient;
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -195,6 +203,24 @@ void setupBioHub()
     else 
         Serial.println("Error starting Bio Hub");
 }
+
+//---------------------------------------------------------------------
+void setupMQTT()
+{
+
+    Serial.println("Setting up MQTT.");
+
+    // // Setup our MQTT parameters for testing if desired - or perform via settings/json file on SD card
+    // mqttClient.server = "duke.home.lan";
+    // mqttClient.topic = "/openlogesp32/logger1";
+    // mqttClient.clientName = "myesp32";
+
+    // setup the network connection for the mqtt
+    mqttClient.setNetwork(&wifiConnection);
+
+    // add mqtt to JSON
+    fmtJSON.add(mqttClient);
+}
 //---------------------------------------------------------------------
 // Arduino Setup
 //
@@ -239,8 +265,11 @@ void setup() {
     ntpClient.setStartupDelay(5);  // Give the NTP server some time to start
 
     // setup SD card. Do this before calling start - so prefs can be read off SD if needed
-
     setupSDCard();
+
+    // setup MQTT
+    setupMQTT();
+
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
     spark.start();  
@@ -259,11 +288,15 @@ void setup() {
     fmtJSON.add(spSerial());
     fmtCSV.add(spSerial());    
 
+    
+
     //  - Add the JSON and CVS format to the logger
     logger.add(fmtJSON);
     logger.add(fmtCSV);    
 
     setupNFC();
+
+   
     // What devices has the system detected?
     // List them and add them to the logger
 
