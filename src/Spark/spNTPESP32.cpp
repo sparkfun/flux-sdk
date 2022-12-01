@@ -71,21 +71,41 @@ bool spNTPESP32::start(void)
     if (_startupDelay)
     {
         uint32_t start = millis();
+        uint32_t secs;
+        uint32_t inc=0;
+
         struct tm *tm_now;
         time_t now;
 
-        spLog_I(F("Waiting on NTP startup [%u secs]..."), _startupDelay);
+        spLog_I_(F("Waiting on NTP startup [%u secs]..."), _startupDelay);
 
-        while (millis() - start < _startupDelay*1000)
+
+        while (true)
+        // while (millis() - start < _startupDelay*1000)
         {
+            secs = (millis() - start)/1000;
+            if (secs >= _startupDelay)
+                break;
             time(&now);
             tm_now = localtime(&now);
             if (tm_now && tm_now->tm_year > (2020 - 1900))
                 break; // synched
+            if (secs > inc)
+            {
+                spLog_N_(F("."));
+                inc++;
+            }
         }
-        delay(20);
+        delay(100);
     }
-    return sntp_enabled();
+    bool enabled = sntp_enabled();
+
+    if (enabled)
+        spLog_N(F("enabled."));
+    else
+        spLog_N(F("not enabled."));    
+
+    return enabled;
 }
 
 void spNTPESP32::stop(void)
