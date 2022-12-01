@@ -37,15 +37,14 @@ class spSerial_ : public spWriter
     {
         Serial.println(value);
     }
-    void write(const char *value)
+    void write(const char *value, bool newline)
     {
-        Serial.println(value);
+        if (newline)
+            Serial.println(value);
+        else
+            Serial.print(value);
     }
 
-    void write(std::string &value)
-    {
-        write(value.c_str());
-    }
     // Overload listen, so we can type the events, and use the templated
     // write() method above.
 

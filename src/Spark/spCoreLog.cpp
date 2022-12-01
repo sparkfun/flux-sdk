@@ -19,7 +19,7 @@ const char OutputPrefixCodes[] = "NEWIDV"; // NONE, Error , Warning, Info, Debug
 //
 // Returns the length of the output
 
-int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, const char *fmt, va_list args)
+int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args)
 {
 
     static char szBuffer[kOutputBufferSize];
@@ -54,14 +54,19 @@ int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, const char *fmt, va
 
         lenBuffer = len + 1 + kOutputPrefixLen;
     }
-    // set our prefix
-    snprintf(pBuffer, lenBuffer, kOutputPrefixFMT, OutputPrefixCodes[level]);
+    uint8_t offset = 0;
+    // set our prefix if we have a level
+    if (level > spLogNone)
+    {
+        snprintf(pBuffer, lenBuffer, kOutputPrefixFMT, OutputPrefixCodes[level]);
+        offset = kOutputPrefixLen;
+    }
 
     // Okay,print, staring past prefex
-    vsnprintf(pBuffer + kOutputPrefixLen, len + 1, fmt, args);
+    vsnprintf(pBuffer + offset, len + 1, fmt, args);
 
     // send to our output device
-    _wrOutput->write(pBuffer);
+    _wrOutput->write(pBuffer, newline);
 
     // free up allocated memory
     if (len >= sizeof(szBuffer))
@@ -110,7 +115,7 @@ void spLoggingDrvESP32::setLogLevel(const spLogLevel_t level)
 //
 // Returns the length of the output
 
-int spLoggingDrvESP32::logPrintf(const spLogLevel_t level, const char *fmt, va_list args)
+int spLoggingDrvESP32::logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args)
 {
     esp_log_writev((esp_log_level_t)getESPLevel(level), kESP32LogTag, fmt, args);
 

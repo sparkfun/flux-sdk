@@ -34,7 +34,7 @@ class spLoggingDriver
     // Very simple interface - just follow a standard printf() format, but with
     // log level also passed in
   public:
-    virtual int logPrintf(const spLogLevel_t level, const char *fmt, va_list args) = 0;
+    virtual int logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args) = 0;
 
     virtual void setLogLevel(spLogLevel_t level)
     {
@@ -69,7 +69,7 @@ class spLoggingDrvDefault : public spLoggingDriver
     {
     }
 
-    int logPrintf(const spLogLevel_t level, const char *fmt, va_list args);
+    int logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args);
 
     void setOutput(spWriter &theWriter)
     {
@@ -124,28 +124,28 @@ class spLogging
 
     //-------------------------------------------------------------------------
     // generic log interface
-    int logPrintf(const spLogLevel_t level, const __FlashStringHelper *fmt, ...)
+    int logPrintf(const spLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...)
     {
         int retval = 0;
-        if (_pLogDriver && level <= _logLevel && level != spLogNone)
+        if (_pLogDriver && level <= _logLevel )
         {
             va_list ap;
             va_start(ap, fmt);
-            retval = _pLogDriver->logPrintf(level, reinterpret_cast<const char *>(fmt), ap);
+            retval = _pLogDriver->logPrintf(level,  newline, reinterpret_cast<const char *>(fmt), ap);
             va_end(ap);
         }
         return retval;
     }
     //-------------------------------------------------------------------------
     // generic log interface
-    int logPrintf(const spLogLevel_t level, const char *fmt, ...)
+    int logPrintf(const spLogLevel_t level, bool newline, const char *fmt, ...)
     {
         int retval = 0;
-        if (_pLogDriver && level <= _logLevel && level != spLogNone)
+        if (_pLogDriver && level <= _logLevel)
         {
             va_list ap;
             va_start(ap, fmt);
-            retval = _pLogDriver->logPrintf(level, fmt, ap);
+            retval = _pLogDriver->logPrintf(level, newline, fmt, ap);
             va_end(ap);
         }
         return retval;
@@ -165,11 +165,20 @@ extern spLogging &spLog;
 // Define log macros used throughout the system for logging
 #ifdef SP_LOGGING_ENABLED
 
-#define spLog_V(format, ...) spLog.logPrintf(spLogVerbose, format, ##__VA_ARGS__)
-#define spLog_D(format, ...) spLog.logPrintf(spLogDebug, format, ##__VA_ARGS__)
-#define spLog_I(format, ...) spLog.logPrintf(spLogInfo, format, ##__VA_ARGS__)
-#define spLog_W(format, ...) spLog.logPrintf(spLogWarning, format, ##__VA_ARGS__)
-#define spLog_E(format, ...) spLog.logPrintf(spLogError, format, ##__VA_ARGS__)
+#define spLog_V(format, ...) spLog.logPrintf(spLogVerbose, true, format, ##__VA_ARGS__)
+#define spLog_D(format, ...) spLog.logPrintf(spLogDebug, true, format, ##__VA_ARGS__)
+#define spLog_I(format, ...) spLog.logPrintf(spLogInfo, true, format, ##__VA_ARGS__)
+#define spLog_W(format, ...) spLog.logPrintf(spLogWarning, true, format, ##__VA_ARGS__)
+#define spLog_E(format, ...) spLog.logPrintf(spLogError, true, format, ##__VA_ARGS__)
+#define spLog_N(format, ...) spLog.logPrintf(spLogNone, true, format, ##__VA_ARGS__)
+
+// versions what don't end with a newline ...
+#define spLog_V_(format, ...) spLog.logPrintf(spLogVerbose, false, format, ##__VA_ARGS__)
+#define spLog_D_(format, ...) spLog.logPrintf(spLogDebug, false, format, ##__VA_ARGS__)
+#define spLog_I_(format, ...) spLog.logPrintf(spLogInfo, false, format, ##__VA_ARGS__)
+#define spLog_W_(format, ...) spLog.logPrintf(spLogWarning, false, format, ##__VA_ARGS__)
+#define spLog_E_(format, ...) spLog.logPrintf(spLogError, false, format, ##__VA_ARGS__)
+#define spLog_N_(format, ...) spLog.logPrintf(spLogNone, false, format, ##__VA_ARGS__)
 
 #else
 
@@ -193,5 +202,34 @@ extern spLogging &spLog;
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
+#define spLog_N(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
 
+// no newline
+#define spLog_V_(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_D_(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_I_(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_W_(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_E_(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define spLog_N_(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
 #endif

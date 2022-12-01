@@ -128,6 +128,8 @@ bool spMQTTESP32::connect(void)
         _mqttClient.setUsernamePassword(username().c_str(), password().c_str());
 
     // Connect
+    Serial.printf("MQTT Connect: %s:%d\n\t", server().c_str(), port());
+
    if (!_mqttClient.connect(server().c_str(), port())) 
     {
         spLog_E(F("%s: MQTT connection failed. Error Code: %d"), _mqttClient.connectError());
@@ -157,7 +159,7 @@ uint16_t spMQTTESP32::get_bufferSize(void)
 
 //----------------------------------------------------------------------------
 // spWriter interface method
-void spMQTTESP32::write(const char * value)
+void spMQTTESP32::write(const char * value, bool newline)
 {
     // if we are not connected, ignore
     if (!connected() || !value)

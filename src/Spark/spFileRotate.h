@@ -51,7 +51,7 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
 
     void write(int);
     void write(float);
-    void write(const char *);
+    void write(const char *, bool newline);
 
     void setFileSystem(spIFileSystem *fs)
     {

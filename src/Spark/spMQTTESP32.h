@@ -89,7 +89,7 @@ class spMQTTESP32 : public spActionType<spMQTTESP32>, public spWriter
     {
         //noop
     }
-    void write(const char *);
+    void write(const char *, bool);
     // Properties
 
     // Enabled/Disabled

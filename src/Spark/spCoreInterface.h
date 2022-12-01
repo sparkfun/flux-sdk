@@ -45,10 +45,18 @@ class spWriter
     };
     virtual void write(int) = 0;
     virtual void write(float) = 0;
-    virtual void write(const char *) = 0;
+    virtual void write(const char* value, bool newline)=0;
+    virtual void write(std::string &value, bool newline)
+    {
+      write(value.c_str(), newline);
+    }
+    virtual void write(const char * value)
+    {
+      write(value, true);
+    }
     virtual void write(std::string &value)
     {
-        write(value.c_str());
+        write(value.c_str(), true);
     };
 };
 

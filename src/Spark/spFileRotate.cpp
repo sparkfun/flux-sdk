@@ -70,17 +70,17 @@ bool spFileRotate::openNextLogFile(bool bSendEvent)
 //------------------------------------------------------------------------------------------------
 void spFileRotate::write(int value)
 {
-    write(sp_utils::to_string(value).c_str());
+    write(sp_utils::to_string(value).c_str(), true);
 }
 
 //------------------------------------------------------------------------------------------------
 void spFileRotate::write(float value)
 {
-    write(sp_utils::to_string(value).c_str());
+    write(sp_utils::to_string(value).c_str(), true);
 }
 
 //------------------------------------------------------------------------------------------------
-void spFileRotate::write(const char *value)
+void spFileRotate::write(const char *value, bool newline)
 {
 
     if (!_theFS)
@@ -98,8 +98,9 @@ void spFileRotate::write(const char *value)
     }
     // Write the current line out
     _currentFile.write((uint8_t *)value, strlen(value) + 1);
-    // add a cr
-    _currentFile.write((uint8_t *)"\n", 1);
+    // add a cr if newline set
+    if (newline)
+        _currentFile.write((uint8_t *)"\n", 1);
 
     // Will we need to rotate?
     if (spClock.epoch() - _secsFileOpen() > _secsRotPeriod)
