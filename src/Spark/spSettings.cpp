@@ -126,7 +126,7 @@ bool spSettingsSave::restore(spObject *pObject)
 
     if(!status)
     {
-        spLog_E(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
+        spLog_W(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
 
 
         // Save to secondary ? 
