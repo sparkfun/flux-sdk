@@ -268,7 +268,7 @@ void setup() {
     setupSDCard();
 
     // setup MQTT
-    //setupMQTT();
+    setupMQTT();
 
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
