@@ -4,6 +4,9 @@
 
 #include "spMQTTESP32.h"
 
+#define kMaxConnectionTries 3
+#define kConnectionDelayMS 700
+
 //----------------------------------------------------------------
 // Enabled Property setter/getters
 void spMQTTESP32::set_isEnabled(bool bEnabled)
@@ -41,11 +44,10 @@ void spMQTTESP32::onConnectionChange(bool bConnected)
 
     if (bConnected)
     {
-        spLog_I(F("Connecting to MQTT endpoint %s:%u ..."), server().c_str(), port());
+        spLog_I_(F("Connecting to MQTT endpoint %s:%u ..."), server().c_str(), port());
         if (connect())
-            spLog_I(F("\tConnected"));
-        else
-            spLog_E(F("\tFailed to connect"));
+            spLog_N(F("Connected"));
+        // the connect method will print out sufficient error messages 
     }
     else
     {
@@ -76,13 +78,13 @@ bool spMQTTESP32::connect(void)
 {
     // Already connected?
     if (connected())
-        return false;
+        return true;
 
     // NOTE: For future impl of secure clients connections
     //       The Secure WiFi connection, when in InSecure() mode crashes
     //       MQTT - so for now using a simple connection. Will debug 
     //
-    // // Is this a secure connection?
+    // Is this a secure connection?
     // if (caCertificate().length() == 0)
     // {
     //     Serial.println("DEBUG : MQTT - Insecure connection");
@@ -122,18 +124,23 @@ bool spMQTTESP32::connect(void)
     _mqttClient.setKeepAliveInterval(60 * 1000);
     _mqttClient.setConnectionTimeout(5 * 1000);
 
-    // Username/passworkd provided?
+   //  // Username/password provided?
 
     if (username().length() > 0 && password().length() > 0)
         _mqttClient.setUsernamePassword(username().c_str(), password().c_str());
 
-    // Connect
-    Serial.printf("MQTT Connect: %s:%d\n\t", server().c_str(), port());
+   //  // Connect
+   //  //Serial.printf("MQTT Connect: %s:%d\n\t", server().c_str(), port());
 
-   if (!_mqttClient.connect(server().c_str(), port())) 
+    for( int i=0; !_mqttClient.connect(server().c_str(), port()); i++)
     {
-        spLog_E(F("%s: MQTT connection failed. Error Code: %d"), _mqttClient.connectError());
-        return false;
+        if (i > kMaxConnectionTries)
+        {
+            spLog_E(F("%s: MQTT connection failed. Error Code: %d"), name(), _mqttClient.connectError());
+            return false;
+        }
+        spLog_N_(".");
+        delay(kConnectionDelayMS);
     }
 
     // we're connected
@@ -188,5 +195,6 @@ void spMQTTESP32::write(const char * value, bool newline)
     _mqttClient.beginMessage(topic().c_str());
     _mqttClient.print(value);
     _mqttClient.endMessage();
+
 }
 #endif
