@@ -70,7 +70,7 @@ class spMQTTESP32Base : public spActionType<Object>, public spWriter
 
         if (bConnected)
         {
-            spLog_I_(F("Connecting to MQTT endpoint %s:%u ..."), server().c_str(), port());
+            spLog_I_(F("%s: connecting to MQTT endpoint %s:%u ..."), this->name(), server().c_str(), port());
             if (connect())
                 spLog_N(F("connected"));
             // the connect method will print out sufficient error messages 
