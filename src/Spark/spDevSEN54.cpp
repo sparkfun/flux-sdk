@@ -47,8 +47,8 @@ spDevSEN54::spDevSEN54()
     spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
     spRegister(massConcentrationPm1p0, "Particle Mass Concentration (1um)", "The concentration of 0.3-1.0 micron particles in ug/m^3");
     spRegister(massConcentrationPm2p5, "Particle Mass Concentration (2.5um)", "The concentration of 0.3-2.5 micron particles in ug/m^3");
-    spRegister(massConcentrationPm1p0, "Particle Mass Concentration (4um)", "The concentration of 0.3-4.0 micron particles in ug/m^3");
-    spRegister(massConcentrationPm1p0, "Particle Mass Concentration (10um)", "The concentration of 0.3-10.0 micron particles in ug/m^3");
+    spRegister(massConcentrationPm4p0, "Particle Mass Concentration (4um)", "The concentration of 0.3-4.0 micron particles in ug/m^3");
+    spRegister(massConcentrationPm10p0, "Particle Mass Concentration (10um)", "The concentration of 0.3-10.0 micron particles in ug/m^3");
     spRegister(vocIndex, "VOC Index", "The VOC Index measured in index points (1-500)");
     spRegister(noxIndex, "NOx Index", "The NOx Index measured in index points (1-500)");
 }
@@ -57,16 +57,14 @@ spDevSEN54::spDevSEN54()
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
 bool spDevSEN54::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
-    // For speed, ping the device address first
-    if (!i2cDriver.ping(address))
-        return false;
+    // Don't ping the SEN54. It does not like it...
 
     uint8_t productName[9]; // Product name is 48 bytes maximum, but we'll only read the first nine here ( Three * Two bytes plus CRC)
     uint16_t productNameReg = 0xD014;
     uint8_t productNameRegBytes[2] = { (uint8_t)(productNameReg >> 8), (uint8_t)(productNameReg & 0xFF)}; // MSB first
     if (!i2cDriver.write(address, productNameRegBytes, 2))
         return false;
-    delay(3);
+    delay(20);
     if (i2cDriver.receiveResponse(address, productName, 9) != 9)
         return false;
 
@@ -90,6 +88,7 @@ bool spDevSEN54::isConnected(spBusI2C &i2cDriver, uint8_t address)
     couldBeSEN54 &= productName[3] == 'N';
     couldBeSEN54 &= productName[4] == '5';
     couldBeSEN54 &= productName[6] == '4';
+
     return (couldBeSEN54);
 }
 //----------------------------------------------------------------------------------------------------------
@@ -102,7 +101,8 @@ bool spDevSEN54::isConnected(spBusI2C &i2cDriver, uint8_t address)
 bool spDevSEN54::onInitialize(TwoWire &wirePort)
 {
     SensirionI2CSen5x::begin(wirePort);
-    _begun = SensirionI2CSen5x::startMeasurement();
+    _begun = SensirionI2CSen5x::deviceReset() == 0;
+    _begun &= SensirionI2CSen5x::startMeasurement() == 0;
     return _begun;
 }
 
@@ -124,7 +124,7 @@ float spDevSEN54::read_temperature_C()
                 _massConcentrationPm10p0 = true;
             }
     _temperature = false;
-    return _theTemperature;
+    return _theAmbientTemperature;
 }
 float spDevSEN54::read_humidity()
 {
@@ -143,7 +143,7 @@ float spDevSEN54::read_humidity()
                 _massConcentrationPm10p0 = true;
             }
     _humidity = false;
-    return _theHumidity;
+    return _theAmbientHumidity;
 }
 float spDevSEN54::read_voc_index()
 {
