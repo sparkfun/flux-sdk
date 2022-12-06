@@ -36,9 +36,53 @@ spDevAMG8833::spDevAMG8833()
 
 bool spDevAMG8833::isConnected(spBusI2C &i2cDriver, uint8_t address)
 {
-    // For speed, ping the device address first
-    if (!i2cDriver.ping(address))
-        return false;
+    if (address == 0x69)
+    {
+        // Check for a SEN54
+
+        uint8_t productName[9]; // Product name is 48 bytes maximum, but we'll only read the first nine here ( Three * Two bytes plus CRC)
+        uint16_t productNameReg = 0xD014;
+        uint8_t productNameRegBytes[2] = { (uint8_t)(productNameReg >> 8), (uint8_t)(productNameReg & 0xFF)}; // MSB first
+        bool couldBeSEN54 = i2cDriver.write(address, productNameRegBytes, 2);
+        if (couldBeSEN54)
+        {
+            delay(20);
+            couldBeSEN54 &= i2cDriver.receiveResponse(address, productName, 9) == 9;
+        }
+
+        if (couldBeSEN54)
+        {
+            // Check final CRC
+            uint8_t crc = 0xFF; // Init with 0xFF
+            for (uint8_t x = 6; x < 8; x++)
+            {
+                crc ^= productName[x]; // XOR-in the next input byte
+
+                for (uint8_t i = 0; i < 8; i++)
+                {
+                    if ((crc & 0x80) != 0)
+                        crc = (uint8_t)((crc << 1) ^ 0x31);
+                    else
+                        crc <<= 1;
+                }
+            }
+            couldBeSEN54 &= crc == productName[8];
+            couldBeSEN54 &= productName[0] == 'S';
+            couldBeSEN54 &= productName[1] == 'E';
+            couldBeSEN54 &= productName[3] == 'N';
+            couldBeSEN54 &= productName[4] == '5';
+            couldBeSEN54 &= productName[6] == '4';
+        }
+
+        if (couldBeSEN54)
+            return false;
+    }
+    else
+    {
+        // For speed, ping the device address first
+        if (!i2cDriver.ping(address))
+            return false;
+    }
 
     // Read the thermistor temperature. Make sure it is within bounds.
     // Not a great test, but something...
