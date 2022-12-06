@@ -192,6 +192,12 @@ Supported devices are:
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/17874">SPX-17874</a></td>
     </tr>
     <tr>
+        <td style="vertical-align:middle" align="center">SEN54</td>
+        <td style="vertical-align:middle" align="center">Environmental Sensor Node</td>
+        <td style="vertical-align:middle" align="center">0x69</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19325">SEN-19325</a></td>
+    </tr>
+    <tr>
         <td style="vertical-align:middle" align="center">SGP30</td>
         <td style="vertical-align:middle" align="center">Air quality sensor (TVOC, CO<sub>2</sub>, H<sub>2</sub>, Ethanol</td>
         <td style="vertical-align:middle" align="center">0x58</td>
@@ -517,6 +523,12 @@ Allocated / supported I<sup>2</sup>C addresses are:
         <td style="vertical-align:middle" align="center">Button</td>
         <td style="vertical-align:middle" align="center">SparkFun Qwiic Button</td>
         <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/15932">BOB-15932</a></td>
+    </tr>
+    <tr>
+        <td style="vertical-align:middle" align="center"><b>0x69</b></td>
+        <td style="vertical-align:middle" align="center">SEN54</td>
+        <td style="vertical-align:middle" align="center">Environmental Sensor Node</td>
+        <td style="vertical-align:middle" align="left"><a href="https://www.sparkfun.com/products/19325">SEN-19325</a></td>
     </tr>
     <tr>
         <td style="vertical-align:middle" align="center"><b>0x6A</b>, <b>0x6B</b></td>
