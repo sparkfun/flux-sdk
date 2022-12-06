@@ -1,0 +1,279 @@
+/*
+ *
+ *  spDevSEN54.h
+ *
+ *  Spark Device object for the SEN54 device.
+ *
+ *
+ *
+ */
+#include "Arduino.h"
+
+#include "spDevSEN54.h"
+
+#define kSEN54AddressDefault 0x69
+
+// Define our class static variables - allocs storage for them
+
+uint8_t spDevSEN54::defaultDeviceAddress[] = {kSEN54AddressDefault, kSparkDeviceAddressNull};
+
+//----------------------------------------------------------------------------------------------------------
+// Register this class with the system, enabling this driver during system
+// initialization and device discovery.
+
+spRegisterDevice(spDevSEN54);
+
+//----------------------------------------------------------------------------------------------------------
+// Constructor
+//
+// Object constructor. Performs initialization of device values, including device identifiers (name, I2C address),
+// and managed properties.
+
+spDevSEN54::spDevSEN54()
+{
+
+    // Setup unique identifiers for this device and basic device object systems
+    setName(getDeviceName());
+    setDescription("SEN54 Environmental Sensor");
+
+    // Register the properties with the system - this makes the connections needed
+    // to support managed properties/public properties
+
+    // Register Property
+    spRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
+
+    // Register parameters
+    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
+    spRegister(massConcentrationPm1p0, "Particle Mass Concentration (1um)", "The concentration of 0.3-1.0 micron particles in ug/m^3");
+    spRegister(massConcentrationPm2p5, "Particle Mass Concentration (2.5um)", "The concentration of 0.3-2.5 micron particles in ug/m^3");
+    spRegister(massConcentrationPm1p0, "Particle Mass Concentration (4um)", "The concentration of 0.3-4.0 micron particles in ug/m^3");
+    spRegister(massConcentrationPm1p0, "Particle Mass Concentration (10um)", "The concentration of 0.3-10.0 micron particles in ug/m^3");
+    spRegister(vocIndex, "VOC Index", "The VOC Index measured in index points (1-500)");
+    spRegister(noxIndex, "NOx Index", "The NOx Index measured in index points (1-500)");
+}
+
+//----------------------------------------------------------------------------------------------------------
+// Static method used to determine if devices is connected before creating this object (if creating dynamically)
+bool spDevSEN54::isConnected(spBusI2C &i2cDriver, uint8_t address)
+{
+    // For speed, ping the device address first
+    if (!i2cDriver.ping(address))
+        return false;
+
+    uint8_t productName[9]; // Product name is 48 bytes maximum, but we'll only read the first nine here ( Three * Two bytes plus CRC)
+    uint16_t productNameReg = 0xD014;
+    uint8_t productNameRegBytes[2] = { (uint8_t)(productNameReg >> 8), (uint8_t)(productNameReg & 0xFF)}; // MSB first
+    if (!i2cDriver.write(address, productNameRegBytes, 2))
+        return false;
+    delay(3);
+    if (i2cDriver.receiveResponse(address, productName, 9) != 9)
+        return false;
+
+    // Check final CRC
+    uint8_t crc = 0xFF; // Init with 0xFF
+    for (uint8_t x = 6; x < 8; x++)
+    {
+        crc ^= productName[x]; // XOR-in the next input byte
+
+        for (uint8_t i = 0; i < 8; i++)
+        {
+            if ((crc & 0x80) != 0)
+                crc = (uint8_t)((crc << 1) ^ 0x31);
+            else
+                crc <<= 1;
+        }
+    }
+    bool couldBeSEN54 = crc == productName[8];
+    couldBeSEN54 &= productName[0] == 'S';
+    couldBeSEN54 &= productName[1] == 'E';
+    couldBeSEN54 &= productName[3] == 'N';
+    couldBeSEN54 &= productName[4] == '5';
+    couldBeSEN54 &= productName[6] == '4';
+    return (couldBeSEN54);
+}
+//----------------------------------------------------------------------------------------------------------
+// onInitialize()
+//
+// Called during the startup/initialization of the driver (after the constructor is called).
+//
+// Place to initialized the underlying device library/driver
+//
+bool spDevSEN54::onInitialize(TwoWire &wirePort)
+{
+    SensirionI2CSen5x::begin(wirePort);
+    _begun = SensirionI2CSen5x::startMeasurement();
+    return _begun;
+}
+
+// GETTER methods for output params
+float spDevSEN54::read_temperature_C()
+{
+    if (_begun)
+        if (!_temperature)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _humidity = true;
+                _vocIndex = true;
+                _noxIndex = true;
+                _massConcentrationPm1p0 = true;
+                _massConcentrationPm2p5 = true;
+                _massConcentrationPm4p0 = true;
+                _massConcentrationPm10p0 = true;
+            }
+    _temperature = false;
+    return _theTemperature;
+}
+float spDevSEN54::read_humidity()
+{
+    if (_begun)
+        if (!_humidity)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _temperature = true;
+                _vocIndex = true;
+                _noxIndex = true;
+                _massConcentrationPm1p0 = true;
+                _massConcentrationPm2p5 = true;
+                _massConcentrationPm4p0 = true;
+                _massConcentrationPm10p0 = true;
+            }
+    _humidity = false;
+    return _theHumidity;
+}
+float spDevSEN54::read_voc_index()
+{
+    if (_begun)
+        if (!_vocIndex)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _temperature = true;
+                _humidity = true;
+                _noxIndex = true;
+                _massConcentrationPm1p0 = true;
+                _massConcentrationPm2p5 = true;
+                _massConcentrationPm4p0 = true;
+                _massConcentrationPm10p0 = true;
+            }
+    _vocIndex = false;
+    return _theVocIndex;
+}
+float spDevSEN54::read_nox_index()
+{
+    if (_begun)
+        if (!_noxIndex)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _temperature = true;
+                _humidity = true;
+                _vocIndex = true;
+                _massConcentrationPm1p0 = true;
+                _massConcentrationPm2p5 = true;
+                _massConcentrationPm4p0 = true;
+                _massConcentrationPm10p0 = true;
+            }
+    _noxIndex = false;
+    return _theNoxIndex;
+}
+float spDevSEN54::read_mass_concentration_1p0()
+{
+    if (_begun)
+        if (!_massConcentrationPm1p0)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _temperature = true;
+                _humidity = true;
+                _vocIndex = true;
+                _noxIndex = true;
+                _massConcentrationPm2p5 = true;
+                _massConcentrationPm4p0 = true;
+                _massConcentrationPm10p0 = true;
+            }
+    _massConcentrationPm1p0 = false;
+    return _theMassConcentrationPm1p0;
+}
+float spDevSEN54::read_mass_concentration_2p5()
+{
+    if (_begun)
+        if (!_massConcentrationPm2p5)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _temperature = true;
+                _humidity = true;
+                _vocIndex = true;
+                _noxIndex = true;
+                _massConcentrationPm1p0 = true;
+                _massConcentrationPm4p0 = true;
+                _massConcentrationPm10p0 = true;
+            }
+    _massConcentrationPm2p5 = false;
+    return _theMassConcentrationPm2p5;
+}
+float spDevSEN54::read_mass_concentration_4p0()
+{
+    if (_begun)
+        if (!_massConcentrationPm4p0)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _temperature = true;
+                _humidity = true;
+                _vocIndex = true;
+                _noxIndex = true;
+                _massConcentrationPm1p0 = true;
+                _massConcentrationPm2p5 = true;
+                _massConcentrationPm10p0 = true;
+            }
+    _massConcentrationPm4p0 = false;
+    return _theMassConcentrationPm4p0;
+}
+float spDevSEN54::read_mass_concentration_10p0()
+{
+    if (_begun)
+        if (!_massConcentrationPm10p0)
+            if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
+                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+            {
+                _temperature = true;
+                _humidity = true;
+                _vocIndex = true;
+                _noxIndex = true;
+                _massConcentrationPm1p0 = true;
+                _massConcentrationPm2p5 = true;
+                _massConcentrationPm4p0 = true;
+            }
+    _massConcentrationPm10p0 = false;
+    return _theMassConcentrationPm10p0;
+}
+
+//----------------------------------------------------------------------------------------------------------
+// RW Properties
+
+float spDevSEN54::get_temperature_offset()
+{
+    if (_begun)
+        SensirionI2CSen5x::getTemperatureOffsetSimple(_theTemperatureOffset);
+    return _theTemperatureOffset;
+}
+
+void spDevSEN54::set_temperature_offset(float offset)
+{
+    _theTemperatureOffset = offset;
+    if (_begun)
+        SensirionI2CSen5x::setTemperatureOffsetSimple(offset);
+}
+
