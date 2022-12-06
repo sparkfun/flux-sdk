@@ -12,7 +12,7 @@ bool spMQTTESP32Secure::connect(void)
         return true;
 
     
-    if (caCertificate().length() == 0)
+    if (caCertificate().length() > 0)
         _wifiClient.setCACert(caCertificate().c_str());
 
     if (clientCertificate().length() > 0)
