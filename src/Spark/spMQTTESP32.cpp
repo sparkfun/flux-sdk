@@ -4,6 +4,7 @@
 
 #include "spMQTTESP32.h"
 
+
 //----------------------------------------------------------------------------
 bool spMQTTESP32Secure::connect(void)
 {
@@ -11,15 +12,14 @@ bool spMQTTESP32Secure::connect(void)
     if (connected())
         return true;
 
-    
-    if (caCertificate().length() > 0)
-        _wifiClient.setCACert(caCertificate().c_str());
+    if ( _pCACert != nullptr )
+        _wifiClient.setCACert(_pCACert);
 
-    if (clientCertificate().length() > 0)
-        _wifiClient.setCertificate(clientCertificate().c_str());
+    if ( _pClientCert != nullptr)
+        _wifiClient.setCertificate(_pClientCert);
 
-    if (clientKey().length() > 0)
-        _wifiClient.setPrivateKey(clientKey().c_str());
+    if (_pClientKey != nullptr)
+        _wifiClient.setPrivateKey(_pClientKey);
 
     return spMQTTESP32Base::connect();
 

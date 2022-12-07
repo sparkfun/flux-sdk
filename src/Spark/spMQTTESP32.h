@@ -143,7 +143,6 @@ class spMQTTESP32Base : public spActionType<Object>, public spWriter
         if (connected())
             return true;
 
-
         // do we have all the parameters we need?
         if (clientName().length() == 0)
         {
@@ -164,18 +163,16 @@ class spMQTTESP32Base : public spActionType<Object>, public spWriter
         // mqtt time
         _mqttClient.setId(clientName().c_str());
         _mqttClient.setKeepAliveInterval(60 * 1000);
-        _mqttClient.setConnectionTimeout(5 * 1000);
+        _mqttClient.setConnectionTimeout(20 * 1000);
 
         // Username/password provided?
-
         if (username().length() > 0 && password().length() > 0)
             _mqttClient.setUsernamePassword(username().c_str(), password().c_str());
 
         // Connect
-
         for( int i=0; !_mqttClient.connect(server().c_str(), port()); i++)
         {
-            if (i > 4)
+            if (i > 10)
             {
                 spLog_E(F("%s: MQTT connection failed. Error Code: %d"), this->name(), _mqttClient.connectError());
                 return false;
@@ -199,7 +196,7 @@ class spMQTTESP32Base : public spActionType<Object>, public spWriter
     }
     //----------------------------------------------------------------------------
     // spWriter interface method
-    void write(const char * value, bool newline)
+    virtual void write(const char * value, bool newline)
     {
         // if we are not connected, ignore
         if (!connected() || !value)
@@ -269,9 +266,72 @@ class spMQTTESP32: public spMQTTESP32Base<spMQTTESP32, WiFiClient>
 class spMQTTESP32Secure: public spMQTTESP32Base<spMQTTESP32Secure, WiFiClientSecure>
 {
 
+private: 
+
+    // NOTE: 
+    //   Standard string props are stored in std::string variables. 
+    //   Because the c_str() method on std::strings returns a value that is temporary,
+    ///  and the underlying secure connection is expecting const chars, we use a RW
+    //   property for the cert/key strings and stash the values in allocated memory.
+
+    //-----------------------------------------------------------
+    std::string get_caCert(void)
+    {
+        std::string tmp = _pCACert;
+        return tmp;
+    }
+    //-----------------------------------------------------------    
+    void set_caCert(std::string theCert)
+    {
+        if (_pCACert != nullptr)
+        {
+            delete _pCACert;
+            _pCACert = nullptr;
+        }
+
+        if (theCert.length() > 0)
+            _pCACert = strdup(theCert.c_str());
+    }
+    //-----------------------------------------------------------
+    std::string get_clientCert(void)
+    {
+        std::string tmp = _pClientCert;
+        return tmp;
+    }
+    //-----------------------------------------------------------    
+    void set_clientCert(std::string theCert)
+    {
+        if (_pClientCert != nullptr)
+        {
+            delete _pClientCert;
+            _pClientCert = nullptr;
+        }
+
+        if (theCert.length() > 0)
+            _pClientCert = strdup(theCert.c_str());
+    }
+    //-----------------------------------------------------------
+    std::string get_clientKey(void)
+    {
+        std::string tmp = _pClientKey;
+        return tmp;
+    }
+    //-----------------------------------------------------------    
+    void set_clientKey(std::string theCert)
+    {
+        if (_pClientKey != nullptr)
+        {
+            delete _pClientKey;
+            _pClientKey = nullptr;
+        }
+
+        if (theCert.length() > 0)
+            _pClientKey = strdup(theCert.c_str());
+    }
+
 public:
 
-    spMQTTESP32Secure()
+    spMQTTESP32Secure() : _pCACert{nullptr}, _pClientCert{nullptr}, _pClientKey{nullptr}
     {
         spRegister(caCertificate, "CA Certificate", 
                    "The Certificate Authority certificate. If set, the connection is secure");
@@ -284,9 +344,17 @@ public:
     bool connect(void);
 
     // Security certs/keys
-    spPropertySecureString<spMQTTESP32Secure> caCertificate;
-    spPropertySecureString<spMQTTESP32Secure> clientCertificate;
-    spPropertySecureString<spMQTTESP32Secure> clientKey;
+    spPropertyRWSecureString<spMQTTESP32Secure, &spMQTTESP32Secure::get_caCert, &spMQTTESP32Secure::set_caCert> caCertificate;
+    spPropertyRWSecureString<spMQTTESP32Secure, &spMQTTESP32Secure::get_clientCert, &spMQTTESP32Secure::set_clientCert> clientCertificate;
+    spPropertyRWSecureString<spMQTTESP32Secure, &spMQTTESP32Secure::get_clientKey, &spMQTTESP32Secure::set_clientKey> clientKey;
+
+    // We need perm version of the keys for the secure connection, so the values are stashed in allocated
+    // strings
+    char * _pCACert;
+    char * _pClientCert;
+    char * _pClientKey;
 };
+
+
 
 #endif
