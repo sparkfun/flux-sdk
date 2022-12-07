@@ -50,7 +50,12 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 // MQTT
 #include <Spark/spMQTTESP32.h>
+#include <Spark/spAWSIoT.h>
 
+//#define TEST_AWS
+#ifdef TEST_AWS 
+#include "aws_secrets.h"
+#endif
 
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
@@ -110,6 +115,10 @@ spDevBioHub bioHub;
 // An MQTT client 
 
 spMQTTESP32 mqttClient;
+
+#ifdef TEST_AWS
+spAWSIoT mqttAWS;
+#endif
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -216,10 +225,27 @@ void setupMQTT()
     // mqttClient.clientName = "myesp32";
 
     // setup the network connection for the mqtt
-    mqttClient.setNetwork(&wifiConnection);
+   // mqttClient.setNetwork(&wifiConnection);
 
     // add mqtt to JSON
-    fmtJSON.add(mqttClient);
+   // fmtJSON.add(mqttClient);
+
+#ifdef TEST_AWS
+    // AWS
+    mqttAWS.setName("AWS IoT", "Connect to an AWS Iot Thing");
+    mqttAWS.setNetwork(&wifiConnection);
+    mqttAWS.clientName = kAWSMyThingName;
+    mqttAWS.port = 8883;
+    mqttAWS.server = kAWSIOTEndpoint;
+
+    char szBuffer[64];
+    snprintf(szBuffer, sizeof(szBuffer), "$aws/things/%s/shadow/update", kAWSMyThingName);
+    mqttAWS.topic = szBuffer;
+    mqttAWS.caCertificate = kAWSCertCA;
+    mqttAWS.clientCertificate = kAWSCertCRT;
+    mqttAWS.clientKey = kAWSCertPrivate;
+    fmtJSON.add(mqttAWS);
+#endif
 }
 //---------------------------------------------------------------------
 // Arduino Setup
