@@ -53,9 +53,6 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 #include <Spark/spAWSIoT.h>
 
 //#define TEST_AWS
-#ifdef TEST_AWS 
-#include "aws_secrets.h"
-#endif
 
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
@@ -234,16 +231,12 @@ void setupMQTT()
     // AWS
     mqttAWS.setName("AWS IoT", "Connect to an AWS Iot Thing");
     mqttAWS.setNetwork(&wifiConnection);
-    mqttAWS.clientName = kAWSMyThingName;
-    mqttAWS.port = 8883;
-    mqttAWS.server = kAWSIOTEndpoint;
 
-    char szBuffer[64];
-    snprintf(szBuffer, sizeof(szBuffer), "$aws/things/%s/shadow/update", kAWSMyThingName);
-    mqttAWS.topic = szBuffer;
-    mqttAWS.caCertificate = kAWSCertCA;
-    mqttAWS.clientCertificate = kAWSCertCRT;
-    mqttAWS.clientKey = kAWSCertPrivate;
+    // Add the filesystem to load certs/keys from the SD card 
+    mqttAWS.setFileSystem(&theSDCard); 
+
+    // Note: Certs and settings are loaded off the SD card at startup.
+
     fmtJSON.add(mqttAWS);
 #endif
 }
