@@ -8,6 +8,7 @@
 #include "spSpark.h"
 #include "spCoreInterface.h"
 #include "spNetwork.h"
+#include "spFS.h"
 
 #include <ArduinoMqttClient.h>
 #include <WiFiClientSecure.h>
@@ -159,8 +160,8 @@ class spMQTTESP32Base : public spActionType<Object>, public spWriter
             spLog_E(F("%s : A valid port is not set %d. Unable to connect"), this->name(), port());
             return false;
         }
-
         // mqtt time
+
         _mqttClient.setId(clientName().c_str());
         _mqttClient.setKeepAliveInterval(60 * 1000);
         _mqttClient.setConnectionTimeout(20 * 1000);
@@ -172,7 +173,7 @@ class spMQTTESP32Base : public spActionType<Object>, public spWriter
         // Connect
         for( int i=0; !_mqttClient.connect(server().c_str(), port()); i++)
         {
-            if (i > 10)
+            if (i > 3)
             {
                 spLog_E(F("%s: MQTT connection failed. Error Code: %d"), this->name(), _mqttClient.connectError());
                 return false;
@@ -274,85 +275,64 @@ private:
     ///  and the underlying secure connection is expecting const chars, we use a RW
     //   property for the cert/key strings and stash the values in allocated memory.
 
-    //-----------------------------------------------------------
-    std::string get_caCert(void)
-    {
-        std::string tmp = _pCACert;
-        return tmp;
-    }
-    //-----------------------------------------------------------    
-    void set_caCert(std::string theCert)
-    {
-        if (_pCACert != nullptr)
-        {
-            delete _pCACert;
-            _pCACert = nullptr;
-        }
+    std::string get_caCert(void);
+    void set_caCert(std::string theCert);
 
-        if (theCert.length() > 0)
-            _pCACert = strdup(theCert.c_str());
-    }
-    //-----------------------------------------------------------
-    std::string get_clientCert(void)
-    {
-        std::string tmp = _pClientCert;
-        return tmp;
-    }
-    //-----------------------------------------------------------    
-    void set_clientCert(std::string theCert)
-    {
-        if (_pClientCert != nullptr)
-        {
-            delete _pClientCert;
-            _pClientCert = nullptr;
-        }
+    std::string get_clientCert(void);
+    void set_clientCert(std::string theCert);
 
-        if (theCert.length() > 0)
-            _pClientCert = strdup(theCert.c_str());
-    }
-    //-----------------------------------------------------------
-    std::string get_clientKey(void)
-    {
-        std::string tmp = _pClientKey;
-        return tmp;
-    }
-    //-----------------------------------------------------------    
-    void set_clientKey(std::string theCert)
-    {
-        if (_pClientKey != nullptr)
-        {
-            delete _pClientKey;
-            _pClientKey = nullptr;
-        }
+    std::string get_clientKey(void);
+    void set_clientKey(std::string theCert);
 
-        if (theCert.length() > 0)
-            _pClientKey = strdup(theCert.c_str());
-    }
+    std::string get_caCertFilename(void);
+    void set_caCertFilename(std::string theFile);
 
+    std::string get_clientCertFilename(void);
+    void set_clientCertFilename(std::string theFile);
+
+    std::string get_clientKeyFilename(void);
+    void set_clientKeyFilename(std::string theFile);
+
+    char * loadCertFile(std::string &theFile);
 public:
 
-    spMQTTESP32Secure() : _pCACert{nullptr}, _pClientCert{nullptr}, _pClientKey{nullptr}
-    {
-        spRegister(caCertificate, "CA Certificate", 
-                   "The Certificate Authority certificate. If set, the connection is secure");
-        spRegister(clientCertificate, "Client Certificate", "The certificate for the client connection");
-        spRegister(clientKey, "Client Key", "The secure key used for client verification");
-
-        this->setName("MQTT Secure Client", "A MQTT Secure Client for ESP32 Systems");
-    }
+    spMQTTESP32Secure();
+    ~spMQTTESP32Secure();
 
     bool connect(void);
+
+    void setFileSystem(spIFileSystem * fs)
+    {
+        _fileSystem = fs;
+    }
 
     // Security certs/keys
     spPropertyRWSecureString<spMQTTESP32Secure, &spMQTTESP32Secure::get_caCert, &spMQTTESP32Secure::set_caCert> caCertificate;
     spPropertyRWSecureString<spMQTTESP32Secure, &spMQTTESP32Secure::get_clientCert, &spMQTTESP32Secure::set_clientCert> clientCertificate;
     spPropertyRWSecureString<spMQTTESP32Secure, &spMQTTESP32Secure::get_clientKey, &spMQTTESP32Secure::set_clientKey> clientKey;
 
+    // Define filename properties to access the secure keys. A filesystem must be provided to this object for it to read the
+    // data.
+// Security certs/keys
+    spPropertyRWString<spMQTTESP32Secure, &spMQTTESP32Secure::get_caCertFilename, 
+                        &spMQTTESP32Secure::set_caCertFilename> caCertFilename;
+    spPropertyRWString<spMQTTESP32Secure, &spMQTTESP32Secure::get_clientCertFilename, 
+                        &spMQTTESP32Secure::set_clientCertFilename> clientCertFilename;
+    spPropertyRWString<spMQTTESP32Secure, &spMQTTESP32Secure::get_clientKeyFilename, 
+                        &spMQTTESP32Secure::set_clientKeyFilename> clientKeyFilename;
+
     // We need perm version of the keys for the secure connection, so the values are stashed in allocated
     // strings
     char * _pCACert;
     char * _pClientCert;
     char * _pClientKey;
+
+    // Filesystem to load a file from
+    spIFileSystem * _fileSystem;
+
+    std::string _caFilename;
+    std::string _clientFilename;
+    std::string _keyFilename;    
 };
 
 
