@@ -101,9 +101,9 @@ bool spNTPESP32::start(void)
     bool enabled = sntp_enabled();
 
     if (enabled)
-        spLog_N(F("enabled."));
+        spLog_N(F("enabled"));
     else
-        spLog_N(F("not enabled."));    
+        spLog_N(F("not enabled"));
 
     return enabled;
 }
