@@ -7,7 +7,7 @@
 #include "spUtils.h"
 
 
-#define kJsonDocumentSize 2048
+#define kJsonDocumentSize 3600
 //------------------------------------------------------------------------------
 // Use tags to ID an item and move to use data types. Model after the
 // JSON preference library
