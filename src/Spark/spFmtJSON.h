@@ -9,6 +9,18 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
+#include <vector>
+
+// define a simple interface to output the actual JSON document, not 
+// the serialized string.
+//
+
+class spIWriterJSON 
+{
+public:
+    virtual void write(JsonDocument &jsonDoc) = 0;
+};
+
 template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
 {
 
@@ -167,7 +179,14 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
             szBuffer[buffer_size] = '\0';
         }
 
+        // Send the JSON string to output writers/destinations
         outputObservation(szBuffer);
+
+        // if we have any output writers that want the actual json document,
+        // send the mthe document.
+
+        for ( auto aWriter : _jsonWriters)
+            aWriter->write(_jDoc);
     }
 
     //-----------------------------------------------------------------
@@ -183,6 +202,19 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     }
 
     size_t buffer_size;
+
+    // we need to promote the add methods from our subclass - these take spWriter() interfaces
+    using spOutputFormat::add;
+
+    // Add methods to capture the json writers
+    void add(spIWriterJSON &newWriter)
+    {
+        add(&newWriter);
+    }
+    void add(spIWriterJSON *newWriter)
+    {
+        _jsonWriters.push_back(newWriter);
+    }
 
   protected:
     template <typename T>
@@ -224,4 +256,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     JsonObject _jSection;
 
     StaticJsonDocument<BUFFER_SIZE> _jDoc;
+
+private:
+    std::vector<spIWriterJSON *>  _jsonWriters;
 };
