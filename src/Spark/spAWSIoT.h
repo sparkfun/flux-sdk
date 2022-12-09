@@ -14,6 +14,11 @@
 class spAWSIoT : public spMQTTESP32Secure
 {
 public:
+    spAWSIoT()
+    {
+        setName("AWS IoT", "Connection to AWs IoT");
+    }
+    
     virtual void write(const char * value, bool newline)
     {
     	if (!value)
