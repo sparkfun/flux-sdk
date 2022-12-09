@@ -50,9 +50,13 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 // MQTT
 #include <Spark/spMQTTESP32.h>
+
+// AWS IoT
+//#define TEST_AWS
 #include <Spark/spAWSIoT.h>
 
-//#define TEST_AWS
+// ThingSpeak outpout
+#include <Spark/spThingSpeak.h>
 
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
@@ -116,6 +120,8 @@ spMQTTESP32 mqttClient;
 #ifdef TEST_AWS
 spAWSIoT mqttAWS;
 #endif
+
+spThingSpeak iotThingSpeak;
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -239,6 +245,8 @@ void setupMQTT()
 
     fmtJSON.add(mqttAWS);
 #endif
+
+    fmtJSON.add(iotThingSpeak);
 }
 //---------------------------------------------------------------------
 // Arduino Setup
