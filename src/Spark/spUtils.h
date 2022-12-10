@@ -34,6 +34,8 @@ std::string to_string(double const data, uint8_t precision);
 std::string to_string(double const data);
 std::string to_string(bool const data);
 
+std::string strtrim(const std::string& str, const std::string& whitespace = " \t");
+
 } // namespace sp_utils
 
 /*
