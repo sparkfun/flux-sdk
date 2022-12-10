@@ -13,8 +13,7 @@
 
 // simple class to support ThingSpeak output
 
-// Note - we contain an instance of a mqtt client. It does all the work
-class spThingSpeak : public spActionType<spThingSpeak>, public spIWriterJSON
+class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWriterJSON
 {
 
 public:
@@ -24,14 +23,6 @@ public:
 
         spark.add(this);
 
-        // promote properties up from the underlying mqtt object.
-
-        addProperty(_mqttConnection.port);
-        addProperty(_mqttConnection.username);
-        addProperty(_mqttConnection.password);
-        addProperty(_mqttConnection.caCertFilename);
-        addProperty(_mqttConnection.clientCertFilename);
-        addProperty(_mqttConnection.clientKeyFilename);
     }
 
     void write(JsonDocument &jsonDoc)
@@ -43,7 +34,7 @@ public:
     bool initialize(void)
     {
 
-        return _mqttConnection.initialize();
+        return spMQTTESP32SecureCore::initialize();
 
         // char szBuffer[clientName().length() + sizeof(kAWSUpdateShadowTopic)];
         // snprintf(szBuffer, sizeof(szBuffer), kAWSUpdateShadowTopic, clientName().c_str());
@@ -52,8 +43,5 @@ public:
         
         // return true;
     }
-
-private:
-    spMQTTESP32Secure  _mqttConnection;
 
 };

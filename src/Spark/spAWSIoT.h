@@ -11,14 +11,24 @@
 
 // simple class to support AWS IoT
 
-class spAWSIoT : public spMQTTESP32Secure
+class spAWSIoT : public spMQTTESP32SecureCore<spAWSIoT>, public spWriter
 {
 public:
     spAWSIoT()
     {
         setName("AWS IoT", "Connection to AWs IoT");
+        spark.add(this);
     }
     
+    // for the Writer interface
+    void write(int data)
+    {
+        // noop
+    }
+    void write(float data)
+    {
+        // noop
+    }
     virtual void write(const char * value, bool newline)
     {
     	if (!value)
@@ -27,13 +37,13 @@ public:
     	// Wrap the value with the structure required to update the device shadow
         char szBuffer[strlen(value) + sizeof(kAWSUpdateShadowTemplate)];
         snprintf(szBuffer, sizeof(szBuffer),  kAWSUpdateShadowTemplate, value);
-        spMQTTESP32Secure::write(szBuffer, false);
+        spMQTTESP32SecureCore::write(szBuffer, false);
     }
 
     bool initialize(void)
     {
 
-        spMQTTESP32Secure::initialize();
+        spMQTTESP32SecureCore::initialize();
 
         char szBuffer[clientName().length() + sizeof(kAWSUpdateShadowTopic)];
         snprintf(szBuffer, sizeof(szBuffer), kAWSUpdateShadowTopic, clientName().c_str());
