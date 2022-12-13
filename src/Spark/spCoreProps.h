@@ -753,6 +753,43 @@ template <class Object, double (Object::*_getter)(), void (Object::*_setter)(dou
 using spPropertyRWSecureDouble = _spPropertyTypedRW<double, Object, _getter, _setter, false, true>;
 
 
+// Hidden Secure
+// bool
+template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
+using spPropertyRWSecretBool = _spPropertyTypedRW<bool, Object, _getter, _setter, true, true>;
+
+// int8
+template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
+using spPropertyRWSecretInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter, true, true>;
+
+// int16
+template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
+using spPropertyRWSecretInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter, true, true>;
+
+// int
+template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
+using spPropertyRWSecretInt = _spPropertyTypedRW<int, Object, _getter, _setter, true, true>;
+
+// unsigned int 8
+template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
+using spPropertyRWSecretUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter, true, true>;
+
+// unsigned int 16
+template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
+using spPropertyRWSecretUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter, true, true>;
+
+// unsigned int
+template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
+using spPropertyRWSecretUint = _spPropertyTypedRW<uint, Object, _getter, _setter, true, true>;
+
+// float
+template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
+using spPropertyRWSecretFloat = _spPropertyTypedRW<float, Object, _getter, _setter, true, true>;
+
+// double
+template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
+using spPropertyRWSecretDouble = _spPropertyTypedRW<double, Object, _getter, _setter, true, true>;
+
 //---------------------------------------------------------------------------------
 // spPropertyRWString
 //
@@ -910,6 +947,9 @@ using spPropertyRWHiddenString = spPropertyRWString<Object, _getter, _setter, tr
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
 using spPropertyRWSecureString = spPropertyRWString<Object, _getter, _setter, false, true>;
 
+// Hidden and SECURE
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
+using spPropertyRWSecretString = spPropertyRWString<Object, _getter, _setter, true, true>;
 //----------------------------------------------------------------------------------------------------
 // spPropertyTyped
 //
@@ -1079,6 +1119,17 @@ template <class Object> using spPropertySecureUint16 = _spPropertyTyped<Object, 
 template <class Object> using spPropertySecureUint = _spPropertyTyped<Object, uint, false, true>;
 template <class Object> using spPropertySecureFloat = _spPropertyTyped<Object, float, false, true>;
 template <class Object> using spPropertySecureDouble = _spPropertyTyped<Object, double, false, true>;
+
+// Define typed properties - SECURE
+template <class Object> using spPropertySecretBool = _spPropertyTyped<Object, bool, true, true>;
+template <class Object> using spPropertySecretInt8 = _spPropertyTyped<Object, int8_t, true, true>;
+template <class Object> using spPropertySecretInt16 = _spPropertyTyped<Object, int16_t, true, true>;
+template <class Object> using spPropertySecretInt = _spPropertyTyped<Object, int, true, true>;
+template <class Object> using spPropertySecretUint8 = _spPropertyTyped<Object, uint8_t, true, true>;
+template <class Object> using spPropertySecretUint16 = _spPropertyTyped<Object, uint16_t, true, true>;
+template <class Object> using spPropertySecretUint = _spPropertyTyped<Object, uint, true, true>;
+template <class Object> using spPropertySecretFloat = _spPropertyTyped<Object, float, true, true>;
+template <class Object> using spPropertySecretDouble = _spPropertyTyped<Object, double, true, true>;
 //----------------------------------------------------------------------------------------------------
 // spPropertyString
 //
@@ -1215,6 +1266,10 @@ using spPropertyHiddenString = spPropertyString<Object, true, false>;
 template <class Object>
 using spPropertySecureString = spPropertyString<Object, false, true>;
 
+
+// Hidden/SECURE
+template <class Object>
+using spPropertySecretString = spPropertyString<Object, true, true>;
 //----------------------------------------------------------------------------------------------------
 // spObject
 //
