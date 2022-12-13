@@ -508,15 +508,15 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
     }
 
     // Security certs/keys
-    spPropertyRWSecureString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCert,
+    spPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCert,
                              &spMQTTESP32SecureCore::set_caCert>
         caCertificate;
 
-    spPropertyRWSecureString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCert,
+    spPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCert,
                              &spMQTTESP32SecureCore::set_clientCert>
         clientCertificate;
 
-    spPropertyRWSecureString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKey,
+    spPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKey,
                              &spMQTTESP32SecureCore::set_clientKey>
         clientKey;
 
