@@ -26,6 +26,8 @@ bool spSpark::start(bool bAutoLoad)
     spLog.setLogDriver(_logDriver);
     spLog.setLogLevel(spLogInfo); // TODO - adjust?
 
+    writeBanner();
+
     if (bAutoLoad)
     {
         // Build drivers for the registered devices connected to the system
@@ -40,7 +42,7 @@ bool spSpark::start(bool bAutoLoad)
     // Everything should be loaded -- restore settings from storage
     if (spSettings.isAvailable())
     {
-        spLog_I(F("Restoring System Settings ..."));
+        spLog_I_(F("Restoring System Settings ..."));
         if (!spSettings.restoreSystem())
             spLog_W(F("Error encountered restoring system settings..."));
     }
@@ -195,7 +197,7 @@ bool spSpark::restore(spStorage *pStorage)
     // everything go okay?
     if (!status)
     {
-        spLog_I(F("System settings not available for restoration from %s"), pStorage->name());
+        spLog_D(F("System settings not available for restoration from %s"), pStorage->name());
         return false;
     }
     // call superclass

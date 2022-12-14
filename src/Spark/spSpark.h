@@ -155,27 +155,64 @@ class spSpark : public spObjectContainer
 
         return _i2cDriver;
     }
+
+    void setVersion(const char *strVersion, uint32_t uiVersion)
+    {
+        _strVersion=strVersion;
+        _uiVersion = uiVersion;
+    }
+    
+    const char * versionString(void)
+    {
+        return _strVersion.c_str();
+    }
+
+    uint32_t version()
+    {
+        return _uiVersion;
+    }
+
+    void writeBanner(void)
+    {
+        spLog_N("");
+        spLog_N(F("%s  %s"), name(), versionString());
+        spLog_N(F("%s\n\r"), description());
+    }
+
+    uint32_t deviceId(void)
+    {
+#ifdef ESP32
+        return ESP.getEfuseMac() & 0xFFFFFFFF;
+#endif
+        return 0;
+    }
+
   private:
 
     spBusI2C     _i2cDriver;
     spBusSPI     _spiDriver;
 
+    std::string _strVersion;
+    uint32_t    _uiVersion;
+
     // Note private constructor...
-    spSpark() 
+    spSpark() : _strVersion{"0"}, _uiVersion{0}
     {
 
         // setup some default heirarchy things ...
         this->setName("spark", "The SparkFun Spark Framework");
-        Devices.setName("Devices", "The devices connected to this system.");
-        Actions.setName("Actions", "The operations/actions registered with this system.");
+        Actions.setName("Settings", "System settings and operations");
+        Devices.setName("Devices Settings", "Settings for connected devices");
+
 
         // Our container has two children, the device and the actions container
         // Cast the devices and actions to objects to add. And had to use
         // a temp var to get the references to take.
-        spObject *pTmp = &Devices;
+        spObject * pTmp = &Actions;
         this->push_back(pTmp);
-        pTmp = &Actions;
+        pTmp = &Devices;
         this->push_back(pTmp);
+        
     }
 
     spOperation *_getByType(spTypeID type)
