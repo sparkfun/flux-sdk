@@ -81,6 +81,8 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
 
     uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = 30);
 
+    void drawEntryBanner(void);
+    
     //-----------------------------------------------------------------------------
     // drawPage()  - spContainer version
     //

@@ -1,9 +1,11 @@
 
 
+#include "spSpark.h"
 #include "spSettingsSerial.h"
 #include "spSerialField.h"
 #include "spUtils.h"
 #include <ctype.h>
+#include <time.h>
 
 #define kOutputBufferSize 128
 
@@ -911,6 +913,24 @@ uint8_t spSettingsSerial::getMenuSelectionYN(uint timeout)
 {
     return getMenuSelectionFunc(0, true, timeout);
 }
+
+void spSettingsSerial::drawEntryBanner(void)
+{
+    // Let's draw a header as we enter 
+
+    spark.writeBanner();
+
+    Serial.printf("Device ID: %X\n\r", spark.deviceId());
+    
+    time_t t_now;
+    time(&t_now);
+    struct tm *tmLocal = localtime(&t_now);
+    char szBuffer[64];
+
+    memset(szBuffer, '\0', sizeof(szBuffer));
+    strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
+    Serial.printf("%s\n\r", szBuffer);
+}
 //--------------------------------------------------------------------------
 // Loop call
 //
@@ -920,8 +940,12 @@ uint8_t spSettingsSerial::getMenuSelectionYN(uint timeout)
 bool spSettingsSerial::loop(void)
 {
 
+
     if (_systemRoot && Serial.available())
     {
+        
+        drawEntryBanner();
+
         bool doSave = drawPage(_systemRoot);
         Serial.printf("\n\r\n\rEnd Settings\n\r");
 
