@@ -58,7 +58,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 // ThingSpeak outpout
 // Uncomment to test Thingspeak mqtt
-//#define TEST_THINGSPEAK
+#define TEST_THINGSPEAK
 #include <Spark/spThingSpeak.h>
 
 
@@ -163,10 +163,10 @@ void setupSDCard(void)
         // will cause a header to be written next cycle.
         fmtCSV.listenNewFile(theOutputFile.on_newFile);
 
-        Serial.printf("SD card connected. Card Type: %s, Size: %uMB\n\r", theSDCard.type(), theSDCard.size());
+        //Serial.printf("SD card connected. Card Type: %s, Size: %uMB\n\r", theSDCard.type(), theSDCard.size());
     }
-    else
-        Serial.println("SD card output not available");
+   // else
+      //  Serial.println("SD card output not available");
 }
 //---------------------------------------------------------------------
 // Check if we have a NFC reader available -- for use with WiFi credentials
@@ -205,38 +205,36 @@ void setupSPIDevices()
     // IMU
     if (onboardIMU.initialize(IMU_CS))
     {
-        Serial.println("Onboard IMU is enabled");
+        spLog_I(F("Onboard IMU is enabled"));
         logger.add(onboardIMU);
     }
     else 
-        Serial.println("Error starting onboard IMU");
+        spLog_E(F("Onboard IMU failed to start."));
 
     // Magnetometer
     if (onboardMag.initialize(MAG_CS))
     {
-        Serial.println("Onboard Magnetometer is enabled");
+        spLog_I(F("Onboard Magnetometer is enabled"));
         logger.add(onboardMag);
     }
     else 
-        Serial.println("Error starting onboard Magnetometer");
+        spLog_E(F("Onboard Magnetometer failed to start"));
 }
 //---------------------------------------------------------------------
 void setupBioHub()
 {
     if (bioHub.initialize(BIO_HUB_RESET, BIO_HUB_MFIO)) // Initialize the bio hub using the reset and mfio pins, 
     {
-        Serial.println("Bio Hub is enabled");
+        spLog_I(F("Bio Hub is enabled"));
         logger.add(bioHub);
     }
     else 
-        Serial.println("Error starting Bio Hub");
+        spLog_E(F("Bio Hub not started/connected"));
 }
 
 //---------------------------------------------------------------------
 void setupMQTT()
 {
-
-    Serial.println("Setting up MQTT.");
 
     // // Setup our MQTT parameters for testing if desired - or perform via settings/json file on SD card
     // mqttClient.server = "duke.home.lan";
@@ -300,7 +298,7 @@ void setup() {
 
     Serial.begin(115200);  
     while (!Serial);
-    Serial.println("\n---- Startup ----");
+    //Serial.println("\n---- Startup ----");
 
 #ifdef OPENLOG_ESP32    
     pinMode(EN_3V3_SW, OUTPUT); // Enable Qwiic power and I2C
@@ -308,7 +306,9 @@ void setup() {
 #endif
 
     // Lets set the application name?!
-    spark.setName("OpenLog ESP32", "Framework example for the OpenLog ESP32 board");
+    spark.setName("SparkFun Data Logger ESP32", "(c) 2023 SparkFun Electronics");
+    spark.setVersion("0.9.1 Alpha", 10009001);
+
     // If not using settings, can use the following lines to test WiFi manually
     // Try WiFi
     //wifiConnection.SSID = "";
@@ -342,10 +342,18 @@ void setup() {
     //               This should be done after all devices are added..for now...
     spark.start();  
 
-    if (wifiConnection.isConnected())
-        Serial.println("Connected to Wifi!");
+    spLog_I(F("Device ID: %X"), spark.deviceId());
+
+    // Write out the SD card stats 
+    if (theSDCard.enabled())
+        spLog_I(F("SD card available. Type: %s, Size: %uMB"), theSDCard.type(), theSDCard.size());
     else
-        Serial.println("Unable to connect to WiFi!");
+        spLog_W(F("SD card not available."));
+
+
+    // WiFi status    
+    if (!wifiConnection.isConnected())
+        spLog_E(F("Unable to connect to WiFi!"));
 
     // Logging is done at an interval - using an interval timer. 
     // Connect logger to the timer event
@@ -364,7 +372,6 @@ void setup() {
 
     setupNFC();
 
-   
     // What devices has the system detected?
     // List them and add them to the logger
 
@@ -379,19 +386,19 @@ void setup() {
     // But for this example, let's loop over our devices and show how use the
     // device parameters.
 
-    Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
+    spLog_I(F("Devices Detected [%d]"), myDevices.size() );
 
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-        Serial.printf("\tDevice: %s, Output Number: %d", device->name(), device->nOutputParameters());
+        spLog_N_(F("\tDevice: %s, Output Number: %d"), device->name(), device->nOutputParameters());
         if ( device->nOutputParameters() > 0)
         {
-            Serial.printf("  - Adding to logger\r\n");
+            spLog_N(F("  - Adding to logger"));
             logger.add(device);
         }
         else
-            Serial.printf(" - Not adding to logger \r\n");
+            spLog_N(F(" - Not adding to logger"));
     }
 
     // Setup the Onboard IMU
@@ -402,24 +409,24 @@ void setup() {
 
     ////////////
     // getAll() testing
-    auto allButtons = spark.get<spDevButton>();
+    // auto allButtons = spark.get<spDevButton>();
 
-    Serial.printf("Number of buttons: %d \n\r", allButtons->size());
-    for( auto button: *allButtons)
-    {
-        Serial.printf("Button Name: %s", button->name());
+    // Serial.printf("Number of buttons: %d \n\r", allButtons->size());
+    // for( auto button: *allButtons)
+    // {
+    //     Serial.printf("Button Name: %s", button->name());
 
-        // Have the button trigger a log entry
-        logger.listen(button->on_clicked);
+    //     // Have the button trigger a log entry
+    //     logger.listen(button->on_clicked);
         
-        // Lets long the value of the button event
-        logger.listenLogEvent(button->on_clicked, button);        
-    }
+    //     // Lets long the value of the button event
+    //     logger.listenLogEvent(button->on_clicked, button);        
+    // }
 
     /// END TESTING
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
-    Serial.printf("\n\rLog Output:\n\r");
+    spLog_N("\n\rLog Output:");
 }
 
 //---------------------------------------------------------------------
