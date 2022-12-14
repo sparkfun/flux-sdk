@@ -51,7 +51,6 @@ void spNTPESP32::onConnectionChange(bool bConnected)
 
 bool spNTPESP32::start(void)
 {
-    spLog_I(F("Starting NTP..."));
     // already running?
     if(sntp_enabled())
         return true;
@@ -77,7 +76,7 @@ bool spNTPESP32::start(void)
         struct tm *tm_now;
         time_t now;
 
-        spLog_I_(F("Waiting on NTP startup [%u secs]..."), _startupDelay);
+        spLog_I_(F("NTP startup [%u secs]..."), _startupDelay);
 
 
         while (true)
