@@ -62,12 +62,13 @@ bool spWiFiESP32::connect(void)
     WiFi.mode(WIFI_STA);
     WiFi.begin(SSID().c_str(), password().c_str());
     
-    spLog_I(F("Connecting to WiFi..."));
+    spLog_I_(F("Connecting to WiFi..."));
 
     int i=0;
     while(WiFi.status() != WL_CONNECTED)
     {
         delay(500);
+        spLog_N_(F("."));
         i++;
         if ( i > kMaxConnectionTries)
         {
@@ -76,7 +77,7 @@ bool spWiFiESP32::connect(void)
             return false;
         }
     }
-    spLog_I(F("Connected to %s"), SSID().c_str());
+    spLog_N(F("Connected to %s"), SSID().c_str());
     // okay, we're connected.
     _wasConnected = true;
     on_connectionChange.emit(true);
