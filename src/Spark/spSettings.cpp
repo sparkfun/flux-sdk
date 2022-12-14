@@ -124,9 +124,10 @@ bool spSettingsSave::restore(spObject *pObject)
 
     bool status = restoreObjectFromStorage(pObject, _primaryStorage);
 
+    char * strSource = nullptr;
     if(!status)
     {
-        spLog_W(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
+        spLog_D(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
 
 
         // Save to secondary ? 
@@ -134,19 +135,26 @@ bool spSettingsSave::restore(spObject *pObject)
         {
             status = restoreObjectFromStorage(pObject, _fallbackStorage);
             if (!status)
-                spLog_W(F("Unable to restore %s from the fallback system, %s"), pObject->name(), _fallbackStorage->name());
+                spLog_D(F("Unable to restore %s from the fallback system, %s"), pObject->name(), _fallbackStorage->name());
             else 
             {
-                spLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
+                //spLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
                 // We restored from fallback, now save to main storage -- TODO - should this be a setting
-                spLog_I(F("Saving settings to %s"), _primaryStorage->name());
+                spLog_D(F("Saving settings to %s"), _primaryStorage->name());
+                strSource = (char*)_fallbackStorage->name();
                 bool tmp = fallbackSave();
                 fallbackSave=false;
                 save(pObject);
                 fallbackSave = tmp;
             }
         }
-    }
+    }else
+        strSource = (char*) _primaryStorage->name();
+
+    if (status)
+        spLog_N(F("restored from %s"), strSource);
+    else
+        spLog_N(F("unable to restore settings, using defaults"));
 
     return status;
 
