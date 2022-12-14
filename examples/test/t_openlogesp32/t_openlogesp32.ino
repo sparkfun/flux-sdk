@@ -61,6 +61,12 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 //#define TEST_THINGSPEAK
 #include <Spark/spThingSpeak.h>
 
+
+//Azure IoT 
+//#define TEST_AZURE_IOT
+#include <Spark/spAzureIoT.h>
+
+
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
 #define EN_3V3_SW 32
@@ -127,6 +133,11 @@ spAWSIoT mqttAWS;
 #ifdef TEST_THINGSPEAK
 spThingSpeak iotThingSpeak;
 #endif
+
+#ifdef TEST_AZURE_IOT
+spAzureIoT iotAzure;
+#endif
+
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -261,6 +272,20 @@ void setupMQTT()
     // Note: Certs and settings are loaded off the SD card at startup.
 
     fmtJSON.add(iotThingSpeak);
+
+#endif
+
+
+#ifdef TEST_AZURE_IOT
+
+    iotAzure.setNetwork(&wifiConnection);
+
+    // Add the filesystem to load certs/keys from the SD card 
+    iotAzure.setFileSystem(&theSDCard); 
+
+    // Note: Certs and settings are loaded off the SD card at startup.
+
+    fmtJSON.add(iotAzure);
 
 #endif
 }
