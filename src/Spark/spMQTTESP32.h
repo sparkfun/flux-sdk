@@ -25,7 +25,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
 
         _isEnabled = bEnabled;
 
-        // TODO chech network connection availablity ...
+        // TODO check network connection availability ...
         if (_isEnabled)
             (void)connect();
         else
@@ -193,7 +193,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
             return;
         }
 
-        // the mqtt object has a limited transmitt buffer size (256) that doesn't adapt,
+        // the mqtt object has a limited transmit buffer size (256) that doesn't adapt,
         // but you can set the size (which performs a malloc and free)
         //
         // Openlog payloads can be large, so if in dynamic mode we keep track of the
@@ -483,7 +483,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
     }
 
     //---------------------------------------------------------
-    bool connect(void)
+    virtual bool connect(void)
     {
         // Already connected?
         if (spMQTTESP32Base<Object, WiFiClientSecure>::connected())
