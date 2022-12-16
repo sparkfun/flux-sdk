@@ -49,6 +49,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 
 // MQTT
+//#define TEST_MQTT
 #include <Spark/spMQTTESP32.h>
 
 // AWS IoT
@@ -58,7 +59,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 // ThingSpeak outpout
 // Uncomment to test Thingspeak mqtt
-#define TEST_THINGSPEAK
+//#define TEST_THINGSPEAK
 #include <Spark/spThingSpeak.h>
 
 
@@ -123,8 +124,9 @@ spDevMMC5983_SPI onboardMag;
 spDevBioHub bioHub;
 
 // An MQTT client 
-
+#ifdef TEST_MQTT
 spMQTTESP32 mqttClient;
+#endif
 
 #ifdef TEST_AWS
 spAWSIoT mqttAWS;
@@ -241,12 +243,14 @@ void setupMQTT()
     // mqttClient.topic = "/openlogesp32/logger1";
     // mqttClient.clientName = "myesp32";
 
+#ifdef TEST_MQTT
     // setup the network connection for the mqtt
-   // mqttClient.setNetwork(&wifiConnection);
+   mqttClient.setNetwork(&wifiConnection);
 
     // add mqtt to JSON
-   // fmtJSON.add(mqttClient);
+   fmtJSON.add(mqttClient);
 
+#endif
 #ifdef TEST_AWS
     // AWS
     mqttAWS.setName("AWS IoT", "Connect to an AWS Iot Thing");
