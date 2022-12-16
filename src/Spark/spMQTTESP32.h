@@ -121,7 +121,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
     }
 
     //----------------------------------------------------------------------------
-    void disconnect(void)
+    virtual void disconnect(void)
     {
         if (_mqttClient.connected() != 0)
             _mqttClient.stop();
