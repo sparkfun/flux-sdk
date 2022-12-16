@@ -67,6 +67,10 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 //#define TEST_AZURE_IOT
 #include <Spark/spAzureIoT.h>
 
+// HTTP output (call a URL with a JSON Payload)
+//#define TEST_HTTP_IOT
+#include <Spark/spWrHTTP.h>
+
 
 #define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32
