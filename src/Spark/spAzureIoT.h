@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-// For initial operation 
-#define AZURE_SDK_CLIENT_USER_AGENT "c%2F" AZ_SDK_VERSION_STRING "(ard;sparkfun-esp32)"
+// From the Azure SDK examples. Changing this randomly causes connectoin failures
+#define AZURE_SDK_CLIENT_USER_AGENT "c%2F" AZ_SDK_VERSION_STRING "(ard;esp32)"
 
 // This is copied from examples in the Azure C SDK. An default constructor and initialize() method were
 // added to allow post creation setup of the object. 
@@ -52,7 +52,7 @@ class AzIoTSasToken
 class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
 {
   public:
-    spAzureIoT() : _initialized{false}, _connected{false}
+    spAzureIoT() : _initialized{false}, _hubInitialized{false}, _connected{false}
     {
         setName("Azure IoT", "Connection to Azure IoT");
 
@@ -85,6 +85,9 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
     bool initializeIoTHubClient()
     {
 
+        if (_hubInitialized)
+            return true;
+
         az_iot_hub_client_options options = az_iot_hub_client_options_default();
         options.user_agent = AZ_SPAN_FROM_STR(AZURE_SDK_CLIENT_USER_AGENT);
 
@@ -112,7 +115,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
 
         char mqtt_username[kBufferSize];
         if (az_result_failed(az_iot_hub_client_get_user_name(&_client, mqtt_username, 
-                        sizeof(mqtt_username)/sizeof(mqtt_client_id[0]), NULL)))
+                        sizeof(mqtt_username)/sizeof(mqtt_username[0]), NULL)))
         {
             spLog_E(F("%s: Failed to get azure username."),name());
             return false;
@@ -122,7 +125,8 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         username = mqtt_username;
         clientName = mqtt_client_id;
 
-        return true;
+        _hubInitialized = true;
+        return _hubInitialized;
     }
 
     //---------------------------------------------------------------------
@@ -180,6 +184,16 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
     }
 
     //---------------------------------------------------------------------
+    // disconnect()
+
+    void disconnect()
+    {
+        _connected = false;
+
+        // call super
+        spMQTTESP32SecureCore<spAzureIoT>::disconnect();
+    }
+    //---------------------------------------------------------------------
     // Initialize method for the class
 
     bool initialize(void)
@@ -209,6 +223,31 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         return true;
     }
 
+    //---------------------------------------------------------------------    
+    // loop
+    bool loop(void)
+    {
+        if (!_connected)
+            return false;
+
+        // did our sas token expire?
+        if (_sasToken.IsExpired())
+        {
+            // the token needs to be refreshed, which updates the mqtt password. So disconnect
+            // and reconnect
+            disconnect();
+            if (!connect())
+            {
+                spLog_E(F("%s: Failed to reconnect after auth token refresh."), name());
+                return false;
+            }else
+                spLog_I(F("%s: SAS Auth token refreshed"), name());
+            return true;
+        }
+        return false;
+    }
+
+    // Properties
     spPropertyString<spAzureIoT> deviceID;
     spPropertySecureString<spAzureIoT> deviceKey;
 
@@ -229,6 +268,7 @@ private:
     char _az_device_key[kBufferSize];    // "" "" "" 
 
     bool _initialized;
+    bool _hubInitialized;
     bool _connected;
 
     AzIoTSasToken _sasToken;
