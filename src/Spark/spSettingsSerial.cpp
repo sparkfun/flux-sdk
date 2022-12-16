@@ -921,7 +921,7 @@ void spSettingsSerial::drawEntryBanner(void)
     spark.writeBanner();
 
     Serial.printf("Device ID: %X\n\r", spark.deviceId());
-    
+
     time_t t_now;
     time(&t_now);
     struct tm *tmLocal = localtime(&t_now);
@@ -929,7 +929,7 @@ void spSettingsSerial::drawEntryBanner(void)
 
     memset(szBuffer, '\0', sizeof(szBuffer));
     strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
-    Serial.printf("%s\n\r", szBuffer);
+    Serial.printf("Time: %s\n\r", szBuffer);
 }
 //--------------------------------------------------------------------------
 // Loop call
