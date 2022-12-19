@@ -22,6 +22,25 @@
 template <class Object> class spWrHTTPBase : public spActionType<Object>
 {
   private:
+
+    bool createWiFiClient(void)
+    {
+        if (_wifiClient)
+            delete _wifiClient;
+
+        _wifiClient = _isSecure ?  new WiFiClientSecure : new WiFiClient;
+
+        checkConnectionCert();
+
+        return _wifiClient != nullptr;
+    }
+
+    void checkConnectionCert()
+    {
+        if (_wifiClient != nullptr && _isSecure && _pCACert != nullptr)
+            ((WiFiClientSecure*)_wifiClient)->setCACert(_pCACert);
+    }
+
     // Enabled Property setter/getters
     void set_isEnabled(bool bEnabled)
     {
@@ -59,6 +78,31 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         if (theCert.length() > 0)
             _pCACert = strdup(theCert.c_str());
     }
+
+    //---------------------------------------------------------
+    std::string get_URL(void)
+    {
+        return _url;
+    }
+
+    //---------------------------------------------------------
+    void set_URL(std::string theURL)
+    {
+        if (theURL.length() < 10){
+            spLog_E(F("%s: Invalid URL - failed to parse protocol: %s"), this->name(), theURL.c_str());
+            return;
+        }
+
+        _url = theURL;
+
+        _isSecure = theURL.find("https") != std::string::npos;
+
+        if (!createWiFiClient())
+        {
+            spLog_E(F("%s : Error creating a wifi network client connection"), this->name());
+        }
+    }
+
     //---------------------------------------------------------
     char *loadCertFile(std::string &theFile)
     {
@@ -127,9 +171,9 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         if (_pCACert != nullptr)
             delete _pCACert;
 
-       // _wifiClient.setCACert(_pCACert);
-
         _pCACert = pCert;
+
+        checkConnectionCert();
 
         _caFilename = theFile;
     }
@@ -146,8 +190,9 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     }
 
   public:
-    spWrHTTPBase() : _isEnabled{true}, _canConnect{false},
-                     _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr}
+    spWrHTTPBase() : _isEnabled{true}, _canConnect{false}, _isSecure{false},
+                     _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr},
+                     _wifiClient{nullptr}
     {
         spRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
 
@@ -163,6 +208,9 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     {
         if (_pCACert != nullptr)
             delete _pCACert;
+
+        if (_wifiClient != nullptr)
+            delete _wifiClient;
     }
     // Used to register the event we want to listen to, which will trigger this
     // activity.
@@ -187,18 +235,26 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     // spWriter interface method
     virtual void write(const char *value, bool newline)
     {
-        Serial.printf("IN HTTP Writer: %d, %d, %s \n\r", _canConnect, URL().length(), URL().c_str());
         // if we are not connected, ignore
-        if (!_canConnect || !value || URL().length() < 10)
+        if (!_canConnect || !value || _url.length() < 10)
             return;
+
+        if (!_wifiClient)
+        {
+            if (!createWiFiClient())
+            {
+                spLog_E(F("%s: Error creating network connection."), this->name());
+                return;
+            }
+        }
 
         // Connect to server, post data, disconnnect
 
         HTTPClient http; 
 
-        if (!http.begin(_wifiClient, URL().c_str()))
+        if (!http.begin(*_wifiClient, _url.c_str()))
         {
-            spLog_E(F("%s: Error reaching URL: %s"), this->name(), URL().c_str());
+            spLog_E(F("%s: Error reaching URL: %s"), this->name(), _url.c_str());
             return;
         }
 
@@ -207,10 +263,8 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         int rc = http.POST(value);
 
         if (rc != 200)
-        {
-            spLog_W(F("%s: Error [%d] posting to: %s"), this->name(), rc, URL().c_str());
-            Serial.println(http.errorToString(rc).c_str());
-        }
+            spLog_W(F("%s: Error [%s] posting to: %s"), this->name(),
+                        http.errorToString(rc).c_str(), _url.c_str());
 
         http.end();
     }
@@ -225,7 +279,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     // Enabled/Disabled
     spPropertyRWBool<spWrHTTPBase, &spWrHTTPBase::get_isEnabled, &spWrHTTPBase::set_isEnabled> enabled;
 
-    spPropertyString<spWrHTTPBase> URL;
+    spPropertyRWString<spWrHTTPBase, &spWrHTTPBase::get_URL, &spWrHTTPBase::set_URL> URL;
 
     // Security certs/keys
     spPropertyRWSecretString<spWrHTTPBase, &spWrHTTPBase::get_caCert, &spWrHTTPBase::set_caCert> caCertificate;
@@ -235,11 +289,14 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 
   private:
     // WiFiClientSecure _wifiClient;
-    WiFiClient _wifiClient;    
+
     std::string _caFilename;
+
+    std::string _url;
 
     bool _isEnabled;
     bool _canConnect;
+    bool _isSecure;
 
     spNetwork *_theNetwork;
 
@@ -249,12 +306,20 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 
     // Filesystem to load a file from
     spIFileSystem *_fileSystem;
+
+    WiFiClient *_wifiClient;    
 };
 
 
 class spHTTPIoT : public spWrHTTPBase<spHTTPIoT>, public spWriter
 {
 public:
+    spHTTPIoT()
+    {
+        setName("HTTP IoT", "An HTTP IoT data connector");
+
+        spark.add(this);
+    }
     // for the Writer interface
     void write(int data)
     {
