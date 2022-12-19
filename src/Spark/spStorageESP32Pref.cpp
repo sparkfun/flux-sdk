@@ -21,7 +21,7 @@
 // handy helper
 static bool tag_is_valid(const char *tag)
 {
-    if (!tag || strlen(tag) <= kESP32MinTagLen)
+    if (!tag || strlen(tag) < kESP32MinTagLen)
     {
         spLog_E("ESP32  Storage - invalid tag length - minimum is %d: %s\n\r", kESP32MinTagLen, !tag ? "NULL" : tag);
         return false;
