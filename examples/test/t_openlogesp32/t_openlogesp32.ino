@@ -144,6 +144,9 @@ spThingSpeak iotThingSpeak;
 spAzureIoT iotAzure;
 #endif
 
+#ifdef TEST_HTTP_IOT
+spHTTPIoT  iotHTTP;
+#endif
 
 //---------------------------------------------------------------------
 void setupSDCard(void)
@@ -294,6 +297,14 @@ void setupMQTT()
     fmtJSON.add(iotAzure);
 
 #endif
+
+#ifdef TEST_HTTP_IOT
+
+    iotHTTP.setNetwork(&wifiConnection);
+    iotHTTP.setFileSystem(&theSDCard);
+    fmtJSON.add(iotHTTP);
+#endif
+
 }
 //---------------------------------------------------------------------
 // Arduino Setup
