@@ -127,7 +127,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         if (_pCACert != nullptr)
             delete _pCACert;
 
-        _wifiClient.setCACert(_pCACert);
+       // _wifiClient.setCACert(_pCACert);
 
         _pCACert = pCert;
 
@@ -151,7 +151,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     {
         spRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
 
-        spRegister(url, "URL", "The URL to call with log information");
+        spRegister(URL, "URL", "The URL to call with log information");
 
         spRegister(caCertificate, "CA Certificate",
                    "The Certificate Authority certificate. If set, the connection is secure");
@@ -187,6 +187,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     // spWriter interface method
     virtual void write(const char *value, bool newline)
     {
+        Serial.printf("IN HTTP Writer: %d, %d, %s \n\r", _canConnect, URL().length(), URL().c_str());
         // if we are not connected, ignore
         if (!_canConnect || !value || URL().length() < 10)
             return;
@@ -195,7 +196,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 
         HTTPClient http; 
 
-        if (!http.begin(_wifiClient, URL.c_str()))
+        if (!http.begin(_wifiClient, URL().c_str()))
         {
             spLog_E(F("%s: Error reaching URL: %s"), this->name(), URL().c_str());
             return;
@@ -206,7 +207,10 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         int rc = http.POST(value);
 
         if (rc != 200)
+        {
             spLog_W(F("%s: Error [%d] posting to: %s"), this->name(), rc, URL().c_str());
+            Serial.println(http.errorToString(rc).c_str());
+        }
 
         http.end();
     }
@@ -230,7 +234,8 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         caCertFilename;
 
   private:
-    WiFiClientSecure _wifiClient;
+    // WiFiClientSecure _wifiClient;
+    WiFiClient _wifiClient;    
     std::string _caFilename;
 
     bool _isEnabled;
@@ -246,4 +251,24 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     spIFileSystem *_fileSystem;
 };
 
+
+class spHTTPIoT : public spWrHTTPBase<spHTTPIoT>, public spWriter
+{
+public:
+    // for the Writer interface
+    void write(int data)
+    {
+        // noop
+    }
+    void write(float data)
+    {
+        // noop
+    }
+    //---------------------------------------------------------------------    
+    virtual void write(const char *value, bool newline)
+    {
+
+        spWrHTTPBase<spHTTPIoT>::write(value, false);
+    }
+};
 #endif
