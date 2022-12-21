@@ -179,12 +179,21 @@ class spSpark : public spObjectContainer
         spLog_N(F("%s\n\r"), description());
     }
 
-    uint32_t deviceId(void)
+    const char* deviceId(void)
     {
+        // ID is 16 in length, we use last byte as a flag. 
+        static char szDeviceID[17]={0};
 #ifdef ESP32
-        return ESP.getEfuseMac() & 0xFFFFFFFF;
+
+        if ( szDeviceID[sizeof(szDeviceID)-1] == 0)
+        {
+            snprintf(szDeviceID, sizeof(szDeviceID)-1, "%012llX", ESP.getEfuseMac());
+
+            szDeviceID[sizeof(szDeviceID)-1] = 1;
+        }
+
 #endif
-        return 0;
+        return (const char*)szDeviceID;
     }
 
   private:
