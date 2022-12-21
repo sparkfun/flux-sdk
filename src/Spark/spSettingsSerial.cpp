@@ -920,7 +920,7 @@ void spSettingsSerial::drawEntryBanner(void)
 
     spark.writeBanner();
 
-    Serial.printf("Device ID: %X\n\r", spark.deviceId());
+    Serial.printf("Device ID: %s\n\r", spark.deviceId());
 
     time_t t_now;
     time(&t_now);
