@@ -361,7 +361,7 @@ void setup() {
     //               This should be done after all devices are added..for now...
     spark.start();  
 
-    spLog_I(F("Device ID: %X"), spark.deviceId());
+    spLog_I(F("Device ID: %s"), spark.deviceId());
 
     // Write out the SD card stats 
     if (theSDCard.enabled())
