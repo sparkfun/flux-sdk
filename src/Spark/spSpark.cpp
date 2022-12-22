@@ -26,18 +26,29 @@ bool spSpark::start(bool bAutoLoad)
     spLog.setLogDriver(_logDriver);
     spLog.setLogLevel(spLogInfo); // TODO - adjust?
 
+
+
+    // Loop in the application
+    if (_theApplication)
+    {
+        if (!_theApplication->setup())
+        {
+            spLog_E(F("Error during application setup"));
+            return false;
+        }
+
+        if (strlen(_theApplication->name()) > 0)
+            this->setName(_theApplication->name());
+
+        if (strlen(_theApplication->description()) > 0)
+            this->setDescription(_theApplication->description());            
+    }
+
     writeBanner();
 
-    if (bAutoLoad)
-    {
         // Build drivers for the registered devices connected to the system
+    if (bAutoLoad)
         spDeviceFactory::get().buildDevices(i2cDriver());
-
-        // restore state - loads save property values for this object and
-        // connected devices.
-        // 6/10 TODO - Something is broken with restore and container crap
-        // restore();
-    }
 
     // Everything should be loaded -- restore settings from storage
     if (spSettings.isAvailable())
@@ -50,11 +61,21 @@ bool spSpark::start(bool bAutoLoad)
         spLog_I(F("Restore of System Settings unavailable."));
 
     // initialize actions
-
     for (auto pAction : Actions)
     {
         if (!pAction->initialize())
             spLog_W(F("[Startup] %s failed to initialize."), pAction->name());
+    }
+
+    // Call start on the application
+    // Loop in the application
+    if (_theApplication)
+    {
+        if (!_theApplication->start())
+        {
+            spLog_E(F("Error during application start"));
+            return false;
+        }
     }
     return true;
 }

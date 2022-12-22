@@ -6,6 +6,11 @@
 #include "spCoreDevice.h"
 #include <memory>
 
+
+
+
+class spApplication;
+
 // happy functions for happy users.
 bool spark_start(bool bAutoLoad = true);
 bool spark_loop();
@@ -196,6 +201,21 @@ class spSpark : public spObjectContainer
         return (const char*)szDeviceID;
     }
 
+    void setApplication(spApplication &theApp)
+    {
+        setApplication(&theApp);
+    }
+
+    void setApplication(spApplication *theApp)
+    {
+        if (theApp)
+            _theApplication = theApp;
+    }
+
+    spApplication * application(void)
+    {
+        return _theApplication;
+    }
   private:
 
     spBusI2C     _i2cDriver;
@@ -204,8 +224,10 @@ class spSpark : public spObjectContainer
     std::string _strVersion;
     uint32_t    _uiVersion;
 
+    spApplication * _theApplication;
+
     // Note private constructor...
-    spSpark() : _strVersion{"0"}, _uiVersion{0}
+    spSpark() : _strVersion{"0"}, _uiVersion{0}, _theApplication{nullptr}
     {
 
         // setup some default heirarchy things ...
@@ -245,3 +267,31 @@ class spSpark : public spObjectContainer
 // have a "global" variable that allows access to the spark environment from anywhere...
 
 extern spSpark &spark;
+
+// Define our application class interface.
+class spApplication : public spActionType<spApplication>
+{
+
+public:
+    spApplication()
+    {
+        spark.setApplication(this);
+    }
+    
+    // Method is called before device auto-load, settings restoratoin and action initalization
+    virtual bool setup(void)
+    {
+        return true;
+    }
+
+    // Called after everthing is loaded, restored and initialize
+    virtual bool start(void)
+    {
+        return true;
+    }
+
+    void setVersion(const char *strVersion, uint32_t uiVersion)
+    {
+        spark.setVersion(strVersion, uiVersion);
+    }
+};
