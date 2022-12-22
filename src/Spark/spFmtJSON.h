@@ -215,6 +215,13 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     {
         _jsonWriters.push_back(newWriter);
     }
+    void remove(spIWriterJSON *oldWriter)
+    {
+        auto iter = std::find(_jsonWriters.begin(), _jsonWriters.end(), oldWriter);
+
+        if (iter != _jsonWriters.end())
+            _jsonWriters.erase(iter);
+    }
 
   protected:
     template <typename T>
