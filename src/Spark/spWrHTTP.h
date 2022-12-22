@@ -190,7 +190,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     }
 
   public:
-    spWrHTTPBase() : _isEnabled{true}, _canConnect{false}, _isSecure{false},
+    spWrHTTPBase() : _isEnabled{false}, _canConnect{false}, _isSecure{false},
                      _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr},
                      _wifiClient{nullptr}
     {
