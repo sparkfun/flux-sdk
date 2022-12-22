@@ -198,7 +198,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
 
     bool initialize(void)
     {
-        if (_initialized)
+        if (_initialized || !enabled)
             return true;
 
         // do we have a device key
