@@ -236,7 +236,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     virtual void write(const char *value, bool newline)
     {
         // if we are not connected, ignore
-        if (!_canConnect || !value || _url.length() < 10)
+        if (!_isEnabled || !_canConnect || !value || _url.length() < 10)
             return;
 
         if (!_wifiClient)
