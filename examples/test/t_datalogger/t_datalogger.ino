@@ -37,8 +37,8 @@ void setup() {
     digitalWrite(EN_3V3_SW, HIGH);
 #endif
 
-    // Add the app to framework
-    spark.setApplication(theDataLogger);
+    // Start up the framework
+    spark.start();
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
