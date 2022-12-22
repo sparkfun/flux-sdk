@@ -71,6 +71,14 @@ class spOutputFormat
         _Writers.push_back(newWriter);
     }
 
+    void remove(spWriter *oldWriter)
+    {
+        auto iter = std::find(_Writers.begin(), _Writers.end(), oldWriter);
+
+        if (iter != _Writers.end())
+            _Writers.erase(iter);
+    }
+
     void outputObservation(const char *szBuffer)
     {
 
