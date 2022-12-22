@@ -82,7 +82,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
 
   public:
     spMQTTESP32Base()
-        : _isEnabled{true}, _theNetwork{nullptr}, _mqttClient(_wifiClient), _txBufferSize{0}, _dynamicBufferSize{0}
+        : _isEnabled{false}, _theNetwork{nullptr}, _mqttClient(_wifiClient), _txBufferSize{0}, _dynamicBufferSize{0}
     {
         spRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
 
