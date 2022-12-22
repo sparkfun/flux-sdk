@@ -202,10 +202,7 @@ private:
         auto nfcDevices = spark.get<spDevST25DV>();
 
         if (nfcDevices->size() == 0)
-        {
-            spLog_I(F("No NFC device detected"));
             return;
-        }
 
         // We have an NFC device. Create a credentials action and connect to the NFC device
         // and WiFi.
@@ -312,7 +309,7 @@ private:
         // Loop over the device list - note that it is iterable.
         for (auto device : myDevices)
         {
-            spLog_N_(F("\tDevice: %s, Output Number: %d"), device->name(), device->nOutputParameters());
+            spLog_N_(F("\tDevice: %s, Output Number: %d\n\r"), device->name(), device->nOutputParameters());
             if (device->nOutputParameters() > 0)
                 _logger.add(device);
         }
@@ -323,6 +320,8 @@ private:
         // Setup the Bio Hub
         setupBioHub();
 
+        spLog_N("");
+        
         return true;
     }
 
