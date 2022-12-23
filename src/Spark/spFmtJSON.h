@@ -223,6 +223,10 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
             _jsonWriters.erase(iter);
     }
 
+    // bring up our sub-class remove to handle standard writers
+    using spOutputFormat::remove;
+
+
   protected:
     template <typename T>
     void writeOutArrayDimension(JsonArray &jsonArray, T *&pData, spDataArrayType<T> *theArray, uint16_t currentDim)
