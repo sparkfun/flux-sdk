@@ -22,7 +22,7 @@ The new device class should subclass from the frameworks ```flxDevice``` class, 
 Implementing a driver for the `BME280` Device.
 
 ```C++
-class spDevBME280 : public flxDeviceI2CType<spDevBME280>, public BME280
+class flxDevBME280 : public flxDeviceI2CType<flxDevBME280>, public BME280
 {
 
 };
@@ -87,11 +87,11 @@ The class definition
 #define kBME280DeviceName "bme280";
 
 // Define our class - note sub-classing from the Qwiic Library
-class spDevBME280 : public flxDevice<spDevBME280>, public BME280
+class flxDevBME280 : public flxDevice<flxDevBME280>, public BME280
 {
 
   public:
-    spDevBME280();
+    flxDevBME280();
 
     // Device is connected methods
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
@@ -123,7 +123,7 @@ To complete the auto-discovery capabilities of the system, besides the implement
 
 This is call is placed before the class implementation and has the following signature:
 ```C++
-spRegisterDevice(DeviceName);
+flxRegisterDevice(DeviceName);
 ```
 Where `DeviceName` is the class name of the device being registered. 
 
@@ -136,17 +136,17 @@ Building off the above BME280 example, the implementation looks like:
 
 // Define our class static variables - allocs storage for them
 
-uint8_t spDevBME280::defaultDeviceAddress[] = {kBMEAddressDefault, 
+uint8_t flxDevBME280::defaultDeviceAddress[] = {kBMEAddressDefault, 
                     kBMEAddressAlt1, 
                     kSparkDeviceAddressNull};
 
 // Register this class with the system,
-spRegisterDevice(spDevBME280);
+flxRegisterDevice(flxDevBME280);
 
 //----------------------------------------
 // Constructor
 
-spDevBME280::spDevBME280()
+flxDevBME280::flxDevBME280()
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -162,7 +162,7 @@ Notes
 
 The isConnected() method for this example is:
 ```C++
-bool spDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
+bool flxDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
 
     uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); 
@@ -186,7 +186,7 @@ The only argument to this methods is the Arduino I2C `TwoWire` class, which the 
 
 The BME280 example implementation:
 ```C++
-bool spDevBME280::onInitialize(TwoWire &wirePort)
+bool flxDevBME280::onInitialize(TwoWire &wirePort)
 {
 
     // set the device address

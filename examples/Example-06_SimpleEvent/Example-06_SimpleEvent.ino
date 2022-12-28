@@ -5,8 +5,8 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spDevTwist.h>
-#include <Spark/spDevButton.h>
+#include <Spark/flxDevTwist.h>
+#include <Spark/flxDevButton.h>
 #include <Spark/flxSerial.h>
 
 
@@ -42,7 +42,7 @@ void setup() {
     spark.start();  
 
 
-    auto theTwists = spark.get<spDevTwist>();
+    auto theTwists = spark.get<flxDevTwist>();
 
     for ( auto pTwist : *theTwists)
     {
@@ -56,7 +56,7 @@ void setup() {
     if ( theTwists->size() == 0)
         Serial.println("No Twist Connected.");
 
-    auto theButtons = spark.get<spDevButton>();
+    auto theButtons = spark.get<flxDevButton>();
 
     for ( auto pButton : *theButtons)        
     {

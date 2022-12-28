@@ -12,7 +12,7 @@
 #include <Spark/flxSerial.h>
 
 // get testing
-#include <Spark/spDevNAU7802.h>
+#include <Spark/flxDevNAU7802.h>
 
 
 //------------------------------------------
@@ -102,7 +102,7 @@ void setup() {
 
     ////////////
     // get() testing
-    auto devs = spark.get<spDevNAU7802>();
+    auto devs = spark.get<flxDevNAU7802>();
 
     Serial.printf("Number of NAU7802 devices: %d \n\r", devs->size());
     for( auto dev : *devs)
@@ -145,12 +145,12 @@ void loop() {
       
       for (int i = 0; i < myDevices.size(); i++)
       {
-        flxTypeID type = spDevNAU7802::type();
+        flxTypeID type = flxDevNAU7802::type();
         
         if (type == myDevices.at(i)->getType())
         {
-          spDevNAU7802 *theItem;
-          theItem = (spDevNAU7802 *)myDevices.at(i);
+          flxDevNAU7802 *theItem;
+          theItem = (flxDevNAU7802 *)myDevices.at(i);
               
           if ((c == 'z') || (c == 'Z')) // Zero the scale
           {

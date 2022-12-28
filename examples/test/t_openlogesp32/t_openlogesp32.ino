@@ -19,7 +19,7 @@
 #include <Spark/flxSettingsSerial.h>
 
 // Testing for device calls
-#include <Spark/spDevButton.h>
+#include <Spark/flxDevButton.h>
 
 // SD Card output
 #include <Spark/flxFSSDMMCard.h>
@@ -32,18 +32,18 @@
 #include <Spark/flxNTPESP32.h>
 
 // NFC device
-#include <Spark/spDevsT25DV.h>
+#include <Spark/flxDevST25DV.h>
 
 // SPI Devices
 // The onboard IMU 
-#include <Spark/spDevISM330.h>
+#include <Spark/flxDevISM330.h>
 static const uint8_t IMU_CS = 5;
 // The onboard Magnetometer
-#include <Spark/spDevMMC5983.h>
+#include <Spark/flxDevMMC5983.h>
 static const uint8_t MAG_CS = 27;
 
 // Biometric Hub
-#include <Spark/spDevBioHub.h>
+#include <Spark/flxDevBioHub.h>
 static const uint8_t BIO_HUB_RESET = 17; // Use the TXD pin as the bio hub reset pin
 static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio pin
 
@@ -121,11 +121,11 @@ flxWiFiESP32 wifiConnection;
 flxNTPESP32  ntpClient;
 
 // the onboard IMU 
-spDevISM330_SPI onboardIMU;
-spDevMMC5983_SPI onboardMag;
+flxDevISM330_SPI onboardIMU;
+flxDevMMC5983_SPI onboardMag;
 
 // a biometric sensor hub
-spDevBioHub bioHub;
+flxDevBioHub bioHub;
 
 // An MQTT client 
 #ifdef TEST_MQTT
@@ -185,7 +185,7 @@ void setupNFC(void)
 {
 
     // do we have a NFC device connected?
-    auto nfcDevices = spark.get<spDevST25DV>();
+    auto nfcDevices = spark.get<flxDevST25DV>();
 
     if (nfcDevices->size() == 0)
         return;
@@ -428,7 +428,7 @@ void setup() {
 
     ////////////
     // getAll() testing
-    // auto allButtons = spark.get<spDevButton>();
+    // auto allButtons = spark.get<flxDevButton>();
 
     // Serial.printf("Number of buttons: %d \n\r", allButtons->size());
     // for( auto button: *allButtons)

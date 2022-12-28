@@ -7,8 +7,8 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spDevBME280.h>
-#include <Spark/spDevCCS811.h>
+#include <Spark/flxDevBME280.h>
+#include <Spark/flxDevCCS811.h>
 
 /////////////////////////////////////////////////////////////////////////
 //
@@ -16,8 +16,8 @@
 //
 // For this demo, connect to a BME280 and a CCS811 (the env combo board)
 
-spDevBME280 myBME;
-spDevCCS811 myCCS;
+flxDevBME280 myBME;
+flxDevCCS811 myCCS;
 
 bool BMEIsConnected=false;
 bool CCSIsConnected=false;

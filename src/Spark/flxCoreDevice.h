@@ -204,7 +204,7 @@ class flxDeviceBuilderI2C
 // Define a class template used to register a device, then use this template to
 // have a device create a builder for it's specific device class.
 //
-// The trick is the macro spRegisterDevice, which sets up a static object
+// The trick is the macro flxRegisterDevice, which sets up a static object
 // of the builder class. This object is created at startup (when *globals* are inst),
 // and the constructor of the class registers the builder in the factory class.
 //
@@ -244,4 +244,4 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
 };
 
 // Macro to define the global builder object.
-#define spRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
+#define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;

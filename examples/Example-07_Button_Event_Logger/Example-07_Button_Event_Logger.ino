@@ -9,8 +9,8 @@
 #include <Spark/flxFmtCSV.h>
 #include <Spark/flxSerial.h>
 
-#include <Spark/spDevButton.h> // For get testing
-#include <Spark/spDevTwist.h> // For get testing
+#include <Spark/flxDevButton.h> // For get testing
+#include <Spark/flxDevTwist.h> // For get testing
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ void setup() {
 
     // Identify any buttons
     // Add their on_clicked events as logger triggers
-    auto buttons = spark.get<spDevButton>();
+    auto buttons = spark.get<flxDevButton>();
     
     Serial.printf("Number of buttons: %d\r\n", buttons->size());
 
@@ -109,7 +109,7 @@ void setup() {
 
     // Identify any Qwiic Twists
     // Add their on_clicked and on_twist events as logger triggers
-    auto twists = spark.get<spDevTwist>();
+    auto twists = spark.get<flxDevTwist>();
     
     Serial.printf("Number of twists: %d\r\n", twists->size());
 

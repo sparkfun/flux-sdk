@@ -77,7 +77,7 @@ class spSpark : public flxObjectContainer
     // example - getting all the buttons :
     // -------------------------------
     //
-    //  auto buttons = spark.getAll<spDevButton>();
+    //  auto buttons = spark.getAll<flxDevButton>();
     //
     //  Serial.printf("Number of buttons: %d \n\r", buttons->size());
     //  for( auto b : *buttons)

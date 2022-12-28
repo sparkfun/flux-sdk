@@ -18,7 +18,7 @@
 #include <Spark/flxSettingsSerial.h>
 
 // Testing for device calls
-#include <Spark/spDevButton.h>
+#include <Spark/flxDevButton.h>
 
 // SD Card output
 #include <Spark/flxFSSDMMCard.h>
@@ -197,7 +197,7 @@ void setup() {
 
     ////////////
     // getAll() testing
-    auto allButtons = spark.get<spDevButton>();
+    auto allButtons = spark.get<flxDevButton>();
 
     Serial.printf("Number of buttons: %d \n\r", allButtons->size());
     for( auto button: *allButtons)

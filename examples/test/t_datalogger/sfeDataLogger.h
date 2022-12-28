@@ -26,19 +26,19 @@
 #include <Spark/flxNTPESP32.h>
 
 // NFC device
-#include <Spark/spDevsT25DV.h>
+#include <Spark/flxDevST25DV.h>
 
 // SPI Devices
 // The onboard IMU
-#include <Spark/spDevISM330.h>
+#include <Spark/flxDevISM330.h>
 static const uint8_t kAppOnBoardIMUCS = 5;
 
 // The onboard Magnetometer
-#include <Spark/spDevMMC5983.h>
+#include <Spark/flxDevMMC5983.h>
 static const uint8_t kAppOnBoardMAGCS = 27;
 
 // Biometric Hub -- requires pins to be set on startup
-#include <Spark/spDevBioHub.h>
+#include <Spark/flxDevBioHub.h>
 static const uint8_t kAppBioHubReset = 17; // Use the TXD pin as the bio hub reset pin
 static const uint8_t kAppBioHubMFIO = 16;  // Use the RXD pin as the bio hub mfio pin
 
@@ -176,11 +176,11 @@ private:
     flxNTPESP32 _ntpClient;
 
     // the onboard IMU
-    spDevISM330_SPI _onboardIMU;
-    spDevMMC5983_SPI _onboardMag;
+    flxDevISM330_SPI _onboardIMU;
+    flxDevMMC5983_SPI _onboardMag;
 
     // a biometric sensor hub
-    spDevBioHub _bioHub;
+    flxDevBioHub _bioHub;
 
     // IoT endpoints
     // An generic MQTT client

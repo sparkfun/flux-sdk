@@ -1,6 +1,6 @@
 /*
  *
- *  spDevBME280.cpp
+ *  flxDevBME280.cpp
  *
  *  Device object for the BME280 Qwiic device.
  *

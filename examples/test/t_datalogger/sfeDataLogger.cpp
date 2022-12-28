@@ -141,7 +141,7 @@ bool sfeDataLogger::setup()
 void sfeDataLogger::setupNFDevice(void)
 {
     // do we have a NFC device connected?
-    auto nfcDevices = spark.get<spDevST25DV>();
+    auto nfcDevices = spark.get<flxDevST25DV>();
 
     if (nfcDevices->size() == 0)
         return;
@@ -153,7 +153,7 @@ void sfeDataLogger::setupNFDevice(void)
     if (!pCreds)
         return;
 
-    spDevST25DV *pNFC = nfcDevices->at(0);
+    flxDevST25DV *pNFC = nfcDevices->at(0);
     flxLog_I(F("%s: WiFi credentials via NFC enabled"), pNFC->name());
 
     pCreds->setCredentialSource(pNFC);
