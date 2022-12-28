@@ -109,17 +109,17 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     bool bHasLimits = false;
     char limitRange[64] = {'\0'};
 
-    spDataLimit *propLimit = pProp->dataLimit();   
+    flxDataLimit *propLimit = pProp->dataLimit();   
     if (propLimit )
     {
         // limits sets are handled in another routine
-        if ( propLimit->type() == spDataLimitTypeSet)
+        if ( propLimit->type() == flxDataLimitTypeSet)
             return drawPage<spProperty>(pCurrent, pProp, propLimit, true);
 
-        if ( propLimit->type() == spDataLimitTypeRange)
+        if ( propLimit->type() == flxDataLimitTypeRange)
         {
             bHasLimits=true;
-            const spDataLimitList limitTags = propLimit->limits();
+            const flxDataLimitList limitTags = propLimit->limits();
             if(limitTags.size() > 1)
                 snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(), limitTags.at(1).name.c_str());
         }
@@ -136,7 +136,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     // Editing Intro
     Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
-                  spGetTypeName(pProp->type()));
+                  flxGetTypeName(pProp->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
@@ -286,24 +286,24 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 
     // Void type input parameter?
 
-    if (pParam->type() == spTypeNone)
+    if (pParam->type() == flxTypeNone)
         return drawPageParamInVoid(pCurrent, pParam);
 
     // Any value limits set? - use in prompt loop
     bool bHasLimits = false;
     char limitRange[64] = {'\0'};
 
-    spDataLimit *propLimit = pParam->dataLimit();   
+    flxDataLimit *propLimit = pParam->dataLimit();   
     if (propLimit )
     {
         // limits sets are handled in another routine
-        if ( propLimit->type() == spDataLimitTypeSet)
+        if ( propLimit->type() == flxDataLimitTypeSet)
             return drawPage<spParameterIn>(pCurrent, pParam, propLimit );
             
-        if ( propLimit->type() == spDataLimitTypeRange)
+        if ( propLimit->type() == flxDataLimitTypeRange)
         {
             bHasLimits=true;
-            const spDataLimitList limitTags = propLimit->limits();
+            const flxDataLimitList limitTags = propLimit->limits();
             if(limitTags.size() > 1)
                 snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(), limitTags.at(1).name.c_str());
         }
@@ -316,10 +316,10 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     // Header
     drawPageHeader(pCurrent, pParam->name());
 
-    // if the parameter is a void type (spTypeNone),
+    // if the parameter is a void type (flxTypeNone),
     // Editing Intro
     Serial.printf("\tEnter the value to pass into `%s`(<%s>)\n\r\n\r", pParam->name(),
-                  spGetTypeName(pParam->type()));
+                  flxGetTypeName(pParam->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
@@ -365,7 +365,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 
 bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn *pParam)
 {
-    if (!pCurrent || !pParam || pParam->type() != spTypeNone)
+    if (!pCurrent || !pParam || pParam->type() != flxTypeNone)
         return false;
 
     // let's get a value for the parameter
@@ -373,7 +373,7 @@ bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn 
     // Header
     drawPageHeader(pCurrent, pParam->name());
 
-    // if the parameter is a void type (spTypeNone),
+    // if the parameter is a void type (flxTypeNone),
     // Editing Intro
     Serial.printf("\tCall `%s`() [Y/n]? ", pParam->name());
 
@@ -475,7 +475,7 @@ void spSettingsSerial::drawPageFooter(spObject *pCurrent)
 //
 // Draw the entry in the menu for the give item
 //
-void spSettingsSerial::drawMenuEntry(uint item, spDescriptor *pDesc)
+void spSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
 {
 
     if (!pDesc)

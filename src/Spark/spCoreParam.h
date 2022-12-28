@@ -11,7 +11,7 @@
 
 #include "spCoreInterface.h"
 #include "spCoreProps.h"
-#include "spCoreTypes.h"
+#include "flxCoreTypes.h"
 #include "spUtils.h"
 
 //----------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@
 //
 // From an abstract sense, a basic parameter   - nothing more
 
-class spParameter : public spDescriptor
+class spParameter : public flxDescriptor
 {
     bool _isEnabled;
 
@@ -37,7 +37,7 @@ class spParameter : public spDescriptor
     {
         _isEnabled = enabled;
     };
-    virtual spDataType_t type(void) = 0;
+    virtual flxDataType_t type(void) = 0;
 };
 
 // We want to bin parameters as input and output for storing different
@@ -46,9 +46,9 @@ class spParameter : public spDescriptor
 class spParameterIn : public spParameter
 {
   public:
-    virtual spEditResult_t editValue(spDataEditor &) = 0;
-    virtual bool setValue(spDataVariable &) = 0;
-    virtual spDataLimit *dataLimit(void) = 0;
+    virtual spEditResult_t editValue(flxDataEditor &) = 0;
+    virtual bool setValue(flxDataVariable &) = 0;
+    virtual flxDataLimit *dataLimit(void) = 0;
     std::string to_string()
     {
         return std::string(name());
@@ -57,7 +57,7 @@ class spParameterIn : public spParameter
 
 #define kParameterOutFlagArray 0x01
 
-// class spParameterOut : public spParameter, public spDataOut
+// class spParameterOut : public spParameter, public flxDataOut
 class spParameterOut : public spParameter
 {
   public:
@@ -68,7 +68,7 @@ class spParameterOut : public spParameter
     {
     }
 
-    virtual spDataType_t type(void) = 0;
+    virtual flxDataType_t type(void) = 0;
     // Some types need precision - just make it generic
     virtual uint16_t precision(void)
     {
@@ -203,7 +203,7 @@ class _spParameterContainer
 //----------------------------------------------------------------------------------------------------
 // spParameterOutScalar
 
-class spParameterOutScalar : public spParameterOut, public spDataOut
+class spParameterOutScalar : public spParameterOut, public flxDataOut
 {
   public:
     // mostly a
@@ -211,7 +211,7 @@ class spParameterOutScalar : public spParameterOut, public spDataOut
     {
         return this;
     }
-    virtual spDataType_t type(void) = 0;
+    virtual flxDataType_t type(void) = 0;
 };
 //----------------------------------------------------------------------------------------------------
 // spParameterOut
@@ -221,7 +221,7 @@ class spParameterOutScalar : public spParameterOut, public spDataOut
 //
 
 template <class T, class Object, T (Object::*_getter)()>
-class _spParameterOut : public _spDataOut<T>, public spParameterOutScalar
+class _spParameterOut : public _flxDataOut<T>, public spParameterOutScalar
 {
     Object *my_object; // Pointer to the containing object
 
@@ -235,9 +235,9 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOutScalar
     }
     //---------------------------------------------------------------------------------
     // return our data type
-    spDataType_t type()
+    flxDataType_t type()
     {
-        return _spDataOut<T>::type();
+        return _flxDataOut<T>::type();
     };
 
     //---------------------------------------------------------------------------------
@@ -303,43 +303,43 @@ class _spParameterOut : public _spDataOut<T>, public spParameterOutScalar
 
     bool getBool()
     {
-        return _spDataOut<T>::getBool();
+        return _flxDataOut<T>::getBool();
     };
     int8_t getInt8()
     {
-        return _spDataOut<T>::getInt8();
+        return _flxDataOut<T>::getInt8();
     };
     int16_t getInt16()
     {
-        return _spDataOut<T>::getInt16();
+        return _flxDataOut<T>::getInt16();
     };
     int getInt()
     {
-        return _spDataOut<T>::getInt();
+        return _flxDataOut<T>::getInt();
     };
     uint8_t getUint8()
     {
-        return _spDataOut<T>::getUint8();
+        return _flxDataOut<T>::getUint8();
     };
     uint16_t getUint16()
     {
-        return _spDataOut<T>::getUint16();
+        return _flxDataOut<T>::getUint16();
     };
     uint getUint()
     {
-        return _spDataOut<T>::getUint();
+        return _flxDataOut<T>::getUint();
     };
     float getFloat()
     {
-        return _spDataOut<T>::getFloat();
+        return _flxDataOut<T>::getFloat();
     };
     double getDouble()
     {
-        return _spDataOut<T>::getDouble();
+        return _flxDataOut<T>::getDouble();
     };
     std::string getString()
     {
-        return _spDataOut<T>::getString();
+        return _flxDataOut<T>::getString();
     };
 };
 
@@ -409,7 +409,7 @@ class spParameterOutDouble : public _spParameterOut<double, Object, _getter>
 //
 //
 template <class Object, std::string (Object::*_getter)()>
-class spParameterOutString : public spParameterOutScalar, public _spDataOutString
+class spParameterOutString : public spParameterOutScalar, public _flxDataOutString
 {
     Object *my_object; // Pointer to the containing object
 
@@ -419,9 +419,9 @@ class spParameterOutString : public spParameterOutScalar, public _spDataOutStrin
     }
 
     // type
-    spDataType_t type(void)
+    flxDataType_t type(void)
     {
-        return _spDataOutString::type();
+        return _flxDataOutString::type();
     };
     //---------------------------------------------------------------------------------
     // to register the parameter - set the containing object instance
@@ -487,43 +487,43 @@ class spParameterOutString : public spParameterOutScalar, public _spDataOutStrin
 
     bool getBool()
     {
-        return _spDataOutString::getBool();
+        return _flxDataOutString::getBool();
     };
     int8_t getInt8()
     {
-        return _spDataOutString::getInt8();
+        return _flxDataOutString::getInt8();
     };
     int16_t getInt16()
     {
-        return _spDataOutString::getInt16();
+        return _flxDataOutString::getInt16();
     };
     int getInt()
     {
-        return _spDataOutString::getInt();
+        return _flxDataOutString::getInt();
     };
     uint8_t getUint8()
     {
-        return _spDataOutString::getUint8();
+        return _flxDataOutString::getUint8();
     };
     uint16_t getUint16()
     {
-        return _spDataOutString::getUint16();
+        return _flxDataOutString::getUint16();
     };
     uint getUint()
     {
-        return _spDataOutString::getUint();
+        return _flxDataOutString::getUint();
     };
     float getFloat()
     {
-        return _spDataOutString::getFloat();
+        return _flxDataOutString::getFloat();
     };
     double getDouble()
     {
-        return _spDataOutString::getDouble();
+        return _flxDataOutString::getDouble();
     };
     std::string getString()
     {
-        return _spDataOutString::getString();
+        return _flxDataOutString::getString();
     };
 };
 
@@ -542,12 +542,12 @@ class spParameterOutArray : public spParameterOut
         return this;
     }
 
-    virtual spDataArray *get(void) = 0;
+    virtual flxDataArray *get(void) = 0;
 };
 
 //---------------------------------------------------------------------------------------
 
-template <class T, class Object, bool (Object::*_getter)(spDataArrayType<T> *)>
+template <class T, class Object, bool (Object::*_getter)(flxDataArrayType<T> *)>
 class spParameterOutArrayType : public spParameterOutArray
 {
 
@@ -560,10 +560,10 @@ class spParameterOutArrayType : public spParameterOutArray
 
     //---------------------------------------------------------------------------------
     // return our data type
-    spDataType_t type()
+    flxDataType_t type()
     {
         T c;
-        return spDataTyper::type(c);
+        return flxDataTyper::type(c);
     };
 
     //---------------------------------------------------------------------------------
@@ -614,14 +614,14 @@ class spParameterOutArrayType : public spParameterOutArray
     // NOTE - using smart pointer/shared pointer for the return value. This will automatically
     //        free memory when the pointer goes out of scope.
 
-    spDataArrayType<T> *get(void)
+    flxDataArrayType<T> *get(void)
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return nullptr;
         }
-        spDataArrayType<T> *data = new spDataArrayType<T>;
+        flxDataArrayType<T> *data = new flxDataArrayType<T>;
         bool bstatus = (my_object->*_getter)(data);
 
         if (!bstatus)
@@ -635,35 +635,35 @@ class spParameterOutArrayType : public spParameterOutArray
 
     // //---------------------------------------------------------------------------------
     // // get -> parameter()
-    // bool operator()(spDataArrayType<T> & data)
+    // bool operator()(flxDataArrayType<T> & data)
     // {
     //     return get(data);
     // };
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)(spDataArrayType<bool> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<bool> *)>
 using spParameterOutArrayBool = spParameterOutArrayType<bool, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int8_t> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<int8_t> *)>
 using spParameterOutArrayInt8 = spParameterOutArrayType<int8_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int16_t> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<int16_t> *)>
 using spParameterOutArrayInt16 = spParameterOutArrayType<int16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<int> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<int> *)>
 using spParameterOutArrayInt = spParameterOutArrayType<int, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint8_t> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<uint8_t> *)>
 using spParameterOutArrayUint8 = spParameterOutArrayType<uint8_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint16_t> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<uint16_t> *)>
 using spParameterOutArrayUint16 = spParameterOutArrayType<uint16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<uint> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<uint> *)>
 using spParameterOutArrayUint = spParameterOutArrayType<uint, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<float> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<float> *)>
 class spParameterOutArrayFloat : public spParameterOutArrayType<float, Object, _getter>
 {
   public:
@@ -683,7 +683,7 @@ class spParameterOutArrayFloat : public spParameterOutArrayType<float, Object, _
     uint16_t _precision;
 };
 
-template <class Object, bool (Object::*_getter)(spDataArrayType<double> *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayType<double> *)>
 class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object, _getter>
 {
   public:
@@ -703,7 +703,7 @@ class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object,
     uint16_t _precision;
 };
 
-template <class Object, bool (Object::*_getter)(spDataArrayString *)>
+template <class Object, bool (Object::*_getter)(flxDataArrayString *)>
 class spParameterOutArrayString : public spParameterOutArray
 {
 
@@ -716,9 +716,9 @@ class spParameterOutArrayString : public spParameterOutArray
 
     //---------------------------------------------------------------------------------
     // return our data type
-    spDataType_t type()
+    flxDataType_t type()
     {
-        return spTypeString;
+        return flxTypeString;
     };
 
     //---------------------------------------------------------------------------------
@@ -768,14 +768,14 @@ class spParameterOutArrayString : public spParameterOutArray
     // NOTE - using smart pointer/shared pointer for the return value. This will automatically
     //        free memory when the pointer goes out of scope.
 
-    spDataArrayString *get(void)
+    flxDataArrayString *get(void)
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
             spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return nullptr;
         }
-        spDataArrayString *data = new spDataArrayString;
+        flxDataArrayString *data = new flxDataArrayString;
         bool bstatus = (my_object->*_getter)(data);
 
         if (!bstatus)
@@ -791,7 +791,7 @@ class spParameterOutArrayString : public spParameterOutArray
 //-----------------------------------------------------------------------------------
 
 template <class T, class Object, void (Object::*_setter)(T const &)>
-class _spParameterIn : public spParameterIn, public _spDataIn<T>
+class _spParameterIn : public spParameterIn, public _flxDataIn<T>
 {
     Object *my_object; // Pointer to the containing object
 
@@ -803,18 +803,18 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
     // Limit data range
     _spParameterIn(T min, T max)
     {
-        _spDataIn<T>::setDataLimitRange(min, max);
+        _flxDataIn<T>::setDataLimitRange(min, max);
     }
     // Limit data set
     _spParameterIn(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
-        _spDataIn<T>::addDataLimitValidValue(limitSet);
+        _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
 
     //---------------------------------------------------------------------------------
-    spDataType_t type()
+    flxDataType_t type()
     {
-        return _spDataIn<T>::type();
+        return _flxDataIn<T>::type();
     };
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
@@ -882,7 +882,7 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         T value = 0;
@@ -892,7 +892,7 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
         if (bSuccess) // success
         {
             // do we have a dataLimit set, and if so are we in limits?
-            if (!_spDataIn<T>::isValueValid(value))
+            if (!_flxDataIn<T>::isValueValid(value))
                 return spEditOutOfRange;
 
             set(value);
@@ -900,7 +900,7 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
-    bool setValue(spDataVariable &value)
+    bool setValue(flxDataVariable &value)
     {
 
         if (value.type == type())
@@ -912,9 +912,9 @@ class _spParameterIn : public spParameterIn, public _spDataIn<T>
         return false;
     };
 
-    spDataLimit *dataLimit(void)
+    flxDataLimit *dataLimit(void)
     {
-        return _spDataIn<T>::dataLimit();
+        return _flxDataIn<T>::dataLimit();
     }
 };
 
@@ -950,7 +950,7 @@ using spParameterInDouble = _spParameterIn<double, Object, _setter>;
 
 // strings are special.
 template <class Object, void (Object::*_setter)(std::string const &)>
-class spParameterInString : public spParameterIn, _spDataInString
+class spParameterInString : public spParameterIn, _flxDataInString
 {
     Object *my_object; // Pointer to the containing object
 
@@ -963,9 +963,9 @@ class spParameterInString : public spParameterIn, _spDataInString
     {
     }
     //---------------------------------------------------------------------------------
-    spDataType_t type()
+    flxDataType_t type()
     {
-        return _spDataInString::type();
+        return _flxDataInString::type();
     };
 
     //---------------------------------------------------------------------------------
@@ -1033,7 +1033,7 @@ class spParameterInString : public spParameterIn, _spDataInString
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         std::string value = "";
@@ -1045,12 +1045,12 @@ class spParameterInString : public spParameterIn, _spDataInString
 
         return bSuccess ? spEditSuccess : spEditFailure;
     }
-    spDataLimit *dataLimit(void)
+    flxDataLimit *dataLimit(void)
     {
         return nullptr;
     }
 
-    bool setValue(spDataVariable &value)
+    bool setValue(flxDataVariable &value)
     {
 
         if (value.type == type())
@@ -1085,9 +1085,9 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     {
     }
     //---------------------------------------------------------------------------------
-    spDataType_t type()
+    flxDataType_t type()
     {
-        return spTypeNone;
+        return flxTypeNone;
     };
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
@@ -1153,15 +1153,15 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     // editValue()
     //
     // there is nothing to edit - this method just supports the interface
-    spEditResult_t editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(flxDataEditor &theEditor)
     {
         return spEditSuccess;
     };
-    spDataLimit *dataLimit(void)
+    flxDataLimit *dataLimit(void)
     {
         return nullptr;
     };
-    bool setValue(spDataVariable &value)
+    bool setValue(flxDataVariable &value)
     {
         return true;
     };
@@ -1187,9 +1187,9 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
 class spOperation : public spObject, public _spParameterContainer
 {
   public:
-    virtual spTypeID getType(void)
+    virtual flxTypeID getType(void)
     {
-        return (spTypeID) nullptr;
+        return (flxTypeID) nullptr;
     }
 
     virtual bool loop(void)
@@ -1228,16 +1228,16 @@ template <typename T> class spActionType : public spAction
     // The typeID is determined by hashing the name of the class.
     // This way the type ID is consistant across invocations
 
-    static spTypeID type(void)
+    static flxTypeID type(void)
     {
-        static spTypeID _myTypeID = spGetClassTypeID<T>();
+        static flxTypeID _myTypeID = flxGetClassTypeID<T>();
 
         return _myTypeID;
     }
 
     // ---------------------------------------------------------------
     // Return the type ID of this
-    spTypeID getType(void)
+    flxTypeID getType(void)
     {
         return type();
     }

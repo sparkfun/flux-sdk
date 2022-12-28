@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "spCore.h"
+#include "flxCore.h"
 #include "spCoreDevice.h"
 #include <memory>
 
@@ -59,10 +59,10 @@ class spSpark : public spObjectContainer
 
 
     //---------------------------------------------------------------------------------
-    bool save(spStorage *pStorage);
+    bool save(flxStorage *pStorage);
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorage *pStorage);
+    bool restore(flxStorage *pStorage);
 
     //--------------------------------------------------------
     // get/find a device by type template.
@@ -92,7 +92,7 @@ class spSpark : public spObjectContainer
     {
         spContainer<T *> results;
 
-        spTypeID type = T::type();
+        flxTypeID type = T::type();
 
         T *theItem;
         for (int i = 0; i < Devices.size(); i++)
@@ -109,7 +109,7 @@ class spSpark : public spObjectContainer
 
     //--------------------------------------------------------
     // Get all that are of the provided type ID
-    std::shared_ptr<spOperationContainer> get(spTypeID type)
+    std::shared_ptr<spOperationContainer> get(flxTypeID type)
     {
         spOperationContainer results;
 
@@ -246,7 +246,7 @@ class spSpark : public spObjectContainer
         
     }
 
-    spOperation *_getByType(spTypeID type)
+    spOperation *_getByType(flxTypeID type)
     {
 
         for (int i = 0; i < Devices.size(); i++)

@@ -1,29 +1,29 @@
 /*
- * spStorage.h
+ * flxStorage.h
  *
  * Define our interfaces for state saving/storage
  */
 
 #pragma once
 
-#include "spCoreTypes.h"
+#include "flxCoreTypes.h"
 #include <cstdint>
 #include <stddef.h>
 #include <math.h>
 
 // Storage involves two interfaces
 //
-//  - spStorage       - The main interface into the storage system being used.
-//  - spStorageBlock  - Interface to the current block being written to
+//  - flxStorage       - The main interface into the storage system being used.
+//  - flxStorageBlock  - Interface to the current block being written to
 //
 //------------------------------------------------------------------------------
-// spStorageBlock()
+// flxStorageBlock()
 //
 // Define our storage block object. This is used as a FP like object when a bock is
 // written out interactively...
 
 // the "OLD" blocks are from the original prototype system that needs migration
-class spStorageBlockOld
+class flxStorageBlockOld
 {
 
   public:
@@ -32,55 +32,55 @@ class spStorageBlockOld
 };
 
 //------------------------------------------------------------------------------
-// spStorage
+// flxStorage
 //
 // Interface for a storage system to persist state of a system
 
-class spStorageOld
+class flxStorageOld
 {
 
   public:
     // public methods to manage a block
-    virtual spStorageBlockOld *beginBlock(uint16_t idBlock, size_t sz) = 0;
-    virtual spStorageBlockOld *getBlock(uint16_t idBlock) = 0;
-    virtual void endBlock(spStorageBlockOld *) = 0;
+    virtual flxStorageBlockOld *beginBlock(uint16_t idBlock, size_t sz) = 0;
+    virtual flxStorageBlockOld *getBlock(uint16_t idBlock) = 0;
+    virtual void endBlock(flxStorageBlockOld *) = 0;
 
     virtual void resetStorage() = 0;
 };
 
 
 
-class spStorageBlock;
+class flxStorageBlock;
 //------------------------------------------------------------------------------
-// spStorage
+// flxStorage
 //
 // Interface for a storage system to persist state of a system
 
-class spStorage : public spDescriptor
+class flxStorage : public flxDescriptor
 {
 
   public:
 
     typedef enum
     {
-        spStorageKindInternal,
-        spStorageKindExternal
-    }spStorageKind_t;
+        flxStorageKindInternal,
+        flxStorageKindExternal
+    }flxStorageKind_t;
 
-    virtual spStorageKind_t kind(void)=0;
+    virtual flxStorageKind_t kind(void)=0;
     
     // Methods used to bracket the save/restore transaction
     virtual bool begin(bool readonly=false) = 0;
     virtual void end(void) = 0;
     // public methods to manage a block
-    virtual spStorageBlock *beginBlock(const char *tag) = 0;
+    virtual flxStorageBlock *beginBlock(const char *tag) = 0;
 
     // NOTE: TODO - for eeprom version of this, the number of bytes written
     // should be kept in the block, then when it's close, written to the block
     // header -- note, you will need to delete all existing blocks when writing
     // new ...
-    virtual spStorageBlock *getBlock(const char *tag) = 0;
-    virtual void endBlock(spStorageBlock *) = 0;
+    virtual flxStorageBlock *getBlock(const char *tag) = 0;
+    virtual void endBlock(flxStorageBlock *) = 0;
 
     virtual void resetStorage() = 0;
 };
@@ -89,7 +89,7 @@ class spStorage : public spDescriptor
 // Use tags to ID an item and move to use data types. Model after the
 // ESP32 preference library
 
-class spStorageBlock 
+class flxStorageBlock 
 {
 
   public:
@@ -103,7 +103,7 @@ class spStorageBlock
     virtual bool writeFloat(const char *tag, float data) = 0;
     virtual bool writeDouble(const char *tag, double data) = 0;
     virtual bool writeString(const char *tag, const char *data) = 0;
-    virtual spStorage::spStorageKind_t kind(void)=0;
+    virtual flxStorage::flxStorageKind_t kind(void)=0;
     
     // Overloaded versions
     bool write(const char *tag, bool data)

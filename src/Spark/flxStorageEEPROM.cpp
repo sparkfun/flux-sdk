@@ -19,7 +19,7 @@
  *     EOF - end of storage - an zero'd out header block.
  */
 
-#include "spStorageEEPROM.h"
+#include "flxStorageEEPROM.h"
 #include "Arduino.h"
 #include <EEPROM.h>
 
@@ -41,7 +41,7 @@
 //-------------------------------------------------------------------------------
 // Init routine
 
-void spStorageEEPROM::initialize(void)
+void flxStorageEEPROM::initialize(void)
 {
 
 
@@ -69,7 +69,7 @@ void spStorageEEPROM::initialize(void)
 }
 
 //-------------------------------------------------------------------------------
-void spStorageEEPROM::initStorage(void)
+void flxStorageEEPROM::initStorage(void)
 {
 
     spBlockHeaderEEPROM header = {}; // zero out header block
@@ -86,7 +86,7 @@ void spStorageEEPROM::initStorage(void)
 #endif
 }
 //-------------------------------------------------------------------------------
-bool spStorageEEPROM::validStorage(void)
+bool flxStorageEEPROM::validStorage(void)
 {
 
     // Basically make sure the value of the first two bytes of EEPROM are
@@ -98,7 +98,7 @@ bool spStorageEEPROM::validStorage(void)
     return (cookie == SPARK_STORAGE_MAGIC);
 }
 //--------------------------------------------------------------------------------------
-uint16_t spStorageEEPROM::findBlock(uint16_t idTarget, spBlockHeaderEEPROM &outBlock)
+uint16_t flxStorageEEPROM::findBlock(uint16_t idTarget, spBlockHeaderEEPROM &outBlock)
 {
 
     // is the storage *formated*
@@ -134,7 +134,7 @@ uint16_t spStorageEEPROM::findBlock(uint16_t idTarget, spBlockHeaderEEPROM &outB
 // Removes a block from storage area. Basically overwrites the block with
 // the data blocks that follows it.
 //
-void spStorageEEPROM::deleteBlock(uint16_t idTarget)
+void flxStorageEEPROM::deleteBlock(uint16_t idTarget)
 {
 
     spBlockHeaderEEPROM destBlock, srcBlock;
@@ -170,7 +170,7 @@ void spStorageEEPROM::deleteBlock(uint16_t idTarget)
 }
 
 //-------------------------------------------------------------------------------
-void spStorageEEPROM::resetStorage(void)
+void flxStorageEEPROM::resetStorage(void)
 {
     // basically init the system.
 
@@ -187,7 +187,7 @@ void spStorageEEPROM::resetStorage(void)
 //
 // Returns 0 on error, or offset position of the block on success.
 //
-uint16_t spStorageEEPROM::getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeaderEEPROM &outBlock)
+uint16_t flxStorageEEPROM::getBlockHeader(uint16_t idTarget, size_t szBlock, spBlockHeaderEEPROM &outBlock)
 {
 
     // Find the block or eof (empty block)
@@ -239,13 +239,13 @@ uint16_t spStorageEEPROM::getBlockHeader(uint16_t idTarget, size_t szBlock, spBl
 }
 //-------------------------------------------------------------------------------
 // Internal
-template <typename T> void spStorageEEPROM::write_bytes(uint16_t startPos, T &data)
+template <typename T> void flxStorageEEPROM::write_bytes(uint16_t startPos, T &data)
 {
 
     write_bytes(startPos, sizeof(T), (char *)&data);
 }
 //-------------------------------------------------------------------------------
-void spStorageEEPROM::write_bytes(uint16_t startPos, size_t sz, char *pBytes)
+void flxStorageEEPROM::write_bytes(uint16_t startPos, size_t sz, char *pBytes)
 {
 
     if (!pBytes)
@@ -256,13 +256,13 @@ void spStorageEEPROM::write_bytes(uint16_t startPos, size_t sz, char *pBytes)
 }
 
 //-------------------------------------------------------------------------------
-template <typename T> void spStorageEEPROM::read_bytes(uint16_t startPos, T &data)
+template <typename T> void flxStorageEEPROM::read_bytes(uint16_t startPos, T &data)
 {
 
     read_bytes(startPos, sizeof(T), (char *)&data);
 }
 //-------------------------------------------------------------------------------
-void spStorageEEPROM::read_bytes(uint16_t startPos, size_t sz, char *pBytes)
+void flxStorageEEPROM::read_bytes(uint16_t startPos, size_t sz, char *pBytes)
 {
 
     if (!pBytes)
@@ -276,7 +276,7 @@ void spStorageEEPROM::read_bytes(uint16_t startPos, size_t sz, char *pBytes)
 // but start a block and write to it N times, in sequence.
 ////////////////////////////////////////////////////////////////////////////////////
 
-spStorageBlockEEPROM *spStorageEEPROM::beginBlock(uint16_t blockID, size_t blockSZ)
+flxStorageBlockEEPROM *flxStorageEEPROM::beginBlock(uint16_t blockID, size_t blockSZ)
 {
 
     if ( ! _initialized )
@@ -304,7 +304,7 @@ spStorageBlockEEPROM *spStorageEEPROM::beginBlock(uint16_t blockID, size_t block
 }
 //-------------------------------------------------------------------------------
 // Done with the block
-void spStorageEEPROM::endBlock(spStorageBlockEEPROM *dummy)
+void flxStorageEEPROM::endBlock(flxStorageBlockEEPROM *dummy)
 {
     if ( ! _initialized )
     {
@@ -319,15 +319,15 @@ void spStorageEEPROM::endBlock(spStorageBlockEEPROM *dummy)
 }
 
 // interface method
-void spStorageEEPROM::endBlock(spStorageBlockOld *dummy)
+void flxStorageEEPROM::endBlock(flxStorageBlockOld *dummy)
 {
-    endBlock((spStorageBlockEEPROM*)dummy);
+    endBlock((flxStorageBlockEEPROM*)dummy);
 }
 // Block Public methods - these are called from a block
 //-------------------------------------------------------------------------------
 // I/O routines - simple
 
-bool spStorageEEPROM::writeBytes(spStorageBlockEEPROM *pBlock, size_t sz, char *pBytes)
+bool flxStorageEEPROM::writeBytes(flxStorageBlockEEPROM *pBlock, size_t sz, char *pBytes)
 {
 
     if (!pBlock || !pBytes)
@@ -340,7 +340,7 @@ bool spStorageEEPROM::writeBytes(spStorageBlockEEPROM *pBlock, size_t sz, char *
     return true;
 }
 //-------------------------------------------------------------------------------
-bool spStorageEEPROM::readBytes(spStorageBlockEEPROM *pBlock, size_t sz, char *pBytes)
+bool flxStorageEEPROM::readBytes(flxStorageBlockEEPROM *pBlock, size_t sz, char *pBytes)
 {
 
     if (!pBlock || !pBytes)
@@ -353,22 +353,22 @@ bool spStorageEEPROM::readBytes(spStorageBlockEEPROM *pBlock, size_t sz, char *p
 }
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-bool spStorageBlockEEPROM::writeBytes(size_t sz, char *buffer)
+bool flxStorageBlockEEPROM::writeBytes(size_t sz, char *buffer)
 {
     if ( !_storage )
     {
-        spLog_E("spStorage - EEPROM. Block storage not initialized.");
+        spLog_E("flxStorage - EEPROM. Block storage not initialized.");
         return false;
     }
 
     return _storage->writeBytes(this, sz, buffer);
 }
 //------------------------------------------------------------------------------
-bool spStorageBlockEEPROM::readBytes(size_t sz, char *buffer)
+bool flxStorageBlockEEPROM::readBytes(size_t sz, char *buffer)
 {
     if ( !_storage )
     {
-        spLog_E("spStorage - EEPROM. Block storage not initialized.");
+        spLog_E("flxStorage - EEPROM. Block storage not initialized.");
         return false;
     }
     return _storage->readBytes(this, sz, buffer);

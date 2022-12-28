@@ -22,7 +22,7 @@
 
 #include "spBusI2C.h"
 #include "spBusSPI.h"
-#include "spCore.h"
+#include "flxCore.h"
 #include "spUtils.h"
 
 // define a value that marks the end of a device address/id list

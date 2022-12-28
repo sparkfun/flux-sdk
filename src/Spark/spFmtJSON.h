@@ -105,43 +105,43 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     //-----------------------------------------------------------------
     // Arrays
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, spDataArrayBool *value)
+    void logValue(const std::string &tag, flxDataArrayBool *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayInt8 *value)
+    void logValue(const std::string &tag, flxDataArrayInt8 *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayInt16 *value)
+    void logValue(const std::string &tag, flxDataArrayInt16 *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayInt *value)
+    void logValue(const std::string &tag, flxDataArrayInt *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayUint8 *value)
+    void logValue(const std::string &tag, flxDataArrayUint8 *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayUint16 *value)
+    void logValue(const std::string &tag, flxDataArrayUint16 *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayUint *value)
+    void logValue(const std::string &tag, flxDataArrayUint *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision = 3)
+    void logValue(const std::string &tag, flxDataArrayFloat *value, uint16_t precision = 3)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision = 3)
+    void logValue(const std::string &tag, flxDataArrayDouble *value, uint16_t precision = 3)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, spDataArrayString *value)
+    void logValue(const std::string &tag, flxDataArrayString *value)
     {
         writeOutArray(tag, value);
     }
@@ -229,7 +229,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
 
   protected:
     template <typename T>
-    void writeOutArrayDimension(JsonArray &jsonArray, T *&pData, spDataArrayType<T> *theArray, uint16_t currentDim)
+    void writeOutArrayDimension(JsonArray &jsonArray, T *&pData, flxDataArrayType<T> *theArray, uint16_t currentDim)
     {
 
         // Write out the data?
@@ -250,7 +250,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
         }
     }
     //-----------------------------------------------------------------
-    template <typename T> void writeOutArray(const std::string &tag, spDataArrayType<T> *theArray)
+    template <typename T> void writeOutArray(const std::string &tag, flxDataArrayType<T> *theArray)
     {
         // create an array in this section
 

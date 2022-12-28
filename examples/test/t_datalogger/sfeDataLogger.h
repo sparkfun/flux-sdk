@@ -14,8 +14,8 @@
 // settings storage
 #include <Spark/spSettings.h>
 #include <Spark/spSettingsSerial.h>
-#include <Spark/spStorageESP32Pref.h>
-#include <Spark/spStorageJSONPref.h>
+#include <Spark/flxStorageESP32Pref.h>
+#include <Spark/flxStorageJSONPref.h>
 
 // SD Card output
 #include <Spark/spFSSDMMCard.h>
@@ -167,9 +167,9 @@ private:
     spFileRotate _theOutputFile;
 
     // settings things
-    spStorageESP32Pref _sysStorage;
+    flxStorageESP32Pref _sysStorage;
     spSettingsSerial _serialSettings;
-    spStorageJSONPref _jsonStorage;
+    flxStorageJSONPref _jsonStorage;
 
     // WiFi and NTP
     spWiFiESP32 _wifiConnection;

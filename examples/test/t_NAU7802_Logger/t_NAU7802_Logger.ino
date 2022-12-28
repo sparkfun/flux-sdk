@@ -145,7 +145,7 @@ void loop() {
       
       for (int i = 0; i < myDevices.size(); i++)
       {
-        spTypeID type = spDevNAU7802::type();
+        flxTypeID type = spDevNAU7802::type();
         
         if (type == myDevices.at(i)->getType())
         {

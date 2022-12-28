@@ -2,15 +2,15 @@
 
 #pragma once
 
-// spCore.h
+// flxCore.h
 //
 // Single include to bring in all the core defs needed in the frameworks
 
 
-#include "spStorage.h"
+#include "flxStorage.h"
 
 #include "spCoreLog.h"
-#include "spCoreTypes.h"
+#include "flxCoreTypes.h"
 #include "spCoreProps.h"
 #include "spCoreParam.h"
 #include "spCoreEvent.h"

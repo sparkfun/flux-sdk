@@ -66,7 +66,7 @@ bool test_device::onInitialize(TwoWire &wirePort)
 // The array Getter methods ...
 
 // our "getter" methods for the array output parameters
-bool  test_device::get_bool(spDataArrayBool *theArray)
+bool  test_device::get_bool(flxDataArrayBool *theArray)
 {
     bool mydata[] = {true, true, true, false, true, false};
 
@@ -77,7 +77,7 @@ bool  test_device::get_bool(spDataArrayBool *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_int8(spDataArrayInt8 *theArray)
+bool  test_device::get_int8(flxDataArrayInt8 *theArray)
 {
     static int8_t mydata[] = {-10, -12, 0, 3, 11, 13};
 
@@ -88,7 +88,7 @@ bool  test_device::get_int8(spDataArrayInt8 *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_int16(spDataArrayInt16 *theArray)
+bool  test_device::get_int16(flxDataArrayInt16 *theArray)
 {
     int16_t mydata[] = {300, 201, 102, 3, -10, -20, -30, 1000};
 
@@ -99,7 +99,7 @@ bool  test_device::get_int16(spDataArrayInt16 *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_int(spDataArrayInt *theArray)
+bool  test_device::get_int(flxDataArrayInt *theArray)
 {
     static int mydata[] = {-1000, -800, -400, -200, 200, 400, 800, 1000};
 
@@ -110,7 +110,7 @@ bool  test_device::get_int(spDataArrayInt *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_uint8(spDataArrayUint8 *theArray)
+bool  test_device::get_uint8(flxDataArrayUint8 *theArray)
 {
     uint8_t mydata[] = {0, 12, 24, 254};
 
@@ -121,7 +121,7 @@ bool  test_device::get_uint8(spDataArrayUint8 *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_uint16(spDataArrayUint16 *theArray)
+bool  test_device::get_uint16(flxDataArrayUint16 *theArray)
 {
     static uint16_t mydata[] = {1000, 2000, 3000, 4000, 5000, 6000, 7000};
 
@@ -132,7 +132,7 @@ bool  test_device::get_uint16(spDataArrayUint16 *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_uint(spDataArrayUint *theArray)
+bool  test_device::get_uint(flxDataArrayUint *theArray)
 {
     uint mydata[] = {1, 10, 100, 1000, 10000, 2, 20, 200, 2000, 20000};
 
@@ -143,7 +143,7 @@ bool  test_device::get_uint(spDataArrayUint *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_float(spDataArrayFloat *theArray)
+bool  test_device::get_float(flxDataArrayFloat *theArray)
 {
     static float mydata[] = {1.1111111, 2.222222, 3.33333, 4.444444, 53.55555, 6.666666};
 
@@ -154,7 +154,7 @@ bool  test_device::get_float(spDataArrayFloat *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_double(spDataArrayDouble *theArray)
+bool  test_device::get_double(flxDataArrayDouble *theArray)
 {
     static double mydata[] = {-1.1111199, -2.22222299, -3.3333399, 4.44444499, -53.5555599, 6.66666699};
 
@@ -165,7 +165,7 @@ bool  test_device::get_double(spDataArrayDouble *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_string(spDataArrayString *theArray)
+bool  test_device::get_string(flxDataArrayString *theArray)
 {
     static const char * myData[] = {"one", "two", "three", "four"};
 

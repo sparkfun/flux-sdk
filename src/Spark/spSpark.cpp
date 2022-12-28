@@ -5,7 +5,7 @@
 #include "spSerial.h"
 #include "spSettings.h"
 #include "spSpark.h"
-#include "spStorage.h"
+#include "flxStorage.h"
 
 // for logging - define output driver on the stack
 
@@ -131,11 +131,11 @@ void spSpark::add(spDevice *theDevice)
 #define kApplicationHashIDSize 24
 
 //---------------------------------------------------------------------------------
-bool spSpark::save(spStorage *pStorage)
+bool spSpark::save(flxStorage *pStorage)
 {
     // Write a block to the storage system that has a has of or name/desc
     // Use this to validate that the settings in the storage system are ours
-    spStorageBlock *stBlk = pStorage->beginBlock(name());
+    flxStorageBlock *stBlk = pStorage->beginBlock(name());
     if (!stBlk)
         return false;
 
@@ -143,7 +143,7 @@ bool spSpark::save(spStorage *pStorage)
 
     // If the storage medium is *internal* to the system, save our app hash tag.
     // This allows rapid ID of a valid storage source
-    if (pStorage->kind() == spStorage::spStorageKindInternal)
+    if (pStorage->kind() == flxStorage::flxStorageKindInternal)
     {
         char szBuffer[128] = {0};
         strlcpy(szBuffer, name(), sizeof(szBuffer));
@@ -173,12 +173,12 @@ bool spSpark::save(spStorage *pStorage)
 };
 
 //---------------------------------------------------------------------------------
-bool spSpark::restore(spStorage *pStorage)
+bool spSpark::restore(flxStorage *pStorage)
 {
     // Do we have our ID block in storage? If not, then there's no need to continue
     // since the data isn't for this app
 
-    spStorageBlock *stBlk = pStorage->beginBlock(name());
+    flxStorageBlock *stBlk = pStorage->beginBlock(name());
     if (!stBlk)
         return false;
 
@@ -188,7 +188,7 @@ bool spSpark::restore(spStorage *pStorage)
     // Note for external sources (files...etc), we load in and validate based on 
     // source name. This makes it easlier to manually write out a settings file
     bool status;
-    if (pStorage->kind() == spStorage::spStorageKindInternal)
+    if (pStorage->kind() == flxStorage::flxStorageKindInternal)
     {
         status = stBlk->valueExists(kApplicationHashIDTag);
         if (status)

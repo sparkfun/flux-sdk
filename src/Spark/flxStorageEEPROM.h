@@ -1,5 +1,5 @@
 /*
- * spStorage.h
+ * flxStorage.h
  *
  * Class to encapsulate storage access to the devices EEProm
  */
@@ -9,9 +9,9 @@
 #include <Arduino.h>
 
 #include "spCoreLog.h"
-#include "spStorage.h"
+#include "flxStorage.h"
 
-class spStorageEEPROM;
+class flxStorageEEPROM;
 
 //------------------------------------------------------------------------------
 // Storage is "block" based - data blobs are stored with headers to form a block.
@@ -32,20 +32,20 @@ typedef struct
 // Define our storage block object. This is used as a FP like object when a bock is
 // written out interatively...
 
-class spStorageBlockEEPROM : public spStorageBlockOld
+class flxStorageBlockEEPROM : public flxStorageBlockOld
 {
 
   public:
-    spStorageBlockEEPROM() : _position{0}, _locked{false}, _storage{nullptr} {};
+    flxStorageBlockEEPROM() : _position{0}, _locked{false}, _storage{nullptr} {};
 
     bool writeBytes(size_t sz, char *buffer);
     bool readBytes(size_t sz, char *buffer);
 
   private:
-    friend spStorageEEPROM;
+    friend flxStorageEEPROM;
 
 
-    void setStorage(spStorageEEPROM* theStorage)
+    void setStorage(flxStorageEEPROM* theStorage)
     {
       _storage = theStorage;
     }
@@ -54,42 +54,42 @@ class spStorageBlockEEPROM : public spStorageBlockOld
 
     int _position; // current position in the block's data blob
     bool _locked;
-    spStorageEEPROM * _storage;  ; // storage class will adjust parameters of the block
+    flxStorageEEPROM * _storage;  ; // storage class will adjust parameters of the block
 };
 
 //------------------------------------------------------------------------------
-class spStorageEEPROM : public spStorageOld
+class flxStorageEEPROM : public flxStorageOld
 {
 
   public:
     // this is a singleton
-    static spStorageEEPROM &get(void)
+    static flxStorageEEPROM &get(void)
     {
-        static spStorageEEPROM instance;
+        static flxStorageEEPROM instance;
         return instance;
     }
 
     // public methods to manage a block
-    spStorageBlockEEPROM *beginBlock(uint16_t idBlock, size_t sz);
-    spStorageBlockEEPROM *getBlock(uint16_t idBlock)
+    flxStorageBlockEEPROM *beginBlock(uint16_t idBlock, size_t sz);
+    flxStorageBlockEEPROM *getBlock(uint16_t idBlock)
     {
       return beginBlock(idBlock, 0); 
     }    
 
-    void endBlock(spStorageBlockEEPROM *);
-    void endBlock(spStorageBlockOld *);
+    void endBlock(flxStorageBlockEEPROM *);
+    void endBlock(flxStorageBlockOld *);
 
     void resetStorage();
 
     // delete the copy and assignment constructors
-    spStorageEEPROM(spStorageEEPROM const &) = delete;
-    void operator=(spStorageEEPROM const &) = delete;
+    flxStorageEEPROM(flxStorageEEPROM const &) = delete;
+    void operator=(flxStorageEEPROM const &) = delete;
 
   private:
-    friend spStorageBlockEEPROM;
+    friend flxStorageBlockEEPROM;
 
-    bool writeBytes(spStorageBlockEEPROM *, size_t, char *);
-    bool readBytes(spStorageBlockEEPROM *, size_t, char *);
+    bool writeBytes(flxStorageBlockEEPROM *, size_t, char *);
+    bool readBytes(flxStorageBlockEEPROM *, size_t, char *);
 
     bool validStorage(void);
     void initStorage(void);
@@ -101,7 +101,7 @@ class spStorageEEPROM : public spStorageOld
     template <typename T> void read_bytes(uint16_t startPos, T &pBytes);
 
     void initialize();
-    spStorageEEPROM() : _initialized{false}
+    flxStorageEEPROM() : _initialized{false}
     {
         initialize();
     };
@@ -111,7 +111,7 @@ class spStorageEEPROM : public spStorageOld
     uint16_t findBlock(uint16_t idTarget, spBlockHeaderEEPROM &outBlock);
 
     // The block used to interface with the system
-    spStorageBlockEEPROM _theBlock;
+    flxStorageBlockEEPROM _theBlock;
 
     bool _initialized;
 };

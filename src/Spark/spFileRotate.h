@@ -3,7 +3,7 @@
 #pragma once
 
 #include "spSpark.h"
-#include "spCore.h"
+#include "flxCore.h"
 #include "spCoreInterface.h"
 #include "spFS.h"
 

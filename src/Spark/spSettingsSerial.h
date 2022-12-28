@@ -3,7 +3,7 @@
 #pragma once
 
 #include "spSpark.h"
-#include "spCore.h"
+#include "flxCore.h"
 #include "spDevice.h"
 
 #define kReadBufferTimeoutExpired 255
@@ -37,8 +37,8 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     bool drawPage(spOperation *);
     bool drawPage(spOperation *, spParameter *);
     bool drawPage(spOperation *, spParameterIn *);
-    bool drawPage(spObject *, spParameterIn *, spDataLimit * );
-    bool drawPage(spObject *, spProperty *, spDataLimit * );
+    bool drawPage(spObject *, spParameterIn *, flxDataLimit * );
+    bool drawPage(spObject *, spProperty *, flxDataLimit * );
     bool drawPage(spObjectContainer *);
     bool drawPage(spOperationContainer *);
     bool drawPage(spActionContainer *);
@@ -244,7 +244,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     // drawPage()  - property with a limit edition
 
     template <class T>
-    bool drawPage(spObject *pCurrent, T *pEntity, spDataLimit *propLimit, bool showValue = false)
+    bool drawPage(spObject *pCurrent, T *pEntity, flxDataLimit *propLimit, bool showValue = false)
     {
         if (!pCurrent || !pEntity || !propLimit)
             return false;
@@ -253,7 +253,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         uint8_t selected = 0;
         int nMenuItems;
 
-        spDataLimitList limitTags = propLimit->limits();
+        flxDataLimitList limitTags = propLimit->limits();
 
         while (true)
         {
@@ -316,7 +316,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
 
         return returnValue;
     };
-    void drawMenuEntry(uint item, spDescriptor *pDesc);
+    void drawMenuEntry(uint item, flxDescriptor *pDesc);
     void drawMenuEntry(uint item, const char *);
     void drawPageHeader(spObject *, const char *szItem = nullptr);
     void drawPageFooter(spObject *);

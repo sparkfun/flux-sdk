@@ -48,7 +48,7 @@ public:
 private:
 
     // methods used to get values for our output parameters
-    bool read_distance(spDataArrayInt16 *);
+    bool read_distance(flxDataArrayInt16 *);
 
     // methods to get/set our read-write properties
     uint32_t get_integration_time();

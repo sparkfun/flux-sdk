@@ -167,7 +167,7 @@ void spDevTMF882X::factory_calibration()
 }
 
 // GETTER methods for output params
-bool spDevTMF882X::read_confidence(spDataArrayUint *conf)
+bool spDevTMF882X::read_confidence(flxDataArrayUint *conf)
 {
     static uint32_t theConfidence[TMF882X_MAX_MEAS_RESULTS] = {0};
 
@@ -194,7 +194,7 @@ bool spDevTMF882X::read_confidence(spDataArrayUint *conf)
 
     return true;
 }
-bool spDevTMF882X::read_distance(spDataArrayUint *dist)
+bool spDevTMF882X::read_distance(flxDataArrayUint *dist)
 {
     static uint32_t theDistance[TMF882X_MAX_MEAS_RESULTS] = {0};
 
@@ -221,7 +221,7 @@ bool spDevTMF882X::read_distance(spDataArrayUint *dist)
 
     return true;
 }
-bool spDevTMF882X::read_channel(spDataArrayUint *chan)
+bool spDevTMF882X::read_channel(flxDataArrayUint *chan)
 {
     static uint32_t theChannel[TMF882X_MAX_MEAS_RESULTS] = {0};
 
@@ -248,7 +248,7 @@ bool spDevTMF882X::read_channel(spDataArrayUint *chan)
 
     return true;
 }
-bool spDevTMF882X::read_sub_capture(spDataArrayUint *sub)
+bool spDevTMF882X::read_sub_capture(flxDataArrayUint *sub)
 {
     static uint32_t theSubCapture[TMF882X_MAX_MEAS_RESULTS] = {0};
 

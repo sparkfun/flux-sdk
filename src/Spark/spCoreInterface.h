@@ -8,14 +8,14 @@
 
 
 //----------------------------------------------------------------------
-// spDataEditor()
+// flxDataEditor()
 //
 // define a data editor interface - called to have some value edited.
 //
 //
 // TODO: Factor to a different header in the future...
 
-class spDataEditor
+class flxDataEditor
 {
 
   public:

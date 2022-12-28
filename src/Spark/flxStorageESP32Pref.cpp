@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 
-#include "spStorageESP32Pref.h"
+#include "flxStorageESP32Pref.h"
 #include "spCoreLog.h"
 #include "spUtils.h"
 
@@ -33,7 +33,7 @@ static bool tag_is_valid(const char *tag)
 // ESP32 preference library
 
 // Write out a bool value
-bool spStorageESP32Block::writeBool(const char *tag, bool value)
+bool flxStorageESP32Block::writeBool(const char *tag, bool value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -48,7 +48,7 @@ bool spStorageESP32Block::writeBool(const char *tag, bool value)
 //------------------------------------------------------------------------
 // write out an int8 value
 
-bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
+bool flxStorageESP32Block::writeInt8(const char *tag, int8_t value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -64,7 +64,7 @@ bool spStorageESP32Block::writeInt8(const char *tag, int8_t value)
 //------------------------------------------------------------------------
 // write out an int16 value
 
-bool spStorageESP32Block::writeInt16(const char *tag, int16_t value)
+bool flxStorageESP32Block::writeInt16(const char *tag, int16_t value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -80,7 +80,7 @@ bool spStorageESP32Block::writeInt16(const char *tag, int16_t value)
 //------------------------------------------------------------------------
 // write out a int value
 
-bool spStorageESP32Block::writeInt32(const char *tag, int32_t value)
+bool flxStorageESP32Block::writeInt32(const char *tag, int32_t value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -95,7 +95,7 @@ bool spStorageESP32Block::writeInt32(const char *tag, int32_t value)
 //------------------------------------------------------------------------
 // Unsigned int8  - aka uchar
 
-bool spStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
+bool flxStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -111,7 +111,7 @@ bool spStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
 //------------------------------------------------------------------------
 // Unsigned int16  - aka ushort
 
-bool spStorageESP32Block::writeUInt16(const char *tag, uint16_t value)
+bool flxStorageESP32Block::writeUInt16(const char *tag, uint16_t value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -125,7 +125,7 @@ bool spStorageESP32Block::writeUInt16(const char *tag, uint16_t value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
+bool flxStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -140,7 +140,7 @@ bool spStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 //------------------------------------------------------------------------
 // write out a float
 
-bool spStorageESP32Block::writeFloat(const char *tag, float value)
+bool flxStorageESP32Block::writeFloat(const char *tag, float value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -155,7 +155,7 @@ bool spStorageESP32Block::writeFloat(const char *tag, float value)
 //------------------------------------------------------------------------
 // double
 
-bool spStorageESP32Block::writeDouble(const char *tag, double value)
+bool flxStorageESP32Block::writeDouble(const char *tag, double value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -169,7 +169,7 @@ bool spStorageESP32Block::writeDouble(const char *tag, double value)
 }
 //------------------------------------------------------------------------
 // Write out a c string
-bool spStorageESP32Block::writeString(const char *tag, const char *value)
+bool flxStorageESP32Block::writeString(const char *tag, const char *value)
 {
     if (!tag_is_valid(tag) || !_prefs || _readOnly)
         return false;
@@ -191,7 +191,7 @@ bool spStorageESP32Block::writeString(const char *tag, const char *value)
 // Read value section
 //------------------------------------------------------------------------
 
-bool spStorageESP32Block::readBool(const char *tag, bool &value)
+bool flxStorageESP32Block::readBool(const char *tag, bool &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -209,7 +209,7 @@ bool spStorageESP32Block::readBool(const char *tag, bool &value)
     return true;
 }
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readInt8(const char *tag, int8_t &value)
+bool flxStorageESP32Block::readInt8(const char *tag, int8_t &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -229,7 +229,7 @@ bool spStorageESP32Block::readInt8(const char *tag, int8_t &value)
 
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readInt16(const char *tag, int16_t &value)
+bool flxStorageESP32Block::readInt16(const char *tag, int16_t &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -248,7 +248,7 @@ bool spStorageESP32Block::readInt16(const char *tag, int16_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readInt32(const char *tag, int32_t &value)
+bool flxStorageESP32Block::readInt32(const char *tag, int32_t &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -267,7 +267,7 @@ bool spStorageESP32Block::readInt32(const char *tag, int32_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readUInt8(const char *tag, uint8_t &value)
+bool flxStorageESP32Block::readUInt8(const char *tag, uint8_t &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -286,7 +286,7 @@ bool spStorageESP32Block::readUInt8(const char *tag, uint8_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readUInt16(const char *tag, uint16_t &value)
+bool flxStorageESP32Block::readUInt16(const char *tag, uint16_t &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -305,7 +305,7 @@ bool spStorageESP32Block::readUInt16(const char *tag, uint16_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readUInt32(const char *tag, uint32_t &value)
+bool flxStorageESP32Block::readUInt32(const char *tag, uint32_t &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -324,7 +324,7 @@ bool spStorageESP32Block::readUInt32(const char *tag, uint32_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readFloat(const char *tag, float &value)
+bool flxStorageESP32Block::readFloat(const char *tag, float &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -343,7 +343,7 @@ bool spStorageESP32Block::readFloat(const char *tag, float &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageESP32Block::readDouble(const char *tag, double &value)
+bool flxStorageESP32Block::readDouble(const char *tag, double &value)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -362,7 +362,7 @@ bool spStorageESP32Block::readDouble(const char *tag, double &value)
 }
 
 //------------------------------------------------------------------------
-size_t spStorageESP32Block::readString(const char *tag, char *data, size_t len)
+size_t flxStorageESP32Block::readString(const char *tag, char *data, size_t len)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return 0;
@@ -379,7 +379,7 @@ size_t spStorageESP32Block::readString(const char *tag, char *data, size_t len)
 }
 
 //------------------------------------------------------------------------------
-bool spStorageESP32Block::valueExists(const char *tag)
+bool flxStorageESP32Block::valueExists(const char *tag)
 {
     if (!tag_is_valid(tag) || !_prefs)
         return false;
@@ -392,18 +392,18 @@ bool spStorageESP32Block::valueExists(const char *tag)
     return _prefs->isKey(szHash);
 }
 //------------------------------------------------------------------------------
-// spStorage
+// flxStorage
 //
 // Interface for a storage system to persist state of a system
 
-spStorageESP32Pref::spStorageESP32Pref() : _readOnly{false}
+flxStorageESP32Pref::flxStorageESP32Pref() : _readOnly{false}
 {
     _theBlock.setPrefs(&_prefs);
     setName("ESP32 Preferences", "Device setting storage using the ESP32 Preferences");
 }
 
 // public methods to manage a block
-spStorageESP32Block *spStorageESP32Pref::beginBlock(const char *tag)
+flxStorageESP32Block *flxStorageESP32Pref::beginBlock(const char *tag)
 {
     if (!tag_is_valid(tag))
         return nullptr;
@@ -423,17 +423,17 @@ spStorageESP32Block *spStorageESP32Pref::beginBlock(const char *tag)
     return &_theBlock;
 }
 
-spStorageESP32Block *spStorageESP32Pref::getBlock(const char *tag)
+flxStorageESP32Block *flxStorageESP32Pref::getBlock(const char *tag)
 {
 
     return beginBlock(tag);
 }
-void spStorageESP32Pref::endBlock(spStorageBlock *)
+void flxStorageESP32Pref::endBlock(flxStorageBlock *)
 {
     _prefs.end();
 }
 
-void spStorageESP32Pref::resetStorage()
+void flxStorageESP32Pref::resetStorage()
 {
     // call low level ESP IDF functions to do this - as recommended by ESP32 docs ...
     nvs_flash_erase();

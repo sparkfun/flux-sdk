@@ -100,20 +100,20 @@ template <typename T, typename B = spDevice> class spDeviceI2CType : public B
     // The typeID is determined by hashing the name of the class.
     // This way the type ID is consistant across invocations
 
-    static spTypeID type(void)
+    static flxTypeID type(void)
     {
-        static spTypeID _myTypeID = spGetClassTypeID<T>();
+        static flxTypeID _myTypeID = flxGetClassTypeID<T>();
 
         return _myTypeID;
     }
 
     // Return the type ID of this
-    spTypeID getType(void)
+    flxTypeID getType(void)
     {
         return type();
     }
 
-    bool isType(spTypeID type)
+    bool isType(flxTypeID type)
     {
         return type == getType();
     }
@@ -201,20 +201,20 @@ template <typename T, typename B = spDevice> class spDeviceSPIType : public B
     // The typeID is determined by hashing the name of the class.
     // This way the type ID is consistant across invocations
 
-    static spTypeID type(void)
+    static flxTypeID type(void)
     {
-        static spTypeID _myTypeID = spGetClassTypeID<T>();
+        static flxTypeID _myTypeID = flxGetClassTypeID<T>();
 
         return _myTypeID;
     }
 
     // Return the type ID of this
-    spTypeID getType(void)
+    flxTypeID getType(void)
     {
         return type();
     }
 
-    bool isType(spTypeID type)
+    bool isType(flxTypeID type)
     {
         return type == getType();
     }

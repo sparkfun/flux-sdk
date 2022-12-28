@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "spCoreInterface.h"
-#include "spCoreTypes.h"
-#include "spStorage.h"
+#include "flxCoreTypes.h"
+#include "flxStorage.h"
 #include "spUtils.h"
 
 #define kMaxPropertyString 256
@@ -31,18 +31,18 @@ typedef enum
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty : public spDescriptor
+class spProperty : public flxDescriptor
 {
 
   public:
-    virtual spDataType_t type(void) = 0;
+    virtual flxDataType_t type(void) = 0;
 
     // Editor interface method - called to have the value of the property
     // displayed/set/managed in an editor
 
-    virtual spEditResult_t editValue(spDataEditor &) = 0;
-    virtual spDataLimit *dataLimit(void) = 0;
-    virtual bool setValue(spDataVariable &) = 0;
+    virtual spEditResult_t editValue(flxDataEditor &) = 0;
+    virtual flxDataLimit *dataLimit(void) = 0;
+    virtual bool setValue(flxDataVariable &) = 0;
 
     virtual bool hidden(void) = 0;
     virtual bool secure(void) = 0;
@@ -66,8 +66,8 @@ class spProperty : public spDescriptor
     }
     //---------------------------------------------------------------------------------
     // continue to cascade down persistance interface (maybe do this later??)
-    virtual bool save(spStorageBlock *) = 0;
-    virtual bool restore(spStorageBlock *) = 0;
+    virtual bool save(flxStorageBlock *) = 0;
+    virtual bool restore(flxStorageBlock *) = 0;
 };
 
 // simple def - list of spProperty objects (it's a vector)
@@ -150,7 +150,7 @@ class _spPropertyContainer
     // expect this to be a "mix-in" class, we use a different interface
     // for the save/restore routines
 
-    bool saveProperties(spStorageBlock *stBlk)
+    bool saveProperties(flxStorageBlock *stBlk)
     {
         bool rc = true;
         bool status;
@@ -163,7 +163,7 @@ class _spPropertyContainer
     };
 
     //---------------------------------------------------------------------------------
-    bool restoreProperties(spStorageBlock *stBlk)
+    bool restoreProperties(flxStorageBlock *stBlk)
     {
         bool rc = true;
         bool status;
@@ -206,7 +206,7 @@ class _spPropertyContainer
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spProperty, public _spDataIn<T>, public _spDataOut<T>
+template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spProperty, public _flxDataIn<T>, public _flxDataOut<T>
 {
 
   public:
@@ -224,9 +224,9 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
         return _isSecure;
     }
     //---------------------------------------------------------------------------------
-    spDataType_t type()
+    flxDataType_t type()
     {
-        return _spDataOut<T>::type();
+        return _flxDataOut<T>::type();
     };
     //---------------------------------------------------------------------------------
     // size in bytes of this property
@@ -250,12 +250,12 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
 
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock *stBlk)
+    bool save(flxStorageBlock *stBlk)
     {
         bool status = true;
 
         // We don't save hidden or secure properties if this is an external source
-        if ( stBlk->kind() == spStorage::spStorageKindInternal || (!_isHidden && !_isSecure))
+        if ( stBlk->kind() == flxStorage::flxStorageKindInternal || (!_isHidden && !_isSecure))
         {
             T c = get();
             bool status = stBlk->write(name(), c);
@@ -267,7 +267,7 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
     };
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock *stBlk)
+    bool restore(flxStorageBlock *stBlk)
     {
         T c;
 
@@ -283,13 +283,13 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
     // use this to route the call to our dataOut base class
     virtual std::string to_string(void)
     {
-        return _spDataOut<T>::getString();
+        return _flxDataOut<T>::getString();
     }
     //---------------------------------------------------------------------------------
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         T value = get();
@@ -299,7 +299,7 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
         if (bSuccess) // success
         {
             // do we have a dataLimit set, and if so are we in limits?
-            if (!_spDataIn<T>::isValueValid(value))
+            if (!_flxDataIn<T>::isValueValid(value))
                 return spEditOutOfRange;
 
             set(value);
@@ -308,7 +308,7 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
         return bSuccess ? spEditSuccess : spEditFailure;
     }
     //---------------------------------------------------------------------------------
-    bool setValue(spDataVariable &value)
+    bool setValue(flxDataVariable &value)
     {
 
         if (value.type == type())
@@ -320,9 +320,9 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
         return false;
     };
 
-    spDataLimit *dataLimit(void)
+    flxDataLimit *dataLimit(void)
     {
-        return _spDataIn<T>::dataLimit();
+        return _flxDataIn<T>::dataLimit();
     }
 private:
     bool _isHidden;
@@ -339,10 +339,10 @@ private:
 // magic that could reduce the code duplication - but this isn't happening today ...
 //
 template <bool HIDDEN, bool SECURE>
-class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutString
+class _spPropertyBaseString : public spProperty, _flxDataInString, _flxDataOutString
 {
   protected:
-    spDataLimitType<std::string> *_dataLimit;
+    flxDataLimitType<std::string> *_dataLimit;
 
   public:
     _spPropertyBaseString() : _dataLimit{nullptr}, _isHidden{HIDDEN}, _isSecure{SECURE}
@@ -358,9 +358,9 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
         return _isSecure;
     }
 
-    spDataType_t type()
+    flxDataType_t type()
     {
-        return spTypeString;
+        return flxTypeString;
     };
 
     //---------------------------------------------------------------------------------
@@ -394,11 +394,11 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
 
     std::string to_string()
     {
-        return _spDataOutString::getString();
+        return _flxDataOutString::getString();
     }
     //---------------------------------------------------------------------------------
     // serialization methods
-    bool save(spStorageBlock *stBlk)
+    bool save(flxStorageBlock *stBlk)
     {
         bool status = true;
 
@@ -408,10 +408,10 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
         // later on... 
 
         // We don't save hidden or secure properties if this is an external source
-        if ( stBlk->kind() == spStorage::spStorageKindInternal || !_isHidden)
+        if ( stBlk->kind() == flxStorage::flxStorageKindInternal || !_isHidden)
         {
             // if a secure property and external storage, set value to an empty string
-            std::string c = ( stBlk->kind() == spStorage::spStorageKindExternal && _isSecure) ? "" : get();
+            std::string c = ( stBlk->kind() == flxStorage::flxStorageKindExternal && _isSecure) ? "" : get();
 
             status = stBlk->writeString(name(), c.c_str());
             if (!status)
@@ -421,7 +421,7 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
     }
 
     //---------------------------------------------------------------------------------
-    bool restore(spStorageBlock *stBlk)
+    bool restore(flxStorageBlock *stBlk)
     {
         char szBuffer[kMaxPropertyString];
 
@@ -436,7 +436,7 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(spDataEditor &theEditor)
+    spEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         std::string value = get();
@@ -450,15 +450,15 @@ class _spPropertyBaseString : public spProperty, _spDataInString, _spDataOutStri
         ;
     }
     // Data Limit things
-    void setDataLimit(spDataLimitType<std::string> &dataLimit)
+    void setDataLimit(flxDataLimitType<std::string> &dataLimit)
     {
         _dataLimit = &dataLimit;
     }
-    spDataLimit *dataLimit(void)
+    flxDataLimit *dataLimit(void)
     {
         return _dataLimit;
     }
-    bool setValue(spDataVariable &value)
+    bool setValue(flxDataVariable &value)
     {
 
         if (value.type == type())
@@ -507,24 +507,24 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     // set min and max range
     _spPropertyTypedRW(T min, T max)
     {
-        _spDataIn<T>::setDataLimitRange(min, max);
+        _flxDataIn<T>::setDataLimitRange(min, max);
     }
     // initial value, min, max range
     _spPropertyTypedRW(T value, T min, T max) : _spPropertyTypedRW(value)
     {
-        _spDataIn<T>::setDataLimitRange(min, max);
+        _flxDataIn<T>::setDataLimitRange(min, max);
     }
 
     // Limit data set
     _spPropertyTypedRW(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
-        _spDataIn<T>::addDataLimitValidValue(limitSet);
+        _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
     // Initial value and limit data set.
     _spPropertyTypedRW(T value, std::initializer_list<std::pair<const std::string, T>> limitSet)
         : _spPropertyTypedRW(value)
     {
-        _spDataIn<T>::addDataLimitValidValue(limitSet);
+        _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
     //---------------------------------------------------------------------------------
     // to register the property - set the containing object instance
@@ -558,7 +558,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::setName(name);
+            flxDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -568,7 +568,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     {
         // Description of the object
         if (desc)
-            spDescriptor::setDescription(desc);
+            flxDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -847,7 +847,7 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
     {
         // set the name of the property on init
         if (name)
-            spDescriptor::setName(name);
+            flxDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -857,7 +857,7 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
     {
         // Description of the object
         if (desc)
-            spDescriptor::setDescription(desc);
+            flxDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -970,23 +970,23 @@ class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
     // Just a limit range
     _spPropertyTyped(T min, T max)
     {
-        _spDataIn<T>::setDataLimitRange(min, max);
+        _flxDataIn<T>::setDataLimitRange(min, max);
     }
 
     // Initial value and a limit range
     _spPropertyTyped(T value, T min, T max) : _spPropertyTyped(value)
     {
-        _spDataIn<T>::setDataLimitRange(min, max);
+        _flxDataIn<T>::setDataLimitRange(min, max);
     }
     // Limit data set
     _spPropertyTyped(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
-        _spDataIn<T>::addDataLimitValidValue(limitSet);
+        _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
     // Initial value and limit data set.
     _spPropertyTyped(T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTyped(value)
     {
-        _spDataIn<T>::addDataLimitValidValue(limitSet);
+        _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
 
     // to register the property - set the containing object instance
@@ -1013,7 +1013,7 @@ class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
 
         // set the name of the property on init
         if (name)
-            spDescriptor::setName(name);
+            flxDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -1023,7 +1023,7 @@ class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
     {
         // Description of the object
         if (desc)
-            spDescriptor::setDescription(desc);
+            flxDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -1174,7 +1174,7 @@ class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
     void operator()(Object *obj, const char *name)
     {
         if (name)
-            spDescriptor::setName(name);
+            flxDescriptor::setName(name);
 
         // cascade to other version of method
         (*this)(obj);
@@ -1185,7 +1185,7 @@ class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
     {
         // Description of the object
         if (desc)
-            spDescriptor::setDescription(desc);
+            flxDescriptor::setDescription(desc);
 
         // cascade to other version of method
         (*this)(obj, name);
@@ -1283,7 +1283,7 @@ using spPropertySecretString = spPropertyString<Object, true, true>;
 // TODO:
 //   - Add instance ID counter
 
-class spObject : public spPersist, public _spPropertyContainer, public spDescriptor
+class spObject : public flxPersist, public _spPropertyContainer, public flxDescriptor
 {
 
   private:
@@ -1325,10 +1325,10 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     }
 
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorage *pStorage)
+    virtual bool save(flxStorage *pStorage)
     {
 
-        spStorageBlock *stBlk = pStorage->beginBlock(name());
+        flxStorageBlock *stBlk = pStorage->beginBlock(name());
         if (!stBlk)
             return false;
 
@@ -1342,10 +1342,10 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorage *pStorage)
+    virtual bool restore(flxStorage *pStorage)
     {
         // Do we have this block in storage?
-        spStorageBlock *stBlk = pStorage->getBlock(name());
+        flxStorageBlock *stBlk = pStorage->getBlock(name());
 
         if (!stBlk)
         {
@@ -1364,15 +1364,15 @@ class spObject : public spPersist, public _spPropertyContainer, public spDescrip
     };
     //---------------------------------------------------------------------------------
     // Return the type ID of this
-    virtual spTypeID getType(void)
+    virtual flxTypeID getType(void)
     {
         return type();
     }
     //---------------------------------------------------------------------------------
     // A static type class for spObject
-    static spTypeID type(void)
+    static flxTypeID type(void)
     {
-        static spTypeID _myTypeID = spGetClassTypeID<spObject>();
+        static flxTypeID _myTypeID = flxGetClassTypeID<spObject>();
 
         return _myTypeID;
     }
@@ -1476,21 +1476,21 @@ template <class T> class spContainer : public spObject
     // The typeID is determined by hashing the name of the class.
     // This way the type ID is consistant across invocations
 
-    static spTypeID type(void)
+    static flxTypeID type(void)
     {
-        static spTypeID _myTypeID = spGetClassTypeID<T>();
+        static flxTypeID _myTypeID = flxGetClassTypeID<T>();
 
         return _myTypeID;
     }
 
     // Return the type ID of this
-    spTypeID getType(void)
+    flxTypeID getType(void)
     {
         return type();
     }
 
     //---------------------------------------------------------------------------------
-    virtual bool save(spStorage *pStorage)
+    virtual bool save(flxStorage *pStorage)
     {
         for (auto pObj : _vector)
             pObj->save(pStorage);
@@ -1499,7 +1499,7 @@ template <class T> class spContainer : public spObject
     };
 
     //---------------------------------------------------------------------------------
-    virtual bool restore(spStorage *pStorage)
+    virtual bool restore(flxStorage *pStorage)
     {
         for (auto pObj : _vector)
             pObj->restore(pStorage);

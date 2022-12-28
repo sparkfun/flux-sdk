@@ -5,10 +5,10 @@
 #include <ctype.h>
 #include <string>
 
-#include "spCore.h"
-#include "spCoreTypes.h"
+#include "flxCore.h"
+#include "flxCoreTypes.h"
 
-class spSerialField : public spDataEditor
+class spSerialField : public flxDataEditor
 {
 
   public:

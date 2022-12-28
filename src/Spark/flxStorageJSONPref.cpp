@@ -2,7 +2,7 @@
 #
  */
 
-#include "spStorageJSONPref.h"
+#include "flxStorageJSONPref.h"
 #include "spCoreLog.h"
 #include "spUtils.h"
 
@@ -13,7 +13,7 @@
 // JSON preference library
 
 // Write out a bool value
-bool spStorageJSONBlock::writeBool(const char *tag, bool value)
+bool flxStorageJSONBlock::writeBool(const char *tag, bool value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -25,7 +25,7 @@ bool spStorageJSONBlock::writeBool(const char *tag, bool value)
 //------------------------------------------------------------------------
 // write out an int8 value
 
-bool spStorageJSONBlock::writeInt8(const char *tag, int8_t value)
+bool flxStorageJSONBlock::writeInt8(const char *tag, int8_t value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -38,7 +38,7 @@ bool spStorageJSONBlock::writeInt8(const char *tag, int8_t value)
 //------------------------------------------------------------------------
 // write out an int16 value
 
-bool spStorageJSONBlock::writeInt16(const char *tag, int16_t value)
+bool flxStorageJSONBlock::writeInt16(const char *tag, int16_t value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -51,7 +51,7 @@ bool spStorageJSONBlock::writeInt16(const char *tag, int16_t value)
 //------------------------------------------------------------------------
 // write out a int value
 
-bool spStorageJSONBlock::writeInt32(const char *tag, int32_t value)
+bool flxStorageJSONBlock::writeInt32(const char *tag, int32_t value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -63,7 +63,7 @@ bool spStorageJSONBlock::writeInt32(const char *tag, int32_t value)
 //------------------------------------------------------------------------
 // Unsigned int8  - aka uchar
 
-bool spStorageJSONBlock::writeUInt8(const char *tag, uint8_t value)
+bool flxStorageJSONBlock::writeUInt8(const char *tag, uint8_t value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -76,7 +76,7 @@ bool spStorageJSONBlock::writeUInt8(const char *tag, uint8_t value)
 //------------------------------------------------------------------------
 // Unsigned int16  - aka ushort
 
-bool spStorageJSONBlock::writeUInt16(const char *tag, uint16_t value)
+bool flxStorageJSONBlock::writeUInt16(const char *tag, uint16_t value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -87,7 +87,7 @@ bool spStorageJSONBlock::writeUInt16(const char *tag, uint16_t value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::writeUInt32(const char *tag, uint32_t value)
+bool flxStorageJSONBlock::writeUInt32(const char *tag, uint32_t value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -99,7 +99,7 @@ bool spStorageJSONBlock::writeUInt32(const char *tag, uint32_t value)
 //------------------------------------------------------------------------
 // write out a float
 
-bool spStorageJSONBlock::writeFloat(const char *tag, float value)
+bool flxStorageJSONBlock::writeFloat(const char *tag, float value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -111,7 +111,7 @@ bool spStorageJSONBlock::writeFloat(const char *tag, float value)
 //------------------------------------------------------------------------
 // double
 
-bool spStorageJSONBlock::writeDouble(const char *tag, double value)
+bool flxStorageJSONBlock::writeDouble(const char *tag, double value)
 {
     if (!_jSection.isNull() && !_readOnly)
     {
@@ -122,7 +122,7 @@ bool spStorageJSONBlock::writeDouble(const char *tag, double value)
 }
 //------------------------------------------------------------------------
 // Write out a c string
-bool spStorageJSONBlock::writeString(const char *tag, const char *value)
+bool flxStorageJSONBlock::writeString(const char *tag, const char *value)
 {
 
     if (!_jSection.isNull() && !_readOnly)
@@ -139,7 +139,7 @@ bool spStorageJSONBlock::writeString(const char *tag, const char *value)
 // Read value section
 //------------------------------------------------------------------------
 
-bool spStorageJSONBlock::readBool(const char *tag, bool &value)
+bool flxStorageJSONBlock::readBool(const char *tag, bool &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -150,7 +150,7 @@ bool spStorageJSONBlock::readBool(const char *tag, bool &value)
     return false;
 }
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readInt8(const char *tag, int8_t &value)
+bool flxStorageJSONBlock::readInt8(const char *tag, int8_t &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag) )
     {
@@ -162,7 +162,7 @@ bool spStorageJSONBlock::readInt8(const char *tag, int8_t &value)
 
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readInt16(const char *tag, int16_t &value)
+bool flxStorageJSONBlock::readInt16(const char *tag, int16_t &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -174,7 +174,7 @@ bool spStorageJSONBlock::readInt16(const char *tag, int16_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readInt32(const char *tag, int32_t &value)
+bool flxStorageJSONBlock::readInt32(const char *tag, int32_t &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -186,7 +186,7 @@ bool spStorageJSONBlock::readInt32(const char *tag, int32_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readUInt8(const char *tag, uint8_t &value)
+bool flxStorageJSONBlock::readUInt8(const char *tag, uint8_t &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -198,7 +198,7 @@ bool spStorageJSONBlock::readUInt8(const char *tag, uint8_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readUInt16(const char *tag, uint16_t &value)
+bool flxStorageJSONBlock::readUInt16(const char *tag, uint16_t &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -210,7 +210,7 @@ bool spStorageJSONBlock::readUInt16(const char *tag, uint16_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readUInt32(const char *tag, uint32_t &value)
+bool flxStorageJSONBlock::readUInt32(const char *tag, uint32_t &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -222,7 +222,7 @@ bool spStorageJSONBlock::readUInt32(const char *tag, uint32_t &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readFloat(const char *tag, float &value)
+bool flxStorageJSONBlock::readFloat(const char *tag, float &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -234,7 +234,7 @@ bool spStorageJSONBlock::readFloat(const char *tag, float &value)
 }
 
 //------------------------------------------------------------------------
-bool spStorageJSONBlock::readDouble(const char *tag, double &value)
+bool flxStorageJSONBlock::readDouble(const char *tag, double &value)
 {
     if (!_jSection.isNull() && _jSection.containsKey(tag))
     {
@@ -246,7 +246,7 @@ bool spStorageJSONBlock::readDouble(const char *tag, double &value)
 }
 
 //------------------------------------------------------------------------
-size_t spStorageJSONBlock::readString(const char *tag, char *data, size_t len)
+size_t flxStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 {
 
 
@@ -261,7 +261,7 @@ size_t spStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 }
 
 //------------------------------------------------------------------------------
-bool spStorageJSONBlock::valueExists(const char *tag)
+bool flxStorageJSONBlock::valueExists(const char *tag)
 {
      if (!_jSection.isNull())
         return _jSection.containsKey(tag);
@@ -270,11 +270,11 @@ bool spStorageJSONBlock::valueExists(const char *tag)
 
 }
 //------------------------------------------------------------------------------
-// spStorage
+// flxStorage
 //
 // Interface for a storage system to persist state of a system
 
-bool spStorageJSONPref::begin(bool readonly)
+bool flxStorageJSONPref::begin(bool readonly)
 {
 
     if (!_fileSystem || _filename.length() == 0 || !_fileSystem->enabled())
@@ -334,7 +334,7 @@ bool spStorageJSONPref::begin(bool readonly)
     return true;
 }
 
-void spStorageJSONPref::end(void)
+void flxStorageJSONPref::end(void)
 {
     if (!_readOnly)
     {
@@ -370,7 +370,7 @@ void spStorageJSONPref::end(void)
 }
 
 // public methods to manage a block
-spStorageJSONBlock *spStorageJSONPref::beginBlock(const char *tag)
+flxStorageJSONBlock *flxStorageJSONPref::beginBlock(const char *tag)
 {
 
     if (!tag)
@@ -389,24 +389,24 @@ spStorageJSONBlock *spStorageJSONPref::beginBlock(const char *tag)
     return &_theBlock;
 }
 
-spStorageJSONBlock *spStorageJSONPref::getBlock(const char *tag)
+flxStorageJSONBlock *flxStorageJSONPref::getBlock(const char *tag)
 {
 
     // TODO - find object in JSON doc, set in block and return that
 
     return beginBlock(tag);
 }
-void spStorageJSONPref::endBlock(spStorageBlock *)
+void flxStorageJSONPref::endBlock(flxStorageBlock *)
 {
 
 }
 
-void spStorageJSONPref::resetStorage()
+void flxStorageJSONPref::resetStorage()
 {
     
 }
 
-void spStorageJSONPref::checkName()
+void flxStorageJSONPref::checkName()
 {
     if (_filename.length() == 0 || !_fileSystem)
         return;
@@ -417,13 +417,13 @@ void spStorageJSONPref::checkName()
     setName(szBuffer);
 
 }
-void spStorageJSONPref::setFileSystem(spIFileSystem *theFilesystem)
+void flxStorageJSONPref::setFileSystem(spIFileSystem *theFilesystem)
 {
     _fileSystem = theFilesystem;
     checkName();
 }
 
-void spStorageJSONPref::setFilename(std::string &filename)
+void flxStorageJSONPref::setFilename(std::string &filename)
 {
     _filename = filename;
     checkName();

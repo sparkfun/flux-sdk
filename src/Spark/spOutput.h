@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "spCoreInterface.h"
-#include "spCoreTypes.h"
+#include "flxCoreTypes.h"
 //-----------------------------------------
 
 // Define a formatter for log data
@@ -35,16 +35,16 @@ class spOutputFormat
     }
 
     // Array value methods
-    virtual void logValue(const std::string &tag, spDataArrayBool *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayInt8 *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayInt16 *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayInt *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayUint8 *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayUint16 *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayUint *value) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision = 3) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision = 3) = 0;
-    virtual void logValue(const std::string &tag, spDataArrayString *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayBool *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayInt8 *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayInt16 *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayInt *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayUint8 *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayUint16 *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayUint *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayFloat *value, uint16_t precision = 3) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayDouble *value, uint16_t precision = 3) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayString *value) = 0;
 
     // structure cycle
 

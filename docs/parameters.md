@@ -279,11 +279,11 @@ Where:
 These methods are implemented on the containing class and are called when the value of a parameter is requested. These methods have the following signature:
 
 ```C++
-bool ClassName::read_Name(spDataArray<type> *array);
+bool ClassName::read_Name(flxDataArray<type> *array);
 ```
 Where
 
-* array  -  a pointer to an spDataArray<type> object. Type is the type of the parameter (int, float, double ...etc)
+* array  -  a pointer to an flxDataArray<type> object. Type is the type of the parameter (int, float, double ...etc)
 * ClassName - the name of the containing class for the property
 * On success, a true value is returned, false on error.
 
@@ -316,7 +316,7 @@ Note:
 class MyClass : public spObject
 {
 private:
-    bool read_myOutput(spDataArrayInt *array);
+    bool read_myOutput(flxDataArrayInt *array);
 
 public:
    // Define an output parameter

@@ -13,8 +13,8 @@
 
 
 // settings storage
-#include <Spark/spStorageESP32Pref.h>
-#include <Spark/spStorageJSONPref.h>
+#include <Spark/flxStorageESP32Pref.h>
+#include <Spark/flxStorageJSONPref.h>
 #include <Spark/spSettings.h>
 #include <Spark/spSettingsSerial.h>
 
@@ -113,9 +113,9 @@ spFSSDMMCard theSDCard;
 spFileRotate  theOutputFile;
 
 // settings things
-spStorageESP32Pref  myStorage;
+flxStorageESP32Pref  myStorage;
 spSettingsSerial    serialSettings;
-spStorageJSONPref   jsonStorage;
+flxStorageJSONPref   jsonStorage;
 
 spWiFiESP32 wifiConnection;
 spNTPESP32  ntpClient;

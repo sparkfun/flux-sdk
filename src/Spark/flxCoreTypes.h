@@ -17,15 +17,15 @@
 
 #include "Arduino.h"
 //----------------------------------------------------------------------------------------
-// spDescriptor
+// flxDescriptor
 //
 // Simple class that can be mixed-in to add a common name and description string
 // to user "exposed" objects in the framework..
 
-class spDescriptor
+class flxDescriptor
 {
   public:
-    spDescriptor() : _name{""}, _description{""}
+    flxDescriptor() : _name{""}, _description{""}
     {
     }
 
@@ -58,18 +58,18 @@ class spDescriptor
 
 typedef enum
 {
-    spTypeNone = 0,
-    spTypeBool,
-    spTypeInt8,
-    spTypeInt16,
-    spTypeInt,
-    spTypeUInt8,
-    spTypeUInt16,
-    spTypeUInt,
-    spTypeFloat,
-    spTypeDouble,
-    spTypeString
-} spDataType_t;
+    flxTypeNone = 0,
+    flxTypeBool,
+    flxTypeInt8,
+    flxTypeInt16,
+    flxTypeInt,
+    flxTypeUInt8,
+    flxTypeUInt16,
+    flxTypeUInt,
+    flxTypeFloat,
+    flxTypeDouble,
+    flxTypeString
+} flxDataType_t;
 
 // helpful data types
 typedef union {
@@ -83,65 +83,65 @@ typedef union {
     float f;
     double d;
     const char *str;
-} spDataAllType_t;
+} flxDataAllType_t;
 
-class spDataVariable
+class flxDataVariable
 {
   public:
-    spDataType_t type;
-    spDataAllType_t value;
+    flxDataType_t type;
+    flxDataAllType_t value;
 
-    spDataVariable() : type{spTypeNone}
+    flxDataVariable() : type{flxTypeNone}
     {
     }
     void set(bool v)
     {
-        type = spTypeBool;
+        type = flxTypeBool;
         value.b = v;
     };
     void set(int8_t v)
     {
-        type = spTypeInt8;
+        type = flxTypeInt8;
         value.i8 = v;
     };
     void set(int16_t v)
     {
-        type = spTypeInt16;
+        type = flxTypeInt16;
         value.i16 = v;
     };
     void set(int32_t v)
     {
-        type = spTypeInt;
+        type = flxTypeInt;
         value.i32 = v;
     };
     void set(uint8_t v)
     {
-        type = spTypeUInt8;
+        type = flxTypeUInt8;
         value.ui8 = v;
     };
     void set(uint16_t v)
     {
-        type = spTypeUInt16;
+        type = flxTypeUInt16;
         value.ui16 = v;
     };
     void set(uint32_t v)
     {
-        type = spTypeUInt;
+        type = flxTypeUInt;
         value.ui32 = v;
     };
     void set(float v)
     {
-        type = spTypeFloat;
+        type = flxTypeFloat;
         value.f = v;
     };
     void set(double v)
     {
-        type = spTypeDouble;
+        type = flxTypeDouble;
         value.d = v;
     };
     void set(const char *v)
     {
-        type = spTypeString;
+        type = flxTypeString;
         value.str = v;
     };
     // gets
@@ -193,68 +193,68 @@ class spDataVariable
     // is equal?
     bool isEqual(bool v)
     {
-        return (type == spTypeBool && v == value.b);
+        return (type == flxTypeBool && v == value.b);
     }
     bool isEqual(int8_t v)
     {
-        return (type == spTypeInt8 && value.i8 == v);
+        return (type == flxTypeInt8 && value.i8 == v);
     }
     bool isEqual(int16_t v)
     {
-        return (type == spTypeInt16 && value.i16 == v);
+        return (type == flxTypeInt16 && value.i16 == v);
     }
     bool isEqual(int32_t v)
     {
-        return (type == spTypeInt && value.i32 == v);
+        return (type == flxTypeInt && value.i32 == v);
     }
     bool isEqual(uint8_t v)
     {
-        return (type == spTypeUInt8 && value.ui8 == v);
+        return (type == flxTypeUInt8 && value.ui8 == v);
     }
     bool isEqual(uint16_t v)
     {
-        return (type == spTypeUInt16 && value.ui16 == v);
+        return (type == flxTypeUInt16 && value.ui16 == v);
     }
     bool isEqual(uint32_t v)
     {
-        return (type == spTypeUInt && value.ui32 == v);
+        return (type == flxTypeUInt && value.ui32 == v);
     }
     bool isEqual(float v)
     {
-        return (type == spTypeFloat && value.f == v);
+        return (type == flxTypeFloat && value.f == v);
     }
     bool isEqual(double v)
     {
-        return (type == spTypeDouble && value.d == v);
+        return (type == flxTypeDouble && value.d == v);
     }
     bool isEqual(const char *v)
     {
-        return (type == spTypeString && strcmp(value.str, v) == 0);
+        return (type == flxTypeString && strcmp(value.str, v) == 0);
     }
 
     std::string to_string(void)
     {
         switch (type)
         {
-        case spTypeBool:
+        case flxTypeBool:
             return sp_utils::to_string(value.b);
-        case spTypeInt8:
+        case flxTypeInt8:
             return sp_utils::to_string(value.i8);
-        case spTypeInt16:
+        case flxTypeInt16:
             return sp_utils::to_string(value.i16);
-        case spTypeInt:
+        case flxTypeInt:
             return sp_utils::to_string(value.i32);
-        case spTypeUInt8:
+        case flxTypeUInt8:
             return sp_utils::to_string(value.ui8);
-        case spTypeUInt16:
+        case flxTypeUInt16:
             return sp_utils::to_string(value.ui16);
-        case spTypeUInt:
+        case flxTypeUInt:
             return sp_utils::to_string(value.ui32);
-        case spTypeFloat:
+        case flxTypeFloat:
             return sp_utils::to_string(value.f);
-        case spTypeDouble:
+        case flxTypeDouble:
             return sp_utils::to_string(value.d);
-        case spTypeString:
+        case flxTypeString:
             return sp_utils::to_string(value.str);
         default:
             break;
@@ -263,118 +263,118 @@ class spDataVariable
     };
 };
 
-class spDataTyper
+class flxDataTyper
 {
   public:
     // some method overloading to determine types
-    static spDataType_t type(std::nullptr_t *t)
+    static flxDataType_t type(std::nullptr_t *t)
     {
-        return spTypeNone;
+        return flxTypeNone;
     };
-    static spDataType_t type(bool *t)
+    static flxDataType_t type(bool *t)
     {
-        return spTypeBool;
+        return flxTypeBool;
     };
-    static spDataType_t type(int8_t *t)
+    static flxDataType_t type(int8_t *t)
     {
-        return spTypeInt8;
+        return flxTypeInt8;
     };
-    static spDataType_t type(int16_t *t)
+    static flxDataType_t type(int16_t *t)
     {
-        return spTypeInt16;
+        return flxTypeInt16;
     };
-    static spDataType_t type(int *t)
+    static flxDataType_t type(int *t)
     {
-        return spTypeInt;
+        return flxTypeInt;
     };
-    static spDataType_t type(uint8_t *t)
+    static flxDataType_t type(uint8_t *t)
     {
-        return spTypeUInt8;
+        return flxTypeUInt8;
     };
-    static spDataType_t type(uint16_t *t)
+    static flxDataType_t type(uint16_t *t)
     {
-        return spTypeUInt16;
+        return flxTypeUInt16;
     };
-    static spDataType_t type(uint *t)
+    static flxDataType_t type(uint *t)
     {
-        return spTypeUInt;
+        return flxTypeUInt;
     };
-    static spDataType_t type(float *t)
+    static flxDataType_t type(float *t)
     {
-        return spTypeFloat;
+        return flxTypeFloat;
     };
-    static spDataType_t type(double *t)
+    static flxDataType_t type(double *t)
     {
-        return spTypeDouble;
+        return flxTypeDouble;
     };
-    static spDataType_t type(std::string *t)
+    static flxDataType_t type(std::string *t)
     {
-        return spTypeString;
+        return flxTypeString;
     };
-    static spDataType_t type(char *t)
+    static flxDataType_t type(char *t)
     {
-        return spTypeString;
+        return flxTypeString;
     };
 
     // non pointer
-    static spDataType_t type(bool &t)
+    static flxDataType_t type(bool &t)
     {
         return type(&t);
     };
-    static spDataType_t type(int8_t &t)
+    static flxDataType_t type(int8_t &t)
     {
         return type(&t);
     };
-    static spDataType_t type(int16_t &t)
+    static flxDataType_t type(int16_t &t)
     {
         return type(&t);
     };
-    static spDataType_t type(int &t)
+    static flxDataType_t type(int &t)
     {
         return type(&t);
     };
-    static spDataType_t type(uint8_t &t)
+    static flxDataType_t type(uint8_t &t)
     {
         return type(&t);
     };
-    static spDataType_t type(uint16_t &t)
+    static flxDataType_t type(uint16_t &t)
     {
         return type(&t);
     };
-    static spDataType_t type(uint &t)
+    static flxDataType_t type(uint &t)
     {
         return type(&t);
     };
-    static spDataType_t type(float &t)
+    static flxDataType_t type(float &t)
     {
         return type(&t);
     };
-    static spDataType_t type(double &t)
+    static flxDataType_t type(double &t)
     {
         return type(&t);
     };
-    static spDataType_t type(std::string &t)
+    static flxDataType_t type(std::string &t)
     {
         return type(&t);
     };
 };
-const char *spGetTypeName(spDataType_t type);
+const char *flxGetTypeName(flxDataType_t type);
 
 //----------------------------------------------------------------------------------------
 // Array variable/data type.
 
 // Basic interface
-class spDataArray
+class flxDataArray
 {
 
   public:
-    spDataArray() : _n_dims{0}, _dimensions{0} {};
+    flxDataArray() : _n_dims{0}, _dimensions{0} {};
 
-    virtual ~spDataArray()
+    virtual ~flxDataArray()
     {
     }
 
-    virtual spDataType_t type() = 0;
+    virtual flxDataType_t type() = 0;
 
     //--------------------------------------------------------------------
     // number of dimensions
@@ -438,15 +438,15 @@ class spDataArray
 // ----------------------------------------------------------------------
 // Type templated array class...
 //
-template <typename T> class spDataArrayType : public spDataArray
+template <typename T> class flxDataArrayType : public flxDataArray
 {
 
   public:
-    spDataArrayType() : _bAlloc{false}, _data{nullptr}
+    flxDataArrayType() : _bAlloc{false}, _data{nullptr}
     {
     }
 
-    ~spDataArrayType()
+    ~flxDataArrayType()
     {
         reset();
     }
@@ -454,10 +454,10 @@ template <typename T> class spDataArrayType : public spDataArray
     //--------------------------------------------------------------------
     // return the type of this array
 
-    spDataType_t type(void)
+    flxDataType_t type(void)
     {
         T c = {0};
-        return spDataTyper::type(c); // use the typer object - leverage overloading
+        return flxDataTyper::type(c); // use the typer object - leverage overloading
     }
 
     //--------------------------------------------------------------------
@@ -512,7 +512,7 @@ template <typename T> class spDataArrayType : public spDataArray
         // free any alloc first - this might require array dims ...
         freeAlloc();
 
-        spDataArray::reset(); // call superclass
+        flxDataArray::reset(); // call superclass
     }
 
     virtual void freeAlloc(void)
@@ -556,18 +556,18 @@ template <typename T> class spDataArrayType : public spDataArray
     T *_data;
 };
 
-using spDataArrayBool = spDataArrayType<bool>;
-using spDataArrayInt8 = spDataArrayType<int8_t>;
-using spDataArrayInt16 = spDataArrayType<int16_t>;
-using spDataArrayInt = spDataArrayType<int>;
-using spDataArrayUint8 = spDataArrayType<uint8_t>;
-using spDataArrayUint16 = spDataArrayType<uint16_t>;
-using spDataArrayUint = spDataArrayType<uint>;
-using spDataArrayFloat = spDataArrayType<float>;
-using spDataArrayDouble = spDataArrayType<double>;
+using flxDataArrayBool = flxDataArrayType<bool>;
+using flxDataArrayInt8 = flxDataArrayType<int8_t>;
+using flxDataArrayInt16 = flxDataArrayType<int16_t>;
+using flxDataArrayInt = flxDataArrayType<int>;
+using flxDataArrayUint8 = flxDataArrayType<uint8_t>;
+using flxDataArrayUint16 = flxDataArrayType<uint16_t>;
+using flxDataArrayUint = flxDataArrayType<uint>;
+using flxDataArrayFloat = flxDataArrayType<float>;
+using flxDataArrayDouble = flxDataArrayType<double>;
 
 // strings are special ..
-class spDataArrayString : public spDataArrayType<char *>
+class flxDataArrayString : public flxDataArrayType<char *>
 {
     //--------------------------------------------------------------------
     void freeAlloc(void)
@@ -586,12 +586,12 @@ class spDataArrayString : public spDataArrayType<char *>
         }
 
         // call super
-        spDataArrayType<char *>::freeAlloc();
+        flxDataArrayType<char *>::freeAlloc();
     }
     //--------------------------------------------------------------------
     bool setDataPtr(char **data, size_t length, bool no_copy)
     {
-        if (!spDataArrayType<char *>::setDataPtr(data, length, no_copy))
+        if (!flxDataArrayType<char *>::setDataPtr(data, length, no_copy))
             return false;
 
         if (no_copy) // done
@@ -621,23 +621,23 @@ class spDataArrayString : public spDataArrayType<char *>
 };
 
 //----------------------------------------------------------------------------------------
-class spStorage;
+class flxStorage;
 //----------------------------------------------------------------------------------------
-struct spPersist
+struct flxPersist
 {
 
-    virtual bool save(spStorage *) = 0;
-    virtual bool restore(spStorage *) = 0;
+    virtual bool save(flxStorage *) = 0;
+    virtual bool restore(flxStorage *) = 0;
 };
 //----------------------------------------------------------------------------------------
-// spDataOut
+// flxDataOut
 //
 // Interface to get outputs from an object.
-class spDataOut
+class flxDataOut
 {
 
   public:
-    virtual spDataType_t type(void) = 0;
+    virtual flxDataType_t type(void) = 0;
 
     virtual bool getBool() = 0;
     virtual int8_t getInt8() = 0;
@@ -692,15 +692,15 @@ class spDataOut
     }
 };
 
-template <typename T> class _spDataOut : public spDataOut
+template <typename T> class _flxDataOut : public flxDataOut
 {
 
   public:
     // Type of property
-    spDataType_t type(void)
+    flxDataType_t type(void)
     {
         T c;
-        return spDataTyper::type(c);
+        return flxDataTyper::type(c);
     };
 
     virtual T get(void) const = 0;
@@ -750,14 +750,14 @@ template <typename T> class _spDataOut : public spDataOut
     typedef T value_type; // might be handy in future
 };
 
-class _spDataOutString : public spDataOut
+class _flxDataOutString : public flxDataOut
 {
 
   public:
     // Type of property
-    spDataType_t type(void)
+    flxDataType_t type(void)
     {
-        return spTypeString;
+        return flxTypeString;
     };
 
     virtual std::string get(void) const = 0;
@@ -811,37 +811,37 @@ class _spDataOutString : public spDataOut
 
 typedef enum
 {
-    spDataLimitTypeNone = 0,
-    spDataLimitTypeRange,
-    spDataLimitTypeSet
-} spDataLimit_t;
+    flxDataLimitTypeNone = 0,
+    flxDataLimitTypeRange,
+    flxDataLimitTypeSet
+} flxDataLimit_t;
 
-class spDataLimitDesc
+class flxDataLimitDesc
 {
   public:
     std::string name;
-    spDataVariable data;
+    flxDataVariable data;
 };
-using spDataLimitList = std::vector<spDataLimitDesc>;
+using flxDataLimitList = std::vector<flxDataLimitDesc>;
 
 //-----------------------------------------------------------------
-class spDataLimit
+class flxDataLimit
 {
   public:
-    virtual ~spDataLimit()
+    virtual ~flxDataLimit()
     {
     }
-    virtual spDataLimit_t type(void)
+    virtual flxDataLimit_t type(void)
     {
-        return spDataLimitTypeNone;
+        return flxDataLimitTypeNone;
     }
-    spDataLimitList _dataLimits;
+    flxDataLimitList _dataLimits;
 
-    spDataLimitList &limits(void)
+    flxDataLimitList &limits(void)
     {
         return _dataLimits;
     }
-    void addLimit(spDataLimitDesc &item)
+    void addLimit(flxDataLimitDesc &item)
     {
         _dataLimits.push_back(item);
     }
@@ -858,19 +858,19 @@ class spDataLimit
     } dataLimitType_t;
 };
 
-template <typename T> class spDataLimitType : public spDataLimit
+template <typename T> class flxDataLimitType : public flxDataLimit
 {
   public:
     virtual bool isValid(T value) = 0;
 };
 
-template <typename T> class spDataLimitRange : public spDataLimitType<T>
+template <typename T> class flxDataLimitRange : public flxDataLimitType<T>
 {
   public:
-    spDataLimitRange() : _isSet{false}
+    flxDataLimitRange() : _isSet{false}
     {
     }
-    spDataLimitRange(T min, T max)
+    flxDataLimitRange(T min, T max)
     {
         setRange(min, max);
     }
@@ -890,16 +890,16 @@ template <typename T> class spDataLimitRange : public spDataLimitType<T>
 
         _isSet = true;
 
-        spDataLimit::clearLimits();
+        flxDataLimit::clearLimits();
         // build our limit descriptors
-        spDataLimitDesc limit;
+        flxDataLimitDesc limit;
         limit.name = sp_utils::to_string(_min);
         limit.data.set(_min);
-        spDataLimit::addLimit(limit);
+        flxDataLimit::addLimit(limit);
 
         limit.name = sp_utils::to_string(_max);
         limit.data.set(_max);
-        spDataLimit::addLimit(limit);
+        flxDataLimit::addLimit(limit);
     };
 
     bool isValid(T value)
@@ -909,9 +909,9 @@ template <typename T> class spDataLimitRange : public spDataLimitType<T>
 
         return (value >= _min && value <= _max);
     }
-    spDataLimit_t type(void)
+    flxDataLimit_t type(void)
     {
-        return spDataLimitTypeRange;
+        return flxDataLimitTypeRange;
     };
 
   private:
@@ -920,48 +920,48 @@ template <typename T> class spDataLimitRange : public spDataLimitType<T>
     bool _isSet;
 };
 
-using spDataLimitRangeInt8 = spDataLimitRange<int8_t>;
-using spDataLimitRangeInt16 = spDataLimitRange<int16_t>;
-using spDataLimitRangeInt = spDataLimitRange<int>;
-using spDataLimitRangeUint8 = spDataLimitRange<uint8_t>;
-using spDataLimitRangeUint16 = spDataLimitRange<uint16_t>;
-using spDataLimitRangeUnt = spDataLimitRange<uint>;
-using spDataLimitRangeFloat = spDataLimitRange<float>;
-using spDataLimitRangeDouble = spDataLimitRange<double>;
+using flxDataLimitRangeInt8 = flxDataLimitRange<int8_t>;
+using flxDataLimitRangeInt16 = flxDataLimitRange<int16_t>;
+using flxDataLimitRangeInt = flxDataLimitRange<int>;
+using flxDataLimitRangeUint8 = flxDataLimitRange<uint8_t>;
+using flxDataLimitRangeUint16 = flxDataLimitRange<uint16_t>;
+using flxDataLimitRangeUnt = flxDataLimitRange<uint>;
+using flxDataLimitRangeFloat = flxDataLimitRange<float>;
+using flxDataLimitRangeDouble = flxDataLimitRange<double>;
 
 //----------------------------------------------------------------------------
-// spDataLimitSetType
+// flxDataLimitSetType
 //
 // Used to contain a set of valid values. The values are stored as Name, Value pairs,
 // where Name is a human readable string for display/UX
 //
 // This is the base class for this type of limit
 
-template <typename T> class spDataLimitSetType : public spDataLimitType<T>
+template <typename T> class flxDataLimitSetType : public flxDataLimitType<T>
 {
   public:
-    spDataLimitSetType()
+    flxDataLimitSetType()
     {
     }
 
-    spDataLimitSetType(std::initializer_list<std::pair<const std::string, T>> list)
+    flxDataLimitSetType(std::initializer_list<std::pair<const std::string, T>> list)
     {
         if (list.size() < 1)
             throw std::length_error("invalid number of arguments");
 
-        spDataLimitDesc limit;
+        flxDataLimitDesc limit;
 
         for (auto item : list)
         {
             limit.name = item.first.c_str();
             limit.data.set(item.second);
-            spDataLimit::addLimit(limit);
+            flxDataLimit::addLimit(limit);
         }
     }
 
     bool isValid(T value)
     {
-        for (auto item : spDataLimit::limits())
+        for (auto item : flxDataLimit::limits())
         {
             if (item.data.isEqual(value))
                 return true;
@@ -971,32 +971,32 @@ template <typename T> class spDataLimitSetType : public spDataLimitType<T>
 
     void addItem(std::string &name, T value)
     {
-        spDataLimitDesc limit;
+        flxDataLimitDesc limit;
         limit.name = name.c_str();
         limit.data.set(value);
-        spDataLimit::addLimit(limit);
+        flxDataLimit::addLimit(limit);
     }
-    spDataLimit_t type(void)
+    flxDataLimit_t type(void)
     {
-        return spDataLimitTypeSet;
+        return flxDataLimitTypeSet;
     };
 };
 
-using spDataLimitSetInt8 = spDataLimitSetType<int8_t>;
-using spDataLimitSetInt16 = spDataLimitSetType<int16_t>;
-using spDataLimitSetInt = spDataLimitSetType<int>;
-using spDataLimitSetUint8 = spDataLimitSetType<uint8_t>;
-using spDataLimitSetUint16 = spDataLimitSetType<uint16_t>;
-using spDataLimitSetUnt = spDataLimitSetType<uint>;
-using spDataLimitSetFloat = spDataLimitSetType<float>;
-using spDataLimitSetDouble = spDataLimitSetType<double>;
-using spDataLimitSetString = spDataLimitSetType<std::string>;
+using flxDataLimitSetInt8 = flxDataLimitSetType<int8_t>;
+using flxDataLimitSetInt16 = flxDataLimitSetType<int16_t>;
+using flxDataLimitSetInt = flxDataLimitSetType<int>;
+using flxDataLimitSetUint8 = flxDataLimitSetType<uint8_t>;
+using flxDataLimitSetUint16 = flxDataLimitSetType<uint16_t>;
+using flxDataLimitSetUnt = flxDataLimitSetType<uint>;
+using flxDataLimitSetFloat = flxDataLimitSetType<float>;
+using flxDataLimitSetDouble = flxDataLimitSetType<double>;
+using flxDataLimitSetString = flxDataLimitSetType<std::string>;
 //-----------------------------------------------------------------------------
 // Data input interface.
-class spDataIn
+class flxDataIn
 {
   public:
-    virtual spDataType_t type(void) = 0;
+    virtual flxDataType_t type(void) = 0;
 
     virtual void setBool(bool) = 0;
     virtual void setInt8(int8_t) = 0;
@@ -1051,16 +1051,16 @@ class spDataIn
     }
 };
 
-template <typename T> class _spDataIn : public spDataIn
+template <typename T> class _flxDataIn : public flxDataIn
 {
 
   public:
-    _spDataIn() : _dataLimit{nullptr}, _limitIsAlloc{false}, _dataLimitType{spDataLimit::dataLimitNone} {};
+    _flxDataIn() : _dataLimit{nullptr}, _limitIsAlloc{false}, _dataLimitType{flxDataLimit::dataLimitNone} {};
 
-    spDataType_t type(void)
+    flxDataType_t type(void)
     {
         T c;
-        return spDataTyper::type(c);
+        return flxDataTyper::type(c);
     };
     virtual void set(T const &value) = 0;
 
@@ -1105,34 +1105,34 @@ template <typename T> class _spDataIn : public spDataIn
         // Convert string to native type..
         switch (this->type())
         {
-        case spTypeBool:
+        case flxTypeBool:
             set(value.length() > 0 ? (value != "false") : false);
             break;
-        case spTypeInt:
+        case flxTypeInt:
             set(std::stoi(value));
             break;
-        case spTypeInt8:
+        case flxTypeInt8:
             set((int8_t)std::stoi(value));
             break;
-        case spTypeInt16:
+        case flxTypeInt16:
             set((int16_t)std::stoi(value));
             break;
-        case spTypeUInt:
+        case flxTypeUInt:
             set(std::stoul(value));
             break;
-        case spTypeUInt8:
+        case flxTypeUInt8:
             set((uint8_t)std::stoul(value));
             break;
-        case spTypeUInt16:
+        case flxTypeUInt16:
             set((uint16_t)std::stoul(value));
             break;
-        case spTypeFloat:
+        case flxTypeFloat:
             set(std::stof(value));
             break;
-        case spTypeDouble:
+        case flxTypeDouble:
             set(std::stof(value));
             break;
-        case spTypeString:
+        case flxTypeString:
             break;
         default:
             spLog_W("Unknown property type set");
@@ -1142,7 +1142,7 @@ template <typename T> class _spDataIn : public spDataIn
     //---------------------------------------------------------------------------------
     // Data Limit things
     //---------------------------------------------------------------------------------
-    void setDataLimit(spDataLimitType<T> &dataLimit)
+    void setDataLimit(flxDataLimitType<T> &dataLimit)
     {
         if (_dataLimit && _limitIsAlloc)
             delete _dataLimit;
@@ -1150,7 +1150,7 @@ template <typename T> class _spDataIn : public spDataIn
         _limitIsAlloc = false;
         _dataLimit = &dataLimit;
     }
-    void setDataLimit(spDataLimitType<T> *dataLimit)
+    void setDataLimit(flxDataLimitType<T> *dataLimit)
     {
         if (_dataLimit && _limitIsAlloc)
             delete _dataLimit;
@@ -1159,22 +1159,22 @@ template <typename T> class _spDataIn : public spDataIn
         _dataLimit = dataLimit;
     }
     // -------------------------------------------
-    spDataLimit *dataLimit(void)
+    flxDataLimit *dataLimit(void)
     {
         return _dataLimit;
     }
 
     void setDataLimitRange(T min, T max)
     {
-        if (_dataLimitType != spDataLimit::dataLimitRange)
+        if (_dataLimitType != flxDataLimit::dataLimitRange)
         {
             if (_dataLimit != nullptr && _limitIsAlloc)
                 delete _dataLimit;
-            _dataLimit = new spDataLimitRange<T>();
-            _dataLimitType = spDataLimit::dataLimitRange;
+            _dataLimit = new flxDataLimitRange<T>();
+            _dataLimitType = flxDataLimit::dataLimitRange;
             _limitIsAlloc = true;
         }
-        ((spDataLimitRange<T> *)_dataLimit)->setRange(min, max);
+        ((flxDataLimitRange<T> *)_dataLimit)->setRange(min, max);
     }
 
     void setDataLimitRange(std::pair<T, T> range)
@@ -1184,15 +1184,15 @@ template <typename T> class _spDataIn : public spDataIn
 
     void addDataLimitValidValue(std::string name, T value)
     {
-        if (_dataLimitType != spDataLimit::dataLimitSet)
+        if (_dataLimitType != flxDataLimit::dataLimitSet)
         {
             if (_dataLimit != nullptr && _limitIsAlloc)
                 delete _dataLimit;
-            _dataLimit = new spDataLimitSetType<T>();
-            _dataLimitType = spDataLimit::dataLimitSet;
+            _dataLimit = new flxDataLimitSetType<T>();
+            _dataLimitType = flxDataLimit::dataLimitSet;
             _limitIsAlloc = true;
         }
-        ((spDataLimitSetType<T> *)_dataLimit)->addItem(name, value);
+        ((flxDataLimitSetType<T> *)_dataLimit)->addItem(name, value);
     }
     void addDataLimitValidValue(std::pair<const std::string, T> value)
     {
@@ -1210,7 +1210,7 @@ template <typename T> class _spDataIn : public spDataIn
         if (_dataLimit)
         {
             delete _dataLimit;
-            _dataLimitType = spDataLimit::dataLimitNone;
+            _dataLimitType = flxDataLimit::dataLimitNone;
         }
     }
     // Check value against the data limits
@@ -1221,18 +1221,18 @@ template <typename T> class _spDataIn : public spDataIn
     }
 
   private:
-    spDataLimitType<T> *_dataLimit;
+    flxDataLimitType<T> *_dataLimit;
     bool _limitIsAlloc;
-    spDataLimit::dataLimitType_t _dataLimitType;
+    flxDataLimit::dataLimitType_t _dataLimitType;
 };
 
-class _spDataInString : public spDataIn
+class _flxDataInString : public flxDataIn
 {
 
   public:
-    spDataType_t type(void)
+    flxDataType_t type(void)
     {
-        return spTypeString;
+        return flxTypeString;
     };
     virtual void set(const std::string &value) = 0;
 
@@ -1287,10 +1287,10 @@ class _spDataInString : public spDataIn
 //---------------------------------------------------------
 // Define simple type ID "types" - used for class IDs
 
-typedef uint32_t spTypeID;
-#define kspTypeIDNone 0
+typedef uint32_t flxTypeID;
+#define kflxTypeIDNone 0
 
-template <typename T> spTypeID spGetClassTypeID()
+template <typename T> flxTypeID flxGetClassTypeID()
 {
     // Use the name of this method via the __PRETTY_FUNCTION__ macro
     // to create our ID. The macro gives us a unique name for
@@ -1300,4 +1300,4 @@ template <typename T> spTypeID spGetClassTypeID()
     return sp_utils::id_hash_string(__PRETTY_FUNCTION__);
 };
 
-// End - spCoreTypes.h
+// End - flxCoreTypes.h

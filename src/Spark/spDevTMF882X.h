@@ -47,10 +47,10 @@ private:
 
     // methods used to get values for our output parameters
     // Strictly, these should be uint32_t
-    bool read_confidence(spDataArrayUint *);
-    bool read_distance(spDataArrayUint *);
-    bool read_channel(spDataArrayUint *);
-    bool read_sub_capture(spDataArrayUint *);
+    bool read_confidence(flxDataArrayUint *);
+    bool read_distance(flxDataArrayUint *);
+    bool read_channel(flxDataArrayUint *);
+    bool read_sub_capture(flxDataArrayUint *);
     uint read_photon_count();
     uint read_ref_photon_count();
     uint read_ambient_light();

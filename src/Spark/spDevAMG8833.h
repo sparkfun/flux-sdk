@@ -42,7 +42,7 @@ public:
 
 private:
     float read_device_temperature_C();
-    bool read_pixel_temperatures(spDataArrayFloat *);
+    bool read_pixel_temperatures(flxDataArrayFloat *);
 
     bool _frameRate10FPS = true; // Default to 10 FPS
 

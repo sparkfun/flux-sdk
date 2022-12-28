@@ -47,34 +47,34 @@ void spLogger::logScalar(spParameterOutScalar *pScalar)
 
     switch (pScalar->type())
     {
-    case spTypeBool:
+    case flxTypeBool:
         writeValue(pScalar->name(), pScalar->getBool());
         break;
-    case spTypeInt8:
+    case flxTypeInt8:
         writeValue(pScalar->name(), pScalar->getInt8());
         break;
-    case spTypeInt16:
+    case flxTypeInt16:
         writeValue(pScalar->name(), pScalar->getInt16());
         break;
-    case spTypeInt:
+    case flxTypeInt:
         writeValue(pScalar->name(), pScalar->getInt());
         break;
-    case spTypeUInt8:
+    case flxTypeUInt8:
         writeValue(pScalar->name(), pScalar->getUint8());
         break;
-    case spTypeUInt16:
+    case flxTypeUInt16:
         writeValue(pScalar->name(), pScalar->getUint16());
         break;
-    case spTypeUInt:
+    case flxTypeUInt:
         writeValue(pScalar->name(), pScalar->getUint());
         break;
-    case spTypeFloat:
+    case flxTypeFloat:
         writeValue(pScalar->name(), pScalar->getFloat(), pScalar->precision());
         break;
-    case spTypeDouble:
+    case flxTypeDouble:
         writeValue(pScalar->name(), pScalar->getDouble(), pScalar->precision());
         break;
-    case spTypeString:
+    case flxTypeString:
         writeValue(pScalar->name(), pScalar->getString());
         break;
 
@@ -95,44 +95,44 @@ void spLogger::logArray(spParameterOutArray *pParam)
     switch (pParam->type())
     {
 
-    case spTypeBool:
-        logArrayType<spDataArrayBool>(pParam);
+    case flxTypeBool:
+        logArrayType<flxDataArrayBool>(pParam);
         break;
 
-    case spTypeInt8:
-        logArrayType<spDataArrayInt8>(pParam);
+    case flxTypeInt8:
+        logArrayType<flxDataArrayInt8>(pParam);
         break;
 
-    case spTypeInt16:
-        logArrayType<spDataArrayInt16>(pParam);
+    case flxTypeInt16:
+        logArrayType<flxDataArrayInt16>(pParam);
         break;
 
-    case spTypeInt:
-        logArrayType<spDataArrayInt>(pParam);
+    case flxTypeInt:
+        logArrayType<flxDataArrayInt>(pParam);
         break;
 
-    case spTypeUInt8:
-        logArrayType<spDataArrayUint8>(pParam);
+    case flxTypeUInt8:
+        logArrayType<flxDataArrayUint8>(pParam);
         break;
 
-    case spTypeUInt16:
-        logArrayType<spDataArrayUint16>(pParam);
+    case flxTypeUInt16:
+        logArrayType<flxDataArrayUint16>(pParam);
         break;
 
-    case spTypeUInt:
-        logArrayType<spDataArrayUint>(pParam);
+    case flxTypeUInt:
+        logArrayType<flxDataArrayUint>(pParam);
         break;
 
-    case spTypeFloat:
-        logArrayType<spDataArrayFloat>(pParam, pParam->precision());
+    case flxTypeFloat:
+        logArrayType<flxDataArrayFloat>(pParam, pParam->precision());
         break;
 
-    case spTypeDouble:
-        logArrayType<spDataArrayDouble>(pParam, pParam->precision());
+    case flxTypeDouble:
+        logArrayType<flxDataArrayDouble>(pParam, pParam->precision());
         break;
 
-    case spTypeString:
-        logArrayType<spDataArrayString>(pParam);
+    case flxTypeString:
+        logArrayType<flxDataArrayString>(pParam);
         break;
 
     default:

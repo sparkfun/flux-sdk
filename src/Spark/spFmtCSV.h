@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "spCore.h"
+#include "flxCore.h"
 #include "spOutput.h"
 #include "spUtils.h"
 
@@ -150,63 +150,63 @@ class spFormatCSV : public spOutputFormat
             spLog_E("CSV - internal data buffer size exceeded.");
     }
 
-    void logValue(const std::string &tag, spDataArrayBool *value)
+    void logValue(const std::string &tag, flxDataArrayBool *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, spDataArrayInt8 *value)
+    void logValue(const std::string &tag, flxDataArrayInt8 *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, spDataArrayInt16 *value)
+    void logValue(const std::string &tag, flxDataArrayInt16 *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
 
-    void logValue(const std::string &tag, spDataArrayInt *value)
+    void logValue(const std::string &tag, flxDataArrayInt *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, spDataArrayUint8 *value)
+    void logValue(const std::string &tag, flxDataArrayUint8 *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, spDataArrayUint16 *value)
+    void logValue(const std::string &tag, flxDataArrayUint16 *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, spDataArrayUint *value)
+    void logValue(const std::string &tag, flxDataArrayUint *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, spDataArrayFloat *value, uint16_t precision = 3)
+    void logValue(const std::string &tag, flxDataArrayFloat *value, uint16_t precision = 3)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value, precision);
     }
-    void logValue(const std::string &tag, spDataArrayDouble *value, uint16_t precision = 3)
+    void logValue(const std::string &tag, flxDataArrayDouble *value, uint16_t precision = 3)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value, precision);
     }
 
-    void logValue(const std::string &tag, spDataArrayString *value)
+    void logValue(const std::string &tag, flxDataArrayString *value)
     {
         writeHeaderEntry(tag);
         writeOutArray(value);
@@ -359,7 +359,7 @@ class spFormatCSV : public spOutputFormat
     }
 
     template <typename T>
-    void writeOutArrayDimension(std::string &sData, T *&pData, spDataArrayType<T> *theArray, uint16_t currentDim,
+    void writeOutArrayDimension(std::string &sData, T *&pData, flxDataArrayType<T> *theArray, uint16_t currentDim,
                                 uint16_t precision = 3)
     {
         sData += "[";
@@ -367,7 +367,7 @@ class spFormatCSV : public spOutputFormat
         // Write out the data?
         if (currentDim == theArray->n_dimensions() - 1)
         {
-            bool isFloat = (theArray->type() == spTypeFloat || theArray->type() == spTypeDouble);
+            bool isFloat = (theArray->type() == flxTypeFloat || theArray->type() == flxTypeDouble);
 
             for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
             {
@@ -394,7 +394,7 @@ class spFormatCSV : public spOutputFormat
         sData += "]";
     }
     //-----------------------------------------------------------------
-    template <typename T> void writeOutArray(spDataArrayType<T> *theArray, uint16_t precision = 3)
+    template <typename T> void writeOutArray(flxDataArrayType<T> *theArray, uint16_t precision = 3)
     {
         std::string sData = "";
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include <memory>
-#include "spCoreTypes.h"
+#include "flxCoreTypes.h"
 // FS Interfaces
 
 //-----------------------------------------------------------------------
@@ -91,7 +91,7 @@ class spFSFile
 //-----------------------------------------------------------------------
 // Interface that defines the interaction with a filesystem.
 
-class spIFileSystem : public spDescriptor
+class spIFileSystem : public flxDescriptor
 {
   public:
     // open file types

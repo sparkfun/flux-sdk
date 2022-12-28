@@ -92,7 +92,7 @@ bool spDevVL53L5::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-bool spDevVL53L5::read_distance(spDataArrayInt16 *distances)
+bool spDevVL53L5::read_distance(flxDataArrayInt16 *distances)
 {
     static int16_t theDistances[64] = {-999};
 

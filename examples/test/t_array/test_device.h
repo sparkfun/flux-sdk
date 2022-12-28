@@ -39,16 +39,16 @@ public:
 
 private:
     // our "getter" methods for the array output parameters
-    bool  get_bool(spDataArrayBool *);
-    bool  get_int8(spDataArrayInt8 *);
-    bool  get_int16(spDataArrayInt16 *);
-    bool  get_int(spDataArrayInt *);
-    bool  get_uint8(spDataArrayUint8 *);
-    bool  get_uint16(spDataArrayUint16 *);
-    bool  get_uint(spDataArrayUint *);
-    bool  get_float(spDataArrayFloat *);
-    bool  get_double(spDataArrayDouble *);
-    bool  get_string(spDataArrayString *);                                    
+    bool  get_bool(flxDataArrayBool *);
+    bool  get_int8(flxDataArrayInt8 *);
+    bool  get_int16(flxDataArrayInt16 *);
+    bool  get_int(flxDataArrayInt *);
+    bool  get_uint8(flxDataArrayUint8 *);
+    bool  get_uint16(flxDataArrayUint16 *);
+    bool  get_uint(flxDataArrayUint *);
+    bool  get_float(flxDataArrayFloat *);
+    bool  get_double(flxDataArrayDouble *);
+    bool  get_string(flxDataArrayString *);                                    
 
 public:
     // Define our output parameters - specify the get functions to call.

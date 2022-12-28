@@ -10,14 +10,14 @@ spSettingsSave &spSettings = spSettingsSave::get();
 //
 // Storage device for settings - set this in the system.
 
-void spSettingsSave::setStorage(spStorage *pStorage)
+void spSettingsSave::setStorage(flxStorage *pStorage)
 {
     _primaryStorage = pStorage;
 
 }
 
 
-void spSettingsSave::setFallback(spStorage *pStorage)
+void spSettingsSave::setFallback(flxStorage *pStorage)
 {
     _fallbackStorage = pStorage;
 
@@ -29,7 +29,7 @@ void spSettingsSave::setFallback(spStorage *pStorage)
 //----------------------------------------------------------------------------------
 
 // General save routine
-bool spSettingsSave::saveObjectToStorage(spObject* pObject, spStorage *pStorage)
+bool spSettingsSave::saveObjectToStorage(spObject* pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;
@@ -85,7 +85,7 @@ bool spSettingsSave::save(spObject *pObject)
 //----------------------------------------------------------------------------------
 // Restore section
 //----------------------------------------------------------------------------------
-bool spSettingsSave::restoreObjectFromStorage(spObject* pObject, spStorage *pStorage)
+bool spSettingsSave::restoreObjectFromStorage(spObject* pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;

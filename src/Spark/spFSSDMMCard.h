@@ -6,7 +6,7 @@
 // be part of the framework.
 
 #include "FS.h"
-#include "spCore.h"
+#include "flxCore.h"
 #include "spFS.h"
 
 class _spFSSDMMCard;

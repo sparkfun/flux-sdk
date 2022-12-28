@@ -9,7 +9,7 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spStorageESP32Pref.h>
+#include <Spark/flxStorageESP32Pref.h>
 #include <Spark/spSettings.h>
 
 #include <math.h>
@@ -391,7 +391,7 @@ void test_check()
 
 }
 
-spStorageESP32Pref myStorage;
+flxStorageESP32Pref myStorage;
 
 //---------------------------------------------------------------------
 // Arduino Setup

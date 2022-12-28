@@ -1,12 +1,12 @@
 /*
- * spStorage.h
+ * flxStorage.h
  *
  * Define our interfaces for state saving/storage
  */
 
 #pragma once
 
-#include "spStorage.h"
+#include "flxStorage.h"
 #include "spFS.h"
 
 #include <Arduino.h>
@@ -14,12 +14,12 @@
 //------------------------------------------------------------------------------
 // Store prefs to a JSON file 
 
-class spStorageJSONPref;
+class flxStorageJSONPref;
 
-class spStorageJSONBlock : public spStorageBlock {
+class flxStorageJSONBlock : public flxStorageBlock {
 
 public:
-    spStorageJSONBlock(): _readOnly{false}{}
+    flxStorageJSONBlock(): _readOnly{false}{}
 
 
 
@@ -47,12 +47,12 @@ public:
 
     bool valueExists(const char* tag);
 
-    spStorage::spStorageKind_t kind(void)
+    flxStorage::flxStorageKind_t kind(void)
     {
-        return spStorage::spStorageKindExternal;
+        return flxStorage::flxStorageKindExternal;
     }
 private:
-    friend spStorageJSONPref;
+    friend flxStorageJSONPref;
 
     JsonObject _jSection;
 
@@ -70,21 +70,21 @@ private:
 };
 
 //------------------------------------------------------------------------------
-// spStorage
+// flxStorage
 //
 // Interface for a storage system to persist state of a system
 
-class spStorageJSONPref : public spStorage {
+class flxStorageJSONPref : public flxStorage {
 
 public:
-    spStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}, _fileSystem{nullptr}, _filename{""}
+    flxStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}, _fileSystem{nullptr}, _filename{""}
     {
         setName("JSON File", "Device setting storage using a JSON File");
     }
 
-    spStorageKind_t kind(void)
+    flxStorageKind_t kind(void)
     {
-        return spStorage::spStorageKindExternal;
+        return flxStorage::flxStorageKindExternal;
     }
     // add begin, end stubs - the Esp32 prefs system doesn't required transaction brackets
     bool begin(bool readonly=false);
@@ -92,10 +92,10 @@ public:
     void end(void);
     
     // public methods to manage a block
-    spStorageJSONBlock* beginBlock(const char* tag);
+    flxStorageJSONBlock* beginBlock(const char* tag);
 
-    spStorageJSONBlock* getBlock(const char* tag);
-    void endBlock(spStorageBlock*);
+    flxStorageJSONBlock* getBlock(const char* tag);
+    void endBlock(flxStorageBlock*);
 
     void resetStorage();
 
@@ -112,7 +112,7 @@ private:
 
     void checkName();
     // The block used to interface with the system
-    spStorageJSONBlock _theBlock;
+    flxStorageJSONBlock _theBlock;
 
     // Pointer to the json document 
 

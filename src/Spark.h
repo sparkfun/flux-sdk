@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "Spark/spCore.h"
+#include "Spark/flxCore.h"
 #include "Spark/spDevice.h"
 
 #include "Spark/spSpark.h"

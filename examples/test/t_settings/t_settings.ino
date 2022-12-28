@@ -11,7 +11,7 @@
 #include <Spark/spTimer.h>
 #include <Spark/spSerial.h>
 
-#include <Spark/spStorageESP32Pref.h>
+#include <Spark/flxStorageESP32Pref.h>
 #include <Spark/spSettingsSerial.h>
 #include <Spark/spSettings.h>
 
@@ -316,7 +316,7 @@ spLogger  logger;
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(3000);    // Timer 
 
-spStorageESP32Pref  myStorage;
+flxStorageESP32Pref  myStorage;
 spSettingsSerial    serialSettings;
 
 

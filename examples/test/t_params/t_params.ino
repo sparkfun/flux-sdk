@@ -87,7 +87,7 @@ public:
 
 
     // out arrays
-    bool get_int_arr(spDataArrayInt *);
+    bool get_int_arr(flxDataArrayInt *);
 
     // Output Parameters
     spParameterOutBool<test_params, &test_params::get_bool>         out_bool;
@@ -181,7 +181,7 @@ void test_params::set_str(const std::string &data){
 // Array
 
 // out arrays
-bool test_params::get_int_arr(spDataArrayInt *theArray)
+bool test_params::get_int_arr(flxDataArrayInt *theArray)
 {
     static int mydata[] = {1, 2, 3, 4, 5, 6};
 
@@ -345,7 +345,7 @@ void run_tests()
     // Array tests
 
     Serial.println("Int Array Test:");
-    spDataArrayInt *iArr = myTest.out_int_arr.get();
+    flxDataArrayInt *iArr = myTest.out_int_arr.get();
     if (!iArr)
         Serial.println("Error accessing int array");
     else

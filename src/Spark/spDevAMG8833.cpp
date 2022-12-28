@@ -154,7 +154,7 @@ float spDevAMG8833::read_device_temperature_C()
     return GridEYE::getDeviceTemperature();
 }
 
-bool spDevAMG8833::read_pixel_temperatures(spDataArrayFloat *temps)
+bool spDevAMG8833::read_pixel_temperatures(flxDataArrayFloat *temps)
 {
     static float theTemps[64] = {-99.0};
 

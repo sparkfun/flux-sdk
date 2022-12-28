@@ -3,9 +3,9 @@
 // Action to control save of settings ...
 #pragma once
 
-#include "spCore.h"
+#include "flxCore.h"
 #include "spSpark.h"
-#include "spStorage.h"
+#include "flxStorage.h"
 
 class spSettingsSave : public spActionType<spSettingsSave>
 {
@@ -62,8 +62,8 @@ class spSettingsSave : public spActionType<spSettingsSave>
     //
     // Storage device for settings - set this in the system.     
 
-    void setStorage(spStorage *pStorage);
-    void setFallback(spStorage *pStorage);
+    void setStorage(flxStorage *pStorage);
+    void setFallback(flxStorage *pStorage);
 
     // Save settings for the system
     bool saveSystem(void);
@@ -133,10 +133,10 @@ private:
         spark.add(this);
     }
 
-    bool saveObjectToStorage(spObject*, spStorage *);
-    bool restoreObjectFromStorage(spObject*, spStorage *);    
+    bool saveObjectToStorage(spObject*, flxStorage *);
+    bool restoreObjectFromStorage(spObject*, flxStorage *);    
 
-    spStorage * _primaryStorage;
-    spStorage * _fallbackStorage;
+    flxStorage * _primaryStorage;
+    flxStorage * _fallbackStorage;
 };
 extern spSettingsSave &spSettings;

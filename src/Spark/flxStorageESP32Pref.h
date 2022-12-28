@@ -1,5 +1,5 @@
 /*
- * spStorage.h
+ * flxStorage.h
  *
  * Define our interfaces for state saving/storage
  */
@@ -13,16 +13,16 @@
 #include <math.h>
 #include <stddef.h>
 
-#include "spStorage.h"
+#include "flxStorage.h"
 //------------------------------------------------------------------------------
 // Use tags to ID an item and move to use data types. Model after the
 // ESP32 preference library
-class spStorageESP32Pref;
+class flxStorageESP32Pref;
 
-class spStorageESP32Block : public spStorageBlock {
+class flxStorageESP32Block : public flxStorageBlock {
 
 public:
-    spStorageESP32Block(): _prefs { nullptr }, _readOnly{false} {};
+    flxStorageESP32Block(): _prefs { nullptr }, _readOnly{false} {};
 
     bool writeBool(const char* tag, bool data);
     bool writeInt8(const char* tag, int8_t data);
@@ -48,13 +48,13 @@ public:
 
     bool valueExists(const char* tag);
 
-    spStorage::spStorageKind_t kind(void)
+    flxStorage::flxStorageKind_t kind(void)
     {
-        return spStorage::spStorageKindInternal;
+        return flxStorage::flxStorageKindInternal;
     }
 
 private:
-    friend spStorageESP32Pref;
+    friend flxStorageESP32Pref;
 
     Preferences* _prefs;
     bool         _readOnly;
@@ -71,18 +71,18 @@ private:
 };
 
 //------------------------------------------------------------------------------
-// spStorage
+// flxStorage
 //
 // Interface for a storage system to persist state of a system
 
-class spStorageESP32Pref : public spStorage {
+class flxStorageESP32Pref : public flxStorage {
 
 public:
-    spStorageESP32Pref();
+    flxStorageESP32Pref();
 
-    spStorageKind_t kind(void)
+    flxStorageKind_t kind(void)
     {
-        return spStorage::spStorageKindInternal;
+        return flxStorage::flxStorageKindInternal;
     }
     
     // add begin, end stubs - the Esp32 prefs system doesn't required trasaction brackets
@@ -97,16 +97,16 @@ public:
     }
 
     // public methods to manage a block
-    spStorageESP32Block* beginBlock(const char* tag);
+    flxStorageESP32Block* beginBlock(const char* tag);
 
-    spStorageESP32Block* getBlock(const char* tag);
-    void endBlock(spStorageBlock*);
+    flxStorageESP32Block* getBlock(const char* tag);
+    void endBlock(flxStorageBlock*);
 
     void resetStorage();
 
 private:
     // The block used to interface with the system
-    spStorageESP32Block _theBlock;
+    flxStorageESP32Block _theBlock;
     Preferences _prefs;
 
     bool _readOnly;

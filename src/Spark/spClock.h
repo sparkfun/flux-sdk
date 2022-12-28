@@ -3,7 +3,7 @@
 // Action to control save of settings ...
 #pragma once
 
-#include "spCore.h"
+#include "flxCore.h"
 
 // Define a clock interface -- really just want secs from unix epoch
 class spIClock

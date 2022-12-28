@@ -75,21 +75,21 @@ void loop() {
             Serial.print(" "); Serial.print(param->name()); Serial.print(" = ");
 
             switch(param->type()){
-                case spTypeBool: 
+                case flxTypeBool: 
                     Serial.println(param->getBool());
                     break;
-                case spTypeInt:    
+                case flxTypeInt:    
                     Serial.println(param->getInt());
                     break;
 
-                case spTypeFloat: 
+                case flxTypeFloat: 
                     Serial.println(param->getFloat());
                     break;
-                case spTypeDouble:
+                case flxTypeDouble:
                     Serial.println(param->getDouble());
                     break;
 
-                case spTypeString:
+                case flxTypeString:
                     Serial.println(param->getString().c_str());                 
                     break;
                 default:
