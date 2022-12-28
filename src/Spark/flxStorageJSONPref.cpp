@@ -4,7 +4,7 @@
 
 #include "flxStorageJSONPref.h"
 #include "flxCoreLog.h"
-#include "spUtils.h"
+#include "flxUtils.h"
 
 
 #define kJsonDocumentSize 3600
@@ -295,7 +295,7 @@ bool flxStorageJSONPref::begin(bool readonly)
         bool status = false;
         // read in the file, parse the json
 
-        spFSFile theFile = _fileSystem->open(_filename.c_str(), spIFileSystem::kFileRead);
+        flxFSFile theFile = _fileSystem->open(_filename.c_str(), flxIFileSystem::kFileRead);
 
         if (theFile)
         {
@@ -347,7 +347,7 @@ void flxStorageJSONPref::end(void)
         }
         else if (_fileSystem && _filename.length() > 0)
         {
-            spFSFile theFile = _fileSystem->open(_filename.c_str(), spIFileSystem::kFileWrite, true);
+            flxFSFile theFile = _fileSystem->open(_filename.c_str(), flxIFileSystem::kFileWrite, true);
 
             if (theFile)
             {
@@ -417,7 +417,7 @@ void flxStorageJSONPref::checkName()
     setName(szBuffer);
 
 }
-void flxStorageJSONPref::setFileSystem(spIFileSystem *theFilesystem)
+void flxStorageJSONPref::setFileSystem(flxIFileSystem *theFilesystem)
 {
     _fileSystem = theFilesystem;
     checkName();

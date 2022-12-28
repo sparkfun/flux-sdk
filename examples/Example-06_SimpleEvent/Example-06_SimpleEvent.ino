@@ -7,7 +7,7 @@
 #include <Spark.h>
 #include <Spark/spDevTwist.h>
 #include <Spark/spDevButton.h>
-#include <Spark/spSerial.h>
+#include <Spark/flxSerial.h>
 
 
 
@@ -47,8 +47,8 @@ void setup() {
     for ( auto pTwist : *theTwists)
     {
         // dump twist messages to serial
-        spSerial()->listen( pTwist->on_twist );
-        spSerial()->listen( pTwist->on_clicked);
+        flxSerial()->listen( pTwist->on_twist );
+        flxSerial()->listen( pTwist->on_clicked);
 
         Serial.println("Twist Connected");
     }
@@ -61,7 +61,7 @@ void setup() {
     for ( auto pButton : *theButtons)        
     {
         // dump button messages to serial
-        spSerial()->listen( pButton->on_clicked);
+        flxSerial()->listen( pButton->on_clicked);
         Serial.println("Button Connected");
     }
 

@@ -104,15 +104,15 @@ bool sfeDataLogger::setup()
     setVersion("0.9.1 Alpha", 10009001);
 
     // set the settings storage system for spark
-    spSettings.setStorage(&_sysStorage);
-    spSettings.setFallback(&_jsonStorage);
+    flxSettings.setStorage(&_sysStorage);
+    flxSettings.setFallback(&_jsonStorage);
 
     // Have JSON storage write/use the SD card
     _jsonStorage.setFileSystem(&_theSDCard);
     _jsonStorage.setFilename("openlog.json");
 
     // Have settings saved when editing via serial console is complete.
-    spSettings.listenForSave(_serialSettings.on_finished);
+    flxSettings.listenForSave(_serialSettings.on_finished);
 
     // Add serial settings to spark - the spark loop call will take care
     // of everything else.
@@ -148,7 +148,7 @@ void sfeDataLogger::setupNFDevice(void)
 
     // We have an NFC device. Create a credentials action and connect to the NFC device
     // and WiFi.
-    spSetWifiCredentials *pCreds = new spSetWifiCredentials;
+    flxSetWifiCredentials *pCreds = new flxSetWifiCredentials;
 
     if (!pCreds)
         return;
@@ -231,16 +231,16 @@ void sfeDataLogger::set_logTypeSer(uint8_t logType)
         return;
 
     if (_logTypeSer == kAppLogTypeCSV)
-        _fmtCSV.remove(spSerial());
+        _fmtCSV.remove(flxSerial());
     else if (_logTypeSer == kAppLogTypeJSON)
-        _fmtJSON.remove(spSerial());
+        _fmtJSON.remove(flxSerial());
 
     _logTypeSer = logType;
 
     if (_logTypeSer == kAppLogTypeCSV)
-        _fmtCSV.add(spSerial());
+        _fmtCSV.add(flxSerial());
     else if (_logTypeSer == kAppLogTypeJSON)
-        _fmtJSON.add(spSerial());
+        _fmtJSON.add(flxSerial());
 }
 
 //---------------------------------------------------------------------------
@@ -268,8 +268,8 @@ bool sfeDataLogger::start()
 
     // We want to output JSON and CSV to the serial consol.
     //  - Add Serial to our  formatters
-    //_fmtJSON.add(spSerial());
-    //_fmtCSV.add(spSerial());
+    //_fmtJSON.add(flxSerial());
+    //_fmtCSV.add(flxSerial());
 
     //  - Add the JSON and CVS format to the logger
     _logger.add(_fmtJSON);

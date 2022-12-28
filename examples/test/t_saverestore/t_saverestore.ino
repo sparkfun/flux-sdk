@@ -10,7 +10,7 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/flxStorageESP32Pref.h>
-#include <Spark/spSettings.h>
+#include <Spark/flxSettings.h>
 
 #include <math.h>
 
@@ -406,15 +406,15 @@ void setup() {
     while (!Serial);
     Serial.println("\n---- Startup of the Save/Restore tests ----");
 
-    spSettings.setStorage(myStorage);
+    flxSettings.setStorage(myStorage);
     spark.add(myTest);
 
     Serial.println("object Added, reseting storage");
-    spSettings.reset();
+    flxSettings.reset();
 
     test_setup();
     Serial.println("Saving...");    
-    spSettings.saveSystem();
+    flxSettings.saveSystem();
 
     Serial.println("Save complete");
 
@@ -424,7 +424,7 @@ void setup() {
 
     test_check();
 
-    spSettings.restoreSystem();
+    flxSettings.restoreSystem();
 
     Serial.println("\n\rValues restored - verify - everything should pass\n\r");    
 

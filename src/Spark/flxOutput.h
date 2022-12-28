@@ -12,11 +12,11 @@
 
 // Define a formatter for log data
 
-class spOutputFormat
+class flxOutputFormat
 {
 
   public:
-    spOutputFormat(){};
+    flxOutputFormat(){};
 
     // value methods
     virtual void logValue(const std::string &tag, bool value) = 0;

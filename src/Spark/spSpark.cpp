@@ -2,8 +2,8 @@
 
 #include <Arduino.h>
 
-#include "spSerial.h"
-#include "spSettings.h"
+#include "flxSerial.h"
+#include "flxSettings.h"
 #include "spSpark.h"
 #include "flxStorage.h"
 
@@ -22,7 +22,7 @@ bool spSpark::start(bool bAutoLoad)
 {
 
     // setup our logging system.
-    _logDriver.setOutput(spSerial());
+    _logDriver.setOutput(flxSerial());
     flxLog.setLogDriver(_logDriver);
     flxLog.setLogLevel(flxLogInfo); // TODO - adjust?
 
@@ -51,10 +51,10 @@ bool spSpark::start(bool bAutoLoad)
         flxDeviceFactory::get().buildDevices(i2cDriver());
 
     // Everything should be loaded -- restore settings from storage
-    if (spSettings.isAvailable())
+    if (flxSettings.isAvailable())
     {
         flxLog_I_(F("Restoring System Settings ..."));
-        if (!spSettings.restoreSystem())
+        if (!flxSettings.restoreSystem())
             flxLog_W(F("Error encountered restoring system settings..."));
     }
     else
@@ -151,7 +151,7 @@ bool spSpark::save(flxStorage *pStorage)
 
         char szHash[kApplicationHashIDSize];
 
-        status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
+        status = flx_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
 
         // Write out the ID tag
         if (status)
@@ -199,7 +199,7 @@ bool spSpark::restore(flxStorage *pStorage)
 
             char szHash[kApplicationHashIDSize];
 
-            status = sp_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
+            status = flx_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
 
             if (status)
             {

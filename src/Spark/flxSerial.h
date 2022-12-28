@@ -5,21 +5,21 @@
 #pragma once
 
 #include "flxCoreEvent.h"
-#include "spOutput.h"
+#include "flxOutput.h"
 #include <Arduino.h>
 
 //-----------------------------------------------------------
 // Simple serial output class. Making a singleton - this has no state.
 //
-class spSerial_ : public flxWriter
+class flxSerial_ : public flxWriter
 {
 
   public:
     // Singleton things
-    static spSerial_ *getInstance(void)
+    static flxSerial_ *getInstance(void)
     {
 
-        static spSerial_ instance;
+        static flxSerial_ instance;
         return &instance;
     }
 
@@ -50,30 +50,30 @@ class spSerial_ : public flxWriter
 
     void listen(flxSignalInt &theEvent)
     {
-        theEvent.call(this, &spSerial_::write);
+        theEvent.call(this, &flxSerial_::write);
     }
     void listen(flxSignalFloat &theEvent)
     {
-        theEvent.call(this, &spSerial_::write);
+        theEvent.call(this, &flxSerial_::write);
     }
     void listen(flxSignalBool &theEvent)
     {
-        theEvent.call(this, &spSerial_::write);
+        theEvent.call(this, &flxSerial_::write);
     }
     void listen(flxSignalString &theEvent)
     {
-        theEvent.call(this, &spSerial_::write);
+        theEvent.call(this, &flxSerial_::write);
     }
     // copy and assign constructors - delete them to prevent extra copys being
     // made -- this is a singleton object.
-    spSerial_(spSerial_ const &) = delete;
-    void operator=(spSerial_ const &) = delete;
+    flxSerial_(flxSerial_ const &) = delete;
+    void operator=(flxSerial_ const &) = delete;
 
   private:
-    spSerial_(){};
+    flxSerial_(){};
 };
 
-typedef spSerial_ *spSerial;
+typedef flxSerial_ *flxSerial;
 
 // Accessor for the signleton
-#define spSerial() spSerial_::getInstance()
+#define flxSerial() flxSerial_::getInstance()

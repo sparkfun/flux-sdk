@@ -8,7 +8,7 @@
 #include "flxCore.h"
 #include "flxCoreTypes.h"
 
-class spSerialField : public flxDataEditor
+class flxSerialField : public flxDataEditor
 {
 
   public:

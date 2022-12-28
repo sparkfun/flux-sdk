@@ -23,7 +23,7 @@
 #include "flxBusI2C.h"
 #include "flxBusSPI.h"
 #include "flxCore.h"
-#include "spUtils.h"
+#include "flxUtils.h"
 
 // define a value that marks the end of a device address/id list
 

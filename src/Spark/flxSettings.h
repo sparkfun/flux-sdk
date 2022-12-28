@@ -7,7 +7,7 @@
 #include "spSpark.h"
 #include "flxStorage.h"
 
-class spSettingsSave : public flxActionType<spSettingsSave>
+class flxSettingsSave : public flxActionType<flxSettingsSave>
 {
 
   private:
@@ -44,16 +44,16 @@ class spSettingsSave : public flxActionType<spSettingsSave>
     }
 
   public:
-    // spSettingsSave is a singleton
-    static spSettingsSave &get(void)
+    // flxSettingsSave is a singleton
+    static flxSettingsSave &get(void)
     {
 
-        static spSettingsSave instance;
+        static flxSettingsSave instance;
         return instance;
     }
     // This is a singleton class - so delete copy & assignment constructors
-    spSettingsSave(spSettingsSave const &) = delete;
-    void operator=(spSettingsSave const &) = delete;
+    flxSettingsSave(flxSettingsSave const &) = delete;
+    void operator=(flxSettingsSave const &) = delete;
     
     
     //------------------------------------------------------------
@@ -92,24 +92,24 @@ class spSettingsSave : public flxActionType<spSettingsSave>
     void listenForRestore(flxSignalVoid &theEvent);
 
     // Properties.
-    flxPropertyBool<spSettingsSave> saveOnEvent = {true};
-    flxPropertyBool<spSettingsSave> restoreOnEvent = {true};
+    flxPropertyBool<flxSettingsSave> saveOnEvent = {true};
+    flxPropertyBool<flxSettingsSave> restoreOnEvent = {true};
 
-    flxPropertyBool<spSettingsSave> fallbackSave = {false};    
-    flxPropertyBool<spSettingsSave> fallbackRestore = {true};
+    flxPropertyBool<flxSettingsSave> fallbackSave = {false};    
+    flxPropertyBool<flxSettingsSave> fallbackRestore = {true};
 
     // Our input parameters
-    flxParameterInVoid<spSettingsSave, &spSettingsSave::save_settings> saveSettings;
-    flxParameterInVoid<spSettingsSave, &spSettingsSave::restore_settings> restoreSettings;
-    flxParameterInVoid<spSettingsSave, &spSettingsSave::reset> clearSettings;
+    flxParameterInVoid<flxSettingsSave, &flxSettingsSave::save_settings> saveSettings;
+    flxParameterInVoid<flxSettingsSave, &flxSettingsSave::restore_settings> restoreSettings;
+    flxParameterInVoid<flxSettingsSave, &flxSettingsSave::reset> clearSettings;
 
-    flxParameterInVoid<spSettingsSave, &spSettingsSave::restore_fallback> restoreFallback;
-    flxParameterInVoid<spSettingsSave, &spSettingsSave::save_fallback> saveFallback;    
+    flxParameterInVoid<flxSettingsSave, &flxSettingsSave::restore_fallback> restoreFallback;
+    flxParameterInVoid<flxSettingsSave, &flxSettingsSave::save_fallback> saveFallback;    
 
 
 private:
 
-    spSettingsSave() : _primaryStorage{nullptr}, _fallbackStorage{nullptr}
+    flxSettingsSave() : _primaryStorage{nullptr}, _fallbackStorage{nullptr}
     {
 
         // Set name and description
@@ -139,4 +139,4 @@ private:
     flxStorage * _primaryStorage;
     flxStorage * _fallbackStorage;
 };
-extern spSettingsSave &spSettings;
+extern flxSettingsSave &flxSettings;

@@ -13,11 +13,11 @@
 #define kReadBufferNoMatch 251
 
 
-class spSettingsSerial : public flxActionType<spSettingsSerial>
+class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
 
   public:
-    spSettingsSerial() : _systemRoot{nullptr}
+    flxSettingsSerial() : _systemRoot{nullptr}
     {
 
         setName("Serial System Settings", "Set system settings via the Serial Console");

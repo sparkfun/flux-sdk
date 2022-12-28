@@ -8,7 +8,7 @@
 #include <Arduino.h>
 
 #include "flxCoreLog.h"
-#include "spSerialField.h"
+#include "flxSerialField.h"
 //
 // ----------------------------------------------------------------------
 // Serial terminal data entry field - for use with terminal apps.
@@ -242,7 +242,7 @@ static bool isTrue(char *value)
 // If isDelete is set, we also need to overwrite end text that is
 // invalid b/c of a deleted char.
 //
-void spSerialField::drawTrailing(FieldContext_t &ctx, bool isDelete)
+void flxSerialField::drawTrailing(FieldContext_t &ctx, bool isDelete)
 {
 
     // Draw the text after the insertion point if any exists
@@ -278,7 +278,7 @@ void spSerialField::drawTrailing(FieldContext_t &ctx, bool isDelete)
 //
 // Zero/Clear out the context struct.
 //
-void spSerialField::resetContext(FieldContext_t &ctx)
+void flxSerialField::resetContext(FieldContext_t &ctx)
 {
 
     memset(&ctx, '\0', sizeof(FieldContext_t));
@@ -294,7 +294,7 @@ void spSerialField::resetContext(FieldContext_t &ctx)
 // Arrow keys come in as 3 chars, but this method is only passed in
 // the last of these chars -- which indicates which arrow was entered
 
-void spSerialField::processArrowKeys(FieldContext_t &ctxEdit, char inCode)
+void flxSerialField::processArrowKeys(FieldContext_t &ctxEdit, char inCode)
 {
 
     // left arrow and we have room to move left?
@@ -332,7 +332,7 @@ void spSerialField::processArrowKeys(FieldContext_t &ctxEdit, char inCode)
 //
 // Keypad Delete key (delete the next char)
 
-void spSerialField::processDELKey(FieldContext_t &ctxEdit)
+void flxSerialField::processDELKey(FieldContext_t &ctxEdit)
 {
 
     // If at end of buffer there is nothing to delete ->bell
@@ -354,7 +354,7 @@ void spSerialField::processDELKey(FieldContext_t &ctxEdit)
 //
 // Kill to end of line - ^K - old emacs command?!
 
-void spSerialField::processKillToEOL(FieldContext_t &ctxEdit)
+void flxSerialField::processKillToEOL(FieldContext_t &ctxEdit)
 {
 
     // If at end of buffer there is nothing kill - return
@@ -374,7 +374,7 @@ void spSerialField::processKillToEOL(FieldContext_t &ctxEdit)
 //
 // Backspace key (delete the previous char)
 
-void spSerialField::processBackspaceKey(FieldContext_t &ctxEdit)
+void flxSerialField::processBackspaceKey(FieldContext_t &ctxEdit)
 {
     // Not at position 0?
     // Serial.printf("{%d}", ctxEdit.cursor);
@@ -400,7 +400,7 @@ void spSerialField::processBackspaceKey(FieldContext_t &ctxEdit)
 //
 // Move cursor to EOL
 
-void spSerialField::processEndOfLineKey(FieldContext_t &ctxEdit)
+void flxSerialField::processEndOfLineKey(FieldContext_t &ctxEdit)
 {
     // Is the cursor not at the end of the line already?
     if (ctxEdit.bcursor < kBCursorZero)
@@ -429,7 +429,7 @@ void spSerialField::processEndOfLineKey(FieldContext_t &ctxEdit)
 //
 // Move cursor to start of the line
 
-void spSerialField::processStartOfLineKey(FieldContext_t &ctxEdit)
+void flxSerialField::processStartOfLineKey(FieldContext_t &ctxEdit)
 {
     // Cursor is not at the start already...
 
@@ -454,7 +454,7 @@ void spSerialField::processStartOfLineKey(FieldContext_t &ctxEdit)
 //
 // Returns the full text line in the provided buffer
 
-void spSerialField::fulltext(FieldContext_t &ctxEdit, char *buffer, size_t length)
+void flxSerialField::fulltext(FieldContext_t &ctxEdit, char *buffer, size_t length)
 {
 
     if (ctxEdit.cursor > 0)
@@ -473,7 +473,7 @@ void spSerialField::fulltext(FieldContext_t &ctxEdit, char *buffer, size_t lengt
 // TODO:
 //    Add validator concept, to enable restricted fields
 //
-void spSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length)
+void flxSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length)
 {
 
     for (int i = 0; i < length; i++)
@@ -528,7 +528,7 @@ void spSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint
 //
 //  timeout - is in secs
 //
-bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
+bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 {
 
     char inputBuffer[kInputBufferSize];
@@ -640,7 +640,7 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 //
 // editing operation with the provided character string as input
 
-bool spSerialField::editFieldCString(char *value, size_t lenValue, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldCString(char *value, size_t lenValue, bool hidden, uint32_t timeout)
 {
 
     if (!value || lenValue == 0)
@@ -671,7 +671,7 @@ bool spSerialField::editFieldCString(char *value, size_t lenValue, bool hidden, 
     return false;
 }
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldString(std::string &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldString(std::string &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -701,7 +701,7 @@ bool spSerialField::editFieldString(std::string &value, bool hidden, uint32_t ti
 
 //--------------------------------------------------------------------------
 // Bool editor - 
-bool spSerialField::editFieldBool(bool &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldBool(bool &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -740,7 +740,7 @@ bool spSerialField::editFieldBool(bool &value, bool hidden, uint32_t timeout)
     return false;
 }
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldInt8(int8_t &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldInt8(int8_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -766,7 +766,7 @@ bool spSerialField::editFieldInt8(int8_t &value, bool hidden, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldInt16(int16_t &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldInt16(int16_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -792,7 +792,7 @@ bool spSerialField::editFieldInt16(int16_t &value, bool hidden, uint32_t timeout
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldInt(int32_t &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldInt(int32_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -818,7 +818,7 @@ bool spSerialField::editFieldInt(int32_t &value, bool hidden, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldUInt8(uint8_t &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldUInt8(uint8_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -846,7 +846,7 @@ bool spSerialField::editFieldUInt8(uint8_t &value, bool hidden, uint32_t timeout
 
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldUInt16(uint16_t &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldUInt16(uint16_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -873,7 +873,7 @@ bool spSerialField::editFieldUInt16(uint16_t &value, bool hidden, uint32_t timeo
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldUInt(uint32_t &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldUInt(uint32_t &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -900,7 +900,7 @@ bool spSerialField::editFieldUInt(uint32_t &value, bool hidden, uint32_t timeout
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldFloat(float &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldFloat(float &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -927,7 +927,7 @@ bool spSerialField::editFieldFloat(float &value, bool hidden, uint32_t timeout)
 }
 
 //--------------------------------------------------------------------------
-bool spSerialField::editFieldDouble(double &value, bool hidden, uint32_t timeout)
+bool flxSerialField::editFieldDouble(double &value, bool hidden, uint32_t timeout)
 {
     // setup context
     FieldContext_t ctxEdit;
@@ -953,7 +953,7 @@ bool spSerialField::editFieldDouble(double &value, bool hidden, uint32_t timeout
     return false;
 }
 
-void spSerialField::beep()
+void flxSerialField::beep()
 {
     Serial.write(kCodeBell); // bell;
 }

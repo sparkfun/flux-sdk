@@ -5,14 +5,14 @@
 
 #include "spSpark.h"
 
-class spTimer : public flxActionType<spTimer>
+class flxTimer : public flxActionType<flxTimer>
 {
 
     // for our timing
     unsigned long _lastLogTime = 0;
 
   public:
-    spTimer(int start = 500) : _lastLogTime(0)
+    flxTimer(int start = 500) : _lastLogTime(0)
     {
 
         spRegister(interval, "interval", "The ms time interval for the timer");
@@ -27,7 +27,7 @@ class spTimer : public flxActionType<spTimer>
     flxSignalVoid on_interval;
 
     // Property  - interval for the timer
-    flxPropertyInt<spTimer> interval;
+    flxPropertyInt<flxTimer> interval;
 
     bool loop(void)
     {

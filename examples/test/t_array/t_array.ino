@@ -6,10 +6,10 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/flxLogger.h>
-#include <Spark/spFmtJSON.h>
-#include <Spark/spFmtCSV.h>
-#include <Spark/spTimer.h>
-#include <Spark/spSerial.h>
+#include <Spark/flxFmtJSON.h>
+#include <Spark/flxFmtCSV.h>
+#include <Spark/flxTimer.h>
+#include <Spark/flxSerial.h>
 
 #include "test_device.h"
 
@@ -34,13 +34,13 @@
 
 // Create a JSON and CSV output formatters. 
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
-spFormatJSON<4000> fmtJSON;
-spFormatCSV fmtCSV;
+flxFormatJSON<4000> fmtJSON;
+flxFormatCSV fmtCSV;
 
 flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
-spTimer   timer(kDefaultLogInterval);    // Timer 
+flxTimer   timer(kDefaultLogInterval);    // Timer 
 
 // create our test device.
 test_device myTestDevice;
@@ -66,8 +66,8 @@ void setup() {
 
     // We want to output JSON and CSV to the serial consol.
     //  - Add Serial to our  formatters
-    fmtJSON.add(spSerial());
-    fmtCSV.add(spSerial());    
+    fmtJSON.add(flxSerial());
+    fmtCSV.add(flxSerial());    
 
     //  - Add the JSON and CVS format to the logger
     logger.add(fmtJSON);

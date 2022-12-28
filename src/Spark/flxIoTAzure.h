@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "spMQTTESP32.h"
+#include "flxMQTTESP32.h"
 
 #include <az_core.h>
 #include <az_iot.h>
@@ -49,7 +49,7 @@ class AzIoTSasToken
 //---------------------------------------------------------------------    
 // simple class to support Azure IoT
 
-class flxIoTAzure : public spMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
+class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
 {
   public:
     flxIoTAzure() : _initialized{false}, _hubInitialized{false}, _connected{false}
@@ -77,7 +77,7 @@ class flxIoTAzure : public spMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         if (!value || !_connected)
             return;
 
-        spMQTTESP32SecureCore::write(value, false);
+        flxMQTTESP32SecureCore::write(value, false);
     }
 
     //---------------------------------------------------------------------
@@ -178,7 +178,7 @@ class flxIoTAzure : public spMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         // Set the topic property
         topic = telemetry_topic;
 
-        _connected = spMQTTESP32SecureCore<flxIoTAzure>::connect();
+        _connected = flxMQTTESP32SecureCore<flxIoTAzure>::connect();
 
         return _connected;
     }
@@ -191,7 +191,7 @@ class flxIoTAzure : public spMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         _connected = false;
 
         // call super
-        spMQTTESP32SecureCore<flxIoTAzure>::disconnect();
+        flxMQTTESP32SecureCore<flxIoTAzure>::disconnect();
     }
     //---------------------------------------------------------------------
     // Initialize method for the class
@@ -208,7 +208,7 @@ class flxIoTAzure : public spMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
             return false;
         }
 
-        if (!spMQTTESP32SecureCore::initialize())
+        if (!flxMQTTESP32SecureCore::initialize())
             return false;
 
         // We need the key in persistant storage

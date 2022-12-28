@@ -6,7 +6,7 @@
 
 #include "flxStorageESP32Pref.h"
 #include "flxCoreLog.h"
-#include "spUtils.h"
+#include "flxUtils.h"
 
 #include <nvs_flash.h>
 
@@ -40,7 +40,7 @@ bool flxStorageESP32Block::writeBool(const char *tag, bool value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putBool(szHash, value) > 0);
@@ -55,7 +55,7 @@ bool flxStorageESP32Block::writeInt8(const char *tag, int8_t value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putChar(szHash, value) > 0);
@@ -71,7 +71,7 @@ bool flxStorageESP32Block::writeInt16(const char *tag, int16_t value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putShort(szHash, value) > 0);
@@ -87,7 +87,7 @@ bool flxStorageESP32Block::writeInt32(const char *tag, int32_t value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putInt(szHash, value) > 0);
@@ -102,7 +102,7 @@ bool flxStorageESP32Block::writeUInt8(const char *tag, uint8_t value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putUChar(szHash, value) > 0);
@@ -118,7 +118,7 @@ bool flxStorageESP32Block::writeUInt16(const char *tag, uint16_t value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putUShort(szHash, value) > 0);
@@ -132,7 +132,7 @@ bool flxStorageESP32Block::writeUInt32(const char *tag, uint32_t value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putUInt(szHash, value) > 0);
@@ -147,7 +147,7 @@ bool flxStorageESP32Block::writeFloat(const char *tag, float value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putFloat(szHash, value) > 0);
@@ -162,7 +162,7 @@ bool flxStorageESP32Block::writeDouble(const char *tag, double value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putDouble(szHash, value) > 0);
@@ -182,7 +182,7 @@ bool flxStorageESP32Block::writeString(const char *tag, const char *value)
 
     char szHash[kESP32HashTagSize] = {0};
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return (_prefs->putString(szHash, value) > 0);
@@ -198,7 +198,7 @@ bool flxStorageESP32Block::readBool(const char *tag, bool &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -216,7 +216,7 @@ bool flxStorageESP32Block::readInt8(const char *tag, int8_t &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -236,7 +236,7 @@ bool flxStorageESP32Block::readInt16(const char *tag, int16_t &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -255,7 +255,7 @@ bool flxStorageESP32Block::readInt32(const char *tag, int32_t &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -274,7 +274,7 @@ bool flxStorageESP32Block::readUInt8(const char *tag, uint8_t &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -293,7 +293,7 @@ bool flxStorageESP32Block::readUInt16(const char *tag, uint16_t &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -312,7 +312,7 @@ bool flxStorageESP32Block::readUInt32(const char *tag, uint32_t &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -331,7 +331,7 @@ bool flxStorageESP32Block::readFloat(const char *tag, float &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -350,7 +350,7 @@ bool flxStorageESP32Block::readDouble(const char *tag, double &value)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     if (!_prefs->isKey(szHash))
@@ -369,7 +369,7 @@ size_t flxStorageESP32Block::readString(const char *tag, char *data, size_t len)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return 0;
 
     if (!_prefs->isKey(szHash))
@@ -386,7 +386,7 @@ bool flxStorageESP32Block::valueExists(const char *tag)
 
     char szHash[kESP32HashTagSize];
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
     return _prefs->isKey(szHash);
@@ -410,7 +410,7 @@ flxStorageESP32Block *flxStorageESP32Pref::beginBlock(const char *tag)
 
     char szHash[kESP32HashTagSize] = {0};
 
-    if (!sp_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return nullptr;
 
     if (!_prefs.begin(szHash, false))

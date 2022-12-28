@@ -2,7 +2,7 @@
 
 #ifdef ESP32
 
-#include "spWiFiESP32.h"
+#include "flxWiFiESP32.h"
 
 // ESP32 library...
 #include "WiFi.h"
@@ -15,7 +15,7 @@
 
 //----------------------------------------------------------------
 // Enabled Property setter/getters
-void spWiFiESP32::set_isEnabled(bool bEnabled)
+void flxWiFiESP32::set_isEnabled(bool bEnabled)
 {
     // Any changes?
     if (_isEnabled == bEnabled)
@@ -33,7 +33,7 @@ void spWiFiESP32::set_isEnabled(bool bEnabled)
 }
 
 //----------------------------------------------------------------
-bool spWiFiESP32::get_isEnabled(void)
+bool flxWiFiESP32::get_isEnabled(void)
 {
     return _isEnabled;
 }
@@ -41,7 +41,7 @@ bool spWiFiESP32::get_isEnabled(void)
 //----------------------------------------------------------------
 // Connection Management
 
-bool spWiFiESP32::connect(void)
+bool flxWiFiESP32::connect(void)
 {
 
     if ( !_isEnabled )
@@ -86,7 +86,7 @@ bool spWiFiESP32::connect(void)
 }
 
 //----------------------------------------------------------------
-void spWiFiESP32::disconnect(void)
+void flxWiFiESP32::disconnect(void)
 {
 
     if ( WiFi.isConnected() )
@@ -104,18 +104,18 @@ void spWiFiESP32::disconnect(void)
 }
 
 //----------------------------------------------------------------
-bool spWiFiESP32::isConnected()
+bool flxWiFiESP32::isConnected()
 {
     return ( _isEnabled && WiFi.isConnected());
 }
 
 //----------------------------------------------------------------
-bool spWiFiESP32::initialize(void)
+bool flxWiFiESP32::initialize(void)
 {
     return connect();
 }
 
-bool spWiFiESP32::loop(void)
+bool flxWiFiESP32::loop(void)
 {
     // Connection change???
     if ( _isEnabled )

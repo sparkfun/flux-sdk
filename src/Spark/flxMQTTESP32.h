@@ -5,15 +5,15 @@
 #ifdef ESP32
 
 #include "flxCoreInterface.h"
-#include "spFS.h"
-#include "spNetwork.h"
+#include "flxFS.h"
+#include "flxNetwork.h"
 #include "spSpark.h"
 
 #include <ArduinoMqttClient.h>
 #include <WiFiClientSecure.h>
 
 // A General MQTT client for the framework - for use on the ESP32
-template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActionType<Object>
+template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActionType<Object>
 {
   private:
     // Enabled Property setter/getters
@@ -81,7 +81,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActio
     }
 
   public:
-    spMQTTESP32Base()
+    flxMQTTESP32Base()
         : _isEnabled{false}, _theNetwork{nullptr}, _mqttClient(_wifiClient), _txBufferSize{0}, _dynamicBufferSize{0}
     {
         spRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
@@ -97,7 +97,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActio
         spRegister(bufferSize, "Buffer Size", "MQTT payload buffer size. If 0, the buffer size is dynamic");
     };
 
-    ~spMQTTESP32Base()
+    ~flxMQTTESP32Base()
     {
         disconnect();
     }
@@ -106,10 +106,10 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActio
     void listenToConnection(flxSignalBool &theEvent)
     {
         // Register to get notified on connection changes
-        theEvent.call(this, &spMQTTESP32Base::onConnectionChange);
+        theEvent.call(this, &flxMQTTESP32Base::onConnectionChange);
     }
 
-    void setNetwork(spNetwork *theNetwork)
+    void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
 
@@ -213,20 +213,20 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActio
     // Properties
 
     // Enabled/Disabled
-    flxPropertyRWBool<spMQTTESP32Base, &spMQTTESP32Base::get_isEnabled, &spMQTTESP32Base::set_isEnabled> enabled;
+    flxPropertyRWBool<flxMQTTESP32Base, &flxMQTTESP32Base::get_isEnabled, &flxMQTTESP32Base::set_isEnabled> enabled;
 
-    flxPropertyUint<spMQTTESP32Base> port = {1883}; // default mqtt port
-    flxPropertyString<spMQTTESP32Base> server;
-    flxPropertyString<spMQTTESP32Base> topic;
-    flxPropertyString<spMQTTESP32Base> clientName;
+    flxPropertyUint<flxMQTTESP32Base> port = {1883}; // default mqtt port
+    flxPropertyString<flxMQTTESP32Base> server;
+    flxPropertyString<flxMQTTESP32Base> topic;
+    flxPropertyString<flxMQTTESP32Base> clientName;
 
     // Buffer size property
-    flxPropertyRWUint16<spMQTTESP32Base, &spMQTTESP32Base::get_bufferSize, &spMQTTESP32Base::set_bufferSize> bufferSize =
+    flxPropertyRWUint16<flxMQTTESP32Base, &flxMQTTESP32Base::get_bufferSize, &flxMQTTESP32Base::set_bufferSize> bufferSize =
         {0};
 
     // username and password properties - some brokers requires this
-    flxPropertyString<spMQTTESP32Base> username;
-    flxPropertySecureString<spMQTTESP32Base> password;
+    flxPropertyString<flxMQTTESP32Base> username;
+    flxPropertySecureString<flxMQTTESP32Base> password;
 
   protected:
     CLIENT _wifiClient;
@@ -234,7 +234,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActio
   private:
     bool _isEnabled;
 
-    spNetwork *_theNetwork;
+    flxNetwork *_theNetwork;
 
     MqttClient _mqttClient;
 
@@ -242,10 +242,10 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActio
     uint16_t _dynamicBufferSize;
 };
 
-class spMQTTESP32 : public spMQTTESP32Base<spMQTTESP32, WiFiClient>, public flxWriter
+class flxMQTTESP32 : public flxMQTTESP32Base<flxMQTTESP32, WiFiClient>, public flxWriter
 {
 public:
-    spMQTTESP32()
+    flxMQTTESP32()
     {
         this->setName("MQTT Client", "A generic MQTT Client");
 
@@ -262,11 +262,11 @@ public:
     }
     void write(const char *value, bool newline)
     {
-        spMQTTESP32Base::write(value, newline);
+        flxMQTTESP32Base::write(value, newline);
     }
 };
 
-template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Object, WiFiClientSecure>
+template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<Object, WiFiClientSecure>
 {
 
   private:
@@ -417,7 +417,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
             return nullptr;
         }
 
-        spFSFile certFile = _fileSystem->open(theFile.c_str(), spIFileSystem::kFileRead);
+        flxFSFile certFile = _fileSystem->open(theFile.c_str(), flxIFileSystem::kFileRead);
         if (!certFile)
         {
             flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
@@ -457,7 +457,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
     }
 
   public:
-    spMQTTESP32SecureCore() : _pCACert{nullptr}, _pClientCert{nullptr}, _pClientKey{nullptr}, _fileSystem{nullptr}
+    flxMQTTESP32SecureCore() : _pCACert{nullptr}, _pClientCert{nullptr}, _pClientKey{nullptr}, _fileSystem{nullptr}
     {
         spRegister(caCertificate, "CA Certificate",
                    "The Certificate Authority certificate. If set, the connection is secure");
@@ -470,7 +470,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
     }
 
     //---------------------------------------------------------
-    ~spMQTTESP32SecureCore()
+    ~flxMQTTESP32SecureCore()
     {
         if (_pCACert != nullptr)
             delete _pCACert;
@@ -486,51 +486,51 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
     virtual bool connect(void)
     {
         // Already connected?
-        if (spMQTTESP32Base<Object, WiFiClientSecure>::connected())
+        if (flxMQTTESP32Base<Object, WiFiClientSecure>::connected())
             return true;
 
         if (_pCACert != nullptr)
-            spMQTTESP32Base<Object, WiFiClientSecure>::_wifiClient.setCACert(_pCACert);
+            flxMQTTESP32Base<Object, WiFiClientSecure>::_wifiClient.setCACert(_pCACert);
 
         if (_pClientCert != nullptr)
-            spMQTTESP32Base<Object, WiFiClientSecure>::_wifiClient.setCertificate(_pClientCert);
+            flxMQTTESP32Base<Object, WiFiClientSecure>::_wifiClient.setCertificate(_pClientCert);
 
         if (_pClientKey != nullptr)
-            spMQTTESP32Base<Object, WiFiClientSecure>::_wifiClient.setPrivateKey(_pClientKey);
+            flxMQTTESP32Base<Object, WiFiClientSecure>::_wifiClient.setPrivateKey(_pClientKey);
 
-        return spMQTTESP32Base<Object, WiFiClientSecure>::connect();
+        return flxMQTTESP32Base<Object, WiFiClientSecure>::connect();
     }
 
     //---------------------------------------------------------
-    void setFileSystem(spIFileSystem *fs)
+    void setFileSystem(flxIFileSystem *fs)
     {
         _fileSystem = fs;
     }
 
     // Security certs/keys
-    flxPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCert,
-                             &spMQTTESP32SecureCore::set_caCert>
+    flxPropertyRWSecretString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_caCert,
+                             &flxMQTTESP32SecureCore::set_caCert>
         caCertificate;
 
-    flxPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCert,
-                             &spMQTTESP32SecureCore::set_clientCert>
+    flxPropertyRWSecretString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientCert,
+                             &flxMQTTESP32SecureCore::set_clientCert>
         clientCertificate;
 
-    flxPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKey,
-                             &spMQTTESP32SecureCore::set_clientKey>
+    flxPropertyRWSecretString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientKey,
+                             &flxMQTTESP32SecureCore::set_clientKey>
         clientKey;
 
     // Define filename properties to access the secure keys. A filesystem must be provided to this object for it to read
     // the data.
     // Security certs/keys
-    flxPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCertFilename,
-                       &spMQTTESP32SecureCore::set_caCertFilename>
+    flxPropertyRWString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_caCertFilename,
+                       &flxMQTTESP32SecureCore::set_caCertFilename>
         caCertFilename;
-    flxPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCertFilename,
-                       &spMQTTESP32SecureCore::set_clientCertFilename>
+    flxPropertyRWString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientCertFilename,
+                       &flxMQTTESP32SecureCore::set_clientCertFilename>
         clientCertFilename;
-    flxPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKeyFilename,
-                       &spMQTTESP32SecureCore::set_clientKeyFilename>
+    flxPropertyRWString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientKeyFilename,
+                       &flxMQTTESP32SecureCore::set_clientKeyFilename>
         clientKeyFilename;
 
     // We need perm version of the keys for the secure connection, so the values are stashed in allocated
@@ -540,7 +540,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
     char *_pClientKey;
 
     // Filesystem to load a file from
-    spIFileSystem *_fileSystem;
+    flxIFileSystem *_fileSystem;
 
     std::string _caFilename;
     std::string _clientFilename;
@@ -548,10 +548,10 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
 };
 
 
-class spMQTTESP32Secure : public spMQTTESP32SecureCore<spMQTTESP32Secure>, public flxWriter
+class flxMQTTESP32Secure : public flxMQTTESP32SecureCore<flxMQTTESP32Secure>, public flxWriter
 {
 public:
-    spMQTTESP32Secure()
+    flxMQTTESP32Secure()
     {
         this->setName("MQTT Secure Client", "A secure MQTT client");
 
@@ -568,7 +568,7 @@ public:
     }
     void write(const char *value, bool newline)
     {
-        spMQTTESP32Base::write(value, newline);
+        flxMQTTESP32Base::write(value, newline);
     }
 };
 #endif

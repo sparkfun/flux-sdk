@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "spOutput.h"
+#include "flxOutput.h"
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -15,18 +15,18 @@
 // the serialized string.
 //
 
-class spIWriterJSON 
+class flxIWriterJSON 
 {
 public:
     virtual void write(JsonDocument &jsonDoc) = 0;
 };
 
-template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
+template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 {
 
   public:
     //-----------------------------------------------------------------
-    spFormatJSON() : buffer_size{BUFFER_SIZE} {};
+    flxFormatJSON() : buffer_size{BUFFER_SIZE} {};
 
     //-----------------------------------------------------------------
     // value methods
@@ -204,18 +204,18 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     size_t buffer_size;
 
     // we need to promote the add methods from our subclass - these take flxWriter() interfaces
-    using spOutputFormat::add;
+    using flxOutputFormat::add;
 
     // Add methods to capture the json writers
-    void add(spIWriterJSON &newWriter)
+    void add(flxIWriterJSON &newWriter)
     {
         add(&newWriter);
     }
-    void add(spIWriterJSON *newWriter)
+    void add(flxIWriterJSON *newWriter)
     {
         _jsonWriters.push_back(newWriter);
     }
-    void remove(spIWriterJSON *oldWriter)
+    void remove(flxIWriterJSON *oldWriter)
     {
         auto iter = std::find(_jsonWriters.begin(), _jsonWriters.end(), oldWriter);
 
@@ -224,7 +224,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     }
 
     // bring up our sub-class remove to handle standard writers
-    using spOutputFormat::remove;
+    using flxOutputFormat::remove;
 
 
   protected:
@@ -269,5 +269,5 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
     StaticJsonDocument<BUFFER_SIZE> _jDoc;
 
 private:
-    std::vector<spIWriterJSON *>  _jsonWriters;
+    std::vector<flxIWriterJSON *>  _jsonWriters;
 };

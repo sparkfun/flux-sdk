@@ -9,7 +9,7 @@
 
 // use a utils namespace
 
-namespace sp_utils
+namespace flx_utils
 {
 
 size_t dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision = 3);
@@ -36,7 +36,7 @@ std::string to_string(bool const data);
 
 std::string strtrim(const std::string& str, const std::string& whitespace = " \t");
 
-} // namespace sp_utils
+} // namespace flx_utils
 
 /*
  * Example of how to use the stack based allocator with a string:

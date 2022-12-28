@@ -3,7 +3,7 @@
 // Object wrapper around the SD Card object. This allows this object to
 // be part of the framework.
 
-#include "spFSSDMMCard.h"
+#include "flxFSSDMMCard.h"
 #include <string>
 
 #include "FS.h"
@@ -35,10 +35,10 @@ static bool checkForFullPath(const char *filename, char *destbuffer, size_t leng
 }
 
 // Global object - for quick access to MMC FS.
-_spFSSDMMCard &_theSDMMCard = _spFSSDMMCard::get();
+_flxFSSDMMCard &_theSDMMCard = _flxFSSDMMCard::get();
 
 //-----------------------------------------------------------------------
-bool _spFSSDMMCard::initialize()
+bool _flxFSSDMMCard::initialize()
 {
     if (_isInitalized)
         return true;
@@ -74,7 +74,7 @@ bool _spFSSDMMCard::initialize()
 
 //-----------------------------------------------------------------------
 
-bool _spFSSDMMCard::initialize(uint8_t pinCS)
+bool _flxFSSDMMCard::initialize(uint8_t pinCS)
 {
     if (!pinCS)
         return false;
@@ -84,7 +84,7 @@ bool _spFSSDMMCard::initialize(uint8_t pinCS)
 }
 
 //-----------------------------------------------------------------------
-bool _spFSSDMMCard::initialize(uint8_t pinCS, uint8_t pinPower)
+bool _flxFSSDMMCard::initialize(uint8_t pinCS, uint8_t pinPower)
 {
     if (!pinCS || !pinPower)
         return false;
@@ -96,7 +96,7 @@ bool _spFSSDMMCard::initialize(uint8_t pinCS, uint8_t pinPower)
 }
 //-----------------------------------------------------------------------
 // Power interface
-void _spFSSDMMCard::setPower(bool powerOn)
+void _flxFSSDMMCard::setPower(bool powerOn)
 {
     if (!_pinPower || (_isInitalized && powerOn == _powerOn))
         return; // no need to continue
@@ -107,13 +107,13 @@ void _spFSSDMMCard::setPower(bool powerOn)
 }
 
 //-----------------------------------------------------------------------
-spFSFile _spFSSDMMCard::open(const char *name, spFileOpenMode_t mode, bool create)
+flxFSFile _flxFSSDMMCard::open(const char *name, flxFileOpenMode_t mode, bool create)
 {
     // Framework file
-    spFSFile theSPFile;
+    flxFSFile theflxFile;
 
     if (!_isInitalized || !name || strlen(name) < 4)
-        return theSPFile;
+        return theflxFile;
 
     const char *sdMode = FILE_READ;
 
@@ -127,31 +127,31 @@ spFSFile _spFSSDMMCard::open(const char *name, spFileOpenMode_t mode, bool creat
     char szBuffer[128];
 
     if (!checkForFullPath(name, szBuffer, sizeof(szBuffer)))
-        return theSPFile;
+        return theflxFile;
 
     File sdFile = SD_MMC.open(szBuffer, sdMode, create);
 
     if (sdFile)
     {
 
-        // setup our MMC file object that implements spIFile interface
-        spFSSDMMCFile theMMCFile;
+        // setup our MMC file object that implements flxIFile interface
+        flxFSSDMMCFile theMMCFile;
 
         // set the File object in our file driver interface
         theMMCFile.setFile(sdFile);
 
         // Move our object to a smart pointer
-        std::shared_ptr<spIFile> pMMCFile = std::make_shared<spFSSDMMCFile>(std::move(theMMCFile));
+        std::shared_ptr<flxIFile> pMMCFile = std::make_shared<flxFSSDMMCFile>(std::move(theMMCFile));
 
         // Now set our MMC driver, into the framework driver
-        theSPFile.setIFile(pMMCFile);
+        theflxFile.setIFile(pMMCFile);
     }
 
-    return theSPFile;
+    return theflxFile;
 }
 
 //-----------------------------------------------------------------------
-bool _spFSSDMMCard::exists(const char *name)
+bool _flxFSSDMMCard::exists(const char *name)
 {
     if (!_isInitalized)
         return false;
@@ -164,7 +164,7 @@ bool _spFSSDMMCard::exists(const char *name)
 }
 
 //-----------------------------------------------------------------------
-bool _spFSSDMMCard::remove(const char *name)
+bool _flxFSSDMMCard::remove(const char *name)
 {
     if (!_isInitalized)
         return false;
@@ -177,7 +177,7 @@ bool _spFSSDMMCard::remove(const char *name)
 }
 
 //-----------------------------------------------------------------------
-bool _spFSSDMMCard::rename(const char *nameFrom, const char *nameTo)
+bool _flxFSSDMMCard::rename(const char *nameFrom, const char *nameTo)
 {
     if (!_isInitalized)
         return false;
@@ -194,7 +194,7 @@ bool _spFSSDMMCard::rename(const char *nameFrom, const char *nameTo)
 }
 
 //-----------------------------------------------------------------------
-bool _spFSSDMMCard::mkdir(const char *path)
+bool _flxFSSDMMCard::mkdir(const char *path)
 {
     if (!_isInitalized)
         return false;
@@ -207,7 +207,7 @@ bool _spFSSDMMCard::mkdir(const char *path)
 }
 
 //-----------------------------------------------------------------------
-bool _spFSSDMMCard::rmdir(const char *path)
+bool _flxFSSDMMCard::rmdir(const char *path)
 {
     if (!_isInitalized)
         return false;
@@ -220,7 +220,7 @@ bool _spFSSDMMCard::rmdir(const char *path)
 }
 
 //-----------------------------------------------------------------------
-uint _spFSSDMMCard::size(void)
+uint _flxFSSDMMCard::size(void)
 {
     if (!_isInitalized)
         return 0;
@@ -229,7 +229,7 @@ uint _spFSSDMMCard::size(void)
 }
 //-----------------------------------------------------------------------
 
-const char *_spFSSDMMCard::type(void)
+const char *_flxFSSDMMCard::type(void)
 {
     if (!_isInitalized)
         return nullptr;
@@ -253,13 +253,13 @@ const char *_spFSSDMMCard::type(void)
 // -------------------------------------------------------
 // File implementation
 
-bool spFSSDMMCFile::isValid()
+bool flxFSSDMMCFile::isValid()
 {
     // if  the file object exist, we exist
     return _file == true;
 }
 
-size_t spFSSDMMCFile::write(const uint8_t *buf, size_t size)
+size_t flxFSSDMMCFile::write(const uint8_t *buf, size_t size)
 {
     if (!_file)
         return false;
@@ -267,26 +267,26 @@ size_t spFSSDMMCFile::write(const uint8_t *buf, size_t size)
     return _file.write(buf, size);
 }
 
-size_t spFSSDMMCFile::read( uint8_t *buf, size_t size)
+size_t flxFSSDMMCFile::read( uint8_t *buf, size_t size)
 {
     if (!_file)
         return false;
 
     return _file.read(buf, size);
 }
-void spFSSDMMCFile::close(void)
+void flxFSSDMMCFile::close(void)
 {
     if (_file)
         _file.close();
 }
 
-void spFSSDMMCFile::flush(void)
+void flxFSSDMMCFile::flush(void)
 {
     if (_file)
         _file.flush();
 }
 
-size_t spFSSDMMCFile::size(void)
+size_t flxFSSDMMCFile::size(void)
 {
     if (_file)
         return _file.size();

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "flxStorage.h"
-#include "spFS.h"
+#include "flxFS.h"
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -99,7 +99,7 @@ public:
 
     void resetStorage();
 
-    void setFileSystem(spIFileSystem *);
+    void setFileSystem(flxIFileSystem *);
     void setFilename(std::string &name);
     void setFilename(const char *name)
     {
@@ -120,7 +120,7 @@ private:
 
     bool _readOnly;
 
-    spIFileSystem * _fileSystem;
+    flxIFileSystem * _fileSystem;
     std::string _filename;
 };
 

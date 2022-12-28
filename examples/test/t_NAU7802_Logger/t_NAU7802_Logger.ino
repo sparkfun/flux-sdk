@@ -6,10 +6,10 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/flxLogger.h>
-#include <Spark/spFmtJSON.h>
-#include <Spark/spFmtCSV.h>
-#include <Spark/spTimer.h>
-#include <Spark/spSerial.h>
+#include <Spark/flxFmtJSON.h>
+#include <Spark/flxFmtCSV.h>
+#include <Spark/flxTimer.h>
+#include <Spark/flxSerial.h>
 
 // get testing
 #include <Spark/spDevNAU7802.h>
@@ -34,12 +34,12 @@
 
 // Create a CSV output formatter. 
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
-spFormatCSV fmtCSV;
+flxFormatCSV fmtCSV;
 
 flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
-spTimer   timer(kDefaultLogInterval);    // Timer 
+flxTimer   timer(kDefaultLogInterval);    // Timer 
 
 //---------------------------------------------------------------------
 // Arduino Setup
@@ -66,7 +66,7 @@ void setup() {
 
     // We want to output CSV to the serial console.
     //  - Add Serial to our  formatters
-    fmtCSV.add(spSerial());    
+    fmtCSV.add(flxSerial());    
 
     //  - Add the CSV format to the logger
     logger.add(fmtCSV);    

@@ -5,7 +5,7 @@
 #ifdef ESP32
 
 #include "spSpark.h"
-#include "spNetwork.h"
+#include "flxNetwork.h"
 
 
 #define kNTPServerAddress1 "pool.ntp.org"
@@ -15,7 +15,7 @@
 
 // Use the NTP client on the ESP32 to sync the onboard clock
 
-class spNTPESP32 : public flxActionType<spNTPESP32>
+class flxNTPESP32 : public flxActionType<flxNTPESP32>
 {
 private:
     void set_isEnabled(bool bEnabled);
@@ -26,7 +26,7 @@ private:
     void onConnectionChange(bool bConnected);
 
 public:
-    spNTPESP32() : _isEnabled{true}, _theNetwork{nullptr}, _startupDelay{0}
+    flxNTPESP32() : _isEnabled{true}, _theNetwork{nullptr}, _startupDelay{0}
     {
         spRegister(enabled, "Enabled", "Enable or Disable the NTP Client");
 
@@ -51,10 +51,10 @@ public:
     void listenToConnection(flxSignalBool &theEvent)
     {
         // Regisgter to get notified on connection changes
-        theEvent.call(this, &spNTPESP32::onConnectionChange);
+        theEvent.call(this, &flxNTPESP32::onConnectionChange);
     }
 
-    void setNetwork(spNetwork *theNetwork)
+    void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
 
@@ -71,19 +71,19 @@ public:
     // Properties 
 
     // Enabled/Disabled
-    flxPropertyRWBool<spNTPESP32, &spNTPESP32::get_isEnabled, &spNTPESP32::set_isEnabled> enabled;
+    flxPropertyRWBool<flxNTPESP32, &flxNTPESP32::get_isEnabled, &flxNTPESP32::set_isEnabled> enabled;
 
     // NTP servers
-    flxPropertyString<spNTPESP32>     ntpServerOne = {kNTPServerAddress1};
-    flxPropertyString<spNTPESP32>     ntpServerTwo = {kNTPServerAddress2};
+    flxPropertyString<flxNTPESP32>     ntpServerOne = {kNTPServerAddress1};
+    flxPropertyString<flxNTPESP32>     ntpServerTwo = {kNTPServerAddress2};
 
     // TimeZone string
-    flxPropertyString<spNTPESP32>     timeZone = {kNTPTimeZoneSparkFun};
+    flxPropertyString<flxNTPESP32>     timeZone = {kNTPTimeZoneSparkFun};
 
 private:
 	bool  _isEnabled;
 
-    spNetwork *_theNetwork;
+    flxNetwork *_theNetwork;
 
     uint _startupDelay;
 };

@@ -5,25 +5,25 @@
 
 // Spark framework
 #include <Spark.h>
-#include <Spark/spFmtCSV.h>
-#include <Spark/spFmtJSON.h>
+#include <Spark/flxFmtCSV.h>
+#include <Spark/flxFmtJSON.h>
 #include <Spark/flxLogger.h>
-#include <Spark/spSerial.h>
-#include <Spark/spTimer.h>
+#include <Spark/flxSerial.h>
+#include <Spark/flxTimer.h>
 
 // settings storage
-#include <Spark/spSettings.h>
-#include <Spark/spSettingsSerial.h>
+#include <Spark/flxSettings.h>
+#include <Spark/flxSettingsSerial.h>
 #include <Spark/flxStorageESP32Pref.h>
 #include <Spark/flxStorageJSONPref.h>
 
 // SD Card output
-#include <Spark/spFSSDMMCard.h>
-#include <Spark/spFileRotate.h>
+#include <Spark/flxFSSDMMCard.h>
+#include <Spark/flxFileRotate.h>
 
 // WiFi and NTP
-#include <Spark/spWiFiESP32.h>
-#include <Spark/spNTPESP32.h>
+#include <Spark/flxWiFiESP32.h>
+#include <Spark/flxNTPESP32.h>
 
 // NFC device
 #include <Spark/spDevsT25DV.h>
@@ -45,8 +45,8 @@ static const uint8_t kAppBioHubMFIO = 16;  // Use the RXD pin as the bio hub mfi
 // IoT Client Icludes
 #include <Spark/flxIoTAWS.h>
 #include <Spark/flxIoTAzure.h>
-#include <Spark/spMQTTESP32.h>
-#include <Spark/spThingSpeak.h>
+#include <Spark/flxMQTTESP32.h>
+#include <Spark/flxIoTThingSpeak.h>
 #include <Spark/flxIoTHTTP.h>
 
 //------------------------------------------
@@ -151,29 +151,29 @@ private:
 
     // Create a JSON and CSV output formatters.
     // Note: setting internal buffer sizes using template to minimize alloc calls.
-    spFormatJSON<kAppJSONDocSize> _fmtJSON;
-    spFormatCSV _fmtCSV;
+    flxFormatJSON<kAppJSONDocSize> _fmtJSON;
+    flxFormatCSV _fmtCSV;
 
     // Our logger
     flxLogger _logger;
 
     // Timer for event logging
-    spTimer _timer;
+    flxTimer _timer;
 
     // SD Card Filesystem object
-    spFSSDMMCard _theSDCard;
+    flxFSSDMMCard _theSDCard;
 
     // A writer interface for the SD Card that also rotates files
-    spFileRotate _theOutputFile;
+    flxFileRotate _theOutputFile;
 
     // settings things
     flxStorageESP32Pref _sysStorage;
-    spSettingsSerial _serialSettings;
+    flxSettingsSerial _serialSettings;
     flxStorageJSONPref _jsonStorage;
 
     // WiFi and NTP
-    spWiFiESP32 _wifiConnection;
-    spNTPESP32 _ntpClient;
+    flxWiFiESP32 _wifiConnection;
+    flxNTPESP32 _ntpClient;
 
     // the onboard IMU
     spDevISM330_SPI _onboardIMU;
@@ -184,13 +184,13 @@ private:
 
     // IoT endpoints
     // An generic MQTT client
-    spMQTTESP32 _mqttClient;
+    flxMQTTESP32 _mqttClient;
 
     // AWS
     flxIoTAWS _iotAWS;
 
     // Thingspeak
-    spThingSpeak _iotThingSpeak;
+    flxIoTThingSpeak _iotThingSpeak;
 
     // azure
     flxIoTAzure _iotAzure;

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "spMQTTESP32.h"
+#include "flxMQTTESP32.h"
 
 #define kAWSUpdateShadowTemplate "{\"state\":{\"reported\":%s}}"
 #define kAWSUpdateShadowTopic "$aws/things/%s/shadow/update"
@@ -11,7 +11,7 @@
 
 // simple class to support AWS IoT
 
-class flxIoTAWS : public spMQTTESP32SecureCore<flxIoTAWS>, public flxWriter
+class flxIoTAWS : public flxMQTTESP32SecureCore<flxIoTAWS>, public flxWriter
 {
 public:
     flxIoTAWS()
@@ -37,13 +37,13 @@ public:
     	// Wrap the value with the structure required to update the device shadow
         char szBuffer[strlen(value) + sizeof(kAWSUpdateShadowTemplate)];
         snprintf(szBuffer, sizeof(szBuffer),  kAWSUpdateShadowTemplate, value);
-        spMQTTESP32SecureCore::write(szBuffer, false);
+        flxMQTTESP32SecureCore::write(szBuffer, false);
     }
 
     bool initialize(void)
     {
 
-        spMQTTESP32SecureCore::initialize();
+        flxMQTTESP32SecureCore::initialize();
 
         char szBuffer[clientName().length() + sizeof(kAWSUpdateShadowTopic)];
         snprintf(szBuffer, sizeof(szBuffer), kAWSUpdateShadowTopic, clientName().c_str());

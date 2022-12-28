@@ -5,8 +5,8 @@
 #ifdef ESP32
 
 #include "flxCoreInterface.h"
-#include "spFS.h"
-#include "spNetwork.h"
+#include "flxFS.h"
+#include "flxNetwork.h"
 #include "spSpark.h"
 
 #include <WiFiClientSecure.h>
@@ -116,7 +116,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
             return nullptr;
         }
 
-        spFSFile certFile = _fileSystem->open(theFile.c_str(), spIFileSystem::kFileRead);
+        flxFSFile certFile = _fileSystem->open(theFile.c_str(), flxIFileSystem::kFileRead);
         if (!certFile)
         {
             flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
@@ -220,7 +220,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
         theEvent.call(this, &flxIoTHTTPBase::onConnectionChange);
     }
 
-    void setNetwork(spNetwork *theNetwork)
+    void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
 
@@ -269,7 +269,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
         http.end();
     }
     //---------------------------------------------------------
-    void setFileSystem(spIFileSystem *fs)
+    void setFileSystem(flxIFileSystem *fs)
     {
         _fileSystem = fs;
     }
@@ -298,14 +298,14 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
     bool _canConnect;
     bool _isSecure;
 
-    spNetwork *_theNetwork;
+    flxNetwork *_theNetwork;
 
     // We need perm version of the keys for the secure connection, so the values are stashed in allocated
     // strings
     char *_pCACert;
 
     // Filesystem to load a file from
-    spIFileSystem *_fileSystem;
+    flxIFileSystem *_fileSystem;
 
     WiFiClient *_wifiClient;    
 };

@@ -6,14 +6,14 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/flxLogger.h>
-#include <Spark/spFmtJSON.h>
-#include <Spark/spFmtCSV.h>
-#include <Spark/spTimer.h>
-#include <Spark/spSerial.h>
+#include <Spark/flxFmtJSON.h>
+#include <Spark/flxFmtCSV.h>
+#include <Spark/flxTimer.h>
+#include <Spark/flxSerial.h>
 
 #include <Spark/flxStorageESP32Pref.h>
-#include <Spark/spSettingsSerial.h>
-#include <Spark/spSettings.h>
+#include <Spark/flxSettingsSerial.h>
+#include <Spark/flxSettings.h>
 
 
 
@@ -314,10 +314,10 @@ void test_params::set_void(void){
 flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
-spTimer   timer(3000);    // Timer 
+flxTimer   timer(3000);    // Timer 
 
 flxStorageESP32Pref  myStorage;
-spSettingsSerial    serialSettings;
+flxSettingsSerial    serialSettings;
 
 
 test_params testParams;
@@ -336,9 +336,9 @@ void setup() {
     Serial.println("\n---- Startup Serial Settings Test ----");
     
 
-    spSettings.setStorage(myStorage);
+    flxSettings.setStorage(myStorage);
     // Have settings save when editing is complete.
-    spSettings.listenForSave(serialSettings.on_finished);
+    flxSettings.listenForSave(serialSettings.on_finished);
 
     // Start Spark 
     spark.start();  

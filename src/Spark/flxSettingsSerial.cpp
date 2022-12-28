@@ -1,9 +1,9 @@
 
 
 #include "spSpark.h"
-#include "spSettingsSerial.h"
-#include "spSerialField.h"
-#include "spUtils.h"
+#include "flxSettingsSerial.h"
+#include "flxSerialField.h"
+#include "flxUtils.h"
 #include <ctype.h>
 #include <time.h>
 
@@ -49,7 +49,7 @@
 //-----------------------------------------------------------------------------
 // drawPage()  - Generic Object edition.
 
-bool spSettingsSerial::drawPage(flxObject *pCurrent)
+bool flxSettingsSerial::drawPage(flxObject *pCurrent)
 {
     if (!pCurrent)
         return false;
@@ -100,7 +100,7 @@ bool spSettingsSerial::drawPage(flxObject *pCurrent)
 //-----------------------------------------------------------------------------
 // drawPage() - Property Editing edition
 
-bool spSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
+bool flxSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
 {
     if (!pCurrent || !pProp)
         return false;
@@ -126,7 +126,7 @@ bool spSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
     }
     
     // The data editor we're using - serial field
-    spSerialField theDataEditor;
+    flxSerialField theDataEditor;
 
     // let's edit the property value
 	flxEditResult_t result;
@@ -176,7 +176,7 @@ bool spSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
 //-----------------------------------------------------------------------------
 // drawPage()  - Operation/Action edition
 
-bool spSettingsSerial::drawPage(flxOperation *pCurrent)
+bool flxSettingsSerial::drawPage(flxOperation *pCurrent)
 {
     if (!pCurrent)
         return false;
@@ -228,7 +228,7 @@ bool spSettingsSerial::drawPage(flxOperation *pCurrent)
 //-----------------------------------------------------------------------------
 // drawPage() Parameter edition -- just enable/disable it
 
-bool spSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
+bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
 {
     if (!pCurrent || !pParam)
         return false;
@@ -279,7 +279,7 @@ bool spSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
 //
 // Get inputs from the user and call the parameter with the provided data.
 
-bool spSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
+bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
 {
     if (!pCurrent || !pParam)
         return false;
@@ -309,7 +309,7 @@ bool spSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
         }
     }
     // The data editor we're using - serial field
-    spSerialField theDataEditor;
+    flxSerialField theDataEditor;
    
     flxEditResult_t result;
 
@@ -363,7 +363,7 @@ bool spSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
 // The user has selected an input parameter of type Void
 //
 
-bool spSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameterIn *pParam)
+bool flxSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameterIn *pParam)
 {
     if (!pCurrent || !pParam || pParam->type() != flxTypeNone)
         return false;
@@ -397,22 +397,22 @@ bool spSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameterI
 }
 
 // Container typed wrappers that use the container template for all the work
-bool spSettingsSerial::drawPage(flxObjectContainer *pCurrent)
+bool flxSettingsSerial::drawPage(flxObjectContainer *pCurrent)
 {
     return drawPage<flxObject *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-bool spSettingsSerial::drawPage(flxOperationContainer *pCurrent)
+bool flxSettingsSerial::drawPage(flxOperationContainer *pCurrent)
 {
     return drawPage<flxOperation *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-bool spSettingsSerial::drawPage(flxDeviceContainer *pCurrent)
+bool flxSettingsSerial::drawPage(flxDeviceContainer *pCurrent)
 {
     return drawPage<flxDevice *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-bool spSettingsSerial::drawPage(flxActionContainer *pCurrent)
+bool flxSettingsSerial::drawPage(flxActionContainer *pCurrent)
 {
     return drawPage<flxAction *>(pCurrent);
 }
@@ -421,7 +421,7 @@ bool spSettingsSerial::drawPage(flxActionContainer *pCurrent)
 //
 // Generic header for all settings pages.
 //
-void spSettingsSerial::drawPageHeader(flxObject *pCurrent, const char *szItem)
+void flxSettingsSerial::drawPageHeader(flxObject *pCurrent, const char *szItem)
 {
 
     char szBuffer[kOutputBufferSize] = {0};
@@ -456,7 +456,7 @@ void spSettingsSerial::drawPageHeader(flxObject *pCurrent, const char *szItem)
 //
 // Generic footer for most pages -- mostly writes out the exit/back menu entry
 //
-void spSettingsSerial::drawPageFooter(flxObject *pCurrent)
+void flxSettingsSerial::drawPageFooter(flxObject *pCurrent)
 {
     Serial.println();
 
@@ -475,7 +475,7 @@ void spSettingsSerial::drawPageFooter(flxObject *pCurrent)
 //
 // Draw the entry in the menu for the give item
 //
-void spSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
+void flxSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
 {
 
     if (!pDesc)
@@ -485,7 +485,7 @@ void spSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
 }
 //-----------------------------------------------------------------------------
 // drawMenuEntry()  -- non-object edition
-void spSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
+void flxSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
 {
 
     if (!szTitle)
@@ -506,7 +506,7 @@ void spSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
 //
 //      N = The current menu entry -- (the last entry number used)
 
-int spSettingsSerial::drawMenu(flxObject *pCurrent, uint level)
+int flxSettingsSerial::drawMenu(flxObject *pCurrent, uint level)
 {
 
     if (!pCurrent)
@@ -539,7 +539,7 @@ int spSettingsSerial::drawMenu(flxObject *pCurrent, uint level)
 // Return Values
 //     -1 = Error
 
-int spSettingsSerial::selectMenu(flxObject *pCurrent, uint level)
+int flxSettingsSerial::selectMenu(flxObject *pCurrent, uint level)
 {
 
     if (!pCurrent)
@@ -562,7 +562,7 @@ int spSettingsSerial::selectMenu(flxObject *pCurrent, uint level)
 
 
 
-int spSettingsSerial::drawMenu(std::vector<std::string> &entries, uint level)
+int flxSettingsSerial::drawMenu(std::vector<std::string> &entries, uint level)
 {
     if (entries.size() == 0)
         return level;
@@ -586,7 +586,7 @@ int spSettingsSerial::drawMenu(std::vector<std::string> &entries, uint level)
 // Return Values
 //     -1 = Error
 
-int spSettingsSerial::selectMenu(flxOperation *pCurrent, uint level)
+int flxSettingsSerial::selectMenu(flxOperation *pCurrent, uint level)
 {
 
     if (!pCurrent)
@@ -642,7 +642,7 @@ int spSettingsSerial::selectMenu(flxOperation *pCurrent, uint level)
 //
 //      N = The current menu entry -- (the last entry number used)
 
-int spSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
+int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
 {
 
     if (!pCurrent)
@@ -689,25 +689,25 @@ int spSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
 
 //-----------------------------------------------------------------------------
 // Container typed wrappers that use the container template for all the work
-int spSettingsSerial::drawMenu(flxObjectContainer *pCurrent, uint level)
+int flxSettingsSerial::drawMenu(flxObjectContainer *pCurrent, uint level)
 {
 
     return drawMenu<flxObject *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::drawMenu(flxOperationContainer *pCurrent, uint level)
+int flxSettingsSerial::drawMenu(flxOperationContainer *pCurrent, uint level)
 {
 
     return drawMenu<flxOperation *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::drawMenu(flxDeviceContainer *pCurrent, uint level)
+int flxSettingsSerial::drawMenu(flxDeviceContainer *pCurrent, uint level)
 {
 
     return drawMenu<flxDevice *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::drawMenu(flxActionContainer *pCurrent, uint level)
+int flxSettingsSerial::drawMenu(flxActionContainer *pCurrent, uint level)
 {
 
     return drawMenu<flxAction *>(pCurrent, level);
@@ -716,25 +716,25 @@ int spSettingsSerial::drawMenu(flxActionContainer *pCurrent, uint level)
 // Select Menus
 //-----------------------------------------------------------------------------
 // Container typed wrappers that use the container template for all the work
-int spSettingsSerial::selectMenu(flxObjectContainer *pCurrent, uint level)
+int flxSettingsSerial::selectMenu(flxObjectContainer *pCurrent, uint level)
 {
 
     return selectMenu<flxObject *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::selectMenu(flxOperationContainer *pCurrent, uint level)
+int flxSettingsSerial::selectMenu(flxOperationContainer *pCurrent, uint level)
 {
 
     return selectMenu<flxOperation *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::selectMenu(flxDeviceContainer *pCurrent, uint level)
+int flxSettingsSerial::selectMenu(flxDeviceContainer *pCurrent, uint level)
 {
 
     return selectMenu<flxDevice *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::selectMenu(flxActionContainer *pCurrent, uint level)
+int flxSettingsSerial::selectMenu(flxActionContainer *pCurrent, uint level)
 {
 
     return selectMenu<flxAction *>(pCurrent, level);
@@ -803,7 +803,7 @@ static uint8_t menuEventYN(uint8_t chIn)
 }
 //-----------------------------------------------------------------------------
 
-uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint timeout)
+uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint timeout)
 {
 
     // TODO - abstract out serial calls.
@@ -904,17 +904,17 @@ uint8_t spSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint ti
 }
 //--------------------------------------------------------------------------
 // get the selected menu item
-uint8_t spSettingsSerial::getMenuSelection(uint max, uint timeout)
+uint8_t flxSettingsSerial::getMenuSelection(uint max, uint timeout)
 {
     return getMenuSelectionFunc(max, false, timeout);
 }
 //--------------------------------------------------------------------------
-uint8_t spSettingsSerial::getMenuSelectionYN(uint timeout)
+uint8_t flxSettingsSerial::getMenuSelectionYN(uint timeout)
 {
     return getMenuSelectionFunc(0, true, timeout);
 }
 
-void spSettingsSerial::drawEntryBanner(void)
+void flxSettingsSerial::drawEntryBanner(void)
 {
     // Let's draw a header as we enter 
 
@@ -937,7 +937,7 @@ void spSettingsSerial::drawEntryBanner(void)
 // If we see input on the serial console, and we have a menu root set, start
 // a settings session
 
-bool spSettingsSerial::loop(void)
+bool flxSettingsSerial::loop(void)
 {
 
 

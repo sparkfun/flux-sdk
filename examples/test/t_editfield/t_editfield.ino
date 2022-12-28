@@ -4,9 +4,9 @@
 #include <string>
 
 #include "Spark.h"
-#include "Spark/spSerialField.h"
+#include "Spark/flxSerialField.h"
 
-spSerialField myField;
+flxSerialField myField;
 
 
 // For the test, two options:

@@ -14,7 +14,7 @@
 #include "flxCoreInterface.h"
 #include "flxCoreTypes.h"
 #include "flxStorage.h"
-#include "spUtils.h"
+#include "flxUtils.h"
 
 #define kMaxPropertyString 256
 

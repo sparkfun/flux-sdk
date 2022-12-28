@@ -6,30 +6,30 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/flxLogger.h>
-#include <Spark/spFmtJSON.h>
-#include <Spark/spFmtCSV.h>
-#include <Spark/spTimer.h>
-#include <Spark/spSerial.h>
+#include <Spark/flxFmtJSON.h>
+#include <Spark/flxFmtCSV.h>
+#include <Spark/flxTimer.h>
+#include <Spark/flxSerial.h>
 
 
 // settings storage
 #include <Spark/flxStorageESP32Pref.h>
 #include <Spark/flxStorageJSONPref.h>
-#include <Spark/spSettings.h>
-#include <Spark/spSettingsSerial.h>
+#include <Spark/flxSettings.h>
+#include <Spark/flxSettingsSerial.h>
 
 // Testing for device calls
 #include <Spark/spDevButton.h>
 
 // SD Card output
-#include <Spark/spFSSDMMCard.h>
-#include <Spark/spFileRotate.h>
+#include <Spark/flxFSSDMMCard.h>
+#include <Spark/flxFileRotate.h>
 
 // WiFi Testing
-#include <Spark/spWiFiESP32.h>
+#include <Spark/flxWiFiESP32.h>
 
 //NTP
-#include <Spark/spNTPESP32.h>
+#include <Spark/flxNTPESP32.h>
 
 // NFC device
 #include <Spark/spDevsT25DV.h>
@@ -50,7 +50,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 // MQTT
 //#define TEST_MQTT
-#include <Spark/spMQTTESP32.h>
+#include <Spark/flxMQTTESP32.h>
 
 // AWS IoT
 // UNCOMMENT TO TEST AWS
@@ -60,7 +60,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 // ThingSpeak outpout
 // Uncomment to test Thingspeak mqtt
 //#define TEST_THINGSPEAK
-#include <Spark/spThingSpeak.h>
+#include <Spark/flxIoTThingSpeak.h>
 
 
 //Azure IoT 
@@ -98,27 +98,27 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 // Create a JSON and CSV output formatters. 
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
-spFormatJSON<1200> fmtJSON;
-spFormatCSV fmtCSV;
+flxFormatJSON<1200> fmtJSON;
+flxFormatCSV fmtCSV;
 
 flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
-spTimer   timer(kDefaultLogInterval);    // Timer 
+flxTimer   timer(kDefaultLogInterval);    // Timer 
 
 // SD Card Filesystem object
-spFSSDMMCard theSDCard;
+flxFSSDMMCard theSDCard;
 
 // A writer interface for the SD Card that also rotates files 
-spFileRotate  theOutputFile;
+flxFileRotate  theOutputFile;
 
 // settings things
 flxStorageESP32Pref  myStorage;
-spSettingsSerial    serialSettings;
+flxSettingsSerial    serialSettings;
 flxStorageJSONPref   jsonStorage;
 
-spWiFiESP32 wifiConnection;
-spNTPESP32  ntpClient;
+flxWiFiESP32 wifiConnection;
+flxNTPESP32  ntpClient;
 
 // the onboard IMU 
 spDevISM330_SPI onboardIMU;
@@ -129,7 +129,7 @@ spDevBioHub bioHub;
 
 // An MQTT client 
 #ifdef TEST_MQTT
-spMQTTESP32 mqttClient;
+flxMQTTESP32 mqttClient;
 #endif
 
 #ifdef TEST_AWS
@@ -137,7 +137,7 @@ flxIoTAWS mqttAWS;
 #endif
 
 #ifdef TEST_THINGSPEAK
-spThingSpeak iotThingSpeak;
+flxIoTThingSpeak iotThingSpeak;
 #endif
 
 #ifdef TEST_AZURE_IOT
@@ -194,7 +194,7 @@ void setupNFC(void)
 
     // We have an NFC device. Create a credentials action and connect to the NFC device 
     // and WiFi.
-    spSetWifiCredentials * pCreds  = new spSetWifiCredentials;
+    flxSetWifiCredentials * pCreds  = new flxSetWifiCredentials;
 
     if (!pCreds)
         return;
@@ -334,13 +334,13 @@ void setup() {
     //wifiConnection.password = "";
 
     // set the settings storage system for spark
-    spSettings.setStorage(&myStorage);
-    spSettings.setFallback(&jsonStorage);
+    flxSettings.setStorage(&myStorage);
+    flxSettings.setFallback(&jsonStorage);
     jsonStorage.setFileSystem(&theSDCard);
     jsonStorage.setFilename("openlog.json");
 
     // Have settings saved when editing is complete.
-    spSettings.listenForSave(serialSettings.on_finished);
+    flxSettings.listenForSave(serialSettings.on_finished);
 
     // Add serial settings to spark - the spark loop call will take care
     // of everything else.
@@ -380,8 +380,8 @@ void setup() {
 
     // We want to output JSON and CSV to the serial consol.
     //  - Add Serial to our  formatters
-    fmtJSON.add(spSerial());
-    fmtCSV.add(spSerial());    
+    fmtJSON.add(flxSerial());
+    fmtCSV.add(flxSerial());    
 
     
 

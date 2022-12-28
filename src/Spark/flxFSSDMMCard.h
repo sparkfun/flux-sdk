@@ -7,14 +7,14 @@
 
 #include "FS.h"
 #include "flxCore.h"
-#include "spFS.h"
+#include "flxFS.h"
 
-class _spFSSDMMCard;
+class _flxFSSDMMCard;
 
-class spFSSDMMCFile : public spIFile
+class flxFSSDMMCFile : public flxIFile
 {
   public:
-    spFSSDMMCFile(){};
+    flxFSSDMMCFile(){};
 
     size_t write(const uint8_t *buf, size_t size);
 
@@ -29,7 +29,7 @@ class spFSSDMMCFile : public spIFile
     size_t size(void);
 
   private:
-    friend _spFSSDMMCard;
+    friend _flxFSSDMMCard;
 
     void setFile(File &theFile)
     {
@@ -39,20 +39,20 @@ class spFSSDMMCFile : public spIFile
     File _file;
 };
 
-class _spFSSDMMCard : public spIFileSystem
+class _flxFSSDMMCard : public flxIFileSystem
 {
 
   public:
-    // _spFSSDMMCard is a singleton
-    static _spFSSDMMCard &get(void)
+    // _flxFSSDMMCard is a singleton
+    static _flxFSSDMMCard &get(void)
     {
 
-        static _spFSSDMMCard instance;
+        static _flxFSSDMMCard instance;
         return instance;
     }
     // This is a singleton class - so delete copy & assignment constructors
-    _spFSSDMMCard(_spFSSDMMCard const &) = delete;
-    void operator=(_spFSSDMMCard const &) = delete;
+    _flxFSSDMMCard(_flxFSSDMMCard const &) = delete;
+    void operator=(_flxFSSDMMCard const &) = delete;
 
     // setup and lifecycle of the file system interface
     // TODO - make this uniform ...
@@ -79,7 +79,7 @@ class _spFSSDMMCard : public spIFileSystem
 
     // FS interface methods
     // open
-    spFSFile open(const char *name, spFileOpenMode_t mode, bool create = false);
+    flxFSFile open(const char *name, flxFileOpenMode_t mode, bool create = false);
 
     bool exists(const char *name);
 
@@ -102,7 +102,7 @@ class _spFSSDMMCard : public spIFileSystem
 
   private:
     // private constructor
-    _spFSSDMMCard() : _isInitalized{false}, _pinCS{0}, _pinPower{0}, _powerOn{false}
+    _flxFSSDMMCard() : _isInitalized{false}, _pinCS{0}, _pinPower{0}, _powerOn{false}
     {
     }
     bool _isInitalized;
@@ -112,17 +112,17 @@ class _spFSSDMMCard : public spIFileSystem
 
     bool _powerOn;
 };
-extern _spFSSDMMCard &_theSDMMCard;
+extern _flxFSSDMMCard &_theSDMMCard;
 
 // wrapper around the SD file system singleton -
 
-class spFSSDMMCard : public spIFileSystem, public flxSystemType<spFSSDMMCard>
+class flxFSSDMMCard : public flxIFileSystem, public flxSystemType<flxFSSDMMCard>
 {
 
   public:
-    spFSSDMMCard()
+    flxFSSDMMCard()
     {
-        spIFileSystem::setName("SD Card", "A SD Card file system using the SDMMC interface on an ESP32");
+        flxIFileSystem::setName("SD Card", "A SD Card file system using the SDMMC interface on an ESP32");
     }
     bool initialize()
     {
@@ -159,7 +159,7 @@ class spFSSDMMCard : public spIFileSystem, public flxSystemType<spFSSDMMCard>
 
     // FS interface methods
     // open
-    spFSFile open(const char *name, spFileOpenMode_t mode, bool create = false)
+    flxFSFile open(const char *name, flxFileOpenMode_t mode, bool create = false)
     {
         return _theSDMMCard.open(name, mode, create);
     }

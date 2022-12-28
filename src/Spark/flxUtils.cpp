@@ -1,6 +1,6 @@
 
 
-#include "spUtils.h"
+#include "flxUtils.h"
 
 #include <math.h>
 #include <string.h>
@@ -13,7 +13,7 @@
 //
 // Logic from the quad project
 //
-size_t sp_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision)
+size_t flx_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t precision)
 {
     if (!szBuffer || nBuffer == 0)
         return 0;
@@ -105,7 +105,7 @@ size_t sp_utils::dtostr(double value, char *szBuffer, size_t nBuffer, uint8_t pr
 // Internal hash function used to generate a unique ID based on a string
 //    From: http://www.cse.yorku.ca/~oz/hash.html
 
-uint32_t sp_utils::id_hash_string(const char *str)
+uint32_t flx_utils::id_hash_string(const char *str)
 {
 
     uint32_t hash = 5381;
@@ -121,7 +121,7 @@ uint32_t sp_utils::id_hash_string(const char *str)
 }
 //-------------------------------------------------------------------
 // returns a string version of the hash.
-bool sp_utils::id_hash_string_to_string(const char *instr, char *outstr, size_t len)
+bool flx_utils::id_hash_string_to_string(const char *instr, char *outstr, size_t len)
 {
 
     if (!instr || !outstr || !len)
@@ -139,24 +139,24 @@ bool sp_utils::id_hash_string_to_string(const char *instr, char *outstr, size_t 
     return true;
 }
 //-------------------------------------------------------------------
-std::string &sp_utils::to_string(std::string &data)
+std::string &flx_utils::to_string(std::string &data)
 {
     return data;
 }
 //-------------------------------------------------------------------
-const std::string &sp_utils::to_string(std::string const &data)
+const std::string &flx_utils::to_string(std::string const &data)
 {
     return data;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(char * const data)
+std::string flx_utils::to_string(char * const data)
 {
     std::string stmp = data;
     return stmp;
 }
 
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(int const data)
+std::string flx_utils::to_string(int const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%d", data);
@@ -164,7 +164,7 @@ std::string sp_utils::to_string(int const data)
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(int8_t const data)
+std::string flx_utils::to_string(int8_t const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%d", data);
@@ -172,7 +172,7 @@ std::string sp_utils::to_string(int8_t const data)
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(int16_t const data)
+std::string flx_utils::to_string(int16_t const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%d", data);
@@ -180,7 +180,7 @@ std::string sp_utils::to_string(int16_t const data)
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(uint const data)
+std::string flx_utils::to_string(uint const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%u", data);
@@ -188,7 +188,7 @@ std::string sp_utils::to_string(uint const data)
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(uint8_t const data)
+std::string flx_utils::to_string(uint8_t const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%u", data);
@@ -196,7 +196,7 @@ std::string sp_utils::to_string(uint8_t const data)
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(uint16_t const data)
+std::string flx_utils::to_string(uint16_t const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%u", data);
@@ -204,34 +204,34 @@ std::string sp_utils::to_string(uint16_t const data)
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(float const data, uint8_t precision)
+std::string flx_utils::to_string(float const data, uint8_t precision)
 {
-    return sp_utils::to_string((double)data, precision);
+    return flx_utils::to_string((double)data, precision);
     char szBuffer[20];
-    sp_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);
+    flx_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);
     std::string stmp = szBuffer;
     return stmp;
 }
-std::string sp_utils::to_string(float const data)
+std::string flx_utils::to_string(float const data)
 {
-    return sp_utils::to_string(data, 3);
+    return flx_utils::to_string(data, 3);
 }
 
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(double const data, uint8_t precision)
+std::string flx_utils::to_string(double const data, uint8_t precision)
 {
     char szBuffer[20];
-    sp_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);
+    flx_utils::dtostr((double)data, szBuffer, sizeof(szBuffer), precision);
     std::string stmp = szBuffer;
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(double const data)
+std::string flx_utils::to_string(double const data)
 {
-    return sp_utils::to_string(data, 4);
+    return flx_utils::to_string(data, 4);
 }
 //-------------------------------------------------------------------
-std::string sp_utils::to_string(bool const data)
+std::string flx_utils::to_string(bool const data)
 {
     std::string stmp;
     stmp = data ? "true" : "false";
@@ -239,7 +239,7 @@ std::string sp_utils::to_string(bool const data)
 }
 
 //-------------------------------------------------------------------
-std::string sp_utils::strtrim(const std::string& str, const std::string& whitespace)
+std::string flx_utils::strtrim(const std::string& str, const std::string& whitespace)
 {
     const auto strBegin = str.find_first_not_of(whitespace);
     if (strBegin == std::string::npos)

@@ -15,13 +15,13 @@
 #include "flxDevice.h"
 
 // For WiFi updating of credentials
-#include "spWiFi.h"
+#include "flxWiFi.h"
 
 // What is the name used to ID this device?
 #define kST25DVDeviceName "ST25DV"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevST25DV : public flxDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_NDEF, public spIWiFiCredentialSource
+class spDevST25DV : public flxDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_NDEF, public flxIWiFiCredentialSource
 {
 
   public:

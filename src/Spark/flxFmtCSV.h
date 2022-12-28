@@ -5,8 +5,8 @@
 #pragma once
 
 #include "flxCore.h"
-#include "spOutput.h"
-#include "spUtils.h"
+#include "flxOutput.h"
+#include "flxUtils.h"
 
 #include <Arduino.h>
 #include <string>
@@ -18,7 +18,7 @@
 
 #define kMaxCVSHeaderTagSize 32
 
-class spFormatCSV : public spOutputFormat
+class flxFormatCSV : public flxOutputFormat
 {
 
   private:
@@ -31,7 +31,7 @@ class spFormatCSV : public spOutputFormat
 
   public:
     //-----------------------------------------------------------------
-    spFormatCSV()
+    flxFormatCSV()
     {
         reset();
     };
@@ -43,7 +43,7 @@ class spFormatCSV : public spOutputFormat
         // header?
         writeHeaderEntry(tag);
 
-        std::string stmp = sp_utils::to_string(value);
+        std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
     }
@@ -54,7 +54,7 @@ class spFormatCSV : public spOutputFormat
         // header?
         writeHeaderEntry(tag);
 
-        std::string stmp = sp_utils::to_string(value);
+        std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
     }
@@ -65,7 +65,7 @@ class spFormatCSV : public spOutputFormat
         // header?
         writeHeaderEntry(tag);
 
-        std::string stmp = sp_utils::to_string(value);
+        std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
     }
@@ -76,7 +76,7 @@ class spFormatCSV : public spOutputFormat
         // header?
         writeHeaderEntry(tag);
 
-        std::string stmp = sp_utils::to_string(value);
+        std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
     }
@@ -87,7 +87,7 @@ class spFormatCSV : public spOutputFormat
         // header?
         writeHeaderEntry(tag);
 
-        std::string stmp = sp_utils::to_string(value);
+        std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
     }
@@ -98,7 +98,7 @@ class spFormatCSV : public spOutputFormat
         // header?
         writeHeaderEntry(tag);
 
-        std::string stmp = sp_utils::to_string(value);
+        std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
     }
@@ -109,7 +109,7 @@ class spFormatCSV : public spOutputFormat
         // header?
         writeHeaderEntry(tag);
 
-        std::string stmp = sp_utils::to_string(value);
+        std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
     }
@@ -126,7 +126,7 @@ class spFormatCSV : public spOutputFormat
         writeHeaderEntry(tag);
 
         char szBuffer[32] = {'\0'};
-        (void)sp_utils::dtostr(value, szBuffer, sizeof(szBuffer), precision);
+        (void)flx_utils::dtostr(value, szBuffer, sizeof(szBuffer), precision);
 
         if (!append_csv_value(szBuffer, _data_buffer))
             flxLog_E("CSV - internal data buffer size exceeded.");
@@ -280,7 +280,7 @@ class spFormatCSV : public spOutputFormat
         // the end of the observation. So, if in an observation, set the pending bit
 
         if (_inObservation)
-            _writeHeader = (spFmtCSVHeader_t)(_writeHeader | kHeaderPending);
+            _writeHeader = (flxFmtCSVHeader_t)(_writeHeader | kHeaderPending);
         else
             _writeHeader = kHeaderWrite;
     }
@@ -290,7 +290,7 @@ class spFormatCSV : public spOutputFormat
 
     void listenNewFile(flxSignalVoid &theEvent)
     {
-        theEvent.call(this, &spFormatCSV::output_header);
+        theEvent.call(this, &flxFormatCSV::output_header);
     }
 
   private:
@@ -347,15 +347,15 @@ class spFormatCSV : public spOutputFormat
 
     template <typename T> void formatArrayValue(std::string &sData, T value, uint16_t precision = 3)
     {
-        sData += sp_utils::to_string(value);
+        sData += flx_utils::to_string(value);
     }
     void formatArrayValue(std::string &sData, float value, uint16_t precision)
     {
-        sData += sp_utils::to_string(value, precision);
+        sData += flx_utils::to_string(value, precision);
     }
     void formatArrayValue(std::string &sData, double value, uint16_t precision)
     {
-        sData += sp_utils::to_string(value, precision);
+        sData += flx_utils::to_string(value, precision);
     }
 
     template <typename T>
@@ -423,9 +423,9 @@ class spFormatCSV : public spOutputFormat
         kHeaderWrite = 1,
         kHeaderPending = 2,
         kHeaderWriteAndPending = 3
-    } spFmtCSVHeader_t;
+    } flxFmtCSVHeader_t;
 
-    spFmtCSVHeader_t _writeHeader;
+    flxFmtCSVHeader_t _writeHeader;
 
     bool _inObservation;
 };

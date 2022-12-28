@@ -4,7 +4,7 @@
 
 #include "flxCoreEvent.h"
 // Network interface
-class spNetwork
+class flxNetwork
 {
 public:
     virtual bool isConnected() = 0;

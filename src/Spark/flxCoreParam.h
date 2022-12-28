@@ -12,7 +12,7 @@
 #include "flxCoreInterface.h"
 #include "flxCoreProps.h"
 #include "flxCoreTypes.h"
-#include "spUtils.h"
+#include "flxUtils.h"
 
 //----------------------------------------------------------------------------------------
 // flxParameter

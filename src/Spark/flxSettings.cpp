@@ -1,23 +1,23 @@
 
 
-#include "spSettings.h"
+#include "flxSettings.h"
 
 // Global object - for quick access to Settings system
-spSettingsSave &spSettings = spSettingsSave::get();
+flxSettingsSave &flxSettings = flxSettingsSave::get();
 //------------------------------------------------------------
 // settings/storage things.
 //------------------------------------------------------------
 //
 // Storage device for settings - set this in the system.
 
-void spSettingsSave::setStorage(flxStorage *pStorage)
+void flxSettingsSave::setStorage(flxStorage *pStorage)
 {
     _primaryStorage = pStorage;
 
 }
 
 
-void spSettingsSave::setFallback(flxStorage *pStorage)
+void flxSettingsSave::setFallback(flxStorage *pStorage)
 {
     _fallbackStorage = pStorage;
 
@@ -29,7 +29,7 @@ void spSettingsSave::setFallback(flxStorage *pStorage)
 //----------------------------------------------------------------------------------
 
 // General save routine
-bool spSettingsSave::saveObjectToStorage(flxObject* pObject, flxStorage *pStorage)
+bool flxSettingsSave::saveObjectToStorage(flxObject* pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;
@@ -48,20 +48,20 @@ bool spSettingsSave::saveObjectToStorage(flxObject* pObject, flxStorage *pStorag
 //----------------------------------------------------------------------------------
 // Save system
 
-bool spSettingsSave::saveSystem(void)
+bool flxSettingsSave::saveSystem(void)
 {
     return save(&spark);
 }
 //----------------------------------------------------------------------------------
 // save a specific object
-bool spSettingsSave::save(flxObject &theObject)
+bool flxSettingsSave::save(flxObject &theObject)
 {
     return save(&theObject);
 }
 
 //----------------------------------------------------------------------------------
 // Save settings for a object
-bool spSettingsSave::save(flxObject *pObject)
+bool flxSettingsSave::save(flxObject *pObject)
 {
     if (!_primaryStorage)
         return false;
@@ -85,7 +85,7 @@ bool spSettingsSave::save(flxObject *pObject)
 //----------------------------------------------------------------------------------
 // Restore section
 //----------------------------------------------------------------------------------
-bool spSettingsSave::restoreObjectFromStorage(flxObject* pObject, flxStorage *pStorage)
+bool flxSettingsSave::restoreObjectFromStorage(flxObject* pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;
@@ -102,21 +102,21 @@ bool spSettingsSave::restoreObjectFromStorage(flxObject* pObject, flxStorage *pS
 }
 
 //----------------------------------------------------------------------------------
-bool spSettingsSave::restoreSystem(void)
+bool flxSettingsSave::restoreSystem(void)
 {
     return restore(&spark);
 }
 
 //----------------------------------------------------------------------------------
 // restore a specific object
-bool spSettingsSave::restore(flxObject &theObject)
+bool flxSettingsSave::restore(flxObject &theObject)
 {
     return restore(&theObject);
 }
 
 //----------------------------------------------------------------------------------
 // pointer version
-bool spSettingsSave::restore(flxObject *pObject)
+bool flxSettingsSave::restore(flxObject *pObject)
 {
 
     if (!_primaryStorage)
@@ -162,7 +162,7 @@ bool spSettingsSave::restore(flxObject *pObject)
 
 //----------------------------------------------------------------------------------
 
-void spSettingsSave::reset(void)
+void flxSettingsSave::reset(void)
 {
     if (_primaryStorage)
         _primaryStorage->resetStorage();
@@ -175,7 +175,7 @@ void spSettingsSave::reset(void)
 //----------------------------------------------------------------------------------
 // Callbacks for input parameters
 //----------------------------------------------------------------------------------
-void spSettingsSave::restore_fallback(void)
+void flxSettingsSave::restore_fallback(void)
 {
     if (!_fallbackStorage)
         return;
@@ -184,7 +184,7 @@ void spSettingsSave::restore_fallback(void)
         flxLog_E(F("Unable to restore settings from %s"), _fallbackStorage->name());
 }
 //----------------------------------------------------------------------------------
-void spSettingsSave::save_fallback(void)
+void flxSettingsSave::save_fallback(void)
 {
     if (!_fallbackStorage)
         return;
@@ -195,11 +195,11 @@ void spSettingsSave::save_fallback(void)
 //------------------------------------------------------------------------------
 // Events
 // Slots for signals - Enables saving and restoring settings base on events
-void spSettingsSave::listenForSave(flxSignalVoid &theEvent)
+void flxSettingsSave::listenForSave(flxSignalVoid &theEvent)
 {
-    theEvent.call(this, &spSettingsSave::saveEvent_CB);
+    theEvent.call(this, &flxSettingsSave::saveEvent_CB);
 };
-void spSettingsSave::listenForRestore(flxSignalVoid &theEvent)
+void flxSettingsSave::listenForRestore(flxSignalVoid &theEvent)
 {
-    theEvent.call(this, &spSettingsSave::restoreEvent_CB);
+    theEvent.call(this, &flxSettingsSave::restoreEvent_CB);
 };

@@ -1,13 +1,13 @@
 
 
-#include "spFileRotate.h"
-#include "spUtils.h"
+#include "flxFileRotate.h"
+#include "flxUtils.h"
 #include "flxClock.h"
 
 // number of writes between flushes
 #define kFlushIncrement 2
 
-bool spFileRotate::getNextFilename(std::string &strFile)
+bool flxFileRotate::getNextFilename(std::string &strFile)
 {
     // FS Set?
     if (!_theFS)
@@ -33,13 +33,13 @@ bool spFileRotate::getNextFilename(std::string &strFile)
 //------------------------------------------------------------------------------------------------
 // Open the next log file.
 
-bool spFileRotate::openNextLogFile(bool bSendEvent)
+bool flxFileRotate::openNextLogFile(bool bSendEvent)
 {
 
     if (_currentFile)
     {
         _currentFile.close();
-        _currentFile = spFSFile(); // "null file"
+        _currentFile = flxFSFile(); // "null file"
         _currentFilename="";
     }
     // Open the next file
@@ -49,7 +49,7 @@ bool spFileRotate::openNextLogFile(bool bSendEvent)
 
     _currentFilename = nextFile;
 
-    _currentFile = _theFS->open(_currentFilename.c_str(), spIFileSystem::kFileWrite, true);
+    _currentFile = _theFS->open(_currentFilename.c_str(), flxIFileSystem::kFileWrite, true);
 
     if (!_currentFile)
     {
@@ -68,19 +68,19 @@ bool spFileRotate::openNextLogFile(bool bSendEvent)
 }
 
 //------------------------------------------------------------------------------------------------
-void spFileRotate::write(int value)
+void flxFileRotate::write(int value)
 {
-    write(sp_utils::to_string(value).c_str(), true);
+    write(flx_utils::to_string(value).c_str(), true);
 }
 
 //------------------------------------------------------------------------------------------------
-void spFileRotate::write(float value)
+void flxFileRotate::write(float value)
 {
-    write(sp_utils::to_string(value).c_str(), true);
+    write(flx_utils::to_string(value).c_str(), true);
 }
 
 //------------------------------------------------------------------------------------------------
-void spFileRotate::write(const char *value, bool newline)
+void flxFileRotate::write(const char *value, bool newline)
 {
 
     if (!_theFS)

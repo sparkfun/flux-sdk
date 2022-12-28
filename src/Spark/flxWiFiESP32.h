@@ -5,12 +5,12 @@
 #ifdef ESP32
 
 #include "spSpark.h"
-#include "spNetwork.h"
-#include "spWiFi.h"
+#include "flxNetwork.h"
+#include "flxWiFi.h"
 
 // WiFi client for EsP32 boards
 
-class spWiFiESP32 : public flxActionType<spWiFiESP32>, public spNetwork, public spIWiFiDevice
+class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, public flxIWiFiDevice
 {
 private:
 
@@ -19,7 +19,7 @@ private:
 
 
 public:
-    spWiFiESP32() : _wasConnected{false}, _isEnabled{true}
+    flxWiFiESP32() : _wasConnected{false}, _isEnabled{true}
     {
 
         spRegister(SSID, "Network Name", "The SSID of the WiFi network");
@@ -33,9 +33,9 @@ public:
     };
 
     // Properties 
-    flxPropertyString<spWiFiESP32>      	SSID;
-    flxPropertySecureString<spWiFiESP32>		password;
-    flxPropertyRWBool<spWiFiESP32, &spWiFiESP32::get_isEnabled, &spWiFiESP32::set_isEnabled> enabled;
+    flxPropertyString<flxWiFiESP32>      	SSID;
+    flxPropertySecureString<flxWiFiESP32>		password;
+    flxPropertyRWBool<flxWiFiESP32, &flxWiFiESP32::get_isEnabled, &flxWiFiESP32::set_isEnabled> enabled;
 
     bool loop(void);
 

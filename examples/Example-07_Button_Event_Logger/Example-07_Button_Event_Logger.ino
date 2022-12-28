@@ -6,8 +6,8 @@
 // Spark framework 
 #include <Spark.h>
 #include <Spark/flxLogger.h>
-#include <Spark/spFmtCSV.h>
-#include <Spark/spSerial.h>
+#include <Spark/flxFmtCSV.h>
+#include <Spark/flxSerial.h>
 
 #include <Spark/spDevButton.h> // For get testing
 #include <Spark/spDevTwist.h> // For get testing
@@ -28,7 +28,7 @@
 
 // Create a CSV output formatters. 
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
-spFormatCSV fmtCSV;
+flxFormatCSV fmtCSV;
 
 flxLogger  logger;
 
@@ -52,7 +52,7 @@ void setup() {
 
     // We want to output CSV to the serial console.
     //  - Add Serial to our formatters
-    fmtCSV.add(spSerial());    
+    fmtCSV.add(flxSerial());    
 
     //  - Add the CSV format to the logger
     logger.add(fmtCSV);    

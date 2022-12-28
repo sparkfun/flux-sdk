@@ -15,7 +15,7 @@
 #include <initializer_list>
 #include <vector>
 
-#include "spOutput.h"
+#include "flxOutput.h"
 #include "spSpark.h"
 
 // Define the QwiicLog class
@@ -46,12 +46,12 @@ class flxLogger : public flxActionType<flxLogger>
     // method calls va_add() to recurse on the arg list.
     //
     // This pattern is used on constructors and add() methods
-    template <typename... Args> flxLogger(spOutputFormat *a1, Args &&...args) : flxLogger()
+    template <typename... Args> flxLogger(flxOutputFormat *a1, Args &&...args) : flxLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> flxLogger(spOutputFormat &a1, Args &&...args) : flxLogger()
+    template <typename... Args> flxLogger(flxOutputFormat &a1, Args &&...args) : flxLogger()
     {
         va_add(a1, args...);
     }
@@ -150,12 +150,12 @@ class flxLogger : public flxActionType<flxLogger>
     // Could template first arg, but wanted some upfront type checking.
     //
     // Note Args&& for pass args by ref. Otherwise, copy constructor is used.
-    template <typename... Args> void add(spOutputFormat *a1, Args &&...args)
+    template <typename... Args> void add(flxOutputFormat *a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spOutputFormat &a1, Args &&...args)
+    template <typename... Args> void add(flxOutputFormat &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
@@ -238,7 +238,7 @@ class flxLogger : public flxActionType<flxLogger>
 
   private:
     // Output devices
-    std::vector<spOutputFormat *> _Formatters;
+    std::vector<flxOutputFormat *> _Formatters;
 
     // The things we're logging
     flxOperationContainer _objsToLog;
@@ -328,11 +328,11 @@ class flxLogger : public flxActionType<flxLogger>
 
     //----------------------------------------------------------------------------
     // Internal Adds for final object placement add output writers to the logger.
-    void _add(spOutputFormat &writer)
+    void _add(flxOutputFormat &writer)
     {
         _Formatters.push_back(&writer);
     }
-    void _add(spOutputFormat *writer)
+    void _add(flxOutputFormat *writer)
     {
         if (writer != nullptr)
             _Formatters.push_back(writer);

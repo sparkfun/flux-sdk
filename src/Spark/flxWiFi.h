@@ -11,7 +11,7 @@
 // Define interfaces for WifiDevice and WiFiCredentialSource
 
 // WiFi Device - control interface
-class spIWiFiDevice
+class flxIWiFiDevice
 {
   public:
     virtual bool connect(void) = 0;
@@ -21,7 +21,7 @@ class spIWiFiDevice
     virtual void setPassword(std::string &) = 0;
 };
 
-class spIWiFiCredentialSource
+class flxIWiFiCredentialSource
 {
   public:
     virtual std::string getSSID() = 0;
@@ -29,17 +29,17 @@ class spIWiFiCredentialSource
     virtual flxSignalVoid &getUpdateEvent(void) = 0;
 };
 
-class spSetWifiCredentials : public flxActionType<spSetWifiCredentials>
+class flxSetWifiCredentials : public flxActionType<flxSetWifiCredentials>
 {
 public:
-    spSetWifiCredentials() : _source{nullptr}, _targetDevice{nullptr}
+    flxSetWifiCredentials() : _source{nullptr}, _targetDevice{nullptr}
     {
         spRegister(enabled, "Enabled", "Enable updating WiFi credentials from an external device.");
 
         spark.add(this);
     };
 
-    void setWiFiDevice(spIWiFiDevice *theDevice)
+    void setWiFiDevice(flxIWiFiDevice *theDevice)
     {
         if (theDevice)
             _targetDevice = theDevice;
@@ -65,7 +65,7 @@ public:
                 flxLog_E(F("Unable to connect to %s"), ssid.c_str());
         }
     }
-    void setCredentialSource(spIWiFiCredentialSource *theSource)
+    void setCredentialSource(flxIWiFiCredentialSource *theSource)
     {
         if (!theSource)
             return;
@@ -75,12 +75,12 @@ public:
         flxSignalVoid &theEvent = theSource->getUpdateEvent();
 
         // Register with the event.
-        theEvent.call(this, &spSetWifiCredentials::onNewCredentials);
+        theEvent.call(this, &flxSetWifiCredentials::onNewCredentials);
     }
 
-    flxPropertyBool<spSetWifiCredentials> enabled = {true};
+    flxPropertyBool<flxSetWifiCredentials> enabled = {true};
 
   private:
-    spIWiFiCredentialSource *_source;
-    spIWiFiDevice *_targetDevice;
+    flxIWiFiCredentialSource *_source;
+    flxIWiFiDevice *_targetDevice;
 };

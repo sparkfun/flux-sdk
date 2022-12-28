@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "flxCoreLog.h"
-#include "spUtils.h"
+#include "flxUtils.h"
 
 #include "Arduino.h"
 //----------------------------------------------------------------------------------------
@@ -237,25 +237,25 @@ class flxDataVariable
         switch (type)
         {
         case flxTypeBool:
-            return sp_utils::to_string(value.b);
+            return flx_utils::to_string(value.b);
         case flxTypeInt8:
-            return sp_utils::to_string(value.i8);
+            return flx_utils::to_string(value.i8);
         case flxTypeInt16:
-            return sp_utils::to_string(value.i16);
+            return flx_utils::to_string(value.i16);
         case flxTypeInt:
-            return sp_utils::to_string(value.i32);
+            return flx_utils::to_string(value.i32);
         case flxTypeUInt8:
-            return sp_utils::to_string(value.ui8);
+            return flx_utils::to_string(value.ui8);
         case flxTypeUInt16:
-            return sp_utils::to_string(value.ui16);
+            return flx_utils::to_string(value.ui16);
         case flxTypeUInt:
-            return sp_utils::to_string(value.ui32);
+            return flx_utils::to_string(value.ui32);
         case flxTypeFloat:
-            return sp_utils::to_string(value.f);
+            return flx_utils::to_string(value.f);
         case flxTypeDouble:
-            return sp_utils::to_string(value.d);
+            return flx_utils::to_string(value.d);
         case flxTypeString:
-            return sp_utils::to_string(value.str);
+            return flx_utils::to_string(value.str);
         default:
             break;
         }
@@ -744,7 +744,7 @@ template <typename T> class _flxDataOut : public flxDataOut
     std::string getString()
     {
         T c = get();
-        return sp_utils::to_string(c);
+        return flx_utils::to_string(c);
     }
 
     typedef T value_type; // might be handy in future
@@ -893,11 +893,11 @@ template <typename T> class flxDataLimitRange : public flxDataLimitType<T>
         flxDataLimit::clearLimits();
         // build our limit descriptors
         flxDataLimitDesc limit;
-        limit.name = sp_utils::to_string(_min);
+        limit.name = flx_utils::to_string(_min);
         limit.data.set(_min);
         flxDataLimit::addLimit(limit);
 
-        limit.name = sp_utils::to_string(_max);
+        limit.name = flx_utils::to_string(_max);
         limit.data.set(_max);
         flxDataLimit::addLimit(limit);
     };
@@ -1244,39 +1244,39 @@ class _flxDataInString : public flxDataIn
 
     void setBool(bool value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setInt8(int8_t value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setInt16(int16_t value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setInt(int value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setUint8(uint8_t value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setUint16(uint16_t value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setUint(uint value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setFloat(float value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setDouble(double value)
     {
-        set(sp_utils::to_string(value));
+        set(flx_utils::to_string(value));
     }
     void setString(std::string &value)
     {
@@ -1297,7 +1297,7 @@ template <typename T> flxTypeID flxGetClassTypeID()
     // each class b/c it uses the template parameter.
 
     // Hash the name, make that our type ID.
-    return sp_utils::id_hash_string(__PRETTY_FUNCTION__);
+    return flx_utils::id_hash_string(__PRETTY_FUNCTION__);
 };
 
 // End - flxCoreTypes.h

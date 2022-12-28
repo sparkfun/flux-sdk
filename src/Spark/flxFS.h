@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------
 // A file interface
 
-class spIFile
+class flxIFile
 {
   public:
     virtual size_t write(const uint8_t *buf, size_t size) = 0;
@@ -28,13 +28,13 @@ class spIFile
 
 //-----------------------------------------------------------------------
 // Framework file class that is used to provide a standard output
-// from our open() call in IFileSystem. This uses the above spIFile
+// from our open() call in IFileSystem. This uses the above flxIFile
 // interface as a "driver"
-class spFSFile
+class flxFSFile
 {
 
   public:
-    spFSFile() : _file{nullptr} {};
+    flxFSFile() : _file{nullptr} {};
 
     size_t write(const uint8_t *buf, size_t size)
     {
@@ -56,7 +56,7 @@ class spFSFile
     }
 
     // NOTE: Using smart pointers to managing the file interface.
-    void setIFile(std::shared_ptr<spIFile> theFile)
+    void setIFile(std::shared_ptr<flxIFile> theFile)
     {
         _file = theFile;
     }
@@ -85,13 +85,13 @@ class spFSFile
     
   private:
     // note use of smart pointer for the file
-    std::shared_ptr<spIFile> _file;
+    std::shared_ptr<flxIFile> _file;
 };
 
 //-----------------------------------------------------------------------
 // Interface that defines the interaction with a filesystem.
 
-class spIFileSystem : public flxDescriptor
+class flxIFileSystem : public flxDescriptor
 {
   public:
     // open file types
@@ -100,10 +100,10 @@ class spIFileSystem : public flxDescriptor
         kFileWrite = 1,
         kFileRead,
         kFileAppend
-    } spFileOpenMode_t;
+    } flxFileOpenMode_t;
 
     // open
-    virtual spFSFile open(const char *name, spFileOpenMode_t mode, bool create = false) = 0;
+    virtual flxFSFile open(const char *name, flxFileOpenMode_t mode, bool create = false) = 0;
 
     virtual bool exists(const char *name) = 0;
 

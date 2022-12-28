@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "spMQTTESP32.h"
+#include "flxMQTTESP32.h"
 
-#include "spFmtJSON.h"
+#include "flxFmtJSON.h"
 #include "spSpark.h"
-#include "spUtils.h"
+#include "flxUtils.h"
 
 #include <map>
 #include <sstream>
@@ -15,7 +15,7 @@
 
 // simple class to support ThingSpeak output
 
-class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWriterJSON
+class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public flxIWriterJSON
 {
   private:
     //---------------------------------------------------------
@@ -55,12 +55,12 @@ class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWrite
                 flxLog_W(F("%s:Invalid Device=Channel ID : %s"), name(), keyvalue.c_str());
                 continue;
             }
-            _deviceToChannel[sp_utils::strtrim(keyvalue.substr(0, sz))] = sp_utils::strtrim(keyvalue.substr(sz + 1));
+            _deviceToChannel[flx_utils::strtrim(keyvalue.substr(0, sz))] = flx_utils::strtrim(keyvalue.substr(sz + 1));
         }
     }
 
   public:
-    spThingSpeak()
+    flxIoTThingSpeak()
     {
         setName("ThingSpeak MQTT", "Connection to ThingSpeak");
 
@@ -92,15 +92,15 @@ class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWrite
             {
                 // we need to convert the JSON value to string for transport
                 if (kv.value().is<float>())
-                    value = sp_utils::to_string(kv.value().as<float>());
+                    value = flx_utils::to_string(kv.value().as<float>());
                 else if (kv.value().is<const char *>())
                     value = kv.value().as<const char *>();
                 else if (kv.value().is<signed int>())
-                    value = sp_utils::to_string(kv.value().as<signed int>());
+                    value = flx_utils::to_string(kv.value().as<signed int>());
                 else if (kv.value().is<unsigned int>())
-                    value = sp_utils::to_string(kv.value().as<unsigned int>());
+                    value = flx_utils::to_string(kv.value().as<unsigned int>());
                 else if (kv.value().is<unsigned int>())
-                    value = sp_utils::to_string(kv.value().as<unsigned int>());
+                    value = flx_utils::to_string(kv.value().as<unsigned int>());
                 else
                 {
                     flxLog_W(F("%s: Unknown data field type"), name());
@@ -119,7 +119,7 @@ class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWrite
             // Topic is based on the channel...
 
             // send this payload to thingspeak
-            spMQTTESP32SecureCore::write(buffer.c_str(), false);
+            flxMQTTESP32SecureCore::write(buffer.c_str(), false);
         }
     }
 
@@ -127,11 +127,11 @@ class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWrite
     bool initialize(void)
     {
 
-        return spMQTTESP32SecureCore::initialize();
+        return flxMQTTESP32SecureCore::initialize();
     }
 
     // Device=Channel ID property
-    flxPropertyRWString<spThingSpeak, &spThingSpeak::get_channelList, &spThingSpeak::set_channelList> deviceList;
+    flxPropertyRWString<flxIoTThingSpeak, &flxIoTThingSpeak::get_channelList, &flxIoTThingSpeak::set_channelList> deviceList;
 
   private:
     std::map<std::string, std::string> _deviceToChannel;

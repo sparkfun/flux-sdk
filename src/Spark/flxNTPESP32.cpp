@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 
-#include "spNTPESP32.h"
+#include "flxNTPESP32.h"
 
 #include "time.h"
 #include "lwip/apps/sntp.h"
@@ -12,7 +12,7 @@
 #define kNTPServerAddress "pool.ntp.org"
 //----------------------------------------------------------------
 // Enabled Property setter/getters
-void spNTPESP32::set_isEnabled(bool bEnabled)
+void flxNTPESP32::set_isEnabled(bool bEnabled)
 {
     // Any changes?
     if (_isEnabled == bEnabled)
@@ -30,14 +30,14 @@ void spNTPESP32::set_isEnabled(bool bEnabled)
 }
 
 //----------------------------------------------------------------
-bool spNTPESP32::get_isEnabled(void)
+bool flxNTPESP32::get_isEnabled(void)
 {
     return _isEnabled;
 }
 
 // Event callback 
 //----------------------------------------------------------------------------
-void spNTPESP32::onConnectionChange(bool bConnected)
+void flxNTPESP32::onConnectionChange(bool bConnected)
 {
     // Are we enabled ...
     if (!_isEnabled)
@@ -49,7 +49,7 @@ void spNTPESP32::onConnectionChange(bool bConnected)
         stop();
 }
 
-bool spNTPESP32::start(void)
+bool flxNTPESP32::start(void)
 {
     // already running?
     if(sntp_enabled())
@@ -107,7 +107,7 @@ bool spNTPESP32::start(void)
     return enabled;
 }
 
-void spNTPESP32::stop(void)
+void flxNTPESP32::stop(void)
 {
     // If the sntp system is up, shut it down
     if(sntp_enabled())
