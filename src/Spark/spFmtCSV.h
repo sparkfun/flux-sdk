@@ -26,7 +26,7 @@ class spFormatCSV : public spOutputFormat
     {
         if ((_writeHeader & kHeaderWrite) == kHeaderWrite)
             if (!append_to_header(tag))
-                spLog_W("CSV - internal header buffer size exceeded.");
+                flxLog_W("CSV - internal header buffer size exceeded.");
     }
 
   public:
@@ -45,7 +45,7 @@ class spFormatCSV : public spOutputFormat
 
         std::string stmp = sp_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -56,7 +56,7 @@ class spFormatCSV : public spOutputFormat
 
         std::string stmp = sp_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -67,7 +67,7 @@ class spFormatCSV : public spOutputFormat
 
         std::string stmp = sp_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -78,7 +78,7 @@ class spFormatCSV : public spOutputFormat
 
         std::string stmp = sp_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -89,7 +89,7 @@ class spFormatCSV : public spOutputFormat
 
         std::string stmp = sp_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -100,7 +100,7 @@ class spFormatCSV : public spOutputFormat
 
         std::string stmp = sp_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -111,7 +111,7 @@ class spFormatCSV : public spOutputFormat
 
         std::string stmp = sp_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------
@@ -129,7 +129,7 @@ class spFormatCSV : public spOutputFormat
         (void)sp_utils::dtostr(value, szBuffer, sizeof(szBuffer), precision);
 
         if (!append_csv_value(szBuffer, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, const std::string &value)
@@ -138,7 +138,7 @@ class spFormatCSV : public spOutputFormat
         writeHeaderEntry(tag);
 
         if (!append_csv_value(value, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, const char *value)
@@ -147,7 +147,7 @@ class spFormatCSV : public spOutputFormat
         writeHeaderEntry(tag);
 
         if (!append_csv_value(std::string(value), _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     void logValue(const std::string &tag, flxDataArrayBool *value)
@@ -288,7 +288,7 @@ class spFormatCSV : public spOutputFormat
     // Used to register the event we want to listen to, which will trigger this
     // the output of the CSV header next cycle.
 
-    void listenNewFile(spSignalVoid &theEvent)
+    void listenNewFile(flxSignalVoid &theEvent)
     {
         theEvent.call(this, &spFormatCSV::output_header);
     }
@@ -406,7 +406,7 @@ class spFormatCSV : public spOutputFormat
             writeOutArrayDimension(sData, pData, theArray, 0, precision);
 
         if (!append_csv_value(sData, _data_buffer))
-            spLog_E("CSV - internal data buffer size exceeded.");
+            flxLog_E("CSV - internal data buffer size exceeded.");
     }
 
     //-----------------------------------------------------------------

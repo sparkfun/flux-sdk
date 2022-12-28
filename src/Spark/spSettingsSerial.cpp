@@ -49,7 +49,7 @@
 //-----------------------------------------------------------------------------
 // drawPage()  - Generic Object edition.
 
-bool spSettingsSerial::drawPage(spObject *pCurrent)
+bool spSettingsSerial::drawPage(flxObject *pCurrent)
 {
     if (!pCurrent)
         return false;
@@ -68,7 +68,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
         else if (nMenuItems < 0)
         {
             Serial.println("Error generating menu entries.");
-            spLog_E("Error generating menu entries");
+            flxLog_E("Error generating menu entries");
             return false;
         }
 
@@ -100,7 +100,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent)
 //-----------------------------------------------------------------------------
 // drawPage() - Property Editing edition
 
-bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
+bool spSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
 {
     if (!pCurrent || !pProp)
         return false;
@@ -114,7 +114,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     {
         // limits sets are handled in another routine
         if ( propLimit->type() == flxDataLimitTypeSet)
-            return drawPage<spProperty>(pCurrent, pProp, propLimit, true);
+            return drawPage<flxProperty>(pCurrent, pProp, propLimit, true);
 
         if ( propLimit->type() == flxDataLimitTypeRange)
         {
@@ -129,7 +129,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
     spSerialField theDataEditor;
 
     // let's edit the property value
-	spEditResult_t result;
+	flxEditResult_t result;
     
     // Header
     drawPageHeader(pCurrent, pProp->name());
@@ -153,7 +153,7 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
 
     	Serial.printf("\n\r\n\r");
 
-    	if (result == spEditOutOfRange)
+    	if (result == flxEditOutOfRange)
     	{
         	Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", limitRange);
         	theDataEditor.beep();
@@ -163,20 +163,20 @@ bool spSettingsSerial::drawPage(spObject *pCurrent, spProperty *pProp)
        		break;
     }
        		 	
-    if (result == spEditSuccess)
+    if (result == flxEditSuccess)
         Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());
     else
         Serial.printf("\t[%s is unchanged]\n\r", pProp->name());
 
     delay(kMessageDelayTimeout); // good UX here I think
 
-    return result == spEditSuccess;
+    return result == flxEditSuccess;
 }
 
 //-----------------------------------------------------------------------------
 // drawPage()  - Operation/Action edition
 
-bool spSettingsSerial::drawPage(spOperation *pCurrent)
+bool spSettingsSerial::drawPage(flxOperation *pCurrent)
 {
     if (!pCurrent)
         return false;
@@ -197,7 +197,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
         else if (nMenuItems < 0)
         {
             Serial.println("Error generating menu entries.");
-            spLog_E("Error generating menu entries");
+            flxLog_E("Error generating menu entries");
             return false;
         }
         drawPageFooter(pCurrent);
@@ -228,7 +228,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent)
 //-----------------------------------------------------------------------------
 // drawPage() Parameter edition -- just enable/disable it
 
-bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
+bool spSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
 {
     if (!pCurrent || !pParam)
         return false;
@@ -279,7 +279,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameter *pParam)
 //
 // Get inputs from the user and call the parameter with the provided data.
 
-bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
+bool spSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
 {
     if (!pCurrent || !pParam)
         return false;
@@ -298,7 +298,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     {
         // limits sets are handled in another routine
         if ( propLimit->type() == flxDataLimitTypeSet)
-            return drawPage<spParameterIn>(pCurrent, pParam, propLimit );
+            return drawPage<flxParameterIn>(pCurrent, pParam, propLimit );
             
         if ( propLimit->type() == flxDataLimitTypeRange)
         {
@@ -311,7 +311,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
     // The data editor we're using - serial field
     spSerialField theDataEditor;
    
-    spEditResult_t result;
+    flxEditResult_t result;
 
     // Header
     drawPageHeader(pCurrent, pParam->name());
@@ -336,7 +336,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 
         Serial.printf("\n\r\n\r");
 
-        if (result == spEditOutOfRange)
+        if (result == flxEditOutOfRange)
         {
             Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", limitRange);
             theDataEditor.beep();
@@ -346,14 +346,14 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
             break;
     }
 
-    if (result == spEditSuccess)
+    if (result == flxEditSuccess)
         Serial.printf("\t[`%s` was called with the provided value.]\n\r", pParam->name());
     else
         Serial.printf("\t[`%s` was not called]\n\r", pParam->name());
 
     delay(kMessageDelayTimeout); // good UX here I think
 
-    return result == spEditSuccess;
+    return result == flxEditSuccess;
 }
 
 
@@ -363,7 +363,7 @@ bool spSettingsSerial::drawPage(spOperation *pCurrent, spParameterIn *pParam)
 // The user has selected an input parameter of type Void
 //
 
-bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn *pParam)
+bool spSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameterIn *pParam)
 {
     if (!pCurrent || !pParam || pParam->type() != flxTypeNone)
         return false;
@@ -385,7 +385,7 @@ bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn 
     Serial.printf("\n\r\n\r");
     if (selected == 'y')
     {
-        reinterpret_cast<spParameterInVoidType *>(pParam)->set();
+        reinterpret_cast<flxParameterInVoidType *>(pParam)->set();
         Serial.printf("\t[`%s` was called]\n\r", pParam->name());
     }
     else
@@ -397,31 +397,31 @@ bool spSettingsSerial::drawPageParamInVoid(spOperation *pCurrent, spParameterIn 
 }
 
 // Container typed wrappers that use the container template for all the work
-bool spSettingsSerial::drawPage(spObjectContainer *pCurrent)
+bool spSettingsSerial::drawPage(flxObjectContainer *pCurrent)
 {
-    return drawPage<spObject *>(pCurrent);
+    return drawPage<flxObject *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-bool spSettingsSerial::drawPage(spOperationContainer *pCurrent)
+bool spSettingsSerial::drawPage(flxOperationContainer *pCurrent)
 {
-    return drawPage<spOperation *>(pCurrent);
+    return drawPage<flxOperation *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-bool spSettingsSerial::drawPage(spDeviceContainer *pCurrent)
+bool spSettingsSerial::drawPage(flxDeviceContainer *pCurrent)
 {
-    return drawPage<spDevice *>(pCurrent);
+    return drawPage<flxDevice *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
-bool spSettingsSerial::drawPage(spActionContainer *pCurrent)
+bool spSettingsSerial::drawPage(flxActionContainer *pCurrent)
 {
-    return drawPage<spAction *>(pCurrent);
+    return drawPage<flxAction *>(pCurrent);
 }
 //-----------------------------------------------------------------------------
 // drawPaeHeader()
 //
 // Generic header for all settings pages.
 //
-void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
+void spSettingsSerial::drawPageHeader(flxObject *pCurrent, const char *szItem)
 {
 
     char szBuffer[kOutputBufferSize] = {0};
@@ -456,7 +456,7 @@ void spSettingsSerial::drawPageHeader(spObject *pCurrent, const char *szItem)
 //
 // Generic footer for most pages -- mostly writes out the exit/back menu entry
 //
-void spSettingsSerial::drawPageFooter(spObject *pCurrent)
+void spSettingsSerial::drawPageFooter(flxObject *pCurrent)
 {
     Serial.println();
 
@@ -495,7 +495,7 @@ void spSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
 }
 
 //-----------------------------------------------------------------------------
-// drawMenu()  - spObject version
+// drawMenu()  - flxObject version
 //
 // Draws the menu portion specific to the object.
 //   - The object name and description - pre-amble
@@ -506,13 +506,13 @@ void spSettingsSerial::drawMenuEntry(uint item, const char *szTitle)
 //
 //      N = The current menu entry -- (the last entry number used)
 
-int spSettingsSerial::drawMenu(spObject *pCurrent, uint level)
+int spSettingsSerial::drawMenu(flxObject *pCurrent, uint level)
 {
 
     if (!pCurrent)
         return -1;
 
-    // Draw the menu for the spObject - loop over the properties for the object
+    // Draw the menu for the flxObject - loop over the properties for the object
     // and draw menu entries.
 
     if (pCurrent->nProperties() == 0)
@@ -532,14 +532,14 @@ int spSettingsSerial::drawMenu(spObject *pCurrent, uint level)
 }
 
 //-----------------------------------------------------------------------------
-// selectMenu()  - spObject version
+// selectMenu()  - flxObject version
 //
 // Selects the menu portion specific to the object.
 //
 // Return Values
 //     -1 = Error
 
-int spSettingsSerial::selectMenu(spObject *pCurrent, uint level)
+int spSettingsSerial::selectMenu(flxObject *pCurrent, uint level)
 {
 
     if (!pCurrent)
@@ -551,7 +551,7 @@ int spSettingsSerial::selectMenu(spObject *pCurrent, uint level)
 
     // Get the property targeted and start a new page on it.
 
-    spProperty *theProp = pCurrent->getProperties().at(level - 1);
+    flxProperty *theProp = pCurrent->getProperties().at(level - 1);
 
     // Call a new page
     drawPage(pCurrent, theProp);
@@ -579,22 +579,22 @@ int spSettingsSerial::drawMenu(std::vector<std::string> &entries, uint level)
 }
 
 //-----------------------------------------------------------------------------
-// selectMenu()  - spOperation version
+// selectMenu()  - flxOperation version
 //
 // Selects the menu portion specific to the object.
 //
 // Return Values
 //     -1 = Error
 
-int spSettingsSerial::selectMenu(spOperation *pCurrent, uint level)
+int spSettingsSerial::selectMenu(flxOperation *pCurrent, uint level)
 {
 
     if (!pCurrent)
         return -1;
 
-    // First, cascade to the spObject portion of the menu
+    // First, cascade to the flxObject portion of the menu
 
-    int returnLevel = selectMenu((spObject *)pCurrent, level);
+    int returnLevel = selectMenu((flxObject *)pCurrent, level);
 
     if (returnLevel < 0)
         return returnLevel; // error happened
@@ -631,7 +631,7 @@ int spSettingsSerial::selectMenu(spOperation *pCurrent, uint level)
     return returnLevel;
 }
 //-----------------------------------------------------------------------------
-// drawMenu()  - spOperation version
+// drawMenu()  - flxOperation version
 //
 // Draws the menu portion specific to the object.
 //   - The object name and description - pre-amble
@@ -642,15 +642,15 @@ int spSettingsSerial::selectMenu(spOperation *pCurrent, uint level)
 //
 //      N = The current menu entry -- (the last entry number used)
 
-int spSettingsSerial::drawMenu(spOperation *pCurrent, uint level)
+int spSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
 {
 
     if (!pCurrent)
         return -1;
 
-    // First, cascade to the spObject portion of the menu
+    // First, cascade to the flxObject portion of the menu
 
-    int returnLevel = drawMenu((spObject *)pCurrent, level);
+    int returnLevel = drawMenu((flxObject *)pCurrent, level);
 
     if (returnLevel < 0)
         return returnLevel; // error happened
@@ -689,55 +689,55 @@ int spSettingsSerial::drawMenu(spOperation *pCurrent, uint level)
 
 //-----------------------------------------------------------------------------
 // Container typed wrappers that use the container template for all the work
-int spSettingsSerial::drawMenu(spObjectContainer *pCurrent, uint level)
+int spSettingsSerial::drawMenu(flxObjectContainer *pCurrent, uint level)
 {
 
-    return drawMenu<spObject *>(pCurrent, level);
+    return drawMenu<flxObject *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::drawMenu(spOperationContainer *pCurrent, uint level)
+int spSettingsSerial::drawMenu(flxOperationContainer *pCurrent, uint level)
 {
 
-    return drawMenu<spOperation *>(pCurrent, level);
+    return drawMenu<flxOperation *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::drawMenu(spDeviceContainer *pCurrent, uint level)
+int spSettingsSerial::drawMenu(flxDeviceContainer *pCurrent, uint level)
 {
 
-    return drawMenu<spDevice *>(pCurrent, level);
+    return drawMenu<flxDevice *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::drawMenu(spActionContainer *pCurrent, uint level)
+int spSettingsSerial::drawMenu(flxActionContainer *pCurrent, uint level)
 {
 
-    return drawMenu<spAction *>(pCurrent, level);
+    return drawMenu<flxAction *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 // Select Menus
 //-----------------------------------------------------------------------------
 // Container typed wrappers that use the container template for all the work
-int spSettingsSerial::selectMenu(spObjectContainer *pCurrent, uint level)
+int spSettingsSerial::selectMenu(flxObjectContainer *pCurrent, uint level)
 {
 
-    return selectMenu<spObject *>(pCurrent, level);
+    return selectMenu<flxObject *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::selectMenu(spOperationContainer *pCurrent, uint level)
+int spSettingsSerial::selectMenu(flxOperationContainer *pCurrent, uint level)
 {
 
-    return selectMenu<spOperation *>(pCurrent, level);
+    return selectMenu<flxOperation *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::selectMenu(spDeviceContainer *pCurrent, uint level)
+int spSettingsSerial::selectMenu(flxDeviceContainer *pCurrent, uint level)
 {
 
-    return selectMenu<spDevice *>(pCurrent, level);
+    return selectMenu<flxDevice *>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
-int spSettingsSerial::selectMenu(spActionContainer *pCurrent, uint level)
+int spSettingsSerial::selectMenu(flxActionContainer *pCurrent, uint level)
 {
 
-    return selectMenu<spAction *>(pCurrent, level);
+    return selectMenu<flxAction *>(pCurrent, level);
 }
 
 //-----------------------------------------------------------------------------

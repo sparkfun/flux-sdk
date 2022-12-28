@@ -44,7 +44,7 @@ float spDevMS8607::read_humidity()
 
 // Static method used to determine if this device is connected
 
-bool spDevMS8607::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevMS8607::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -137,7 +137,7 @@ bool spDevMS8607::onInitialize(TwoWire &wirePort)
     bool result = MS8607::begin(wirePort);
 
     if (!result)
-        spLog_E("MS8607 - begin failed");
+        flxLog_E("MS8607 - begin failed");
 
     return result;
 }

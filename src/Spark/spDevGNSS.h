@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_u-blox_GNSS_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kGNSSDeviceName "GNSS"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevGNSS : public spDeviceI2CType<spDevGNSS>, public SFE_UBLOX_GNSS
+class spDevGNSS : public flxDeviceI2CType<spDevGNSS>, public SFE_UBLOX_GNSS
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kGNSSDeviceName;
@@ -83,36 +83,36 @@ private:
 
 public:
     // Define our read-write properties
-    spPropertyRWUint<spDevGNSS, &spDevGNSS::get_measurement_rate, &spDevGNSS::set_measurement_rate> measurementRate;
+    flxPropertyRWUint<spDevGNSS, &spDevGNSS::get_measurement_rate, &spDevGNSS::set_measurement_rate> measurementRate;
 
     // Define our input parameters - specify the write functions to call.
-    spParameterInVoid<spDevGNSS, &spDevGNSS::factory_default> factoryDefault;    
+    flxParameterInVoid<spDevGNSS, &spDevGNSS::factory_default> factoryDefault;    
 
     // Define our output parameters - specify the read functions to call.
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_year> year;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_month> month;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_day> day;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_hour> hour;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_min> min;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_sec> sec;    
-    spParameterOutDouble<spDevGNSS, &spDevGNSS::read_latitude> latitude;    
-    spParameterOutDouble<spDevGNSS, &spDevGNSS::read_longitude> longitude;    
-    spParameterOutDouble<spDevGNSS, &spDevGNSS::read_altitude> altitude;
-    spParameterOutDouble<spDevGNSS, &spDevGNSS::read_altitude_msl> altitudeMSL;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_siv> SIV;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_fix> fixType;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_carrier_soln> carrierSolution;    
-    spParameterOutFloat<spDevGNSS, &spDevGNSS::read_ground_speed> groundSpeed;    
-    spParameterOutFloat<spDevGNSS, &spDevGNSS::read_heading> heading;    
-    spParameterOutFloat<spDevGNSS, &spDevGNSS::read_pdop> PDOP;    
-    spParameterOutFloat<spDevGNSS, &spDevGNSS::read_horiz_acc> horizontalAccEst;    
-    spParameterOutFloat<spDevGNSS, &spDevGNSS::read_vert_acc> verticalAccEst;    
-    spParameterOutUint<spDevGNSS, &spDevGNSS::read_tow> TOW;    
-    spParameterOutString<spDevGNSS, &spDevGNSS::read_iso8601> iso8601;    
-    spParameterOutString<spDevGNSS, &spDevGNSS::read_yyyy_mm_dd> YYYYMMDD;    
-    spParameterOutString<spDevGNSS, &spDevGNSS::read_yyyy_dd_mm> YYYYDDMM;    
-    spParameterOutString<spDevGNSS, &spDevGNSS::read_dd_mm_yyyy> DDMMYYYY;    
-    spParameterOutString<spDevGNSS, &spDevGNSS::read_hh_mm_ss> HHMMSS;    
-    spParameterOutString<spDevGNSS, &spDevGNSS::read_fix_string> fixTypeStr;    
-    spParameterOutString<spDevGNSS, &spDevGNSS::read_carrier_soln_string> carrierSolutionStr;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_year> year;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_month> month;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_day> day;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_hour> hour;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_min> min;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_sec> sec;    
+    flxParameterOutDouble<spDevGNSS, &spDevGNSS::read_latitude> latitude;    
+    flxParameterOutDouble<spDevGNSS, &spDevGNSS::read_longitude> longitude;    
+    flxParameterOutDouble<spDevGNSS, &spDevGNSS::read_altitude> altitude;
+    flxParameterOutDouble<spDevGNSS, &spDevGNSS::read_altitude_msl> altitudeMSL;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_siv> SIV;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_fix> fixType;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_carrier_soln> carrierSolution;    
+    flxParameterOutFloat<spDevGNSS, &spDevGNSS::read_ground_speed> groundSpeed;    
+    flxParameterOutFloat<spDevGNSS, &spDevGNSS::read_heading> heading;    
+    flxParameterOutFloat<spDevGNSS, &spDevGNSS::read_pdop> PDOP;    
+    flxParameterOutFloat<spDevGNSS, &spDevGNSS::read_horiz_acc> horizontalAccEst;    
+    flxParameterOutFloat<spDevGNSS, &spDevGNSS::read_vert_acc> verticalAccEst;    
+    flxParameterOutUint<spDevGNSS, &spDevGNSS::read_tow> TOW;    
+    flxParameterOutString<spDevGNSS, &spDevGNSS::read_iso8601> iso8601;    
+    flxParameterOutString<spDevGNSS, &spDevGNSS::read_yyyy_mm_dd> YYYYMMDD;    
+    flxParameterOutString<spDevGNSS, &spDevGNSS::read_yyyy_dd_mm> YYYYDDMM;    
+    flxParameterOutString<spDevGNSS, &spDevGNSS::read_dd_mm_yyyy> DDMMYYYY;    
+    flxParameterOutString<spDevGNSS, &spDevGNSS::read_hh_mm_ss> HHMMSS;    
+    flxParameterOutString<spDevGNSS, &spDevGNSS::read_fix_string> fixTypeStr;    
+    flxParameterOutString<spDevGNSS, &spDevGNSS::read_carrier_soln_string> carrierSolutionStr;    
 };

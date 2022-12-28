@@ -4,12 +4,12 @@
  *---------------------------------------------------------------------------------
  */
 
-#include "spLogger.h"
+#include "flxLogger.h"
 #include "spSpark.h"
 #include <string.h>
 #include <time.h>
 
-spLogger::spLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
+flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
 {
     setName("Logger", "Data logging action");
 
@@ -38,7 +38,7 @@ spLogger::spLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{false
 //
 // Outputs the value of a scalar parameter.
 //
-void spLogger::logScalar(spParameterOutScalar *pScalar)
+void flxLogger::logScalar(flxParameterOutScalar *pScalar)
 {
 
     // Key off parameter type, get the correct data value and type, call
@@ -79,7 +79,7 @@ void spLogger::logScalar(spParameterOutScalar *pScalar)
         break;
 
     default:
-        spLog_D("Unknown Parameter Value");
+        flxLog_D("Unknown Parameter Value");
         break;
     }
 }
@@ -88,7 +88,7 @@ void spLogger::logScalar(spParameterOutScalar *pScalar)
 //
 // Manages the logging of array parameters.
 
-void spLogger::logArray(spParameterOutArray *pParam)
+void flxLogger::logArray(flxParameterOutArray *pParam)
 {
     // Key off parameter type and call logArrayType<> with required type
 
@@ -136,13 +136,13 @@ void spLogger::logArray(spParameterOutArray *pParam)
         break;
 
     default:
-        spLog_D("Unknown Array Parameter Value");
+        flxLog_D("Unknown Array Parameter Value");
         break;
     }
 }
 //----------------------------------------------------------------------------
 // Log the data in a section of the output - title and parameter values
-void spLogger::logSection(const char *section_name, spParameterOutList &paramList)
+void flxLogger::logSection(const char *section_name, flxParameterOutList &paramList)
 {
 
     if (paramList.size() == 0)
@@ -159,16 +159,16 @@ void spLogger::logSection(const char *section_name, spParameterOutList &paramLis
 
         // is this an array or a scalar? Note: using covariant return values to get correct pointer
         if ((param->flags() & kParameterOutFlagArray) == kParameterOutFlagArray)
-            logArray((spParameterOutArray *)param->accessor());
+            logArray((flxParameterOutArray *)param->accessor());
         else
-            logScalar((spParameterOutScalar *)param->accessor());
+            logScalar((flxParameterOutScalar *)param->accessor());
     }
 
     for (auto theFormatter : _Formatters)
         theFormatter->endSection();
 }
 //----------------------------------------------------------------------------
-void spLogger::logObservation(void)
+void flxLogger::logObservation(void)
 {
 
     // Begin the observation with all our formatters
@@ -198,12 +198,12 @@ void spLogger::logObservation(void)
 //----------------------------------------------------------------------------
 // Timestamp type property get/set
 //----------------------------------------------------------------------------
-uint spLogger::get_ts_type(void)
+uint flxLogger::get_ts_type(void)
 {
     return _timestampType;
 }
 //----------------------------------------------------------------------------
-void spLogger::set_ts_type(uint newType)
+void flxLogger::set_ts_type(uint newType)
 {
     if ((Timestamp_t)newType == _timestampType)
         return;
@@ -233,7 +233,7 @@ void spLogger::set_ts_type(uint newType)
 }
 //----------------------------------------------------------------------------
 // Return the current timestamp, as outlined in the timestamp mode.
-std::string spLogger::get_timestamp(void)
+std::string flxLogger::get_timestamp(void)
 {
 
     char szBuffer[64];
@@ -299,12 +299,12 @@ std::string spLogger::get_timestamp(void)
 //----------------------------------------------------------------------------
 // Log sample number property get/set
 //----------------------------------------------------------------------------
-bool spLogger::get_num_mode(void)
+bool flxLogger::get_num_mode(void)
 {
     return _sampleNumberEnabled;
 }
 //----------------------------------------------------------------------------
-void spLogger::set_num_mode(bool newMode)
+void flxLogger::set_num_mode(bool newMode)
 {
     if (newMode == _sampleNumberEnabled)
         return;
@@ -332,13 +332,13 @@ void spLogger::set_num_mode(bool newMode)
 //
 // Reset the sample number to the provided number. Note, the parameter is optional with a
 // default value of 0
-void spLogger::reset_sample_number(const uint & number)
+void flxLogger::reset_sample_number(const uint & number)
 {
     _currentSampleNumber = number;
 }
 //----------------------------------------------------------------------------
 // Increment and return the current number
-uint spLogger::get_sample_number(void)
+uint flxLogger::get_sample_number(void)
 {
     _currentSampleNumber = _currentSampleNumber + numberIncrement();
 

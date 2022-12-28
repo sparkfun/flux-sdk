@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SensirionI2CSen5x.h" // Also requires Sensirion Core
 
 // What is the name used to ID this device?
 #define kSEN54DeviceName "SEN54"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Sensirion Library
-class spDevSEN54 : public spDeviceI2CType<spDevSEN54>, public SensirionI2CSen5x
+class spDevSEN54 : public flxDeviceI2CType<spDevSEN54>, public SensirionI2CSen5x
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kSEN54DeviceName;
@@ -87,15 +87,15 @@ private:
     bool _begun = false;
 
 public:
-    spPropertyRWFloat<spDevSEN54, &spDevSEN54::get_temperature_offset, &spDevSEN54::set_temperature_offset> temperatureOffset;
+    flxPropertyRWFloat<spDevSEN54, &spDevSEN54::get_temperature_offset, &spDevSEN54::set_temperature_offset> temperatureOffset;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_temperature_C> temperatureC;    
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_humidity> humidity;    
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_1p0> massConcentrationPm1p0;    
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_2p5> massConcentrationPm2p5;    
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_4p0> massConcentrationPm4p0;    
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_10p0> massConcentrationPm10p0;    
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_voc_index> vocIndex;    
-    spParameterOutFloat<spDevSEN54, &spDevSEN54::read_nox_index> noxIndex;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_humidity> humidity;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_1p0> massConcentrationPm1p0;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_2p5> massConcentrationPm2p5;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_4p0> massConcentrationPm4p0;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_mass_concentration_10p0> massConcentrationPm10p0;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_voc_index> vocIndex;    
+    flxParameterOutFloat<spDevSEN54, &spDevSEN54::read_nox_index> noxIndex;    
 };

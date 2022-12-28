@@ -4,17 +4,17 @@
 
 #include "spSpark.h"
 #include "flxCore.h"
-#include "spCoreInterface.h"
+#include "flxCoreInterface.h"
 #include "spFS.h"
 
 // TODO - refactor this out
 #include "spFSSDMMCard.h"
 #include <string>
 
-// This object implements the spWriter interface, and manages the rotation
+// This object implements the flxWriter interface, and manages the rotation
 // of files created on the passed in filesystem.
 
-class spFileRotate : public spActionType<spFileRotate>, public spWriter
+class spFileRotate : public flxActionType<spFileRotate>, public flxWriter
 {
 
   private:
@@ -63,20 +63,20 @@ class spFileRotate : public spActionType<spFileRotate>, public spWriter
         setFileSystem(&fs);
     }
     // Rotation Period in Days
-    spPropertyRWUint<spFileRotate, &spFileRotate::get_RotatePeriod, &spFileRotate::set_RotatePeriod> rotatePeriod = {
+    flxPropertyRWUint<spFileRotate, &spFileRotate::get_RotatePeriod, &spFileRotate::set_RotatePeriod> rotatePeriod = {
         24, {{"6 Hours", 6}, {"12 Hours", 12}, {"1 Day", 24}, {"2 Days", 48}, {"1 Week", 168}}};
 
-    spPropertyUint<spFileRotate> startNumber = {1};
+    flxPropertyUint<spFileRotate> startNumber = {1};
 
-    spPropertyString<spFileRotate> filePrefix = {""};
+    flxPropertyString<spFileRotate> filePrefix = {""};
 
     // Our "New File" event
-    spSignalVoid on_newFile;
+    flxSignalVoid on_newFile;
 
   private:
 
     // Hidden property - epoch when file was opened...
-    spPropertyHiddenUint<spFileRotate> _secsFileOpen= {0};
+    flxPropertyHiddenUint<spFileRotate> _secsFileOpen= {0};
 
     static constexpr uint kSecsPerHour = 3600;
 

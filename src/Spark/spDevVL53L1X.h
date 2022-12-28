@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_VL53L1X.h"
 
 // What is the name used to ID this device?
 #define kVL53L1XDeviceName "VL53L1x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevVL53L1X : public spDeviceI2CType<spDevVL53L1X>, public SFEVL53L1X
+class spDevVL53L1X : public flxDeviceI2CType<spDevVL53L1X>, public SFEVL53L1X
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kVL53L1XDeviceName;
@@ -69,14 +69,14 @@ private:
 
 public:
     // Define our read-write properties
-    spPropertyRWUint8<spDevVL53L1X, &spDevVL53L1X::get_distance_mode, &spDevVL53L1X::set_distance_mode> distanceMode
+    flxPropertyRWUint8<spDevVL53L1X, &spDevVL53L1X::get_distance_mode, &spDevVL53L1X::set_distance_mode> distanceMode
          = { DISTANCE_SHORT, { { "Short", DISTANCE_SHORT }, { "Long", DISTANCE_LONG } } }; // Default to short distance mode
-    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_intermeasurment_period, &spDevVL53L1X::set_intermeasurment_period> intermeasurementPeriod;
-    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_crosstalk, &spDevVL53L1X::set_crosstalk> crosstalk = { 0, 0, 4000 };
-    spPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_offset, &spDevVL53L1X::set_offset> offset = { 0, 0, 4000 };
+    flxPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_intermeasurment_period, &spDevVL53L1X::set_intermeasurment_period> intermeasurementPeriod;
+    flxPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_crosstalk, &spDevVL53L1X::set_crosstalk> crosstalk = { 0, 0, 4000 };
+    flxPropertyRWUint16<spDevVL53L1X, &spDevVL53L1X::get_offset, &spDevVL53L1X::set_offset> offset = { 0, 0, 4000 };
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_distance> distance;    
-    spParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_range_status> rangeStatus;    
-    spParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_signal_rate> signalRate;    
+    flxParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_distance> distance;    
+    flxParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_range_status> rangeStatus;    
+    flxParameterOutUint<spDevVL53L1X, &spDevVL53L1X::read_signal_rate> signalRate;    
 };

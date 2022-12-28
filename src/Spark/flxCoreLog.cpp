@@ -1,10 +1,10 @@
 
 
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 #include <string.h>
 
 // Global object - for quick log access
-spLogging &spLog = spLogging::get();
+flxLogging &flxLog = flxLogging::get();
 
 #define kOutputBufferSize 64
 
@@ -19,7 +19,7 @@ const char OutputPrefixCodes[] = "NEWIDV"; // NONE, Error , Warning, Info, Debug
 //
 // Returns the length of the output
 
-int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args)
+int flxLoggingDrvDefault::logPrintf(const flxLogLevel_t level, bool newline, const char *fmt, va_list args)
 {
 
     static char szBuffer[kOutputBufferSize];
@@ -56,7 +56,7 @@ int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, bool newline, const
     }
     uint8_t offset = 0;
     // set our prefix if we have a level
-    if (level > spLogNone)
+    if (level > flxLogNone)
     {
         snprintf(pBuffer, lenBuffer, kOutputPrefixFMT, OutputPrefixCodes[level]);
         offset = kOutputPrefixLen;
@@ -82,19 +82,19 @@ int spLoggingDrvDefault::logPrintf(const spLogLevel_t level, bool newline, const
 
 const char *kESP32LogTag = "SP";
 
-uint spLoggingDrvESP32::getESPLevel(const spLogLevel_t level)
+uint flxLoggingDrvESP32::getESPLevel(const flxLogLevel_t level)
 {
     switch (level)
     {
-    case spLogError:
+    case flxLogError:
         return ESP_LOG_ERROR;
-    case spLogWarning:
+    case flxLogWarning:
         return ESP_LOG_WARN;
-    case spLogInfo:
+    case flxLogInfo:
         return ESP_LOG_INFO;
-    case spLogDebug:
+    case flxLogDebug:
         return ESP_LOG_DEBUG;
-    case spLogVerbose:
+    case flxLogVerbose:
         return ESP_LOG_VERBOSE;
     default:
         break;
@@ -103,7 +103,7 @@ uint spLoggingDrvESP32::getESPLevel(const spLogLevel_t level)
     return ESP_LOG_NONE;
 }
 
-void spLoggingDrvESP32::setLogLevel(const spLogLevel_t level)
+void flxLoggingDrvESP32::setLogLevel(const flxLogLevel_t level)
 {
     // esp_log_level_set(kESP32LogTag, (esp_log_level_t)getESPLevel(level));
     esp_log_level_set("*", ESP_LOG_VERBOSE);
@@ -115,7 +115,7 @@ void spLoggingDrvESP32::setLogLevel(const spLogLevel_t level)
 //
 // Returns the length of the output
 
-int spLoggingDrvESP32::logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args)
+int flxLoggingDrvESP32::logPrintf(const flxLogLevel_t level, bool newline, const char *fmt, va_list args)
 {
     esp_log_writev((esp_log_level_t)getESPLevel(level), kESP32LogTag, fmt, args);
 

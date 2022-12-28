@@ -39,7 +39,7 @@ float spDevMS5637::read_temperature_C()
 
 // Static method used to determine if this device is connected
 
-bool spDevMS5637::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevMS5637::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -135,7 +135,7 @@ bool spDevMS5637::onInitialize(TwoWire &wirePort)
     bool result = MS5637::begin(wirePort);
 
     if (!result)
-        spLog_E("MS5637 - begin failed");
+        flxLog_E("MS5637 - begin failed");
 
     return result;
 }

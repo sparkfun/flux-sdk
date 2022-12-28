@@ -58,7 +58,7 @@ bool spNTPESP32::start(void)
     // do we have a network and is it connected
     if ( !_theNetwork || !_theNetwork->isConnected())
     {
-        spLog_W(F("NTP Client - Unable to start, no network connection"));
+        flxLog_W(F("NTP Client - Unable to start, no network connection"));
         return false;
     }
     
@@ -76,7 +76,7 @@ bool spNTPESP32::start(void)
         struct tm *tm_now;
         time_t now;
 
-        spLog_I_(F("NTP startup [%u secs]..."), _startupDelay);
+        flxLog_I_(F("NTP startup [%u secs]..."), _startupDelay);
 
 
         while (true)
@@ -91,7 +91,7 @@ bool spNTPESP32::start(void)
                 break; // synched
             if (secs > inc)
             {
-                spLog_N_(F("."));
+                flxLog_N_(F("."));
                 inc++;
             }
         }
@@ -100,9 +100,9 @@ bool spNTPESP32::start(void)
     bool enabled = sntp_enabled();
 
     if (enabled)
-        spLog_N(F("enabled"));
+        flxLog_N(F("enabled"));
     else
-        spLog_N(F("not enabled"));
+        flxLog_N(F("not enabled"));
 
     return enabled;
 }

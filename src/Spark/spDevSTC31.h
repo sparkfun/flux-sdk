@@ -12,7 +12,7 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_STC3x_Arduino_Library.h"
 
 // What is the name used to ID this device?
@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSTC31 : public spDeviceI2CType<spDevSTC31>, public STC3x
+class spDevSTC31 : public flxDeviceI2CType<spDevSTC31>, public STC3x
 {
 
 public:
@@ -28,7 +28,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kSTC31DeviceName;
@@ -68,17 +68,17 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevSTC31, &spDevSTC31::read_co2> co2;    
-    spParameterOutFloat<spDevSTC31, &spDevSTC31::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<spDevSTC31, &spDevSTC31::read_co2> co2;    
+    flxParameterOutFloat<spDevSTC31, &spDevSTC31::read_temperature_C> temperatureC;    
 
     // Define our input parameters
-    spParameterInFloat<spDevSTC31, &spDevSTC31::write_rh> rh;
-    spParameterInFloat<spDevSTC31, &spDevSTC31::write_temperature> temperatureC_In;
-    spParameterInUint<spDevSTC31, &spDevSTC31::write_pressure> pressure;
+    flxParameterInFloat<spDevSTC31, &spDevSTC31::write_rh> rh;
+    flxParameterInFloat<spDevSTC31, &spDevSTC31::write_temperature> temperatureC_In;
+    flxParameterInUint<spDevSTC31, &spDevSTC31::write_pressure> pressure;
 
     // Define our read-write properties
     // binaryGas is STC3X_binary_gas_type_e. Default is STC3X_BINARY_GAS_CO2_AIR_25
-    spPropertyRWUint8<spDevSTC31, &spDevSTC31::get_binary_gas, &spDevSTC31::set_binary_gas> binaryGas
+    flxPropertyRWUint8<spDevSTC31, &spDevSTC31::get_binary_gas, &spDevSTC31::set_binary_gas> binaryGas
         = { STC3X_BINARY_GAS_CO2_AIR_25, { { "CO2 in N2 (100% max)", STC3X_BINARY_GAS_CO2_N2_100 },
                                            { "CO2 in Air (100% max)", STC3X_BINARY_GAS_CO2_AIR_100 },
                                            { "CO2 in N2 (25% max)", STC3X_BINARY_GAS_CO2_N2_25 },

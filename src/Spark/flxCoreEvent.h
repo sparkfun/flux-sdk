@@ -8,14 +8,14 @@
 // Define the concept of signals/slots to enable events within the framework
 //-----------------------------------------------------------------------
 // 5/20 - Impl based on https://schneegans.github.io/tutorials/2015/09/20/signal-slot
-// spSignals - sort of  - support for our simple observer pattern for events
+// flxSignals - sort of  - support for our simple observer pattern for events
 //
 
-template <typename ArgT> class spSignal
+template <typename ArgT> class flxSignal
 {
 
   public:
-    // connects a member function to this spSignal
+    // connects a member function to this flxSignal
     template <typename T> void call(T *inst, void (T::*func)(ArgT var))
     {
         connect([=](ArgT var) { // uses a lambda for the callback
@@ -23,7 +23,7 @@ template <typename ArgT> class spSignal
         });
     }
 
-    // connects a const member function to this spSignal
+    // connects a const member function to this flxSignal
     template <typename T> void call(T *inst, void (T::*func)(ArgT var) const)
     {
         connect([=](ArgT var) { // users a lambda for the callback
@@ -52,7 +52,7 @@ template <typename ArgT> class spSignal
             (inst->*func)(uValue, var);
         });
     }
-    // connects a std::function to the spSignal.
+    // connects a std::function to the flxSignal.
     void connect(std::function<void(ArgT var)> const &slot) const
     {
         slots_.push_back(slot);
@@ -73,24 +73,24 @@ template <typename ArgT> class spSignal
     mutable std::vector<std::function<void(ArgT &var)>> slots_;
 };
 
-typedef spSignal<bool> spSignalBool;
-typedef spSignal<int8_t> spSignalInt8;
-typedef spSignal<int16_t> spSignalInt16;
-typedef spSignal<int> spSignalInt;
-typedef spSignal<uint8_t> spSignalUInt8;
-typedef spSignal<uint16_t> spSignalUInt16;
-typedef spSignal<uint> spSignalUInt;
-typedef spSignal<float> spSignalFloat;
-typedef spSignal<double> spSignalDouble;
-typedef spSignal<const char *> spSignalString;
+typedef flxSignal<bool> flxSignalBool;
+typedef flxSignal<int8_t> flxSignalInt8;
+typedef flxSignal<int16_t> flxSignalInt16;
+typedef flxSignal<int> flxSignalInt;
+typedef flxSignal<uint8_t> flxSignalUInt8;
+typedef flxSignal<uint16_t> flxSignalUInt16;
+typedef flxSignal<uint> flxSignalUInt;
+typedef flxSignal<float> flxSignalFloat;
+typedef flxSignal<double> flxSignalDouble;
+typedef flxSignal<const char *> flxSignalString;
 
 // Signal - zero arg - aka void function callback type. Unable to template this, so
 // just brute force the impl.
-class spSignalVoid
+class flxSignalVoid
 {
 
   public:
-    // connects a member function to this spSignal
+    // connects a member function to this flxSignal
     template <typename T> void call(T *inst, void (T::*func)())
     {
         connect([=]() { // uses a lambda for the callback
@@ -120,7 +120,7 @@ class spSignalVoid
         });
     }
 
-    // connects a const member function to this spSignal
+    // connects a const member function to this flxSignal
     template <typename T> void call(T *inst, void (T::*func)() const)
     {
         connect([=]() { // users a lambda for the callback

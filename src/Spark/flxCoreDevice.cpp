@@ -1,14 +1,14 @@
 /*
  *
- * spDevice Objects
+ * flxDevice Objects
  *
  */
 
-#include "spCoreDevice.h"
+#include "flxCoreDevice.h"
 #include "spSpark.h"
 
 
-bool spDevice::initialize()
+bool flxDevice::initialize()
 {
     spark.add(this);
 
@@ -21,7 +21,7 @@ bool spDevice::initialize()
 //----------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
-bool spDeviceFactory::addressInUse(uint8_t address)
+bool flxDeviceFactory::addressInUse(uint8_t address)
 {
     // loop over connected/created devices - if the address is a match, return true
     for (auto device : spark.connectedDevices())
@@ -45,7 +45,7 @@ bool spDeviceFactory::addressInUse(uint8_t address)
 //    The count of devices connected and the driver was successfully created...
 //-------------------------------------------------------------------------------
 
-int spDeviceFactory::buildDevices(spBusI2C &i2cDriver)
+int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
 {
 
     // walk the list of registered drivers
@@ -57,7 +57,7 @@ int spDeviceFactory::buildDevices(spBusI2C &i2cDriver)
     {
 
         // Only autoload i2c devices
-        if ( deviceBuilder->getDeviceKind() != spDeviceKindI2C)
+        if ( deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
             continue;
 
         deviceAddresses = deviceBuilder->getDefaultAddresses();
@@ -73,10 +73,10 @@ int spDeviceFactory::buildDevices(spBusI2C &i2cDriver)
             // See if the device is connected
             if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
             {
-                spDevice *pDevice = deviceBuilder->create();
+                flxDevice *pDevice = deviceBuilder->create();
                 if (!pDevice)
                 {
-                    spLog_E("Device create failed - %s", deviceBuilder->getDeviceName());
+                    flxLog_E("Device create failed - %s", deviceBuilder->getDeviceName());
                 }
                 else
                 {
@@ -106,7 +106,7 @@ int spDeviceFactory::buildDevices(spBusI2C &i2cDriver)
 //
 // A device match = Device::type is the same and the address is the same.
 
-void spDeviceFactory::purneAutoload(spDevice *theDevice, spDeviceContainer &devList)
+void flxDeviceFactory::pruneAutoload(flxDevice *theDevice, flxDeviceContainer &devList)
 {
 
     if (theDevice->autoload() || devList.size() == 0)
@@ -122,7 +122,7 @@ void spDeviceFactory::purneAutoload(spDevice *theDevice, spDeviceContainer &devL
             if (theDevice->getType() == (*itDevice)->getType() && theDevice->address() == (*itDevice)->address())
             {
                 // remove the device - returns updated iterator
-                spDevice *pTmp = *itDevice;
+                flxDevice *pTmp = *itDevice;
                 itDevice = devList.erase(itDevice);
                 delete pTmp;
                 break;

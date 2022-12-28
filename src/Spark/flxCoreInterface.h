@@ -35,7 +35,7 @@ class flxDataEditor
 
 // Define an interface for output of log information.
 
-class spWriter
+class flxWriter
 {
 
   public:

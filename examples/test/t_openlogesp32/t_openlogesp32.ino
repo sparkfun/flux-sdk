@@ -5,7 +5,7 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spLogger.h>
+#include <Spark/flxLogger.h>
 #include <Spark/spFmtJSON.h>
 #include <Spark/spFmtCSV.h>
 #include <Spark/spTimer.h>
@@ -55,7 +55,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 // AWS IoT
 // UNCOMMENT TO TEST AWS
 //#define TEST_AWS
-#include <Spark/spAWSIoT.h>
+#include <Spark/flxIoTAWS.h>
 
 // ThingSpeak outpout
 // Uncomment to test Thingspeak mqtt
@@ -65,11 +65,11 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 
 //Azure IoT 
 //#define TEST_AZURE_IOT
-#include <Spark/spAzureIoT.h>
+#include <Spark/flxIoTAzure.h>
 
 // HTTP output (call a URL with a JSON Payload)
 //#define TEST_HTTP_IOT
-#include <Spark/spWrHTTP.h>
+#include <Spark/flxIoTHTTP.h>
 
 
 #define OPENLOG_ESP32
@@ -101,7 +101,7 @@ static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio p
 spFormatJSON<1200> fmtJSON;
 spFormatCSV fmtCSV;
 
-spLogger  logger;
+flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(kDefaultLogInterval);    // Timer 
@@ -133,7 +133,7 @@ spMQTTESP32 mqttClient;
 #endif
 
 #ifdef TEST_AWS
-spAWSIoT mqttAWS;
+flxIoTAWS mqttAWS;
 #endif
 
 #ifdef TEST_THINGSPEAK
@@ -141,11 +141,11 @@ spThingSpeak iotThingSpeak;
 #endif
 
 #ifdef TEST_AZURE_IOT
-spAzureIoT iotAzure;
+flxIoTAzure iotAzure;
 #endif
 
 #ifdef TEST_HTTP_IOT
-spHTTPIoT  iotHTTP;
+flxIoTHTTP  iotHTTP;
 #endif
 
 //---------------------------------------------------------------------
@@ -214,31 +214,31 @@ void setupSPIDevices()
     // IMU
     if (onboardIMU.initialize(IMU_CS))
     {
-        spLog_I(F("Onboard IMU is enabled"));
+        flxLog_I(F("Onboard IMU is enabled"));
         logger.add(onboardIMU);
     }
     else 
-        spLog_E(F("Onboard IMU failed to start."));
+        flxLog_E(F("Onboard IMU failed to start."));
 
     // Magnetometer
     if (onboardMag.initialize(MAG_CS))
     {
-        spLog_I(F("Onboard Magnetometer is enabled"));
+        flxLog_I(F("Onboard Magnetometer is enabled"));
         logger.add(onboardMag);
     }
     else 
-        spLog_E(F("Onboard Magnetometer failed to start"));
+        flxLog_E(F("Onboard Magnetometer failed to start"));
 }
 //---------------------------------------------------------------------
 void setupBioHub()
 {
     if (bioHub.initialize(BIO_HUB_RESET, BIO_HUB_MFIO)) // Initialize the bio hub using the reset and mfio pins, 
     {
-        spLog_I(F("Bio Hub is enabled"));
+        flxLog_I(F("Bio Hub is enabled"));
         logger.add(bioHub);
     }
     else 
-        spLog_E(F("Bio Hub not started/connected"));
+        flxLog_E(F("Bio Hub not started/connected"));
 }
 
 //---------------------------------------------------------------------
@@ -361,18 +361,18 @@ void setup() {
     //               This should be done after all devices are added..for now...
     spark.start();  
 
-    spLog_I(F("Device ID: %s"), spark.deviceId());
+    flxLog_I(F("Device ID: %s"), spark.deviceId());
 
     // Write out the SD card stats 
     if (theSDCard.enabled())
-        spLog_I(F("SD card available. Type: %s, Size: %uMB"), theSDCard.type(), theSDCard.size());
+        flxLog_I(F("SD card available. Type: %s, Size: %uMB"), theSDCard.type(), theSDCard.size());
     else
-        spLog_W(F("SD card not available."));
+        flxLog_W(F("SD card not available."));
 
 
     // WiFi status    
     if (!wifiConnection.isConnected())
-        spLog_E(F("Unable to connect to WiFi!"));
+        flxLog_E(F("Unable to connect to WiFi!"));
 
     // Logging is done at an interval - using an interval timer. 
     // Connect logger to the timer event
@@ -394,7 +394,7 @@ void setup() {
     // What devices has the system detected?
     // List them and add them to the logger
 
-    spDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = spark.connectedDevices();
 
     // The device list can be added directly to the logger object using an 
     // add() method call. This will only add devices with output parameters. 
@@ -405,19 +405,19 @@ void setup() {
     // But for this example, let's loop over our devices and show how use the
     // device parameters.
 
-    spLog_I(F("Devices Detected [%d]"), myDevices.size() );
+    flxLog_I(F("Devices Detected [%d]"), myDevices.size() );
 
     // Loop over the device list - note that it is iterable. 
     for (auto device: myDevices )
     {
-        spLog_N_(F("\tDevice: %s, Output Number: %d"), device->name(), device->nOutputParameters());
+        flxLog_N_(F("\tDevice: %s, Output Number: %d"), device->name(), device->nOutputParameters());
         if ( device->nOutputParameters() > 0)
         {
-            spLog_N(F("  - Adding to logger"));
+            flxLog_N(F("  - Adding to logger"));
             logger.add(device);
         }
         else
-            spLog_N(F(" - Not adding to logger"));
+            flxLog_N(F(" - Not adding to logger"));
     }
 
     // Setup the Onboard IMU
@@ -445,7 +445,7 @@ void setup() {
     /// END TESTING
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
-    spLog_N("\n\rLog Output:");
+    flxLog_N("\n\rLog Output:");
 }
 
 //---------------------------------------------------------------------

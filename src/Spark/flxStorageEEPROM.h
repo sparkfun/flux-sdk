@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 #include "flxStorage.h"
 
 class flxStorageEEPROM;

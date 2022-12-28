@@ -54,7 +54,7 @@ spDevRV8803::spDevRV8803()
 
 // Static method used to determine if this device is connected
 
-bool spDevRV8803::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevRV8803::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -96,7 +96,7 @@ bool spDevRV8803::onInitialize(TwoWire &wirePort)
     if (result)
         _begun = true;
     else
-        spLog_E("RV8803 - begin failed");
+        flxLog_E("RV8803 - begin failed");
 
     return result;
 }
@@ -124,7 +124,7 @@ std::string spDevRV8803::read_date_USA()
     char szBuffer[12] = {'\0'};
 
     if (RV8803::stringDateUSA(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return MM/DD/YYYY
-        spLog_E("RV8803 - read_date_USA failed");
+        flxLog_E("RV8803 - read_date_USA failed");
 
     std::string theString = szBuffer;
 
@@ -152,7 +152,7 @@ std::string spDevRV8803::read_date()
     char szBuffer[12] = {'\0'};
 
     if (RV8803::stringDate(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return DD/MM/YYYY
-        spLog_E("RV8803 - read_date failed");
+        flxLog_E("RV8803 - read_date failed");
 
     std::string theString = szBuffer;
 
@@ -180,7 +180,7 @@ std::string spDevRV8803::read_time()
     char szBuffer[12] = {'\0'};
 
     if (RV8803::stringTime(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return HH:MM:SS
-        spLog_E("RV8803 - read_time failed");
+        flxLog_E("RV8803 - read_time failed");
 
     std::string theString = szBuffer;
 
@@ -208,7 +208,7 @@ std::string spDevRV8803::read_iso8601()
     char szBuffer[21] = {'\0'};
 
     if (RV8803::stringTime8601(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return YYYY-MM-DDTHH:MM:SS
-        spLog_E("RV8803 - read_iso8601 failed");
+        flxLog_E("RV8803 - read_iso8601 failed");
 
     std::string theString = szBuffer;
 
@@ -236,7 +236,7 @@ std::string spDevRV8803::read_iso8601_tz()
     char szBuffer[27] = {'\0'};
 
     if (RV8803::stringTime8601TZ(szBuffer, sizeof(szBuffer)) != szBuffer) // Should return YYYY-MM-DDTHH:MM:SS-HH:MM
-        spLog_E("RV8803 - read_iso8601 failed");
+        flxLog_E("RV8803 - read_iso8601 failed");
 
     std::string theString = szBuffer;
 
@@ -264,7 +264,7 @@ std::string spDevRV8803::read_day()
     char szBuffer[11] = {'\0'};
 
     if (RV8803::stringDayOfWeek(szBuffer, sizeof(szBuffer)) != szBuffer)
-        spLog_E("RV8803 - read_day failed");
+        flxLog_E("RV8803 - read_day failed");
 
     std::string theString = szBuffer;
 
@@ -292,7 +292,7 @@ std::string spDevRV8803::read_day_short()
     char szBuffer[5] = {'\0'};
 
     if (RV8803::stringDayOfWeekShort(szBuffer, sizeof(szBuffer)) != szBuffer)
-        spLog_E("RV8803 - read_day_short failed");
+        flxLog_E("RV8803 - read_day_short failed");
 
     std::string theString = szBuffer;
 
@@ -320,7 +320,7 @@ std::string spDevRV8803::read_ordinal()
     char szBuffer[6] = {'\0'};
 
     if (RV8803::stringDateOrdinal(szBuffer, sizeof(szBuffer)) != szBuffer)
-        spLog_E("RV8803 - read_ordinal failed");
+        flxLog_E("RV8803 - read_ordinal failed");
 
     std::string theString = szBuffer;
 
@@ -348,7 +348,7 @@ std::string spDevRV8803::read_month()
     char szBuffer[11] = {'\0'};
 
     if (RV8803::stringMonth(szBuffer, sizeof(szBuffer)) != szBuffer)
-        spLog_E("RV8803 - read_month failed");
+        flxLog_E("RV8803 - read_month failed");
 
     std::string theString = szBuffer;
 
@@ -376,7 +376,7 @@ std::string spDevRV8803::read_month_short()
     char szBuffer[5] = {'\0'};
 
     if (RV8803::stringMonthShort(szBuffer, sizeof(szBuffer)) != szBuffer)
-        spLog_E("RV8803 - read_month_short failed");
+        flxLog_E("RV8803 - read_month_short failed");
 
     std::string theString = szBuffer;
 
@@ -430,42 +430,42 @@ uint spDevRV8803::get_epoch()
 void spDevRV8803::set_epoch(const uint &epoch)
 {
     if (!RV8803::setEpoch(epoch, _offsetEpoch))
-        spLog_E("RV8803 - set_epoch failed");
+        flxLog_E("RV8803 - set_epoch failed");
 }
 void spDevRV8803::set_seconds(const uint8_t &secs)
 {
     if (!RV8803::setSeconds(secs))
-        spLog_E("RV8803 - set_seconds failed");
+        flxLog_E("RV8803 - set_seconds failed");
 }
 void spDevRV8803::set_minutes(const uint8_t &min)
 {
     if (!RV8803::setMinutes(min))
-        spLog_E("RV8803 - set_minutes failed");
+        flxLog_E("RV8803 - set_minutes failed");
 }
 void spDevRV8803::set_hours(const uint8_t &hour)
 {
     if (!RV8803::setHours(hour))
-        spLog_E("RV8803 - set_hour failed");
+        flxLog_E("RV8803 - set_hour failed");
 }
 void spDevRV8803::set_date(const uint8_t &date)
 {
     if (!RV8803::setDate(date))
-        spLog_E("RV8803 - set_date failed");
+        flxLog_E("RV8803 - set_date failed");
 }
 void spDevRV8803::set_month(const uint8_t &month)
 {
     if (!RV8803::setMonth(month))
-        spLog_E("RV8803 - set_month failed");
+        flxLog_E("RV8803 - set_month failed");
 }
 void spDevRV8803::set_year(const uint16_t &year)
 {
     if (!RV8803::setYear(year))
-        spLog_E("RV8803 - set_year failed");
+        flxLog_E("RV8803 - set_year failed");
 }
 void spDevRV8803::set_weekday(const uint8_t &dow)
 {
     if (!RV8803::setWeekday(dow))
-        spLog_E("RV8803 - set_weekday failed");
+        flxLog_E("RV8803 - set_weekday failed");
 }
 
 // Read-write properties

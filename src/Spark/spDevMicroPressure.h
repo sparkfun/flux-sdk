@@ -11,18 +11,18 @@
 
 #include "Arduino.h"
 #include "SparkFun_MicroPressure.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 #define kMicroPressureDeviceName "MicroPressure"
 
 // Define our class
-class spDevMicroPressure : public spDeviceI2CType<spDevMicroPressure>, public SparkFun_MicroPressure
+class spDevMicroPressure : public flxDeviceI2CType<spDevMicroPressure>, public SparkFun_MicroPressure
 {
 
   public:
     spDevMicroPressure();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -49,11 +49,11 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_PSI> pressure_PSI;    
-    spParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_Pa> pressure_Pa;    
-    spParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_kPa> pressure_kPa;    
-    spParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_torr> pressure_torr;    
-    spParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_inHg> pressure_inHg;    
-    spParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_atm> pressure_atm;    
-    spParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_bar> pressure_bar;    
+    flxParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_PSI> pressure_PSI;    
+    flxParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_Pa> pressure_Pa;    
+    flxParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_kPa> pressure_kPa;    
+    flxParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_torr> pressure_torr;    
+    flxParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_inHg> pressure_inHg;    
+    flxParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_atm> pressure_atm;    
+    flxParameterOutFloat<spDevMicroPressure, &spDevMicroPressure::read_pressure_bar> pressure_bar;    
 };

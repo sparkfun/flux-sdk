@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_SGP30_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kSGP30DeviceName "SGP30"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSGP30 : public spDeviceI2CType<spDevSGP30>, public SGP30
+class spDevSGP30 : public flxDeviceI2CType<spDevSGP30>, public SGP30
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kSGP30DeviceName;
@@ -61,8 +61,8 @@ public:
     // TO DO: add baselineCO2 and baseline TVOC as RW properties
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutUint<spDevSGP30, &spDevSGP30::read_tvoc> tvoc;    
-    spParameterOutUint<spDevSGP30, &spDevSGP30::read_co2> co2;    
-    spParameterOutUint<spDevSGP30, &spDevSGP30::read_h2> h2;    
-    spParameterOutUint<spDevSGP30, &spDevSGP30::read_ethanol> ethanol;    
+    flxParameterOutUint<spDevSGP30, &spDevSGP30::read_tvoc> tvoc;    
+    flxParameterOutUint<spDevSGP30, &spDevSGP30::read_co2> co2;    
+    flxParameterOutUint<spDevSGP30, &spDevSGP30::read_h2> h2;    
+    flxParameterOutUint<spDevSGP30, &spDevSGP30::read_ethanol> ethanol;    
 };

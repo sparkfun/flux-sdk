@@ -13,7 +13,7 @@
 
 // Define a class that uses the parameters of the system
 
-class test_params : public spOperation
+class test_params : public flxOperation
 {
 
     bool            _b_data=false;
@@ -90,26 +90,26 @@ public:
     bool get_int_arr(flxDataArrayInt *);
 
     // Output Parameters
-    spParameterOutBool<test_params, &test_params::get_bool>         out_bool;
-    spParameterOutInt8<test_params, &test_params::get_int8>         out_int8;    
-    spParameterOutInt16<test_params, &test_params::get_int16>       out_int16;
-    spParameterOutInt<test_params, &test_params::get_int>           out_int;
-    spParameterOutUint8<test_params, &test_params::get_uint8>       out_uint8;        
-    spParameterOutUint16<test_params, &test_params::get_uint16>     out_uint16;        
-    spParameterOutFloat<test_params, &test_params::get_float>       out_float;
-    spParameterOutString<test_params, &test_params::get_str>        out_string;
+    flxParameterOutBool<test_params, &test_params::get_bool>         out_bool;
+    flxParameterOutInt8<test_params, &test_params::get_int8>         out_int8;    
+    flxParameterOutInt16<test_params, &test_params::get_int16>       out_int16;
+    flxParameterOutInt<test_params, &test_params::get_int>           out_int;
+    flxParameterOutUint8<test_params, &test_params::get_uint8>       out_uint8;        
+    flxParameterOutUint16<test_params, &test_params::get_uint16>     out_uint16;        
+    flxParameterOutFloat<test_params, &test_params::get_float>       out_float;
+    flxParameterOutString<test_params, &test_params::get_str>        out_string;
 
-    spParameterInBool<test_params, &test_params::set_bool>          in_bool;
-    spParameterInInt8<test_params, &test_params::set_int8>        in_int8;
-    spParameterInInt16<test_params, &test_params::set_int16>        in_int16;    
-    spParameterInInt<test_params, &test_params::set_int>            in_int;
-    spParameterInUint8<test_params, &test_params::set_uint8>      in_uint8;        
-    spParameterInUint16<test_params, &test_params::set_uint16>      in_uint16;            
-    spParameterInFloat<test_params, &test_params::set_float>        in_float;
-    spParameterInString<test_params, &test_params::set_str>         in_string;    
+    flxParameterInBool<test_params, &test_params::set_bool>          in_bool;
+    flxParameterInInt8<test_params, &test_params::set_int8>        in_int8;
+    flxParameterInInt16<test_params, &test_params::set_int16>        in_int16;    
+    flxParameterInInt<test_params, &test_params::set_int>            in_int;
+    flxParameterInUint8<test_params, &test_params::set_uint8>      in_uint8;        
+    flxParameterInUint16<test_params, &test_params::set_uint16>      in_uint16;            
+    flxParameterInFloat<test_params, &test_params::set_float>        in_float;
+    flxParameterInString<test_params, &test_params::set_str>         in_string;    
 
 
-    spParameterOutArrayInt<test_params, &test_params::get_int_arr>  out_int_arr;
+    flxParameterOutArrayInt<test_params, &test_params::get_int_arr>  out_int_arr;
 };
 
 // Method implementation

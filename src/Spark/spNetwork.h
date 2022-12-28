@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "spCoreEvent.h"
+#include "flxCoreEvent.h"
 // Network interface
 class spNetwork
 {
@@ -10,6 +10,6 @@ public:
     virtual bool isConnected() = 0;
 
     // Event - triggered on connection changes
-    spSignalBool on_connectionChange;
+    flxSignalBool on_connectionChange;
 
 };

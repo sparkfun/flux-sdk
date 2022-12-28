@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_Bio_Sensor_Hub_Library.h"
 
 // What is the name used to ID this device?
 #define kBioHubDeviceName "BioHub"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBioHub : public spDeviceI2CType<spDevBioHub>, public SparkFun_Bio_Sensor_Hub
+class spDevBioHub : public flxDeviceI2CType<spDevBioHub>, public SparkFun_Bio_Sensor_Hub
 {
 
 public:
@@ -35,7 +35,7 @@ public:
     // and then add it to the logger.
     bool initialize( int connectResetPin, int connectMfioPin );
 
-    static bool isConnected( spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected( flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBioHubDeviceName;
@@ -76,10 +76,10 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutUint16<spDevBioHub, &spDevBioHub::read_heart_rate> heartRate;    
-    spParameterOutUint8<spDevBioHub, &spDevBioHub::read_confidence> confidence;    
-    spParameterOutUint16<spDevBioHub, &spDevBioHub::read_oxygen> O2;    
-    spParameterOutUint8<spDevBioHub, &spDevBioHub::read_status> status;    
-    spParameterOutInt8<spDevBioHub, &spDevBioHub::read_extended_status> eStatus;    
-    spParameterOutFloat<spDevBioHub, &spDevBioHub::read_r_value> O2R;    
+    flxParameterOutUint16<spDevBioHub, &spDevBioHub::read_heart_rate> heartRate;    
+    flxParameterOutUint8<spDevBioHub, &spDevBioHub::read_confidence> confidence;    
+    flxParameterOutUint16<spDevBioHub, &spDevBioHub::read_oxygen> O2;    
+    flxParameterOutUint8<spDevBioHub, &spDevBioHub::read_status> status;    
+    flxParameterOutInt8<spDevBioHub, &spDevBioHub::read_extended_status> eStatus;    
+    flxParameterOutFloat<spDevBioHub, &spDevBioHub::read_r_value> O2R;    
 };

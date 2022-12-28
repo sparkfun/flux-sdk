@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "bme68xLibrary.h"
 
 // What is the name used to ID this device?
 #define kBME68xDeviceName "BME68x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBME68x : public spDeviceI2CType<spDevBME68x>, public Bme68x
+class spDevBME68x : public flxDeviceI2CType<spDevBME68x>, public Bme68x
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBME68xDeviceName;
@@ -62,10 +62,10 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevBME68x, &spDevBME68x::read_Humidity> humidity;
-    spParameterOutFloat<spDevBME68x, &spDevBME68x::read_TemperatureC> temperatureC;
-    spParameterOutFloat<spDevBME68x, &spDevBME68x::read_Pressure> pressure;
-    spParameterOutFloat<spDevBME68x, &spDevBME68x::read_GasResistance> gasResistance;
-    spParameterOutUint8<spDevBME68x, &spDevBME68x::read_Status> status;
+    flxParameterOutFloat<spDevBME68x, &spDevBME68x::read_Humidity> humidity;
+    flxParameterOutFloat<spDevBME68x, &spDevBME68x::read_TemperatureC> temperatureC;
+    flxParameterOutFloat<spDevBME68x, &spDevBME68x::read_Pressure> pressure;
+    flxParameterOutFloat<spDevBME68x, &spDevBME68x::read_GasResistance> gasResistance;
+    flxParameterOutUint8<spDevBME68x, &spDevBME68x::read_Status> status;
 
 };

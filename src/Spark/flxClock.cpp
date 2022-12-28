@@ -1,6 +1,6 @@
 
 
-#include "spClock.h"
+#include "flxClock.h"
 
 #include "spSpark.h"
 
@@ -8,18 +8,18 @@
 #ifdef ESP32
 
 #define DEFAULT_DEFINED
-spClockESP32 defaultClock;
+flxClockESP32 defaultClock;
 
 #endif
 
 // Global object - for quick access to Settings system
-_spClock &spClock = _spClock::get();
+_flxClock &flxClock = _flxClock::get();
 
 // Refresh period if we have a reference clock - time in secs
 
 #define kClockReferenceRefresh 3600
 
-_spClock::_spClock() : _defaultClock{nullptr}, _referenceClock{nullptr}, _lastRefCheck{0}, _bInitialized{false}
+_flxClock::_flxClock() : _defaultClock{nullptr}, _referenceClock{nullptr}, _lastRefCheck{0}, _bInitialized{false}
 {
     // Set name and description
     setName("Epoch Clock", "Seconds since Unix Epoch");
@@ -31,7 +31,7 @@ _spClock::_spClock() : _defaultClock{nullptr}, _referenceClock{nullptr}, _lastRe
 #endif
 }
 //----------------------------------------------------------------
-uint32_t _spClock::epoch()
+uint32_t _flxClock::epoch()
 {
     if (_defaultClock)
         return _defaultClock->epoch();
@@ -40,18 +40,18 @@ uint32_t _spClock::epoch()
     return millis() / 1000; // TODO - Revisit
 }
 //----------------------------------------------------------------
-uint32_t _spClock::now()
+uint32_t _flxClock::now()
 {
     return epoch();
 }
 //----------------------------------------------------------------
-void _spClock::setDefaultClock(spIClock *clock)
+void _flxClock::setDefaultClock(flxIClock *clock)
 {
     if (clock)
         _defaultClock = clock;
 }
 //----------------------------------------------------------------
-void _spClock::setClockReference(spIClock *clock)
+void _flxClock::setClockReference(flxIClock *clock)
 {
 
     if (!clock)
@@ -62,7 +62,7 @@ void _spClock::setClockReference(spIClock *clock)
     updateClock();
 }
 //----------------------------------------------------------------
-void _spClock::updateClock()
+void _flxClock::updateClock()
 {
 
     // refresh our clock
@@ -76,14 +76,14 @@ void _spClock::updateClock()
     _lastRefCheck = epoch();
 }
 //----------------------------------------------------------------
-bool _spClock::initialize(void)
+bool _flxClock::initialize(void)
 {
     _bInitialized = true;
     updateClock();
     return true;
 }
 
-bool _spClock::loop(void)
+bool _flxClock::loop(void)
 {
     // Time to refresh?
     if (_bInitialized && epoch() - _lastRefCheck > kClockReferenceRefresh)

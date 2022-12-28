@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFunBMP384.h"
 
 // What is the name used to ID this device?
 #define kBMP384DeviceName "BMP384"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBMP384 : public spDeviceI2CType<spDevBMP384>, public BMP384
+class spDevBMP384 : public flxDeviceI2CType<spDevBMP384>, public BMP384
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBMP384DeviceName;
@@ -56,7 +56,7 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutDouble<spDevBMP384, &spDevBMP384::read_TemperatureC> temperatureC;
-    spParameterOutDouble<spDevBMP384, &spDevBMP384::read_Pressure> pressure;
+    flxParameterOutDouble<spDevBMP384, &spDevBMP384::read_TemperatureC> temperatureC;
+    flxParameterOutDouble<spDevBMP384, &spDevBMP384::read_Pressure> pressure;
 
 };

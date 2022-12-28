@@ -15,7 +15,7 @@
 
 // Use the NTP client on the ESP32 to sync the onboard clock
 
-class spNTPESP32 : public spActionType<spNTPESP32>
+class spNTPESP32 : public flxActionType<spNTPESP32>
 {
 private:
     void set_isEnabled(bool bEnabled);
@@ -48,7 +48,7 @@ public:
 
     // Used to register the event we want to listen to, which will trigger this
     // activity.
-    void listenToConnection(spSignalBool &theEvent)
+    void listenToConnection(flxSignalBool &theEvent)
     {
         // Regisgter to get notified on connection changes
         theEvent.call(this, &spNTPESP32::onConnectionChange);
@@ -71,14 +71,14 @@ public:
     // Properties 
 
     // Enabled/Disabled
-    spPropertyRWBool<spNTPESP32, &spNTPESP32::get_isEnabled, &spNTPESP32::set_isEnabled> enabled;
+    flxPropertyRWBool<spNTPESP32, &spNTPESP32::get_isEnabled, &spNTPESP32::set_isEnabled> enabled;
 
     // NTP servers
-    spPropertyString<spNTPESP32>     ntpServerOne = {kNTPServerAddress1};
-    spPropertyString<spNTPESP32>     ntpServerTwo = {kNTPServerAddress2};
+    flxPropertyString<spNTPESP32>     ntpServerOne = {kNTPServerAddress1};
+    flxPropertyString<spNTPESP32>     ntpServerTwo = {kNTPServerAddress2};
 
     // TimeZone string
-    spPropertyString<spNTPESP32>     timeZone = {kNTPTimeZoneSparkFun};
+    flxPropertyString<spNTPESP32>     timeZone = {kNTPTimeZoneSparkFun};
 
 private:
 	bool  _isEnabled;

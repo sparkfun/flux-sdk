@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_BMP581_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kBMP581DeviceName "BMP581"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBMP581 : public spDeviceI2CType<spDevBMP581>, public BMP581
+class spDevBMP581 : public flxDeviceI2CType<spDevBMP581>, public BMP581
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBMP581DeviceName;
@@ -62,15 +62,15 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevBMP581, &spDevBMP581::read_TemperatureC> temperatureC;
-    spParameterOutFloat<spDevBMP581, &spDevBMP581::read_Pressure> pressure;
+    flxParameterOutFloat<spDevBMP581, &spDevBMP581::read_TemperatureC> temperatureC;
+    flxParameterOutFloat<spDevBMP581, &spDevBMP581::read_Pressure> pressure;
 
     // Define our read-write properties
     // Note to self: we might need to restrict the available power modes if we can't guarantee spDevBMP581 handles
     // all possible/required changes of mode correctly...
     // From Dryw's notes: the sensor can only enter forced mode from sleep mode.
     //                    Transitions between forced and normal modes are ignored
-    spPropertyRWUint8<spDevBMP581, &spDevBMP581::get_power_mode, &spDevBMP581::set_power_mode> powerMode
+    flxPropertyRWUint8<spDevBMP581, &spDevBMP581::get_power_mode, &spDevBMP581::set_power_mode> powerMode
         = { BMP5_POWERMODE_NORMAL, { { "Standby", BMP5_POWERMODE_STANDBY }, { "Normal", BMP5_POWERMODE_NORMAL },
                                      { "Forced", BMP5_POWERMODE_FORCED }, { "Continuous", BMP5_POWERMODE_CONTINOUS },
                                      { "Deep_Standby", BMP5_POWERMODE_DEEP_STANDBY } } };

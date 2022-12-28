@@ -3,7 +3,7 @@
 #pragma once
 
 #include "flxCore.h"
-#include "spCoreDevice.h"
+#include "flxCoreDevice.h"
 #include <memory>
 
 
@@ -16,7 +16,7 @@ bool spark_start(bool bAutoLoad = true);
 bool spark_loop();
 
 // Define the main framework class  - note it's a singleton
-class spSpark : public spObjectContainer
+class spSpark : public flxObjectContainer
 {
 
   public:
@@ -34,28 +34,28 @@ class spSpark : public spObjectContainer
     bool loop(void);
 
     // Add items to framework - use overloading to determine destination
-    void add(spAction &theAction)
+    void add(flxAction &theAction)
     {
         add(&theAction);
     }
-    void add(spAction *theAction)
+    void add(flxAction *theAction)
     {
         Actions.push_back(theAction);
     }
 
-    void add(spDevice &theDevice)
+    void add(flxDevice &theDevice)
     {
         add(&theDevice);
     }
-    void add(spDevice *theDevice);
+    void add(flxDevice *theDevice);
 
     // This is a singleton class - so delete copy & assignment constructors
     spSpark(spSpark const &) = delete;
     void operator=(spSpark const &) = delete;
 
     // leaving containers public - not sure if this is helpful
-    spDeviceContainer Devices;
-    spActionContainer Actions;
+    flxDeviceContainer Devices;
+    flxActionContainer Actions;
 
 
     //---------------------------------------------------------------------------------
@@ -88,9 +88,9 @@ class spSpark : public spObjectContainer
     //  }
     //
 
-    template <class T> std::shared_ptr<spContainer<T *>> get()
+    template <class T> std::shared_ptr<flxContainer<T *>> get()
     {
-        spContainer<T *> results;
+        flxContainer<T *> results;
 
         flxTypeID type = T::type();
 
@@ -104,26 +104,26 @@ class spSpark : public spObjectContainer
             }
         }
         // make a smart pointer
-        return std::make_shared<spContainer<T *>>(std::move(results));
+        return std::make_shared<flxContainer<T *>>(std::move(results));
     }
 
     //--------------------------------------------------------
     // Get all that are of the provided type ID
-    std::shared_ptr<spOperationContainer> get(flxTypeID type)
+    std::shared_ptr<flxOperationContainer> get(flxTypeID type)
     {
-        spOperationContainer results;
+        flxOperationContainer results;
 
-        spOperation *theItem;
+        flxOperation *theItem;
         for (int i = 0; i < Devices.size(); i++)
         {
             if (type == Devices.at(i)->getType())
             {
-                theItem = (spOperation *)Devices.at(i);
+                theItem = (flxOperation *)Devices.at(i);
                 results.push_back(theItem);
             }
         }
         // make a smart pointer
-        return std::make_shared<spOperationContainer>(std::move(results));
+        return std::make_shared<flxOperationContainer>(std::move(results));
     }
 
     //--------------------------------------------------------
@@ -139,12 +139,12 @@ class spSpark : public spObjectContainer
         return false;
     }
 
-    spDeviceContainer &connectedDevices(void)
+    flxDeviceContainer &connectedDevices(void)
     {
         return Devices;
     }
 
-    spBusSPI & spiDriver()
+    flxBusSPI & spiDriver()
     {
         // has the driver been initialized?
         if (!_spiDriver.initialized())
@@ -152,7 +152,7 @@ class spSpark : public spObjectContainer
 
         return _spiDriver;
     }
-    spBusI2C & i2cDriver()
+    flxBusI2C & i2cDriver()
     {
         // has the driver been initialized?
         if (!_i2cDriver.initialized())
@@ -179,9 +179,9 @@ class spSpark : public spObjectContainer
 
     void writeBanner(void)
     {
-        spLog_N("");
-        spLog_N(F("%s  %s"), name(), versionString());
-        spLog_N(F("%s\n\r"), description());
+        flxLog_N("");
+        flxLog_N(F("%s  %s"), name(), versionString());
+        flxLog_N(F("%s\n\r"), description());
     }
 
     const char* deviceId(void)
@@ -218,8 +218,8 @@ class spSpark : public spObjectContainer
     }
   private:
 
-    spBusI2C     _i2cDriver;
-    spBusSPI     _spiDriver;
+    flxBusI2C     _i2cDriver;
+    flxBusSPI     _spiDriver;
 
     std::string _strVersion;
     uint32_t    _uiVersion;
@@ -239,26 +239,26 @@ class spSpark : public spObjectContainer
         // Our container has two children, the device and the actions container
         // Cast the devices and actions to objects to add. And had to use
         // a temp var to get the references to take.
-        spObject * pTmp = &Actions;
+        flxObject * pTmp = &Actions;
         this->push_back(pTmp);
         pTmp = &Devices;
         this->push_back(pTmp);
         
     }
 
-    spOperation *_getByType(flxTypeID type)
+    flxOperation *_getByType(flxTypeID type)
     {
 
         for (int i = 0; i < Devices.size(); i++)
         {
             if (type == Devices.at(i)->getType())
-                return (spOperation *)Devices.at(i);
+                return (flxOperation *)Devices.at(i);
         }
 
         for (int i = 0; i < Actions.size(); i++)
         {
             if (type == Actions.at(i)->getType())
-                return (spOperation *)Actions.at(i);
+                return (flxOperation *)Actions.at(i);
         }
         return nullptr;
     }
@@ -269,7 +269,7 @@ class spSpark : public spObjectContainer
 extern spSpark &spark;
 
 // Define our application class interface.
-class spApplication : public spActionType<spApplication>
+class spApplication : public flxActionType<spApplication>
 {
 
 public:

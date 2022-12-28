@@ -11,18 +11,18 @@
 
 #include "Arduino.h"
 #include "SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 #define kMAX17048DeviceName "MAX17048"
 
 // Define our class
-class spDevMAX17048 : public spDeviceI2CType<spDevMAX17048>, public SFE_MAX1704X
+class spDevMAX17048 : public flxDeviceI2CType<spDevMAX17048>, public SFE_MAX1704X
 {
 
   public:
     spDevMAX17048();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -45,7 +45,7 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevMAX17048, &spDevMAX17048::read_voltage> voltageV;
-    spParameterOutFloat<spDevMAX17048, &spDevMAX17048::read_state_of_charge> stateOfCharge;    
-    spParameterOutFloat<spDevMAX17048, &spDevMAX17048::read_change_rate> changeRate;    
+    flxParameterOutFloat<spDevMAX17048, &spDevMAX17048::read_voltage> voltageV;
+    flxParameterOutFloat<spDevMAX17048, &spDevMAX17048::read_state_of_charge> stateOfCharge;    
+    flxParameterOutFloat<spDevMAX17048, &spDevMAX17048::read_change_rate> changeRate;    
 };

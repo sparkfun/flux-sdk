@@ -9,8 +9,8 @@
 
 #include "flxStorage.h"
 
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 #include "flxCoreTypes.h"
-#include "spCoreProps.h"
-#include "spCoreParam.h"
-#include "spCoreEvent.h"
+#include "flxCoreProps.h"
+#include "flxCoreParam.h"
+#include "flxCoreEvent.h"

@@ -11,18 +11,18 @@
 
 #include "Arduino.h"
 #include "SparkFun_LPS25HB_Arduino_Library.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 #define kLPS25HBDeviceName "LPS25HB"
 
 // Define our class
-class spDevLPS25HB : public spDeviceI2CType<spDevLPS25HB>, public LPS25HB
+class spDevLPS25HB : public flxDeviceI2CType<spDevLPS25HB>, public LPS25HB
 {
 
   public:
     spDevLPS25HB();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -44,6 +44,6 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevLPS25HB, &spDevLPS25HB::read_temperature_c> temperatureC;
-    spParameterOutFloat<spDevLPS25HB, &spDevLPS25HB::read_pressure_hpa> pressurehPa;    
+    flxParameterOutFloat<spDevLPS25HB, &spDevLPS25HB::read_temperature_c> temperatureC;
+    flxParameterOutFloat<spDevLPS25HB, &spDevLPS25HB::read_pressure_hpa> pressurehPa;    
 };

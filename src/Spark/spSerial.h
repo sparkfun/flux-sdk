@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include "spCoreEvent.h"
+#include "flxCoreEvent.h"
 #include "spOutput.h"
 #include <Arduino.h>
 
 //-----------------------------------------------------------
 // Simple serial output class. Making a singleton - this has no state.
 //
-class spSerial_ : public spWriter
+class spSerial_ : public flxWriter
 {
 
   public:
@@ -48,19 +48,19 @@ class spSerial_ : public spWriter
     // Overload listen, so we can type the events, and use the templated
     // write() method above.
 
-    void listen(spSignalInt &theEvent)
+    void listen(flxSignalInt &theEvent)
     {
         theEvent.call(this, &spSerial_::write);
     }
-    void listen(spSignalFloat &theEvent)
+    void listen(flxSignalFloat &theEvent)
     {
         theEvent.call(this, &spSerial_::write);
     }
-    void listen(spSignalBool &theEvent)
+    void listen(flxSignalBool &theEvent)
     {
         theEvent.call(this, &spSerial_::write);
     }
-    void listen(spSignalString &theEvent)
+    void listen(flxSignalString &theEvent)
     {
         theEvent.call(this, &spSerial_::write);
     }

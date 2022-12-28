@@ -12,7 +12,7 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_TMP117.h"
 
 // What is the name used to ID this device?
@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevTMP117 : public spDeviceI2CType<spDevTMP117>, public TMP117
+class spDevTMP117 : public flxDeviceI2CType<spDevTMP117>, public TMP117
 {
 
 public:
@@ -28,7 +28,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kTMP117DeviceName;
@@ -51,5 +51,5 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutDouble<spDevTMP117, &spDevTMP117::read_temperature_C> temperatureC;    
+    flxParameterOutDouble<spDevTMP117, &spDevTMP117::read_temperature_C> temperatureC;    
 };

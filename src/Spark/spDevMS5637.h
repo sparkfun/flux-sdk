@@ -11,18 +11,18 @@
 
 #include "Arduino.h"
 #include "SparkFun_MS5637_Arduino_Library.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 #define kMS5637DeviceName "MS5637"
 
 // Define our class
-class spDevMS5637 : public spDeviceI2CType<spDevMS5637>, public MS5637
+class spDevMS5637 : public flxDeviceI2CType<spDevMS5637>, public MS5637
 {
 
   public:
     spDevMS5637();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -44,6 +44,6 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevMS5637, &spDevMS5637::read_pressure_mbar> pressure_mbar;    
-    spParameterOutFloat<spDevMS5637, &spDevMS5637::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<spDevMS5637, &spDevMS5637::read_pressure_mbar> pressure_mbar;    
+    flxParameterOutFloat<spDevMS5637, &spDevMS5637::read_temperature_C> temperatureC;    
 };

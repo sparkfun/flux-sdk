@@ -11,10 +11,10 @@
 
 // simple class to support AWS IoT
 
-class spAWSIoT : public spMQTTESP32SecureCore<spAWSIoT>, public spWriter
+class flxIoTAWS : public spMQTTESP32SecureCore<flxIoTAWS>, public flxWriter
 {
 public:
-    spAWSIoT()
+    flxIoTAWS()
     {
         setName("AWS IoT", "Connection to AWs IoT");
         spark.add(this);

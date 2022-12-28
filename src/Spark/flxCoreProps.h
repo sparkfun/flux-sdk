@@ -1,17 +1,17 @@
 
 
-// spCoreProps.h
+// flxCoreProps.h
 //
 // Defines the objects that make up the property system in the framework.
 //
-// Also includes the core object definition (spObject and spContainer)
+// Also includes the core object definition (flxObject and flxContainer)
 
 #pragma once
 
 #include <string>
 #include <vector>
 
-#include "spCoreInterface.h"
+#include "flxCoreInterface.h"
 #include "flxCoreTypes.h"
 #include "flxStorage.h"
 #include "spUtils.h"
@@ -20,18 +20,18 @@
 
 typedef enum
 {
-    spEditSuccess = 0,
-    spEditFailure,
-    spEditOutOfRange
-} spEditResult_t;
+    flxEditSuccess = 0,
+    flxEditFailure,
+    flxEditOutOfRange
+} flxEditResult_t;
 //----------------------------------------------------------------------------------------
-// spProperty
+// flxProperty
 //
 // Base/Core Property Class
 //
 // From an abstract sense, a basic property - nothing more
 
-class spProperty : public flxDescriptor
+class flxProperty : public flxDescriptor
 {
 
   public:
@@ -40,7 +40,7 @@ class spProperty : public flxDescriptor
     // Editor interface method - called to have the value of the property
     // displayed/set/managed in an editor
 
-    virtual spEditResult_t editValue(flxDataEditor &) = 0;
+    virtual flxEditResult_t editValue(flxDataEditor &) = 0;
     virtual flxDataLimit *dataLimit(void) = 0;
     virtual bool setValue(flxDataVariable &) = 0;
 
@@ -70,23 +70,23 @@ class spProperty : public flxDescriptor
     virtual bool restore(flxStorageBlock *) = 0;
 };
 
-// simple def - list of spProperty objects (it's a vector)
-using spPropertyList = std::vector<spProperty *>;
+// simple def - list of flxProperty objects (it's a vector)
+using flxPropertyList = std::vector<flxProperty *>;
 
 //----------------------------------------------------------------------------------------
-// spPropertyContainer
+// flxPropertyContainer
 //
 // Define interface/class to manage a list of property
 //
 // The intent is to add this into other classes that want to expose properties.
 //
-class _spPropertyContainer
+class _flxPropertyContainer
 {
 
   public:
-    _spPropertyContainer() : _nProperties{0}{}
+    _flxPropertyContainer() : _nProperties{0}{}
     //---------------------------------------------------------------------------------
-    void addProperty(spProperty *newProperty)
+    void addProperty(flxProperty *newProperty)
     {
 
         if ( !newProperty)
@@ -115,13 +115,13 @@ class _spPropertyContainer
     };
 
     //---------------------------------------------------------------------------------
-    void addProperty(spProperty &newProperty)
+    void addProperty(flxProperty &newProperty)
     {
         addProperty(&newProperty);
     };
 
     //---------------------------------------------------------------------------------
-    void removeProperty(spProperty *rmProp)
+    void removeProperty(flxProperty *rmProp)
     {
         auto iter = std::find(_properties.begin(), _properties.end(), rmProp);
 
@@ -130,12 +130,12 @@ class _spPropertyContainer
     }
 
     //---------------------------------------------------------------------------------    
-    void removeProperty(spProperty &rmProp)
+    void removeProperty(flxProperty &rmProp)
     {
         removeProperty(&rmProp);
     } 
     //---------------------------------------------------------------------------------
-    spPropertyList &getProperties(void)
+    flxPropertyList &getProperties(void)
     {
         return _properties;
     };
@@ -191,14 +191,14 @@ class _spPropertyContainer
     };
 
   private:
-    spPropertyList _properties;
+    flxPropertyList _properties;
 
     // The number of "visible" (not hidden) properties
     uint  _nProperties;  
 };
 
 //----------------------------------------------------------------------------------------
-// _spPropertyBase
+// _flxPropertyBase
 //
 // Template for a property object that implements typed operations for the property value
 //
@@ -206,11 +206,11 @@ class _spPropertyContainer
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spProperty, public _flxDataIn<T>, public _flxDataOut<T>
+template <class T, bool HIDDEN, bool SECURE> class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDataOut<T>
 {
 
   public:
-    _spPropertyBase() : _isHidden{HIDDEN}, _isSecure{SECURE}
+    _flxPropertyBase() : _isHidden{HIDDEN}, _isSecure{SECURE}
     {
 
     }
@@ -261,7 +261,7 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
             bool status = stBlk->write(name(), c);
 
             if (!status)
-                spLog_E("Error when saving property %s", name());
+                flxLog_E("Error when saving property %s", name());
         }
         return status;
     };
@@ -289,7 +289,7 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(flxDataEditor &theEditor)
+    flxEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         T value = get();
@@ -300,12 +300,12 @@ template <class T, bool HIDDEN, bool SECURE> class _spPropertyBase : public spPr
         {
             // do we have a dataLimit set, and if so are we in limits?
             if (!_flxDataIn<T>::isValueValid(value))
-                return spEditOutOfRange;
+                return flxEditOutOfRange;
 
             set(value);
         }
 
-        return bSuccess ? spEditSuccess : spEditFailure;
+        return bSuccess ? flxEditSuccess : flxEditFailure;
     }
     //---------------------------------------------------------------------------------
     bool setValue(flxDataVariable &value)
@@ -330,7 +330,7 @@ private:
 };
 
 //----------------------------------------------------------------------------------------
-// _spPropertyBaseString
+// _flxPropertyBaseString
 //
 // Strings are special ...
 //
@@ -339,13 +339,13 @@ private:
 // magic that could reduce the code duplication - but this isn't happening today ...
 //
 template <bool HIDDEN, bool SECURE>
-class _spPropertyBaseString : public spProperty, _flxDataInString, _flxDataOutString
+class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOutString
 {
   protected:
     flxDataLimitType<std::string> *_dataLimit;
 
   public:
-    _spPropertyBaseString() : _dataLimit{nullptr}, _isHidden{HIDDEN}, _isSecure{SECURE}
+    _flxPropertyBaseString() : _dataLimit{nullptr}, _isHidden{HIDDEN}, _isSecure{SECURE}
     {
     }
 
@@ -415,7 +415,7 @@ class _spPropertyBaseString : public spProperty, _flxDataInString, _flxDataOutSt
 
             status = stBlk->writeString(name(), c.c_str());
             if (!status)
-                spLog_E("Error saving string for property: %s", name());
+                flxLog_E("Error saving string for property: %s", name());
         }
         return status;
     }
@@ -436,7 +436,7 @@ class _spPropertyBaseString : public spProperty, _flxDataInString, _flxDataOutSt
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(flxDataEditor &theEditor)
+    flxEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         std::string value = get();
@@ -446,7 +446,7 @@ class _spPropertyBaseString : public spProperty, _flxDataInString, _flxDataOutSt
         if (bSuccess) // success
             set(value);
 
-        return bSuccess ? spEditSuccess : spEditFailure;
+        return bSuccess ? flxEditSuccess : flxEditFailure;
         ;
     }
     // Data Limit things
@@ -480,14 +480,14 @@ private:
 //    - Property object that provides storage for the property value
 //
 //----------------------------------------------------------------------------------------------------
-// RW Property templated class: _spPropertyTypedRW
+// RW Property templated class: _flxPropertyTypedRW
 //
 //
 // A read/write property base class that takes a getter and a setter method and the target object
 //
 //
 template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T), bool HIDDEN=false, bool SECURE=false>
-class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
+class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
 {
     Object *my_object; // Pointer to the containing object
 
@@ -496,33 +496,33 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     bool _hasInitial;
 
   public:
-    _spPropertyTypedRW() : my_object(nullptr), _hasInitial{false}
+    _flxPropertyTypedRW() : my_object(nullptr), _hasInitial{false}
     {
     }
     // Initial Value
-    _spPropertyTypedRW(T value) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
+    _flxPropertyTypedRW(T value) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
     {
     }
 
     // set min and max range
-    _spPropertyTypedRW(T min, T max)
+    _flxPropertyTypedRW(T min, T max)
     {
         _flxDataIn<T>::setDataLimitRange(min, max);
     }
     // initial value, min, max range
-    _spPropertyTypedRW(T value, T min, T max) : _spPropertyTypedRW(value)
+    _flxPropertyTypedRW(T value, T min, T max) : _flxPropertyTypedRW(value)
     {
         _flxDataIn<T>::setDataLimitRange(min, max);
     }
 
     // Limit data set
-    _spPropertyTypedRW(std::initializer_list<std::pair<const std::string, T>> limitSet)
+    _flxPropertyTypedRW(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
         _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
     // Initial value and limit data set.
-    _spPropertyTypedRW(T value, std::initializer_list<std::pair<const std::string, T>> limitSet)
-        : _spPropertyTypedRW(value)
+    _flxPropertyTypedRW(T value, std::initializer_list<std::pair<const std::string, T>> limitSet)
+        : _flxPropertyTypedRW(value)
     {
         _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
@@ -538,9 +538,9 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spPropertyContainer
-        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
-                      "_spPropertyTypedRW: type parameter of this class must derive from spPropertyContainer");
+        // my_object must be derived from _flxPropertyContainer
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
+                      "_flxPropertyTypedRW: type parameter of this class must derive from flxPropertyContainer");
 
         my_object = obj;
         assert(my_object);
@@ -580,7 +580,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return (T)0;
         }
 
@@ -591,7 +591,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return; // would normally throw an exception, but not very Arduino like!
         }
 
@@ -631,7 +631,7 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
 
-    _spPropertyTypedRW<T, Object, _getter, _setter, HIDDEN, SECURE> &operator=(T const &value)
+    _flxPropertyTypedRW<T, Object, _getter, _setter, HIDDEN, SECURE> &operator=(T const &value)
     {
         set(value);
         return *this;
@@ -642,163 +642,163 @@ class _spPropertyTypedRW : public _spPropertyBase<T, HIDDEN, SECURE>
 
 // bool
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
-using spPropertyRWBool = _spPropertyTypedRW<bool, Object, _getter, _setter>;
+using flxPropertyRWBool = _flxPropertyTypedRW<bool, Object, _getter, _setter>;
 
 // int8
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
-using spPropertyRWInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter>;
+using flxPropertyRWInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter>;
 
 // int16
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
-using spPropertyRWInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter>;
+using flxPropertyRWInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter>;
 
 // int
 template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using spPropertyRWInt = _spPropertyTypedRW<int, Object, _getter, _setter>;
+using flxPropertyRWInt = _flxPropertyTypedRW<int, Object, _getter, _setter>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using spPropertyRWUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter>;
+using flxPropertyRWUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using spPropertyRWUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter>;
+using flxPropertyRWUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter>;
 
 // unsigned int
 template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using spPropertyRWUint = _spPropertyTypedRW<uint, Object, _getter, _setter>;
+using flxPropertyRWUint = _flxPropertyTypedRW<uint, Object, _getter, _setter>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
-using spPropertyRWFloat = _spPropertyTypedRW<float, Object, _getter, _setter>;
+using flxPropertyRWFloat = _flxPropertyTypedRW<float, Object, _getter, _setter>;
 
 // double
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
-using spPropertyRWDouble = _spPropertyTypedRW<double, Object, _getter, _setter>;
+using flxPropertyRWDouble = _flxPropertyTypedRW<double, Object, _getter, _setter>;
 
 
 // HIDDEN
 // bool
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
-using spPropertyRWHiddenBool = _spPropertyTypedRW<bool, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenBool = _flxPropertyTypedRW<bool, Object, _getter, _setter, true>;
 
 // int8
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
-using spPropertyRWHiddenInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter, true>;
 
 // int16
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
-using spPropertyRWHiddenInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, true>;
 
 // int
 template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using spPropertyRWHiddenInt = _spPropertyTypedRW<int, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenInt = _flxPropertyTypedRW<int, Object, _getter, _setter, true>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using spPropertyRWHiddenUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using spPropertyRWHiddenUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true>;
 
 // unsigned int
 template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using spPropertyRWHiddenUint = _spPropertyTypedRW<uint, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenUint = _flxPropertyTypedRW<uint, Object, _getter, _setter, true>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
-using spPropertyRWHiddenFloat = _spPropertyTypedRW<float, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenFloat = _flxPropertyTypedRW<float, Object, _getter, _setter, true>;
 
 // double
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
-using spPropertyRWHiddenDouble = _spPropertyTypedRW<double, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, true>;
 
 
 // Secure
 // bool
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
-using spPropertyRWSecureBool = _spPropertyTypedRW<bool, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureBool = _flxPropertyTypedRW<bool, Object, _getter, _setter, false, true>;
 
 // int8
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
-using spPropertyRWSecureInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter, false, true>;
 
 // int16
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
-using spPropertyRWSecureInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, false, true>;
 
 // int
 template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using spPropertyRWSecureInt = _spPropertyTypedRW<int, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureInt = _flxPropertyTypedRW<int, Object, _getter, _setter, false, true>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using spPropertyRWSecureUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, false, true>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using spPropertyRWSecureUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, false, true>;
 
 // unsigned int
 template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using spPropertyRWSecureUint = _spPropertyTypedRW<uint, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureUint = _flxPropertyTypedRW<uint, Object, _getter, _setter, false, true>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
-using spPropertyRWSecureFloat = _spPropertyTypedRW<float, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureFloat = _flxPropertyTypedRW<float, Object, _getter, _setter, false, true>;
 
 // double
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
-using spPropertyRWSecureDouble = _spPropertyTypedRW<double, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, false, true>;
 
 
 // Hidden Secure
 // bool
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
-using spPropertyRWSecretBool = _spPropertyTypedRW<bool, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretBool = _flxPropertyTypedRW<bool, Object, _getter, _setter, true, true>;
 
 // int8
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
-using spPropertyRWSecretInt8 = _spPropertyTypedRW<int8_t, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter, true, true>;
 
 // int16
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
-using spPropertyRWSecretInt16 = _spPropertyTypedRW<int16_t, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, true, true>;
 
 // int
 template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using spPropertyRWSecretInt = _spPropertyTypedRW<int, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretInt = _flxPropertyTypedRW<int, Object, _getter, _setter, true, true>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using spPropertyRWSecretUint8 = _spPropertyTypedRW<uint8_t, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true, true>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using spPropertyRWSecretUint16 = _spPropertyTypedRW<uint16_t, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true, true>;
 
 // unsigned int
 template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using spPropertyRWSecretUint = _spPropertyTypedRW<uint, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretUint = _flxPropertyTypedRW<uint, Object, _getter, _setter, true, true>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
-using spPropertyRWSecretFloat = _spPropertyTypedRW<float, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretFloat = _flxPropertyTypedRW<float, Object, _getter, _setter, true, true>;
 
 // double
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
-using spPropertyRWSecretDouble = _spPropertyTypedRW<double, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, true, true>;
 
 //---------------------------------------------------------------------------------
-// spPropertyRWString
+// flxPropertyRWString
 //
 // "strings are special"
 //
 // A read/write property string class that takes a getter and a setter method and the target object
 //
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string), bool HIDDEN=false, bool SECURE=false>
-class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
+class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
 {
     Object *my_object;
 
@@ -807,11 +807,11 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
     bool _hasInitial;
 
   public:
-    spPropertyRWString() : my_object(0), _hasInitial{false}
+    flxPropertyRWString() : my_object(0), _hasInitial{false}
     {
     }
     // Initial Value
-    spPropertyRWString(std::string value) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
+    flxPropertyRWString(std::string value) : my_object{nullptr}, _initialValue{value}, _hasInitial{true}
     {
     }
     //---------------------------------------------------------------------------------
@@ -826,10 +826,10 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // Make sure the container type has spPropContainer as it's base class or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a flxObject
         // Compile-time check
-        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
-                      "_spPropertyTypedRWString: type parameter of this class must derive from spPropertyContainer");
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
+                      "_flxPropertyTypedRWString: type parameter of this class must derive from flxPropertyContainer");
 
         my_object = obj;
         assert(my_object);
@@ -889,7 +889,7 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return "";
         }
 
@@ -901,7 +901,7 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
             return;
         }
 
@@ -932,7 +932,7 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
 
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
-    spPropertyRWString<Object, _getter, _setter, HIDDEN, SECURE> &operator=(std::string const &value)
+    flxPropertyRWString<Object, _getter, _setter, HIDDEN, SECURE> &operator=(std::string const &value)
     {
         set(value);
         return *this;
@@ -941,50 +941,50 @@ class spPropertyRWString : public _spPropertyBaseString<HIDDEN, SECURE>
 
 // HIDDEN
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
-using spPropertyRWHiddenString = spPropertyRWString<Object, _getter, _setter, true, false>;
+using flxPropertyRWHiddenString = flxPropertyRWString<Object, _getter, _setter, true, false>;
 
 // SECURE
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
-using spPropertyRWSecureString = spPropertyRWString<Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureString = flxPropertyRWString<Object, _getter, _setter, false, true>;
 
 // Hidden and SECURE
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
-using spPropertyRWSecretString = spPropertyRWString<Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretString = flxPropertyRWString<Object, _getter, _setter, true, true>;
 //----------------------------------------------------------------------------------------------------
-// spPropertyTyped
+// flxPropertyTyped
 //
 // Template class for a property object that contains storage for the property.
 //
 template <class Object, class T, bool HIDDEN=false, bool SECURE=false> 
-class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
+class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
 {
   public:
-    _spPropertyTyped()
+    _flxPropertyTyped()
     {
     }
     // Create property with an initial value
-    _spPropertyTyped(T value) : data{value}
+    _flxPropertyTyped(T value) : data{value}
     {
     }
 
     // Just a limit range
-    _spPropertyTyped(T min, T max)
+    _flxPropertyTyped(T min, T max)
     {
         _flxDataIn<T>::setDataLimitRange(min, max);
     }
 
     // Initial value and a limit range
-    _spPropertyTyped(T value, T min, T max) : _spPropertyTyped(value)
+    _flxPropertyTyped(T value, T min, T max) : _flxPropertyTyped(value)
     {
         _flxDataIn<T>::setDataLimitRange(min, max);
     }
     // Limit data set
-    _spPropertyTyped(std::initializer_list<std::pair<const std::string, T>> limitSet)
+    _flxPropertyTyped(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
         _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
     // Initial value and limit data set.
-    _spPropertyTyped(T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _spPropertyTyped(value)
+    _flxPropertyTyped(T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _flxPropertyTyped(value)
     {
         _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
@@ -998,12 +998,12 @@ class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
     // properties.
     void operator()(Object *me)
     {
-        // Make sure the container type has spPropContainer as it's base class or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a flxObject
         // Compile-time check
-        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
-                      "_spPropertyTyped: type parameter of this class must derive from spPropertyContainer");
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
+                      "_flxPropertyTyped: type parameter of this class must derive from flxPropertyContainer");
 
-        // my_object must be derived from _spPropertyContainer
+        // my_object must be derived from _flxPropertyContainer
         assert(me);
         if (me)
             me->addProperty(this);
@@ -1077,7 +1077,7 @@ class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
 
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
-    _spPropertyTyped<Object, T, HIDDEN, SECURE> &operator=(T const &value)
+    _flxPropertyTyped<Object, T, HIDDEN, SECURE> &operator=(T const &value)
     {
         set(value);
         return *this;
@@ -1088,66 +1088,66 @@ class _spPropertyTyped : public _spPropertyBase<T, HIDDEN, SECURE>
 };
 
 // Define typed properties
-template <class Object> using spPropertyBool = _spPropertyTyped<Object, bool>;
-template <class Object> using spPropertyInt8 = _spPropertyTyped<Object, int8_t>;
-template <class Object> using spPropertyInt16 = _spPropertyTyped<Object, int16_t>;
-template <class Object> using spPropertyInt = _spPropertyTyped<Object, int>;
-template <class Object> using spPropertyUint8 = _spPropertyTyped<Object, uint8_t>;
-template <class Object> using spPropertyUint16 = _spPropertyTyped<Object, uint16_t>;
-template <class Object> using spPropertyUint = _spPropertyTyped<Object, uint>;
-template <class Object> using spPropertyFloat = _spPropertyTyped<Object, float>;
-template <class Object> using spPropertyDouble = _spPropertyTyped<Object, double>;
+template <class Object> using flxPropertyBool = _flxPropertyTyped<Object, bool>;
+template <class Object> using flxPropertyInt8 = _flxPropertyTyped<Object, int8_t>;
+template <class Object> using flxPropertyInt16 = _flxPropertyTyped<Object, int16_t>;
+template <class Object> using flxPropertyInt = _flxPropertyTyped<Object, int>;
+template <class Object> using flxPropertyUint8 = _flxPropertyTyped<Object, uint8_t>;
+template <class Object> using flxPropertyUint16 = _flxPropertyTyped<Object, uint16_t>;
+template <class Object> using flxPropertyUint = _flxPropertyTyped<Object, uint>;
+template <class Object> using flxPropertyFloat = _flxPropertyTyped<Object, float>;
+template <class Object> using flxPropertyDouble = _flxPropertyTyped<Object, double>;
 
 // Define typed properties - HIDDEN
-template <class Object> using spPropertyHiddenBool = _spPropertyTyped<Object, bool, true>;
-template <class Object> using spPropertyHiddenInt8 = _spPropertyTyped<Object, int8_t, true>;
-template <class Object> using spPropertyHiddenInt16 = _spPropertyTyped<Object, int16_t, true>;
-template <class Object> using spPropertyHiddenInt = _spPropertyTyped<Object, int, true>;
-template <class Object> using spPropertyHiddenUint8 = _spPropertyTyped<Object, uint8_t, true>;
-template <class Object> using spPropertyHiddenUint16 = _spPropertyTyped<Object, uint16_t, true>;
-template <class Object> using spPropertyHiddenUint = _spPropertyTyped<Object, uint, true>;
-template <class Object> using spPropertyHiddenFloat = _spPropertyTyped<Object, float, true>;
-template <class Object> using spPropertyHiddenDouble = _spPropertyTyped<Object, double, true>;
+template <class Object> using flxPropertyHiddenBool = _flxPropertyTyped<Object, bool, true>;
+template <class Object> using flxPropertyHiddenInt8 = _flxPropertyTyped<Object, int8_t, true>;
+template <class Object> using flxPropertyHiddenInt16 = _flxPropertyTyped<Object, int16_t, true>;
+template <class Object> using flxPropertyHiddenInt = _flxPropertyTyped<Object, int, true>;
+template <class Object> using flxPropertyHiddenUint8 = _flxPropertyTyped<Object, uint8_t, true>;
+template <class Object> using flxPropertyHiddenUint16 = _flxPropertyTyped<Object, uint16_t, true>;
+template <class Object> using flxPropertyHiddenUint = _flxPropertyTyped<Object, uint, true>;
+template <class Object> using flxPropertyHiddenFloat = _flxPropertyTyped<Object, float, true>;
+template <class Object> using flxPropertyHiddenDouble = _flxPropertyTyped<Object, double, true>;
 
 // Define typed properties - SECURE
-template <class Object> using spPropertySecureBool = _spPropertyTyped<Object, bool, false, true>;
-template <class Object> using spPropertySecureInt8 = _spPropertyTyped<Object, int8_t, false, true>;
-template <class Object> using spPropertySecureInt16 = _spPropertyTyped<Object, int16_t, false, true>;
-template <class Object> using spPropertySecureInt = _spPropertyTyped<Object, int, false, true>;
-template <class Object> using spPropertySecureUint8 = _spPropertyTyped<Object, uint8_t, false, true>;
-template <class Object> using spPropertySecureUint16 = _spPropertyTyped<Object, uint16_t, false, true>;
-template <class Object> using spPropertySecureUint = _spPropertyTyped<Object, uint, false, true>;
-template <class Object> using spPropertySecureFloat = _spPropertyTyped<Object, float, false, true>;
-template <class Object> using spPropertySecureDouble = _spPropertyTyped<Object, double, false, true>;
+template <class Object> using flxPropertySecureBool = _flxPropertyTyped<Object, bool, false, true>;
+template <class Object> using flxPropertySecureInt8 = _flxPropertyTyped<Object, int8_t, false, true>;
+template <class Object> using flxPropertySecureInt16 = _flxPropertyTyped<Object, int16_t, false, true>;
+template <class Object> using flxPropertySecureInt = _flxPropertyTyped<Object, int, false, true>;
+template <class Object> using flxPropertySecureUint8 = _flxPropertyTyped<Object, uint8_t, false, true>;
+template <class Object> using flxPropertySecureUint16 = _flxPropertyTyped<Object, uint16_t, false, true>;
+template <class Object> using flxPropertySecureUint = _flxPropertyTyped<Object, uint, false, true>;
+template <class Object> using flxPropertySecureFloat = _flxPropertyTyped<Object, float, false, true>;
+template <class Object> using flxPropertySecureDouble = _flxPropertyTyped<Object, double, false, true>;
 
 // Define typed properties - SECURE
-template <class Object> using spPropertySecretBool = _spPropertyTyped<Object, bool, true, true>;
-template <class Object> using spPropertySecretInt8 = _spPropertyTyped<Object, int8_t, true, true>;
-template <class Object> using spPropertySecretInt16 = _spPropertyTyped<Object, int16_t, true, true>;
-template <class Object> using spPropertySecretInt = _spPropertyTyped<Object, int, true, true>;
-template <class Object> using spPropertySecretUint8 = _spPropertyTyped<Object, uint8_t, true, true>;
-template <class Object> using spPropertySecretUint16 = _spPropertyTyped<Object, uint16_t, true, true>;
-template <class Object> using spPropertySecretUint = _spPropertyTyped<Object, uint, true, true>;
-template <class Object> using spPropertySecretFloat = _spPropertyTyped<Object, float, true, true>;
-template <class Object> using spPropertySecretDouble = _spPropertyTyped<Object, double, true, true>;
+template <class Object> using flxPropertySecretBool = _flxPropertyTyped<Object, bool, true, true>;
+template <class Object> using flxPropertySecretInt8 = _flxPropertyTyped<Object, int8_t, true, true>;
+template <class Object> using flxPropertySecretInt16 = _flxPropertyTyped<Object, int16_t, true, true>;
+template <class Object> using flxPropertySecretInt = _flxPropertyTyped<Object, int, true, true>;
+template <class Object> using flxPropertySecretUint8 = _flxPropertyTyped<Object, uint8_t, true, true>;
+template <class Object> using flxPropertySecretUint16 = _flxPropertyTyped<Object, uint16_t, true, true>;
+template <class Object> using flxPropertySecretUint = _flxPropertyTyped<Object, uint, true, true>;
+template <class Object> using flxPropertySecretFloat = _flxPropertyTyped<Object, float, true, true>;
+template <class Object> using flxPropertySecretDouble = _flxPropertyTyped<Object, double, true, true>;
 //----------------------------------------------------------------------------------------------------
-// spPropertyString
+// flxPropertyString
 //
 // "Strings are special"
 //
 // Implements the property, but uses string specific logic
 
 template <class Object, bool HIDDEN=false, bool SECURE=false> 
-class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
+class flxPropertyString : public _flxPropertyBaseString<HIDDEN, SECURE>
 {
 
   public:
-    spPropertyString()
+    flxPropertyString()
     {
     }
 
     // Create property with an initial value
-    spPropertyString(std::string value) : data{value}
+    flxPropertyString(std::string value) : data{value}
     {
     }
     //---------------------------------------------------------------------------------
@@ -1161,10 +1161,10 @@ class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
 
     void operator()(Object *me)
     {
-        // Make sure the container type has spPropContainer as it's base class or it's a spObject
+        // Make sure the container type has spPropContainer as it's base class or it's a flxObject
         // Compile-time check
-        static_assert(std::is_base_of<_spPropertyContainer, Object>::value,
-                      "_spPropertyString: type parameter of this class must derive from spPropertyContainer");
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
+                      "_flxPropertyString: type parameter of this class must derive from flxPropertyContainer");
 
         assert(me);
         if (me)
@@ -1248,7 +1248,7 @@ class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
 
     //---------------------------------------------------------------------------------
     // set -> property = value  (note: had to add class here to get beyond the copy constructor/op)
-    spPropertyString<Object, HIDDEN, SECURE> &operator=(std::string const &value)
+    flxPropertyString<Object, HIDDEN, SECURE> &operator=(std::string const &value)
     {
         set(value);
         return *this;
@@ -1260,18 +1260,18 @@ class spPropertyString : public _spPropertyBaseString<HIDDEN, SECURE>
 
 // HIDDEN
 template <class Object>
-using spPropertyHiddenString = spPropertyString<Object, true, false>;
+using flxPropertyHiddenString = flxPropertyString<Object, true, false>;
 
 // SECURE
 template <class Object>
-using spPropertySecureString = spPropertyString<Object, false, true>;
+using flxPropertySecureString = flxPropertyString<Object, false, true>;
 
 
 // Hidden/SECURE
 template <class Object>
-using spPropertySecretString = spPropertyString<Object, true, true>;
+using flxPropertySecretString = flxPropertyString<Object, true, true>;
 //----------------------------------------------------------------------------------------------------
-// spObject
+// flxObject
 //
 // Core Object Definition for framework objects
 //
@@ -1283,11 +1283,11 @@ using spPropertySecretString = spPropertyString<Object, true, true>;
 // TODO:
 //   - Add instance ID counter
 
-class spObject : public flxPersist, public _spPropertyContainer, public flxDescriptor
+class flxObject : public flxPersist, public _flxPropertyContainer, public flxDescriptor
 {
 
   private:
-    spObject *_parent;
+    flxObject *_parent;
 
     //---------------------------------------------------------------------------------
     static uint16_t getNextNameNumber(void)
@@ -1299,27 +1299,27 @@ class spObject : public flxPersist, public _spPropertyContainer, public flxDescr
     }
 
   public:
-    spObject()
+    flxObject()
     {
         // setup a default name for this device.
         char szBuffer[64];
-        snprintf(szBuffer, sizeof(szBuffer), "spObject%04u", getNextNameNumber());
+        snprintf(szBuffer, sizeof(szBuffer), "flxObject%04u", getNextNameNumber());
         setName(szBuffer);
     }
-    virtual ~spObject()
+    virtual ~flxObject()
     {
     }
 
-    void setParent(spObject *parent)
+    void setParent(flxObject *parent)
     {
         _parent = parent;
     }
-    void setParent(spObject &parent)
+    void setParent(flxObject &parent)
     {
         setParent(&parent);
     }
 
-    spObject *parent()
+    flxObject *parent()
     {
         return _parent;
     }
@@ -1334,7 +1334,7 @@ class spObject : public flxPersist, public _spPropertyContainer, public flxDescr
 
         bool status = saveProperties(stBlk);
         if (!status)
-            spLog_W("Error Saving a property for %s", name());
+            flxLog_W("Error Saving a property for %s", name());
 
         pStorage->endBlock(stBlk);
 
@@ -1349,14 +1349,14 @@ class spObject : public flxPersist, public _spPropertyContainer, public flxDescr
 
         if (!stBlk)
         {
-            spLog_I("Object Restore - error getting storage block");
+            flxLog_I("Object Restore - error getting storage block");
             return true; // nothing to restore
         }
 
         // restore props
         bool status = restoreProperties(stBlk);
         if (!status)
-            spLog_D("Error restoring a property for %s", name());
+            flxLog_D("Error restoring a property for %s", name());
 
         pStorage->endBlock(stBlk);
 
@@ -1369,10 +1369,10 @@ class spObject : public flxPersist, public _spPropertyContainer, public flxDescr
         return type();
     }
     //---------------------------------------------------------------------------------
-    // A static type class for spObject
+    // A static type class for flxObject
     static flxTypeID type(void)
     {
-        static flxTypeID _myTypeID = flxGetClassTypeID<spObject>();
+        static flxTypeID _myTypeID = flxGetClassTypeID<flxObject>();
 
         return _myTypeID;
     }
@@ -1380,19 +1380,19 @@ class spObject : public flxPersist, public _spPropertyContainer, public flxDescr
 //####################################################################
 // Container update
 //
-// spContainer
+// flxContainer
 //
-// A list/container that holds spObjects and supports serialization. The
+// A list/container that holds flxObjects and supports serialization. The
 // container itself is a object
 
-template <class T> class spContainer : public spObject
+template <class T> class flxContainer : public flxObject
 {
   protected:
     // Use a vector to store data
     std::vector<T> _vector;
 
   public:
-    spContainer() : _vector()
+    flxContainer() : _vector()
     {
     }
     // we're compositing the std::vector inteface - just bridge it up to
@@ -1507,13 +1507,13 @@ template <class T> class spContainer : public spObject
         return true;
     };
 };
-using spObjectContainer = spContainer<spObject *>;
+using flxObjectContainer = flxContainer<flxObject *>;
 
 //----------------------------------------------------------------------
 // Handy template to test if an object is of a specific type
-template <class T> bool spIsType(spObject *pObj)
+template <class T> bool flxIsType(flxObject *pObj)
 {
     return (T::type() == pObj->getType());
 };
 
-// End - spCoreProps.h
+// End - flxCoreProps.h

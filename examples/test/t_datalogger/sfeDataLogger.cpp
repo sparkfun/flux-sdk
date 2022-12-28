@@ -125,11 +125,11 @@ bool sfeDataLogger::setup()
 
     // setup SD card. Do this before calling start - so prefs can be read off SD if needed
     if (!setupSDCard())
-        spLog_W(F("Error initializing the SD Card"));
+        flxLog_W(F("Error initializing the SD Card"));
 
     // Setup the IoT clients
     if (!setupIoTClients())
-        spLog_W(F("Error initializing IoT Clients"));
+        flxLog_W(F("Error initializing IoT Clients"));
 
     return true;
 }
@@ -154,7 +154,7 @@ void sfeDataLogger::setupNFDevice(void)
         return;
 
     spDevST25DV *pNFC = nfcDevices->at(0);
-    spLog_I(F("%s: WiFi credentials via NFC enabled"), pNFC->name());
+    flxLog_I(F("%s: WiFi credentials via NFC enabled"), pNFC->name());
 
     pCreds->setCredentialSource(pNFC);
     pCreds->setWiFiDevice(&_wifiConnection);
@@ -170,20 +170,20 @@ void sfeDataLogger::setupSPIDevices()
     // IMU
     if (_onboardIMU.initialize(kAppOnBoardIMUCS))
     {
-        spLog_I(F("Onboard %s is enabled"), _onboardIMU.name());
+        flxLog_I(F("Onboard %s is enabled"), _onboardIMU.name());
         _logger.add(_onboardIMU);
     }
     else
-        spLog_E(F("Onboard %s failed to start"), _onboardIMU.name());
+        flxLog_E(F("Onboard %s failed to start"), _onboardIMU.name());
 
     // Magnetometer
     if (_onboardMag.initialize(kAppOnBoardMAGCS))
     {
-        spLog_I(F("Onboard %s is enabled"), _onboardMag.name());
+        flxLog_I(F("Onboard %s is enabled"), _onboardMag.name());
         _logger.add(_onboardMag);
     }
     else
-        spLog_E(F("Onboard %s failed to start"), _onboardMag.name());
+        flxLog_E(F("Onboard %s failed to start"), _onboardMag.name());
 }
 //---------------------------------------------------------------------
 void sfeDataLogger::setupBioHub()
@@ -191,7 +191,7 @@ void sfeDataLogger::setupBioHub()
     if (_bioHub.initialize(kAppBioHubReset,
                            kAppBioHubMFIO)) // Initialize the bio hub using the reset and mfio pins,
     {
-        spLog_I(F("%s is enabled"), _bioHub.name());
+        flxLog_I(F("%s is enabled"), _bioHub.name());
         _logger.add(_bioHub);
     }
 }
@@ -250,17 +250,17 @@ void sfeDataLogger::set_logTypeSer(uint8_t logType)
 bool sfeDataLogger::start()
 {
     // printout the device ID
-    spLog_I(F("Device ID: %s"), spark.deviceId());
+    flxLog_I(F("Device ID: %s"), spark.deviceId());
 
     // Write out the SD card stats
     if (_theSDCard.enabled())
-        spLog_I(F("SD card available. Type: %s, Size: %uMB"), _theSDCard.type(), _theSDCard.size());
+        flxLog_I(F("SD card available. Type: %s, Size: %uMB"), _theSDCard.type(), _theSDCard.size());
     else
-        spLog_W(F("SD card not available."));
+        flxLog_W(F("SD card not available."));
 
     // WiFi status
     if (!_wifiConnection.isConnected())
-        spLog_E(F("Unable to connect to WiFi!"));
+        flxLog_E(F("Unable to connect to WiFi!"));
 
     // Logging is done at an interval - using an interval timer.
     // Connect logger to the timer event
@@ -281,7 +281,7 @@ bool sfeDataLogger::start()
     // What devices has the system detected?
     // List them and add them to the logger
 
-    spDeviceContainer myDevices = spark.connectedDevices();
+    flxDeviceContainer myDevices = spark.connectedDevices();
 
     // The device list can be added directly to the logger object using an
     // add() method call. This will only add devices with output parameters.
@@ -292,12 +292,12 @@ bool sfeDataLogger::start()
     // But for this app, let's loop over our devices and show how use the
     // device parameters.
 
-    spLog_I(F("Devices Detected [%d]"), myDevices.size());
+    flxLog_I(F("Devices Detected [%d]"), myDevices.size());
 
     // Loop over the device list - note that it is iterable.
     for (auto device : myDevices)
     {
-        spLog_N_(F("\tDevice: %s, Output Number: %d\n\r"), device->name(), device->nOutputParameters());
+        flxLog_N_(F("\tDevice: %s, Output Number: %d\n\r"), device->name(), device->nOutputParameters());
         if (device->nOutputParameters() > 0)
             _logger.add(device);
     }
@@ -308,7 +308,7 @@ bool sfeDataLogger::start()
     // Setup the Bio Hub
     setupBioHub();
 
-    spLog_N("");
+    flxLog_N("");
 
     return true;
 }

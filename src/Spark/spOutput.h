@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "spCoreInterface.h"
+#include "flxCoreInterface.h"
 #include "flxCoreTypes.h"
 //-----------------------------------------
 
@@ -62,16 +62,16 @@ class spOutputFormat
 
     virtual void reset(void){};
 
-    void add(spWriter &newWriter)
+    void add(flxWriter &newWriter)
     {
         add(&newWriter);
     }
-    void add(spWriter *newWriter)
+    void add(flxWriter *newWriter)
     {
         _Writers.push_back(newWriter);
     }
 
-    void remove(spWriter *oldWriter)
+    void remove(flxWriter *oldWriter)
     {
         auto iter = std::find(_Writers.begin(), _Writers.end(), oldWriter);
 
@@ -87,5 +87,5 @@ class spOutputFormat
     }
 
   private:
-    std::vector<spWriter *> _Writers;
+    std::vector<flxWriter *> _Writers;
 };

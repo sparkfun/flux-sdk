@@ -56,13 +56,13 @@ bool _spFSSDMMCard::initialize()
 
     if (!SD_MMC.begin())
     {
-        spLog_E(F("Startup of the SD card failed."));
+        flxLog_E(F("Startup of the SD card failed."));
         return false;
     }
 
     if (SD_MMC.cardType() == CARD_NONE)
     {
-        spLog_W(F("No SD card attached. Please insert an SD card."));
+        flxLog_W(F("No SD card attached. Please insert an SD card."));
         return false;
     }
 

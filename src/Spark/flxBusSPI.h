@@ -8,11 +8,11 @@
 
 // Define our SPI Bus class
 
-class spBusSPI
+class flxBusSPI
 {
 
   public:
-    spBusSPI(void);
+    flxBusSPI(void);
 
     SPIClass *getSPIPort(void)
     {

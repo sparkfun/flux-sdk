@@ -3,7 +3,7 @@
  */
 
 #include "flxStorageJSONPref.h"
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 #include "spUtils.h"
 
 
@@ -279,14 +279,14 @@ bool flxStorageJSONPref::begin(bool readonly)
 
     if (!_fileSystem || _filename.length() == 0 || !_fileSystem->enabled())
     {
-        spLog_E(F("JSON Settings unavailable - no filesystem available."));
+        flxLog_E(F("JSON Settings unavailable - no filesystem available."));
         return false;
     }
 
     _pDocument = new DynamicJsonDocument(kJsonDocumentSize);
     if (!_pDocument)
     {
-        spLog_E(F("Unable to create JSON object for preferences."));
+        flxLog_E(F("Unable to create JSON object for preferences."));
         return false;
     }
 
@@ -318,14 +318,14 @@ bool flxStorageJSONPref::begin(bool readonly)
 
                 delete pBuffer;
             }else
-                spLog_D(F("JSON Settings Begin - Empty file"));
+                flxLog_D(F("JSON Settings Begin - Empty file"));
 
             theFile.close();
         }else
-            spLog_I(F("JSON Settings - the file failed to open: %s"), _filename.c_str());
+            flxLog_I(F("JSON Settings - the file failed to open: %s"), _filename.c_str());
 
         if (status == false)
-            spLog_E(F("Error reading json settings file. Ignoring"));
+            flxLog_E(F("Error reading json settings file. Ignoring"));
 
     }
    
@@ -343,7 +343,7 @@ void flxStorageJSONPref::end(void)
         std::string value;
         if (!serializeJsonPretty(*_pDocument, value))
         {
-            spLog_E(F("Unable to generate settings JSON string"));
+            flxLog_E(F("Unable to generate settings JSON string"));
         }
         else if (_fileSystem && _filename.length() > 0)
         {
@@ -352,11 +352,11 @@ void flxStorageJSONPref::end(void)
             if (theFile)
             {
                 if (theFile.write((uint8_t*)value.c_str(), value.length()) == 0)
-                    spLog_E(F("Error writing JSON settings file"));
+                    flxLog_E(F("Error writing JSON settings file"));
                 theFile.close();
 
             }else
-                spLog_E(F("Error opening settings file - is file system available?"));
+                flxLog_E(F("Error opening settings file - is file system available?"));
         }
     }
     // Clear memory

@@ -5,7 +5,7 @@
 #ifdef ESP32
 
 #include "flxStorageESP32Pref.h"
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 #include "spUtils.h"
 
 #include <nvs_flash.h>
@@ -23,7 +23,7 @@ static bool tag_is_valid(const char *tag)
 {
     if (!tag || strlen(tag) < kESP32MinTagLen)
     {
-        spLog_E("ESP32  Storage - invalid tag length - minimum is %d: %s\n\r", kESP32MinTagLen, !tag ? "NULL" : tag);
+        flxLog_E("ESP32  Storage - invalid tag length - minimum is %d: %s\n\r", kESP32MinTagLen, !tag ? "NULL" : tag);
         return false;
     }
     return true;
@@ -415,7 +415,7 @@ flxStorageESP32Block *flxStorageESP32Pref::beginBlock(const char *tag)
 
     if (!_prefs.begin(szHash, false))
     {
-        spLog_E("Error creating settings storage");
+        flxLog_E("Error creating settings storage");
         return nullptr;
     }
     _theBlock.setReadOnly(_readOnly);

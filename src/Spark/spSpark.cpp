@@ -9,7 +9,7 @@
 
 // for logging - define output driver on the stack
 
-static spLoggingDrvDefault _logDriver;
+static flxLoggingDrvDefault _logDriver;
 
 #define kApplicationHashIDTag "Application ID"
 
@@ -23,8 +23,8 @@ bool spSpark::start(bool bAutoLoad)
 
     // setup our logging system.
     _logDriver.setOutput(spSerial());
-    spLog.setLogDriver(_logDriver);
-    spLog.setLogLevel(spLogInfo); // TODO - adjust?
+    flxLog.setLogDriver(_logDriver);
+    flxLog.setLogLevel(flxLogInfo); // TODO - adjust?
 
 
 
@@ -33,7 +33,7 @@ bool spSpark::start(bool bAutoLoad)
     {
         if (!_theApplication->setup())
         {
-            spLog_E(F("Error during application setup"));
+            flxLog_E(F("Error during application setup"));
             return false;
         }
 
@@ -48,23 +48,23 @@ bool spSpark::start(bool bAutoLoad)
 
         // Build drivers for the registered devices connected to the system
     if (bAutoLoad)
-        spDeviceFactory::get().buildDevices(i2cDriver());
+        flxDeviceFactory::get().buildDevices(i2cDriver());
 
     // Everything should be loaded -- restore settings from storage
     if (spSettings.isAvailable())
     {
-        spLog_I_(F("Restoring System Settings ..."));
+        flxLog_I_(F("Restoring System Settings ..."));
         if (!spSettings.restoreSystem())
-            spLog_W(F("Error encountered restoring system settings..."));
+            flxLog_W(F("Error encountered restoring system settings..."));
     }
     else
-        spLog_I(F("Restore of System Settings unavailable."));
+        flxLog_I(F("Restore of System Settings unavailable."));
 
     // initialize actions
     for (auto pAction : Actions)
     {
         if (!pAction->initialize())
-            spLog_W(F("[Startup] %s failed to initialize."), pAction->name());
+            flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
     }
 
     // Call start on the application
@@ -73,7 +73,7 @@ bool spSpark::start(bool bAutoLoad)
     {
         if (!_theApplication->start())
         {
-            spLog_E(F("Error during application start"));
+            flxLog_E(F("Error during application start"));
             return false;
         }
     }
@@ -120,10 +120,10 @@ bool spSpark::loop(void)
 //
 // To pevent this, if a device added that is not autoload, we have the
 // device list checked and pruned!
-void spSpark::add(spDevice *theDevice)
+void spSpark::add(flxDevice *theDevice)
 {
     if (!theDevice->autoload())
-        spDeviceFactory::get().purneAutoload(theDevice, Devices);
+        flxDeviceFactory::get().pruneAutoload(theDevice, Devices);
 
     Devices.push_back(theDevice);
 }
@@ -164,12 +164,12 @@ bool spSpark::save(flxStorage *pStorage)
     // everything go okay?
     if (!status)
     {
-        spLog_D(F("Unable to store application ID key"));
+        flxLog_D(F("Unable to store application ID key"));
         return false;
     }
 
     // call super class
-    return spObjectContainer::save(pStorage);
+    return flxObjectContainer::save(pStorage);
 };
 
 //---------------------------------------------------------------------------------
@@ -218,9 +218,9 @@ bool spSpark::restore(flxStorage *pStorage)
     // everything go okay?
     if (!status)
     {
-        spLog_D(F("System settings not available for restoration from %s"), pStorage->name());
+        flxLog_D(F("System settings not available for restoration from %s"), pStorage->name());
         return false;
     }
     // call superclass
-    return spObjectContainer::restore(pStorage);
+    return flxObjectContainer::restore(pStorage);
 }

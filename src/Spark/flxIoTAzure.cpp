@@ -1,6 +1,6 @@
 
 
-#include "spAzureIoT.h"
+#include "flxIoTAzure.h"
 
 
 // The implementation of this file/class were copied from the Azure C SDK. 
@@ -45,7 +45,7 @@ static uint32_t getSasTokenExpiration(const char *sasToken)
     }
     if (j != sizeof(SE))
     {
-        spLog_D(F("Azure: Failed finding `se` field in SAS token"));
+        flxLog_D(F("Azure: Failed finding `se` field in SAS token"));
     }
     else
     {
@@ -57,7 +57,7 @@ static uint32_t getSasTokenExpiration(const char *sasToken)
 
         if (az_result_failed(az_span_atou32(az_span_create((uint8_t *)sasToken + i, k - i), &se_as_unix_time)))
         {
-            spLog_D(F("Azure: Failed parsing SAS token expiration timestamp"));
+            flxLog_D(F("Azure: Failed parsing SAS token expiration timestamp"));
         }
     }
 
@@ -90,7 +90,7 @@ static void base64_encode_bytes(az_span decoded_bytes, az_span base64_encoded_by
     if (mbedtls_base64_encode(az_span_ptr(base64_encoded_bytes), (size_t)az_span_size(base64_encoded_bytes), &len,
                               az_span_ptr(decoded_bytes), (size_t)az_span_size(decoded_bytes)) != 0)
     {
-        spLog_D(F("Azure: mbedtls_base64_encode fail"));
+        flxLog_D(F("Azure: mbedtls_base64_encode fail"));
     }
 
     *out_base64_encoded_bytes = az_span_create(az_span_ptr(base64_encoded_bytes), (int32_t)len);
@@ -104,7 +104,7 @@ static int decode_base64_bytes(az_span base64_encoded_bytes, az_span decoded_byt
     if (mbedtls_base64_decode(az_span_ptr(decoded_bytes), (size_t)az_span_size(decoded_bytes), &len,
                               az_span_ptr(base64_encoded_bytes), (size_t)az_span_size(base64_encoded_bytes)) != 0)
     {
-        spLog_E(F("Azure: mbedtls_base64_decode fail"));
+        flxLog_E(F("Azure: mbedtls_base64_decode fail"));
         return 1;
     }
     else
@@ -125,7 +125,7 @@ static int iot_sample_generate_sas_base64_encoded_signed_signature(az_span sas_b
 
     if (decode_base64_bytes(sas_base64_encoded_key, sas_decoded_key, &sas_decoded_key) != 0)
     {
-        spLog_E(F("Azure: Failed generating encoded signed signature"));
+        flxLog_E(F("Azure: Failed generating encoded signed signature"));
         return 1;
     }
 
@@ -162,7 +162,7 @@ az_span generate_sas_token(az_iot_hub_client *hub_client, az_span device_key, az
 
     if (az_result_failed(rc))
     {
-        spLog_E("Could not get the signature for SAS key: az_result return code " + rc);
+        flxLog_E("Could not get the signature for SAS key: az_result return code " + rc);
         return AZ_SPAN_EMPTY;
     }
 
@@ -173,7 +173,7 @@ az_span generate_sas_token(az_iot_hub_client *hub_client, az_span device_key, az
     if (iot_sample_generate_sas_base64_encoded_signed_signature(
             device_key, sas_signature, sas_base64_encoded_signed_signature, &sas_base64_encoded_signed_signature) != 0)
     {
-        spLog_E("Failed generating SAS token signed signature");
+        flxLog_E("Failed generating SAS token signed signature");
         return AZ_SPAN_EMPTY;
     }
 
@@ -185,7 +185,7 @@ az_span generate_sas_token(az_iot_hub_client *hub_client, az_span device_key, az
 
     if (az_result_failed(rc))
     {
-        spLog_E("Could not get the password: az_result return code %d",rc);
+        flxLog_E("Could not get the password: az_result return code %d",rc);
         return AZ_SPAN_EMPTY;
     }
     else
@@ -223,7 +223,7 @@ int AzIoTSasToken::Generate(unsigned int expiryTimeInMinutes)
 
     if (az_span_is_content_equal(this->sasToken, AZ_SPAN_EMPTY))
     {
-        spLog_E(F("Azure: Failed generating SAS token"));
+        flxLog_E(F("Azure: Failed generating SAS token"));
         return 1;
     }
     else
@@ -232,7 +232,7 @@ int AzIoTSasToken::Generate(unsigned int expiryTimeInMinutes)
 
         if (this->expirationUnixTime == 0)
         {
-            spLog_E(F("Azure: Failed getting the SAS token expiration time"));
+            flxLog_E(F("Azure: Failed getting the SAS token expiration time"));
             this->sasToken = AZ_SPAN_EMPTY;
             return 1;
         }
@@ -249,7 +249,7 @@ bool AzIoTSasToken::IsExpired()
 
     if (now == INDEFINITE_TIME)
     {
-        spLog_E(F("Azure: Failed getting current time"));
+        flxLog_E(F("Azure: Failed getting current time"));
         return true;
     }
     else

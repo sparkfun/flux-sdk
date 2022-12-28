@@ -5,7 +5,7 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spLogger.h>
+#include <Spark/flxLogger.h>
 #include <Spark/spFmtCSV.h>
 #include <Spark/spSerial.h>
 
@@ -30,7 +30,7 @@
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
 spFormatCSV fmtCSV;
 
-spLogger  logger;
+flxLogger  logger;
 
 //---------------------------------------------------------------------
 // Arduino Setup
@@ -60,7 +60,7 @@ void setup() {
     // What devices has the system detected?
     // List them
 
-    spDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = spark.connectedDevices();
 
     // The device list can be added directly to the logger object using an 
     // add() method call. This will only add devices with output parameters. 

@@ -75,7 +75,7 @@ spDevGNSS::spDevGNSS()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevGNSS::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevGNSS::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -105,9 +105,9 @@ bool spDevGNSS::isConnected(spBusI2C &i2cDriver, uint8_t address)
         return true; // Return now if traffic has been seen
 
     if (!i2cOK)
-        spLog_E("GNSS::isConnected i2c read error (first attempt)");
+        flxLog_E("GNSS::isConnected i2c read error (first attempt)");
     if (!trafficSeen)
-        spLog_W("GNSS::isConnected no traffic seen (first attempt)");
+        flxLog_W("GNSS::isConnected no traffic seen (first attempt)");
 
     // If the GNSS has been powered on for some time, the buffer could be full
     // Try to read some data from the buffer and see if the count changes
@@ -120,9 +120,9 @@ bool spDevGNSS::isConnected(spBusI2C &i2cDriver, uint8_t address)
     trafficSeen = (bufferWaiting != firstBufferWaiting);
 
     if (!i2cOK)
-        spLog_E("GNSS::isConnected i2c read error (second attempt)");
+        flxLog_E("GNSS::isConnected i2c read error (second attempt)");
     if (!trafficSeen)
-        spLog_W("GNSS::isConnected no traffic seen (second attempt)");
+        flxLog_W("GNSS::isConnected no traffic seen (second attempt)");
 
     return (i2cOK && trafficSeen);
 }

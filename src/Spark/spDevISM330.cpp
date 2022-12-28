@@ -89,11 +89,11 @@ bool spDevISM330Base::onInitialize(void)
         result &= setGyroFilterLP1(_gyro_filter_lp1);
         result &= setGyroLP1Bandwidth(_gyro_lp1_bandwidth);
         if (!result)
-            spLog_E("ISM330 onInitialize: device configuration failed");
+            flxLog_E("ISM330 onInitialize: device configuration failed");
     }
     else
     {
-        spLog_E("ISM330 onInitialize: device did not reset");
+        flxLog_E("ISM330 onInitialize: device did not reset");
         result = false;
     }
     _begun = result;
@@ -272,7 +272,7 @@ void spDevISM330Base::set_gyro_lp1_bandwidth(uint8_t bw)
 // I2C Version of the driver
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevISM330::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevISM330::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -307,7 +307,7 @@ bool spDevISM330::onInitialize(TwoWire &wirePort)
     if (result)
         result = spDevISM330Base::onInitialize();
     else
-        spLog_E("ISM330 onInitialize: device did not begin");
+        flxLog_E("ISM330 onInitialize: device did not begin");
 
     return result;
 }
@@ -339,7 +339,7 @@ bool spDevISM330_SPI::onInitialize(SPIClass &spiPort)
     if (result)
         result = spDevISM330Base::onInitialize();
     else
-        spLog_E("ISM330 SPI onInitialize: device did not begin");
+        flxLog_E("ISM330 SPI onInitialize: device did not begin");
 
     return result;
 }

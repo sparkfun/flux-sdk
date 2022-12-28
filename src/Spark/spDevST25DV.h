@@ -12,7 +12,7 @@
 #include "Arduino.h"
 
 #include "SparkFun_ST25DV64KC_Arduino_Library.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 // For WiFi updating of credentials
 #include "spWiFi.h"
@@ -21,7 +21,7 @@
 #define kST25DVDeviceName "ST25DV"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevST25DV : public spDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_NDEF, public spIWiFiCredentialSource
+class spDevST25DV : public flxDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_NDEF, public spIWiFiCredentialSource
 {
 
   public:
@@ -29,7 +29,7 @@ class spDevST25DV : public spDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_N
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kST25DVDeviceName;
@@ -45,7 +45,7 @@ class spDevST25DV : public spDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_N
 
     // Events
     // Our output event
-    spSignalVoid new_WiFi_record;
+    flxSignalVoid new_WiFi_record;
 
     bool loop(void);
 
@@ -61,7 +61,7 @@ class spDevST25DV : public spDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_N
         return get_password();
     }
 
-    spSignalVoid & getUpdateEvent(void)
+    flxSignalVoid & getUpdateEvent(void)
     {
         return new_WiFi_record;
     }
@@ -89,6 +89,6 @@ class spDevST25DV : public spDeviceI2CType<spDevST25DV>, public SFE_ST25DV64KC_N
     void set_password(std::string);
 
   public:
-    spPropertyRWString<spDevST25DV, &spDevST25DV::get_ssid, &spDevST25DV::set_ssid> ssid;
-    spPropertyRWString<spDevST25DV, &spDevST25DV::get_password, &spDevST25DV::set_password> password;
+    flxPropertyRWString<spDevST25DV, &spDevST25DV::get_ssid, &spDevST25DV::set_ssid> ssid;
+    flxPropertyRWString<spDevST25DV, &spDevST25DV::get_password, &spDevST25DV::set_password> password;
 };

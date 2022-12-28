@@ -5,7 +5,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 //-------------------------------------------------------------------------
 // dtostr()
 //
@@ -126,7 +126,7 @@ bool sp_utils::id_hash_string_to_string(const char *instr, char *outstr, size_t 
 
     if (!instr || !outstr || !len)
     {
-        spLog_E("String hash - invalid parameters");
+        flxLog_E("String hash - invalid parameters");
         return false;
     }
 

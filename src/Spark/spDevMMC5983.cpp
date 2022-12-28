@@ -144,7 +144,7 @@ void spDevMMC5983Base::set_auto_reset(uint8_t enable)
 // I2C Implementation
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevMMC5983::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevMMC5983::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -169,7 +169,7 @@ bool spDevMMC5983::onInitialize(TwoWire &wirePort)
     if (result)
         result = spDevMMC5983Base::onInitialize();
     else
-        spLog_E("MMC5983 onInitialize: device did not begin");
+        flxLog_E("MMC5983 onInitialize: device did not begin");
 
     return result;
 }
@@ -191,7 +191,7 @@ bool spDevMMC5983_SPI::onInitialize(SPIClass &spiPort)
     if (result)
         result = spDevMMC5983Base::onInitialize();
     else
-        spLog_E("MMC5983_SPI onInitialize: device did not begin");
+        flxLog_E("MMC5983_SPI onInitialize: device did not begin");
 
     return result;
 }

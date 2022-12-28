@@ -76,7 +76,7 @@ float spDevADS1015::read_differential_P2_N3()
 
 // Static method used to determine if this device is connected
 
-bool spDevADS1015::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevADS1015::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -129,7 +129,7 @@ bool spDevADS1015::onInitialize(TwoWire &wirePort)
     bool result = ADS1015::begin(address(), wirePort);
 
     if (!result)
-        spLog_E("ADS1015 - begin failed");
+        flxLog_E("ADS1015 - begin failed");
 
     if (result)
     {

@@ -11,20 +11,20 @@
 
 #include "Arduino.h"
 #include "SparkFun_FS3000_Arduino_Library.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 
 
 #define kFS3000DeviceName "FS3000"
 
 // Define our class
-class spDevFS3000 : public spDeviceI2CType<spDevFS3000>, public FS3000
+class spDevFS3000 : public flxDeviceI2CType<spDevFS3000>, public FS3000
 {
 
 public:
     spDevFS3000();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -53,9 +53,9 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevFS3000, &spDevFS3000::read_mps> flow_mps;
-    spParameterOutFloat<spDevFS3000, &spDevFS3000::read_mph> flow_mph;
+    flxParameterOutFloat<spDevFS3000, &spDevFS3000::read_mps> flow_mps;
+    flxParameterOutFloat<spDevFS3000, &spDevFS3000::read_mph> flow_mph;
 
-    spPropertyRWUint8<spDevFS3000, &spDevFS3000::get_fs3000_version, &spDevFS3000::set_fs3000_version> fs3000version
+    flxPropertyRWUint8<spDevFS3000, &spDevFS3000::get_fs3000_version, &spDevFS3000::set_fs3000_version> fs3000version
          = { 1 , { { "FS3000_1005", 1 }, { "FS3000_1015", 0 } } };
 };

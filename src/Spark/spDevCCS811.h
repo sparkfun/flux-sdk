@@ -9,20 +9,20 @@
 
 #include "Arduino.h"
 #include "SparkFunCCS811.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 
 
 #define kCCS811DeviceName "CCS811"
 
 // Define our class
-class spDevCCS811 : public spDeviceI2CType<spDevCCS811>, public CCS811
+class spDevCCS811 : public flxDeviceI2CType<spDevCCS811>, public CCS811
 {
 
   public:
     spDevCCS811();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -46,7 +46,7 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevCCS811, &spDevCCS811::read_CO2> co2;
-    spParameterOutFloat<spDevCCS811, &spDevCCS811::read_TVOC> tvoc;    
+    flxParameterOutFloat<spDevCCS811, &spDevCCS811::read_CO2> co2;
+    flxParameterOutFloat<spDevCCS811, &spDevCCS811::read_TVOC> tvoc;    
 
 };

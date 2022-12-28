@@ -13,7 +13,7 @@
 #include "Arduino.h"
 
 #include "SparkFun_ISM330DHCX.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kISM330DeviceName "ISM330"
@@ -22,7 +22,7 @@
 // Define a base framework device class. Then subclass from this for I2C and SPI version
 // of the device driver
 
-class spDevISM330Base : public spDevice, public QwDevISM330DHCX
+class spDevISM330Base : public flxDevice, public QwDevISM330DHCX
 {
 
   public:
@@ -82,16 +82,16 @@ class spDevISM330Base : public spDevice, public QwDevISM330DHCX
 
   public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_x> accelX;
-    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_y> accelY;
-    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_z> accelZ;
-    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_x> gyroX;
-    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_y> gyroY;
-    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_z> gyroZ;
-    spParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_temperature> temperature;
+    flxParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_x> accelX;
+    flxParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_y> accelY;
+    flxParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_accel_z> accelZ;
+    flxParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_x> gyroX;
+    flxParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_y> gyroY;
+    flxParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_gyro_z> gyroZ;
+    flxParameterOutFloat<spDevISM330Base, &spDevISM330Base::read_temperature> temperature;
 
     // Define our read-write properties
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_data_rate, &spDevISM330Base::set_accel_data_rate>
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_data_rate, &spDevISM330Base::set_accel_data_rate>
         accelDataRate = {ISM_XL_ODR_104Hz,
                          {{"Off", ISM_XL_ODR_OFF},
                           {"12.5 Hz", ISM_XL_ODR_12Hz5},
@@ -106,10 +106,10 @@ class spDevISM330Base : public spDevice, public QwDevISM330DHCX
                           {"6667 Hz", ISM_XL_ODR_6667Hz},
                           {"1.6 Hz", ISM_XL_ODR_1Hz6}}};
 
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_full_scale, &spDevISM330Base::set_accel_full_scale>
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_full_scale, &spDevISM330Base::set_accel_full_scale>
         accelFullScale = {ISM_4g, {{"2 g", ISM_2g}, {"16 g", ISM_16g}, {"4 g", ISM_4g}, {"8 g", ISM_8g}}};
 
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_data_rate, &spDevISM330Base::set_gyro_data_rate>
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_data_rate, &spDevISM330Base::set_gyro_data_rate>
         gyroDataRate = {ISM_GY_ODR_104Hz,
                         {{"Off", ISM_GY_ODR_OFF},
                          {"12 Hz", ISM_GY_ODR_12Hz},
@@ -123,7 +123,7 @@ class spDevISM330Base : public spDevice, public QwDevISM330DHCX
                          {"3332 Hz", ISM_GY_ODR_3332Hz},
                          {"6667 Hz", ISM_GY_ODR_6667Hz}}};
 
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_full_scale, &spDevISM330Base::set_gyro_full_scale>
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_full_scale, &spDevISM330Base::set_gyro_full_scale>
         gyroFullScale = {ISM_500dps,
                          {{"125 dps", ISM_125dps},
                           {"250 dps", ISM_250dps},
@@ -132,13 +132,13 @@ class spDevISM330Base : public spDevice, public QwDevISM330DHCX
                           {"2000 dps", ISM_2000dps},
                           {"4000 dps", ISM_4000dps}}};
 
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_filter_lp2, &spDevISM330Base::set_accel_filter_lp2>
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_filter_lp2, &spDevISM330Base::set_accel_filter_lp2>
         accelFilterLP2 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
 
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_filter_lp1, &spDevISM330Base::set_gyro_filter_lp1>
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_filter_lp1, &spDevISM330Base::set_gyro_filter_lp1>
         gyroFilterLP1 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
 
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_slope_filter,
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_accel_slope_filter,
                       &spDevISM330Base::set_accel_slope_filter>
         accelSlopeFilter = {ISM_LP_ODR_DIV_100,
                             {{"ODR/4", 0},
@@ -150,7 +150,7 @@ class spDevISM330Base : public spDevice, public QwDevISM330DHCX
                              {"ODR/400", ISM_LP_ODR_DIV_400},
                              {"ODR/800", ISM_LP_ODR_DIV_800}}};
 
-    spPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_lp1_bandwidth,
+    flxPropertyRWUint8<spDevISM330Base, &spDevISM330Base::get_gyro_lp1_bandwidth,
                       &spDevISM330Base::set_gyro_lp1_bandwidth>
         gyroLP1Bandwidth = {ISM_MEDIUM,
                             {{"Ultra Light", ISM_ULTRA_LIGHT},
@@ -172,7 +172,7 @@ class spDevISM330Base : public spDevice, public QwDevISM330DHCX
 //
 // Define our I2C version of the class. NOTE: We add our base class to the template call
 
-class spDevISM330 : public spDeviceI2CType<spDevISM330, spDevISM330Base>
+class spDevISM330 : public flxDeviceI2CType<spDevISM330, spDevISM330Base>
 {
 
   public:
@@ -180,7 +180,7 @@ class spDevISM330 : public spDeviceI2CType<spDevISM330, spDevISM330Base>
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kISM330DeviceName;
@@ -207,7 +207,7 @@ class spDevISM330 : public spDeviceI2CType<spDevISM330, spDevISM330Base>
 //
 // Define our SPI version of the class. NOTE: We add our base class to the template call
 
-class spDevISM330_SPI : public spDeviceSPIType<spDevISM330_SPI, spDevISM330Base>
+class spDevISM330_SPI : public flxDeviceSPIType<spDevISM330_SPI, spDevISM330Base>
 {
 
   public:

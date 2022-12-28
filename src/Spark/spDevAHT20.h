@@ -11,18 +11,18 @@
 
 #include "Arduino.h"
 #include "SparkFun_Qwiic_Humidity_AHT20.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 #define kAHT20DeviceName "AHT20"
 
 // Define our class
-class spDevAHT20 : public spDeviceI2CType<spDevAHT20>, public AHT20
+class spDevAHT20 : public flxDeviceI2CType<spDevAHT20>, public AHT20
 {
 
   public:
     spDevAHT20();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -44,6 +44,6 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevAHT20, &spDevAHT20::read_temperature_c> temperatureC;
-    spParameterOutFloat<spDevAHT20, &spDevAHT20::read_humidity> humidity;    
+    flxParameterOutFloat<spDevAHT20, &spDevAHT20::read_temperature_c> temperatureC;
+    flxParameterOutFloat<spDevAHT20, &spDevAHT20::read_humidity> humidity;    
 };

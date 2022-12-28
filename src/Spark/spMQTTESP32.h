@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 
-#include "spCoreInterface.h"
+#include "flxCoreInterface.h"
 #include "spFS.h"
 #include "spNetwork.h"
 #include "spSpark.h"
@@ -13,7 +13,7 @@
 #include <WiFiClientSecure.h>
 
 // A General MQTT client for the framework - for use on the ESP32
-template <class Object, typename CLIENT> class spMQTTESP32Base : public spActionType<Object>
+template <class Object, typename CLIENT> class spMQTTESP32Base : public flxActionType<Object>
 {
   private:
     // Enabled Property setter/getters
@@ -68,14 +68,14 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
 
         if (bConnected)
         {
-            spLog_I_(F("%s: connecting to MQTT endpoint %s:%u ..."), this->name(), server().c_str(), port());
+            flxLog_I_(F("%s: connecting to MQTT endpoint %s:%u ..."), this->name(), server().c_str(), port());
             if (connect())
-                spLog_N(F("connected"));
+                flxLog_N(F("connected"));
             // the connect method will print out sufficient error messages
         }
         else
         {
-            spLog_I(F("Disconnecting from MQTT endpoint %s"), clientName().c_str());
+            flxLog_I(F("Disconnecting from MQTT endpoint %s"), clientName().c_str());
             disconnect();
         }
     }
@@ -103,7 +103,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
     }
     // Used to register the event we want to listen to, which will trigger this
     // activity.
-    void listenToConnection(spSignalBool &theEvent)
+    void listenToConnection(flxSignalBool &theEvent)
     {
         // Register to get notified on connection changes
         theEvent.call(this, &spMQTTESP32Base::onConnectionChange);
@@ -139,17 +139,17 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
         // do we have all the parameters we need?
         if (clientName().length() == 0)
         {
-            spLog_E(F("%s : No Thing/Client name set. Unable to connect"), this->name());
+            flxLog_E(F("%s : No Thing/Client name set. Unable to connect"), this->name());
             return false;
         }
         if (server().length() == 0)
         {
-            spLog_E(F("%s : No server/endpoint set. Unable to connect"), this->name());
+            flxLog_E(F("%s : No server/endpoint set. Unable to connect"), this->name());
             return false;
         }
         if (port() < 1024)
         {
-            spLog_E(F("%s : A valid port is not set %d. Unable to connect"), this->name(), port());
+            flxLog_E(F("%s : A valid port is not set %d. Unable to connect"), this->name(), port());
             return false;
         }
         // mqtt time
@@ -167,10 +167,10 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
         {
             if (i > 3)
             {
-                spLog_E(F("%s: MQTT connection failed. Error Code: %d"), this->name(), _mqttClient.connectError());
+                flxLog_E(F("%s: MQTT connection failed. Error Code: %d"), this->name(), _mqttClient.connectError());
                 return false;
             }
-            spLog_N_(".");
+            flxLog_N_(".");
             delay(400);
         }
 
@@ -179,7 +179,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
     }
 
     //----------------------------------------------------------------------------
-    // spWriter interface method
+    // flxWriter interface method
     virtual void write(const char *value, bool newline)
     {
         // if we are not connected, ignore
@@ -189,7 +189,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
         // do we have a topic?
         if (topic().length() == 0)
         {
-            spLog_E(F("%s : No MQTT topic provided."), this->name());
+            flxLog_E(F("%s : No MQTT topic provided."), this->name());
             return;
         }
 
@@ -213,20 +213,20 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
     // Properties
 
     // Enabled/Disabled
-    spPropertyRWBool<spMQTTESP32Base, &spMQTTESP32Base::get_isEnabled, &spMQTTESP32Base::set_isEnabled> enabled;
+    flxPropertyRWBool<spMQTTESP32Base, &spMQTTESP32Base::get_isEnabled, &spMQTTESP32Base::set_isEnabled> enabled;
 
-    spPropertyUint<spMQTTESP32Base> port = {1883}; // default mqtt port
-    spPropertyString<spMQTTESP32Base> server;
-    spPropertyString<spMQTTESP32Base> topic;
-    spPropertyString<spMQTTESP32Base> clientName;
+    flxPropertyUint<spMQTTESP32Base> port = {1883}; // default mqtt port
+    flxPropertyString<spMQTTESP32Base> server;
+    flxPropertyString<spMQTTESP32Base> topic;
+    flxPropertyString<spMQTTESP32Base> clientName;
 
     // Buffer size property
-    spPropertyRWUint16<spMQTTESP32Base, &spMQTTESP32Base::get_bufferSize, &spMQTTESP32Base::set_bufferSize> bufferSize =
+    flxPropertyRWUint16<spMQTTESP32Base, &spMQTTESP32Base::get_bufferSize, &spMQTTESP32Base::set_bufferSize> bufferSize =
         {0};
 
     // username and password properties - some brokers requires this
-    spPropertyString<spMQTTESP32Base> username;
-    spPropertySecureString<spMQTTESP32Base> password;
+    flxPropertyString<spMQTTESP32Base> username;
+    flxPropertySecureString<spMQTTESP32Base> password;
 
   protected:
     CLIENT _wifiClient;
@@ -242,7 +242,7 @@ template <class Object, typename CLIENT> class spMQTTESP32Base : public spAction
     uint16_t _dynamicBufferSize;
 };
 
-class spMQTTESP32 : public spMQTTESP32Base<spMQTTESP32, WiFiClient>, public spWriter
+class spMQTTESP32 : public spMQTTESP32Base<spMQTTESP32, WiFiClient>, public flxWriter
 {
 public:
     spMQTTESP32()
@@ -413,14 +413,14 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
 
         if (!_fileSystem->exists(theFile.c_str()))
         {
-            spLog_E(F("Certificate file does not exist: %s"), theFile.c_str());
+            flxLog_E(F("Certificate file does not exist: %s"), theFile.c_str());
             return nullptr;
         }
 
         spFSFile certFile = _fileSystem->open(theFile.c_str(), spIFileSystem::kFileRead);
         if (!certFile)
         {
-            spLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
             return nullptr;
         }
 
@@ -428,7 +428,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
         if (szFile < 1)
         {
             certFile.close();
-            spLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
             return nullptr;
         }
         uint8_t *pCert = new uint8_t[szFile + 1];
@@ -436,7 +436,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
         if (!pCert)
         {
             certFile.close();
-            spLog_E(F("Unable to allocate certificate memory: %s"), theFile.c_str());
+            flxLog_E(F("Unable to allocate certificate memory: %s"), theFile.c_str());
             return nullptr;
         }
 
@@ -446,7 +446,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
 
         if (szFile != szRead)
         {
-            spLog_W(F("Error reading certificate file - size mismatch: %s"), theFile.c_str());
+            flxLog_W(F("Error reading certificate file - size mismatch: %s"), theFile.c_str());
             delete pCert;
             return nullptr;
         }
@@ -508,28 +508,28 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
     }
 
     // Security certs/keys
-    spPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCert,
+    flxPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCert,
                              &spMQTTESP32SecureCore::set_caCert>
         caCertificate;
 
-    spPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCert,
+    flxPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCert,
                              &spMQTTESP32SecureCore::set_clientCert>
         clientCertificate;
 
-    spPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKey,
+    flxPropertyRWSecretString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKey,
                              &spMQTTESP32SecureCore::set_clientKey>
         clientKey;
 
     // Define filename properties to access the secure keys. A filesystem must be provided to this object for it to read
     // the data.
     // Security certs/keys
-    spPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCertFilename,
+    flxPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_caCertFilename,
                        &spMQTTESP32SecureCore::set_caCertFilename>
         caCertFilename;
-    spPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCertFilename,
+    flxPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientCertFilename,
                        &spMQTTESP32SecureCore::set_clientCertFilename>
         clientCertFilename;
-    spPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKeyFilename,
+    flxPropertyRWString<spMQTTESP32SecureCore, &spMQTTESP32SecureCore::get_clientKeyFilename,
                        &spMQTTESP32SecureCore::set_clientKeyFilename>
         clientKeyFilename;
 
@@ -548,7 +548,7 @@ template <class Object> class spMQTTESP32SecureCore : public spMQTTESP32Base<Obj
 };
 
 
-class spMQTTESP32Secure : public spMQTTESP32SecureCore<spMQTTESP32Secure>, public spWriter
+class spMQTTESP32Secure : public spMQTTESP32SecureCore<spMQTTESP32Secure>, public flxWriter
 {
 public:
     spMQTTESP32Secure()

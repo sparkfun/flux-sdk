@@ -62,7 +62,7 @@ spDevACS37800::spDevACS37800()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevACS37800::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevACS37800::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))

@@ -44,7 +44,7 @@ float spDevMAX17048::read_change_rate()
 
 // Static method used to determine if this device is connected
 
-bool spDevMAX17048::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevMAX17048::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -66,14 +66,14 @@ bool spDevMAX17048::isConnected(spBusI2C &i2cDriver, uint8_t address)
         else
         {
             retries--;
-            spLog_W("SFE_MAX1704X::isConnected: retrying...");
+            flxLog_W("SFE_MAX1704X::isConnected: retrying...");
             delay(50);
         }
     }
 
     if (!success) // Return now if the version could not be read
     {
-        spLog_E("SFE_MAX1704X::isConnected: failed to detect IC!");
+        flxLog_E("SFE_MAX1704X::isConnected: failed to detect IC!");
         return (success);
     }
 
@@ -104,7 +104,7 @@ bool spDevMAX17048::onInitialize(TwoWire &wirePort)
     bool result = SFE_MAX1704X::begin(wirePort);
 
     if (!result)
-        spLog_E("MAX17048 - begin failed");
+        flxLog_E("MAX17048 - begin failed");
 
     return result;
 }

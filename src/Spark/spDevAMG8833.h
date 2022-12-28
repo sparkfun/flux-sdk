@@ -11,20 +11,20 @@
 
 #include "Arduino.h"
 #include "SparkFun_GridEYE_Arduino_Library.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 
 
 #define kAMG8833DeviceName "AMG8833"
 
 // Define our class
-class spDevAMG8833 : public spDeviceI2CType<spDevAMG8833>, public GridEYE
+class spDevAMG8833 : public flxDeviceI2CType<spDevAMG8833>, public GridEYE
 {
 
 public:
     spDevAMG8833();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -53,9 +53,9 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevAMG8833, &spDevAMG8833::read_device_temperature_C> deviceTemperatureC;
-    spParameterOutArrayFloat<spDevAMG8833, &spDevAMG8833::read_pixel_temperatures> pixelTemperatures;
+    flxParameterOutFloat<spDevAMG8833, &spDevAMG8833::read_device_temperature_C> deviceTemperatureC;
+    flxParameterOutArrayFloat<spDevAMG8833, &spDevAMG8833::read_pixel_temperatures> pixelTemperatures;
 
-    spPropertyRWUint8<spDevAMG8833, &spDevAMG8833::get_frame_rate, &spDevAMG8833::set_frame_rate> frameRate
+    flxPropertyRWUint8<spDevAMG8833, &spDevAMG8833::get_frame_rate, &spDevAMG8833::set_frame_rate> frameRate
          = { 1 , { { "1 Frame Per Second", 0 }, { "10 Frames Per Second", 1 } } };
 };

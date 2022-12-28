@@ -48,7 +48,7 @@ spDevTwist::spDevTwist()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevTwist::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevTwist::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -73,7 +73,7 @@ bool spDevTwist::onInitialize(TwoWire &wirePort)
     bool rc = TWIST::begin(wirePort, address());
 
     if (!rc)
-        spLog_E("TWIST - begin failed");
+        flxLog_E("TWIST - begin failed");
 
     _this_button_state = TWIST::isPressed();
     _last_button_state = _this_button_state;

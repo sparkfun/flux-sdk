@@ -15,14 +15,14 @@ The device class should following the naming patter `spDev[Name]`, where Name is
 
 The implementation requires separate header and implementation files, since a several class variables and a global object are defined that required the use of an implementation file.  
 
-The new device class should subclass from the frameworks ```spDevice``` class, using the ```spDeviceI2CType<DeviceName>``` template. Additionally, the device class subclasses from the underlying driver class. This allows the descriptor class to support the existing driver's interface. 
+The new device class should subclass from the frameworks ```flxDevice``` class, using the ```flxDeviceI2CType<DeviceName>``` template. Additionally, the device class subclasses from the underlying driver class. This allows the descriptor class to support the existing driver's interface. 
 
 ##### Example of a class definition
 
 Implementing a driver for the `BME280` Device.
 
 ```C++
-class spDevBME280 : public spDeviceI2CType<spDevBME280>, public BME280
+class spDevBME280 : public flxDeviceI2CType<spDevBME280>, public BME280
 {
 
 };
@@ -36,7 +36,7 @@ To accomplish this task, class level (static) methods and data are implemented b
 
 |Item | Description|
 |----|--|
- ```bool isConnected(spBusI2C, address)``` | Returns true if the device is connected |
+ ```bool isConnected(flxBusI2C, address)``` | Returns true if the device is connected |
  ```char* getDeviceName()``` | Returns the Device Name |
 |```uint8_t *getDefaultAddresses()``` | Return a list of addresses for the device. This list terminates with the value of ```kSparkDeviceAddressNull``` |
 
@@ -60,7 +60,7 @@ How the driver determines if a device is connected is determined by the implemen
 
 ##### Method Signature
 ```C++
-static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 ```
 
 ##### Arguments
@@ -87,14 +87,14 @@ The class definition
 #define kBME280DeviceName "bme280";
 
 // Define our class - note sub-classing from the Qwiic Library
-class spDevBME280 : public spDevice<spDevBME280>, public BME280
+class spDevBME280 : public flxDevice<spDevBME280>, public BME280
 {
 
   public:
     spDevBME280();
 
     // Device is connected methods
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBME280DeviceName;
@@ -115,7 +115,7 @@ class spDevBME280 : public spDevice<spDevBME280>, public BME280
 * This device defined its name, bme280, using the macro `kBME280DeviceName`
 * Default device addresses are contained in a class variable  ``` defaultDeviceAddress[];```
 * The method ```onInitialize()``` is called after the object is instantiated. 
-* The class subclasses from spDevice, passing in the class name to the template
+* The class subclasses from flxDevice, passing in the class name to the template
 
 ### Auto Discovery - Class Implementation
 
@@ -162,7 +162,7 @@ Notes
 
 The isConnected() method for this example is:
 ```C++
-bool spDevBME280::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
 
     uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); 

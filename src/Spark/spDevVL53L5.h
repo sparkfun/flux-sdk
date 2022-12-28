@@ -12,7 +12,7 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_VL53L5CX_Library.h"
 
 // What is the name used to ID this device?
@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevVL53L5 : public spDeviceI2CType<spDevVL53L5>, public SparkFun_VL53L5CX
+class spDevVL53L5 : public flxDeviceI2CType<spDevVL53L5>, public SparkFun_VL53L5CX
 {
 
 public:
@@ -28,7 +28,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     
     static const char *getDeviceName()
     {
@@ -66,13 +66,13 @@ private:
 
 public:
     // Define our read-write properties
-    spPropertyRWUint<spDevVL53L5, &spDevVL53L5::get_integration_time, &spDevVL53L5::set_integration_time> integrationTime
+    flxPropertyRWUint<spDevVL53L5, &spDevVL53L5::get_integration_time, &spDevVL53L5::set_integration_time> integrationTime
          = { 5, 2, 1000 };
-    spPropertyRWUint8<spDevVL53L5, &spDevVL53L5::get_sharpener_percent, &spDevVL53L5::set_sharpener_percent> sharpenerPercent
+    flxPropertyRWUint8<spDevVL53L5, &spDevVL53L5::get_sharpener_percent, &spDevVL53L5::set_sharpener_percent> sharpenerPercent
         = { 5, 0, 99 };
-    spPropertyRWUint8<spDevVL53L5, &spDevVL53L5::get_target_order, &spDevVL53L5::set_target_order> targetOrder
+    flxPropertyRWUint8<spDevVL53L5, &spDevVL53L5::get_target_order, &spDevVL53L5::set_target_order> targetOrder
         = { (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST, { { "Strongest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST}, { "Closest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::CLOSEST} } };
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutArrayInt16<spDevVL53L5, &spDevVL53L5::read_distance> distance;    
+    flxParameterOutArrayInt16<spDevVL53L5, &spDevVL53L5::read_distance> distance;    
 };

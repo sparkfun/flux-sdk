@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_ACS37800_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kACS37800DeviceName "ACS37800"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevACS37800 : public spDeviceI2CType<spDevACS37800>, public ACS37800
+class spDevACS37800 : public flxDeviceI2CType<spDevACS37800>, public ACS37800
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kACS37800DeviceName;
@@ -113,23 +113,23 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_volts> volts;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_amps> amps;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_watts> watts;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_volts_rms> voltsRMS;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_amps> ampsRMS;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_active> powerActive;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_reactive> powerReactive;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_apparent> powerApparent;
-    spParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_factor> powerFactor;
-    spParameterOutBool<spDevACS37800, &spDevACS37800::read_pos_angle> positiveAngle;
-    spParameterOutBool<spDevACS37800, &spDevACS37800::read_pos_power_factor> positivePowerFactor;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_volts> volts;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_amps> amps;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_watts> watts;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_volts_rms> voltsRMS;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_amps> ampsRMS;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_active> powerActive;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_reactive> powerReactive;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_apparent> powerApparent;
+    flxParameterOutFloat<spDevACS37800, &spDevACS37800::read_power_factor> powerFactor;
+    flxParameterOutBool<spDevACS37800, &spDevACS37800::read_pos_angle> positiveAngle;
+    flxParameterOutBool<spDevACS37800, &spDevACS37800::read_pos_power_factor> positivePowerFactor;
 
     // Define our read-write properties
-    spPropertyRWUint<spDevACS37800, &spDevACS37800::get_number_of_samples, &spDevACS37800::set_number_of_samples> numberOfSamples = { 0, 0, 1023 };
-    spPropertyRWUint8<spDevACS37800, &spDevACS37800::get_bypass_n_enable, &spDevACS37800::set_bypass_n_enable> bypassNenable
+    flxPropertyRWUint<spDevACS37800, &spDevACS37800::get_number_of_samples, &spDevACS37800::set_number_of_samples> numberOfSamples = { 0, 0, 1023 };
+    flxPropertyRWUint8<spDevACS37800, &spDevACS37800::get_bypass_n_enable, &spDevACS37800::set_bypass_n_enable> bypassNenable
         = { 0, { {"RMS calculated using zero crossings", 0}, {"RMS calculated using n samples", 1} } };
-    spPropertyRWFloat<spDevACS37800, &spDevACS37800::get_sense_resistance, &spDevACS37800::set_sense_resistance> senseResistance;
-    spPropertyRWFloat<spDevACS37800, &spDevACS37800::get_divider_resistance, &spDevACS37800::set_divider_resistance> dividerResistance;
-    spPropertyRWFloat<spDevACS37800, &spDevACS37800::get_current_range, &spDevACS37800::set_current_range> currentRange;
+    flxPropertyRWFloat<spDevACS37800, &spDevACS37800::get_sense_resistance, &spDevACS37800::set_sense_resistance> senseResistance;
+    flxPropertyRWFloat<spDevACS37800, &spDevACS37800::get_divider_resistance, &spDevACS37800::set_divider_resistance> dividerResistance;
+    flxPropertyRWFloat<spDevACS37800, &spDevACS37800::get_current_range, &spDevACS37800::set_current_range> currentRange;
 };

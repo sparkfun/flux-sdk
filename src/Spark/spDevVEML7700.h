@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_VEML7700_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kVEML7700DeviceName "VEML7700"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevVEML7700 : public spDeviceI2CType<spDevVEML7700>, public VEML7700
+class spDevVEML7700 : public flxDeviceI2CType<spDevVEML7700>, public VEML7700
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kVEML7700DeviceName;
@@ -66,18 +66,18 @@ private:
 
 public:
     // Define our read-write properties
-    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_integration_time, &spDevVEML7700::set_integration_time> integrationTime
+    flxPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_integration_time, &spDevVEML7700::set_integration_time> integrationTime
         = { VEML7700_INTEGRATION_100ms, { { "25ms", VEML7700_INTEGRATION_25ms }, { "50ms", VEML7700_INTEGRATION_50ms }, { "100ms", VEML7700_INTEGRATION_100ms },
                                           { "200ms", VEML7700_INTEGRATION_200ms }, { "400ms", VEML7700_INTEGRATION_400ms }, { "800ms", VEML7700_INTEGRATION_800ms } } };
-    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_sensitivity, &spDevVEML7700::set_sensitivity> sensitivity
+    flxPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_sensitivity, &spDevVEML7700::set_sensitivity> sensitivity
         = { VEML7700_SENSITIVITY_x1, { { "x1", VEML7700_SENSITIVITY_x1 }, { "x2", VEML7700_SENSITIVITY_x2 },
                                        { "x1/8", VEML7700_SENSITIVITY_x1_8 }, { "x1/4", VEML7700_SENSITIVITY_x1_4 } } };
-    spPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_persistence, &spDevVEML7700::set_persistence> persistence
+    flxPropertyRWUint8<spDevVEML7700, &spDevVEML7700::get_persistence, &spDevVEML7700::set_persistence> persistence
         = { VEML7700_PERSISTENCE_1, { { "x1", VEML7700_PERSISTENCE_1 }, { "x2", VEML7700_PERSISTENCE_2 },
                                       { "x4", VEML7700_PERSISTENCE_4 }, { "x8", VEML7700_PERSISTENCE_8 } } };
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutUint<spDevVEML7700, &spDevVEML7700::read_ambient_light> ambientLight;    
-    spParameterOutUint<spDevVEML7700, &spDevVEML7700::read_white_level> whiteLevel;    
-    spParameterOutFloat<spDevVEML7700, &spDevVEML7700::read_lux> lux;    
+    flxParameterOutUint<spDevVEML7700, &spDevVEML7700::read_ambient_light> ambientLight;    
+    flxParameterOutUint<spDevVEML7700, &spDevVEML7700::read_white_level> whiteLevel;    
+    flxParameterOutFloat<spDevVEML7700, &spDevVEML7700::read_lux> lux;    
 };

@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 
-#include "spCoreInterface.h"
+#include "flxCoreInterface.h"
 #include "spFS.h"
 #include "spNetwork.h"
 #include "spSpark.h"
@@ -19,7 +19,7 @@
 
 // Object -- the name of the class
 
-template <class Object> class spWrHTTPBase : public spActionType<Object>
+template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
 {
   private:
 
@@ -89,7 +89,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     void set_URL(std::string theURL)
     {
         if (theURL.length() < 10){
-            spLog_E(F("%s: Invalid URL - failed to parse protocol: %s"), this->name(), theURL.c_str());
+            flxLog_E(F("%s: Invalid URL - failed to parse protocol: %s"), this->name(), theURL.c_str());
             return;
         }
 
@@ -99,7 +99,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 
         if (!createWiFiClient())
         {
-            spLog_E(F("%s : Error creating a wifi network client connection"), this->name());
+            flxLog_E(F("%s : Error creating a wifi network client connection"), this->name());
         }
     }
 
@@ -112,14 +112,14 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 
         if (!_fileSystem->exists(theFile.c_str()))
         {
-            spLog_E(F("Certificate file does not exist: %s"), theFile.c_str());
+            flxLog_E(F("Certificate file does not exist: %s"), theFile.c_str());
             return nullptr;
         }
 
         spFSFile certFile = _fileSystem->open(theFile.c_str(), spIFileSystem::kFileRead);
         if (!certFile)
         {
-            spLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
             return nullptr;
         }
 
@@ -127,7 +127,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         if (szFile < 1)
         {
             certFile.close();
-            spLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
             return nullptr;
         }
         uint8_t *pCert = new uint8_t[szFile + 1];
@@ -135,7 +135,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         if (!pCert)
         {
             certFile.close();
-            spLog_E(F("Unable to allocate certificate memory: %s"), theFile.c_str());
+            flxLog_E(F("Unable to allocate certificate memory: %s"), theFile.c_str());
             return nullptr;
         }
 
@@ -145,7 +145,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 
         if (szFile != szRead)
         {
-            spLog_W(F("Error reading certificate file - size mismatch: %s"), theFile.c_str());
+            flxLog_W(F("Error reading certificate file - size mismatch: %s"), theFile.c_str());
             delete pCert;
             return nullptr;
         }
@@ -190,7 +190,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     }
 
   public:
-    spWrHTTPBase() : _isEnabled{false}, _canConnect{false}, _isSecure{false},
+    flxIoTHTTPBase() : _isEnabled{false}, _canConnect{false}, _isSecure{false},
                      _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr},
                      _wifiClient{nullptr}
     {
@@ -204,7 +204,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         spRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
     };
 
-    ~spWrHTTPBase()
+    ~flxIoTHTTPBase()
     {
         if (_pCACert != nullptr)
             delete _pCACert;
@@ -214,10 +214,10 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     }
     // Used to register the event we want to listen to, which will trigger this
     // activity.
-    void listenToConnection(spSignalBool &theEvent)
+    void listenToConnection(flxSignalBool &theEvent)
     {
         // Register to get notified on connection changes
-        theEvent.call(this, &spWrHTTPBase::onConnectionChange);
+        theEvent.call(this, &flxIoTHTTPBase::onConnectionChange);
     }
 
     void setNetwork(spNetwork *theNetwork)
@@ -232,7 +232,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     }
     
     //----------------------------------------------------------------------------
-    // spWriter interface method
+    // flxWriter interface method
     virtual void write(const char *value, bool newline)
     {
         // if we are not connected, ignore
@@ -243,7 +243,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         {
             if (!createWiFiClient())
             {
-                spLog_E(F("%s: Error creating network connection."), this->name());
+                flxLog_E(F("%s: Error creating network connection."), this->name());
                 return;
             }
         }
@@ -254,7 +254,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 
         if (!http.begin(*_wifiClient, _url.c_str()))
         {
-            spLog_E(F("%s: Error reaching URL: %s"), this->name(), _url.c_str());
+            flxLog_E(F("%s: Error reaching URL: %s"), this->name(), _url.c_str());
             return;
         }
 
@@ -263,7 +263,7 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
         int rc = http.POST(value);
 
         if (rc != 200)
-            spLog_W(F("%s: Error [%s] posting to: %s"), this->name(),
+            flxLog_W(F("%s: Error [%s] posting to: %s"), this->name(),
                         http.errorToString(rc).c_str(), _url.c_str());
 
         http.end();
@@ -277,14 +277,14 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
     // Properties
 
     // Enabled/Disabled
-    spPropertyRWBool<spWrHTTPBase, &spWrHTTPBase::get_isEnabled, &spWrHTTPBase::set_isEnabled> enabled;
+    flxPropertyRWBool<flxIoTHTTPBase, &flxIoTHTTPBase::get_isEnabled, &flxIoTHTTPBase::set_isEnabled> enabled;
 
-    spPropertyRWString<spWrHTTPBase, &spWrHTTPBase::get_URL, &spWrHTTPBase::set_URL> URL;
+    flxPropertyRWString<flxIoTHTTPBase, &flxIoTHTTPBase::get_URL, &flxIoTHTTPBase::set_URL> URL;
 
     // Security certs/keys
-    spPropertyRWSecretString<spWrHTTPBase, &spWrHTTPBase::get_caCert, &spWrHTTPBase::set_caCert> caCertificate;
+    flxPropertyRWSecretString<flxIoTHTTPBase, &flxIoTHTTPBase::get_caCert, &flxIoTHTTPBase::set_caCert> caCertificate;
 
-    spPropertyRWString<spWrHTTPBase, &spWrHTTPBase::get_caCertFilename, &spWrHTTPBase::set_caCertFilename>
+    flxPropertyRWString<flxIoTHTTPBase, &flxIoTHTTPBase::get_caCertFilename, &flxIoTHTTPBase::set_caCertFilename>
         caCertFilename;
 
   private:
@@ -311,10 +311,10 @@ template <class Object> class spWrHTTPBase : public spActionType<Object>
 };
 
 
-class spHTTPIoT : public spWrHTTPBase<spHTTPIoT>, public spWriter
+class flxIoTHTTP : public flxIoTHTTPBase<flxIoTHTTP>, public flxWriter
 {
 public:
-    spHTTPIoT()
+    flxIoTHTTP()
     {
         setName("HTTP IoT", "An HTTP IoT data connector");
 
@@ -333,7 +333,7 @@ public:
     virtual void write(const char *value, bool newline)
     {
 
-        spWrHTTPBase<spHTTPIoT>::write(value, false);
+        flxIoTHTTPBase<flxIoTHTTP>::write(value, false);
     }
 };
 #endif

@@ -50,7 +50,7 @@ spDevBME280::spDevBME280()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevBME280::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -58,7 +58,7 @@ bool spDevBME280::isConnected(spBusI2C &i2cDriver, uint8_t address)
 
     uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); // Should return 0x60 or 0x58
 
-    spLog_I("BME280 isConnected chip ID 0x%02x", chipID);
+    flxLog_I("BME280 isConnected chip ID 0x%02x", chipID);
 
     return (chipID == 0x58 || chipID == 0x60);
 }

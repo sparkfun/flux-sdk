@@ -39,7 +39,7 @@ float spDevLPS25HB::read_pressure_hpa()
 
 // Static method used to determine if this device is connected
 
-bool spDevLPS25HB::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevLPS25HB::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -64,7 +64,7 @@ bool spDevLPS25HB::onInitialize(TwoWire &wirePort)
     bool result = LPS25HB::begin(wirePort, address());
 
     if (!result)
-        spLog_E("LPS25HB - begin failed");
+        flxLog_E("LPS25HB - begin failed");
 
     return result;
 }

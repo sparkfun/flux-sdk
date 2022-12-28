@@ -47,7 +47,7 @@ spDevVL53L5::spDevVL53L5()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevVL53L5::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevVL53L5::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -80,9 +80,9 @@ bool spDevVL53L5::isConnected(spBusI2C &i2cDriver, uint8_t address)
 //
 bool spDevVL53L5::onInitialize(TwoWire &wirePort)
 {
-    spLog_W("VL53L5 is being initialized. This could take 10 seconds...");
+    flxLog_W("VL53L5 is being initialized. This could take 10 seconds...");
 
-    _begun = SparkFun_VL53L5CX::begin(spDevice::address(), wirePort);
+    _begun = SparkFun_VL53L5CX::begin(flxDevice::address(), wirePort);
     if (_begun)
     {
         SparkFun_VL53L5CX::setResolution(8*8);

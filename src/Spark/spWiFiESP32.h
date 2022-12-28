@@ -10,7 +10,7 @@
 
 // WiFi client for EsP32 boards
 
-class spWiFiESP32 : public spActionType<spWiFiESP32>, public spNetwork, public spIWiFiDevice
+class spWiFiESP32 : public flxActionType<spWiFiESP32>, public spNetwork, public spIWiFiDevice
 {
 private:
 
@@ -33,9 +33,9 @@ public:
     };
 
     // Properties 
-    spPropertyString<spWiFiESP32>      	SSID;
-    spPropertySecureString<spWiFiESP32>		password;
-    spPropertyRWBool<spWiFiESP32, &spWiFiESP32::get_isEnabled, &spWiFiESP32::set_isEnabled> enabled;
+    flxPropertyString<spWiFiESP32>      	SSID;
+    flxPropertySecureString<spWiFiESP32>		password;
+    flxPropertyRWBool<spWiFiESP32, &spWiFiESP32::get_isEnabled, &spWiFiESP32::set_isEnabled> enabled;
 
     bool loop(void);
 

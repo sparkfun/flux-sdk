@@ -1,10 +1,10 @@
 /*
  *
- * spCoreDevice.h
+ * flxCoreDevice.h
  *
  * Class that defines the interface between the system and the underlying device driver
  *
- * Provides the following capabiliites
+ * Provides the following capabilities
  *
  *   - Method to determine if underlying device is connected to the system
  *   - Methods to manage, serialize and describe device properties
@@ -20,8 +20,8 @@
 #include <Arduino.h>
 #include <vector>
 
-#include "spBusI2C.h"
-#include "spBusSPI.h"
+#include "flxBusI2C.h"
+#include "flxBusSPI.h"
 #include "flxCore.h"
 #include "spUtils.h"
 
@@ -31,13 +31,13 @@
 
 typedef enum
 {
-    spDeviceKindI2C,
-    spDeviceKindSPI
-} spDeviceKind_t;
+    flxDeviceKindI2C,
+    flxDeviceKindSPI
+} flxDeviceKind_t;
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// spDevice()
+// flxDevice()
 //
 // Define our device base class used for each device in the system.
 //
@@ -56,25 +56,25 @@ typedef enum
 //
 //
 
-class spDeviceFactory_;
+class flxDeviceFactory_;
 
-class spDevice : public spOperation
+class flxDevice : public flxOperation
 {
 
   public:
-    spDevice() : _autoload{false}, _address{kSparkDeviceAddressNull} {};
+    flxDevice() : _autoload{false}, _address{kSparkDeviceAddressNull} {};
 
-    virtual ~spDevice()
+    virtual ~flxDevice()
     {
     }
 
     // Methods called on initialize
     bool initialize();
-    virtual bool initialize(spBusI2C &)
+    virtual bool initialize(flxBusI2C &)
     {
         return initialize();
     };
-    virtual bool initialize(spBusSPI &)
+    virtual bool initialize(flxBusSPI &)
     {
         return initialize();
     };
@@ -102,7 +102,7 @@ class spDevice : public spOperation
     uint8_t _address;
 };
 
-using spDeviceContainer = spContainer<spDevice *>;
+using flxDeviceContainer = flxContainer<flxDevice *>;
 
 // Macro used to simplify device setup
 #define spSetupDeviceIdent(_name_) this->setName(_name_);
@@ -125,7 +125,7 @@ using spDeviceContainer = spContainer<spDevice *>;
 //
 // How this works:
 //
-//    Builder classes are defined for each new device driver (of type spDevice) using a
+//    Builder classes are defined for each new device driver (of type flxDevice) using a
 //    template. In the implementation of a device driver, a global builder object for that
 //    class is defined.
 //
@@ -144,22 +144,22 @@ using spDeviceContainer = spContainer<spDevice *>;
 //
 
 // it's c++ - you have to do this
-class spDeviceBuilderI2C;
+class flxDeviceBuilderI2C;
 
 // Our factory class
-class spDeviceFactory
+class flxDeviceFactory
 {
 
   public:
     // This is a singleton
-    static spDeviceFactory &get(void)
+    static flxDeviceFactory &get(void)
     {
 
-        static spDeviceFactory instance;
+        static flxDeviceFactory instance;
         return instance;
     }
     // The callback Builders use to register themselves.
-    bool registerDevice(spDeviceBuilderI2C *deviceBuilder)
+    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder)
     {
         _Builders.push_back(deviceBuilder);
         return true;
@@ -171,19 +171,19 @@ class spDeviceFactory
     };
 
     // Called to build a list of device objects for the devices connected to the system.
-    int buildDevices(spBusI2C &);
+    int buildDevices(flxBusI2C &);
 
-    void purneAutoload(spDevice *, spDeviceContainer &);
+    void pruneAutoload(flxDevice *, flxDeviceContainer &);
 
     // Delete copy and assignment constructors - b/c this is singleton.
-    spDeviceFactory(spDeviceFactory const &) = delete;
-    void operator=(spDeviceFactory const &) = delete;
+    flxDeviceFactory(flxDeviceFactory const &) = delete;
+    void operator=(flxDeviceFactory const &) = delete;
 
   private:
     bool addressInUse(uint8_t);
-    spDeviceFactory(){}; // hide constructor - this is a singleton
+    flxDeviceFactory(){}; // hide constructor - this is a singleton
 
-    std::vector<spDeviceBuilderI2C *> _Builders;
+    std::vector<flxDeviceBuilderI2C *> _Builders;
 };
 
 //----------------------------------------------------------------------------------
@@ -191,14 +191,14 @@ class spDeviceFactory
 
 // Base class - defines the builder interface.
 //
-class spDeviceBuilderI2C
+class flxDeviceBuilderI2C
 {
   public:
-    virtual spDevice *create(void) = 0;                                 // create the underlying device obj.
-    virtual bool isConnected(spBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
+    virtual flxDevice *create(void) = 0;                                 // create the underlying device obj.
+    virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
-    virtual spDeviceKind_t getDeviceKind(void) = 0;
+    virtual flxDeviceKind_t getDeviceKind(void) = 0;
 };
 
 // Define a class template used to register a device, then use this template to
@@ -209,12 +209,12 @@ class spDeviceBuilderI2C
 // and the constructor of the class registers the builder in the factory class.
 //
 
-template <class DeviceType> class DeviceBuilder : public spDeviceBuilderI2C
+template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
 {
   public:
     DeviceBuilder()
     {
-        spDeviceFactory::get().registerDevice(this);
+        flxDeviceFactory::get().registerDevice(this);
     }
 
     DeviceType *create()
@@ -222,7 +222,7 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilderI2C
         return new DeviceType();
     }
 
-    bool isConnected(spBusI2C &i2cDriver, uint8_t address)
+    bool isConnected(flxBusI2C &i2cDriver, uint8_t address)
     {
         return DeviceType::isConnected(i2cDriver, address); // calls device object static isConnected method()
     }
@@ -237,7 +237,7 @@ template <class DeviceType> class DeviceBuilder : public spDeviceBuilderI2C
         return DeviceType::getDefaultAddresses();
     }
 
-    spDeviceKind_t getDeviceKind(void)
+    flxDeviceKind_t getDeviceKind(void)
     {
         return DeviceType::kind();
     }

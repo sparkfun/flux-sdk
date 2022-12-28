@@ -49,10 +49,10 @@ class AzIoTSasToken
 //---------------------------------------------------------------------    
 // simple class to support Azure IoT
 
-class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
+class flxIoTAzure : public spMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
 {
   public:
-    spAzureIoT() : _initialized{false}, _hubInitialized{false}, _connected{false}
+    flxIoTAzure() : _initialized{false}, _hubInitialized{false}, _connected{false}
     {
         setName("Azure IoT", "Connection to Azure IoT");
 
@@ -100,7 +100,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
                                                     az_span_create((uint8_t *)_az_device_id, strlen(_az_device_id)),
                                                     &options)))
         {
-            spLog_E(F("%s: Failed initializing Azure IoT Hub client"), name());
+            flxLog_E(F("%s: Failed initializing Azure IoT Hub client"), name());
             return false;
         }
 
@@ -109,7 +109,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         if (az_result_failed(az_iot_hub_client_get_client_id(&_client, mqtt_client_id, sizeof(mqtt_client_id) - 1,
                                                              &client_id_length)))
         {
-            spLog_E(F("%s: Failed getting client id"), name());
+            flxLog_E(F("%s: Failed getting client id"), name());
             return false;
         }
 
@@ -117,7 +117,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         if (az_result_failed(az_iot_hub_client_get_user_name(&_client, mqtt_username, 
                         sizeof(mqtt_username)/sizeof(mqtt_username[0]), NULL)))
         {
-            spLog_E(F("%s: Failed to get azure username."),name());
+            flxLog_E(F("%s: Failed to get azure username."),name());
             return false;
         }
 
@@ -140,7 +140,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         {
             if (!initialize())
             {
-                spLog_E(F("%s failed to initialize"), name());
+                flxLog_E(F("%s failed to initialize"), name());
                 return false;
             }
         }
@@ -151,7 +151,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
 
         if (_sasToken.Generate(60) != 0)
         {
-            spLog_E(F("%s : Failed generating SAS authentication token"), name());
+            flxLog_E(F("%s : Failed generating SAS authentication token"), name());
             return false;
         }
 
@@ -159,7 +159,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         char *token = (char *)az_span_ptr(_sasToken.Get());
         if (!token)
         {
-            spLog_E(F("%s: Error creating password token"), name());
+            flxLog_E(F("%s: Error creating password token"), name());
             return false;
         }
         // set the password property to the token
@@ -172,13 +172,13 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         if (az_result_failed(az_iot_hub_client_telemetry_get_publish_topic(&_client, NULL, telemetry_topic,
                                                                            sizeof(telemetry_topic), NULL)))
         {
-            spLog_E(F("%s: Failed to retrieve azure mqtt topic from Azure SDK"), name());
+            flxLog_E(F("%s: Failed to retrieve azure mqtt topic from Azure SDK"), name());
             return false;
         }
         // Set the topic property
         topic = telemetry_topic;
 
-        _connected = spMQTTESP32SecureCore<spAzureIoT>::connect();
+        _connected = spMQTTESP32SecureCore<flxIoTAzure>::connect();
 
         return _connected;
     }
@@ -191,7 +191,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         _connected = false;
 
         // call super
-        spMQTTESP32SecureCore<spAzureIoT>::disconnect();
+        spMQTTESP32SecureCore<flxIoTAzure>::disconnect();
     }
     //---------------------------------------------------------------------
     // Initialize method for the class
@@ -204,7 +204,7 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
         // do we have a device key
         if (deviceKey().length() < 10)
         {
-            spLog_E(F("%s: No device authentication key provided"), name());
+            flxLog_E(F("%s: No device authentication key provided"), name());
             return false;
         }
 
@@ -238,18 +238,18 @@ class spAzureIoT : public spMQTTESP32SecureCore<spAzureIoT>, public spWriter
             disconnect();
             if (!connect())
             {
-                spLog_E(F("%s: Failed to reconnect after auth token refresh."), name());
+                flxLog_E(F("%s: Failed to reconnect after auth token refresh."), name());
                 return false;
             }else
-                spLog_I(F("%s: SAS Auth token refreshed"), name());
+                flxLog_I(F("%s: SAS Auth token refreshed"), name());
             return true;
         }
         return false;
     }
 
     // Properties
-    spPropertyString<spAzureIoT> deviceID;
-    spPropertySecureString<spAzureIoT> deviceKey;
+    flxPropertyString<flxIoTAzure> deviceID;
+    flxPropertySecureString<flxIoTAzure> deviceKey;
 
 private:
     static constexpr uint kBufferSize = 128;

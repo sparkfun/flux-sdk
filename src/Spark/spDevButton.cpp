@@ -44,7 +44,7 @@ spDevButton::spDevButton()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevButton::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevButton::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     if (address == 0x69)
     {
@@ -113,7 +113,7 @@ bool spDevButton::onInitialize(TwoWire &wirePort)
     bool rc = QwiicButton::begin(address(), wirePort);
 
     if (!rc)
-        spLog_E("BUTTON - begin failed");
+        flxLog_E("BUTTON - begin failed");
 
     _this_button_state = QwiicButton::isPressed();
     _last_button_state = _this_button_state;

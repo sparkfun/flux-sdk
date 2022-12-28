@@ -50,7 +50,7 @@ spDevBME68x::spDevBME68x()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevBME68x::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevBME68x::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -78,12 +78,12 @@ bool spDevBME68x::onInitialize(TwoWire &wirePort)
     int8_t bmeStatus = Bme68x::checkStatus();
     if (bmeStatus == -1)
     {
-        spLog_E("BME68X Sensor error: %s", Bme68x::statusString());
+        flxLog_E("BME68X Sensor error: %s", Bme68x::statusString());
         return false;
     }
     else if (bmeStatus == 1)
     {
-        spLog_W("BME68X Sensor warning: %s", Bme68x::statusString());
+        flxLog_W("BME68X Sensor warning: %s", Bme68x::statusString());
     }
 	
 	/* Set the default configuration for temperature, pressure and humidity */

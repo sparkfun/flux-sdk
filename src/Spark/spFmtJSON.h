@@ -175,7 +175,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
         // TODO: Add Error output
         if (n > buffer_size + 1)
         {
-            spLog_W(" JSON document buffer output buffer trimmed");
+            flxLog_W(" JSON document buffer output buffer trimmed");
             szBuffer[buffer_size] = '\0';
         }
 
@@ -203,7 +203,7 @@ template <std::size_t BUFFER_SIZE> class spFormatJSON : public spOutputFormat
 
     size_t buffer_size;
 
-    // we need to promote the add methods from our subclass - these take spWriter() interfaces
+    // we need to promote the add methods from our subclass - these take flxWriter() interfaces
     using spOutputFormat::add;
 
     // Add methods to capture the json writers

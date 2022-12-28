@@ -2,15 +2,15 @@
 
 // SPI bus encapsulation
 
-#include "spBusSPI.h"
-#include "spCoreLog.h"
+#include "flxBusSPI.h"
+#include "flxCoreLog.h"
 #include <Arduino.h>
 
-spBusSPI::spBusSPI(void) : _spiPort{nullptr}
+flxBusSPI::flxBusSPI(void) : _spiPort{nullptr}
 {
 }
 
-bool spBusSPI::begin(bool bInit)
+bool flxBusSPI::begin(bool bInit)
 {
     // If the transaction settings are not provided by the user they are built here.
     SPISettings spiSettings = SPISettings(3000000, MSBFIRST, SPI_MODE3);
@@ -19,7 +19,7 @@ bool spBusSPI::begin(bool bInit)
     return begin(SPI, spiSettings, bInit);
 }
 
-bool spBusSPI::begin(SPIClass &spiPort, SPISettings &spiSettings, bool bInit)
+bool flxBusSPI::begin(SPIClass &spiPort, SPISettings &spiSettings, bool bInit)
 {
 
     // If we have a port, this system is init'd  - return.
@@ -38,7 +38,7 @@ bool spBusSPI::begin(SPIClass &spiPort, SPISettings &spiSettings, bool bInit)
     return true;
 }
 
-bool spBusSPI::writeRegisterByte(uint8_t cs, uint8_t offset, uint8_t data)
+bool flxBusSPI::writeRegisterByte(uint8_t cs, uint8_t offset, uint8_t data)
 {
     // Bus?
     if (!_spiPort)
@@ -61,7 +61,7 @@ bool spBusSPI::writeRegisterByte(uint8_t cs, uint8_t offset, uint8_t data)
 }
 
 // Return the number of bytes sent
-int spBusSPI::writeRegisterRegion(uint8_t cs, uint8_t offset, const uint8_t *data, uint16_t length)
+int flxBusSPI::writeRegisterRegion(uint8_t cs, uint8_t offset, const uint8_t *data, uint16_t length)
 {
 
     if (!_spiPort)
@@ -84,7 +84,7 @@ int spBusSPI::writeRegisterRegion(uint8_t cs, uint8_t offset, const uint8_t *dat
     return length;
 }
 
-int spBusSPI::readRegisterRegion(uint8_t cs, uint8_t reg, uint8_t *data, uint16_t length)
+int flxBusSPI::readRegisterRegion(uint8_t cs, uint8_t reg, uint8_t *data, uint16_t length)
 {
     if (!_spiPort)
         return 0;

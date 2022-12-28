@@ -11,20 +11,20 @@
 
 #include "Arduino.h"
 #include "SparkFun_RV8803.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 
 
 #define kRV8803DeviceName "RV8803"
 
 // Define our class
-class spDevRV8803 : public spDeviceI2CType<spDevRV8803>, public RV8803
+class spDevRV8803 : public flxDeviceI2CType<spDevRV8803>, public RV8803
 {
 
 public:
     spDevRV8803();
     // Interface
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static const char *getDeviceName()
     {
@@ -87,31 +87,31 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_date_USA> readDateUSA;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_date> readDate;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_time> readTime;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_iso8601> readISO8601;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_iso8601_tz> readISO8601TZ;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_day> readDayOfWeek;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_day_short> readDayOfWeekShort;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_ordinal> readOrdinal;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_month> readMonth;
-    spParameterOutString<spDevRV8803, &spDevRV8803::read_month_short> readMonthShort;
-    spParameterOutUint16<spDevRV8803, &spDevRV8803::read_year> readYear;
-    spParameterOutUint<spDevRV8803, &spDevRV8803::get_epoch> getEpoch;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_date_USA> readDateUSA;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_date> readDate;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_time> readTime;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_iso8601> readISO8601;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_iso8601_tz> readISO8601TZ;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_day> readDayOfWeek;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_day_short> readDayOfWeekShort;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_ordinal> readOrdinal;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_month> readMonth;
+    flxParameterOutString<spDevRV8803, &spDevRV8803::read_month_short> readMonthShort;
+    flxParameterOutUint16<spDevRV8803, &spDevRV8803::read_year> readYear;
+    flxParameterOutUint<spDevRV8803, &spDevRV8803::get_epoch> getEpoch;
 
     // Define our input parameters
-    spParameterInUint<spDevRV8803, &spDevRV8803::set_epoch> setEpoch;
-    spParameterInUint8<spDevRV8803, &spDevRV8803::set_seconds> setSeconds = { 0, 59 };
-    spParameterInUint8<spDevRV8803, &spDevRV8803::set_minutes> setMinutes = { 0, 59 };
-    spParameterInUint8<spDevRV8803, &spDevRV8803::set_hours> setHours = { 0, 23 };
-    spParameterInUint8<spDevRV8803, &spDevRV8803::set_date> setDate = { 1, 31 };
-    spParameterInUint8<spDevRV8803, &spDevRV8803::set_weekday> setWeekday
+    flxParameterInUint<spDevRV8803, &spDevRV8803::set_epoch> setEpoch;
+    flxParameterInUint8<spDevRV8803, &spDevRV8803::set_seconds> setSeconds = { 0, 59 };
+    flxParameterInUint8<spDevRV8803, &spDevRV8803::set_minutes> setMinutes = { 0, 59 };
+    flxParameterInUint8<spDevRV8803, &spDevRV8803::set_hours> setHours = { 0, 23 };
+    flxParameterInUint8<spDevRV8803, &spDevRV8803::set_date> setDate = { 1, 31 };
+    flxParameterInUint8<spDevRV8803, &spDevRV8803::set_weekday> setWeekday
         { {"Sunday",0}, {"Monday",1}, {"Tuesday",2}, {"Wednesday",3}, {"Thursday",4}, {"Friday",5}, {"Saturday",6}};
-    spParameterInUint8<spDevRV8803, &spDevRV8803::set_month> setMonth = { 1, 12 };
-    spParameterInUint16<spDevRV8803, &spDevRV8803::set_year> setYear = { 1970, 2200 };
+    flxParameterInUint8<spDevRV8803, &spDevRV8803::set_month> setMonth = { 1, 12 };
+    flxParameterInUint16<spDevRV8803, &spDevRV8803::set_year> setYear = { 1970, 2200 };
 
     // Define our read-write properties
-    spPropertyRWBool<spDevRV8803, &spDevRV8803::get_offset_epoch, &spDevRV8803::set_offset_epoch> offsetEpoch;
-    spPropertyRWInt8<spDevRV8803, &spDevRV8803::get_time_zone_quarter_hours, &spDevRV8803::set_time_zone_quarter_hours> timeZoneQuarterHours = { -48, 56 };
+    flxPropertyRWBool<spDevRV8803, &spDevRV8803::get_offset_epoch, &spDevRV8803::set_offset_epoch> offsetEpoch;
+    flxPropertyRWInt8<spDevRV8803, &spDevRV8803::get_time_zone_quarter_hours, &spDevRV8803::set_time_zone_quarter_hours> timeZoneQuarterHours = { -48, 56 };
 };

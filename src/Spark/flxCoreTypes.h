@@ -1,5 +1,5 @@
 
-// spCoreType.h
+// flxCoreType.h
 //
 // Defines the core types and interfaces used in the framework.
 
@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 #include "spUtils.h"
 
 #include "Arduino.h"
@@ -1135,7 +1135,7 @@ template <typename T> class _flxDataIn : public flxDataIn
         case flxTypeString:
             break;
         default:
-            spLog_W("Unknown property type set");
+            flxLog_W("Unknown property type set");
             break;
         }
     };

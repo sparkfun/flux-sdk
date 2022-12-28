@@ -5,7 +5,7 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spLogger.h>
+#include <Spark/flxLogger.h>
 #include <Spark/spFmtJSON.h>
 #include <Spark/spFmtCSV.h>
 #include <Spark/spTimer.h>
@@ -17,7 +17,7 @@
 
 
 
-class test_properties : public spActionType<test_properties>
+class test_properties : public flxActionType<test_properties>
 {
 
     bool   _b_data=false;
@@ -128,10 +128,10 @@ public:
 
     };
     // Define standard properties 
-    spPropertyBool<test_properties>     prop_bool;
+    flxPropertyBool<test_properties>     prop_bool;
 
     // int property, with no initial value, but a set of limited values
-    spPropertyUint8<test_properties>      prop_int={
+    flxPropertyUint8<test_properties>      prop_int={
                                             {"Value One", 10},
                                             {"Value Two", 22},
                                             {"Value Three", 33},        
@@ -139,26 +139,26 @@ public:
                                             {"Value Five", 155}                       
                                         };
     // Test property with an initial value and a value limit set.
-    spPropertyUint8<test_properties>      prop_int_set={44, {
+    flxPropertyUint8<test_properties>      prop_int_set={44, {
                                             {"Value 1One", 10},
                                             {"Value 1Two", 22},
                                             {"Value 1Three", 33},        
                                             {"Value 1Four", 44},      
                                             {"Value 1Five", 155}                       
                                             }};
-    spPropertyUint<test_properties>       prop_uint_range = { 20, 60 };
+    flxPropertyUint<test_properties>       prop_uint_range = { 20, 60 };
 
-    spPropertyUint16<test_properties>     prop_uint16={12, 1, 13};
+    flxPropertyUint16<test_properties>     prop_uint16={12, 1, 13};
 
     // A float property with an initial value and a limit range
-    spPropertyFloat<test_properties>    prop_float = {1.0, -1.0, 20.0};
-    //spPropertyString<test_properties>   prop_str = {"starter string"};
+    flxPropertyFloat<test_properties>    prop_float = {1.0, -1.0, 20.0};
+    //flxPropertyString<test_properties>   prop_str = {"starter string"};
 
     // Define RW (getter/setter) Properties
-    spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
+    flxPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
     
     // Read-write property, with an initial value, and a set of Valid VAlues
-    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int = {111, {
+    flxPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int = {111, {
                                                                                                     {"Value One", 111},
                                                                                                     {"Value Two", 222},
                                                                                                     {"Value Three", 333},        
@@ -167,12 +167,12 @@ public:
                                                                                                     } };
 
     // uint 16 w/ initial value
-    spPropertyRWUint16<test_properties, &test_properties::get_uint16, &test_properties::set_uint16> rw_prop_uint16 = {4444};    
+    flxPropertyRWUint16<test_properties, &test_properties::get_uint16, &test_properties::set_uint16> rw_prop_uint16 = {4444};    
 
     // Float with a initial value and a range limit
-    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float = {93, -100, 100}; 
+    flxPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float = {93, -100, 100}; 
     
-    spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str = {"rw string initial value"};   
+    flxPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str = {"rw string initial value"};   
 
 
 
@@ -180,7 +180,7 @@ public:
 
 // Define an action class that uses parameters for testing
 
-class test_params : public spActionType<test_params>
+class test_params : public flxActionType<test_params>
 {
 
     bool   _b_data=false;
@@ -232,24 +232,24 @@ public:
 
 
     // Output Parameters
-    spParameterOutBool<test_params, &test_params::get_bool>   out_bool;
-    spParameterOutInt<test_params, &test_params::get_int>     out_int;
-    spParameterOutFloat<test_params, &test_params::get_float> out_float;
-    spParameterOutString<test_params, &test_params::get_str>  out_string;
+    flxParameterOutBool<test_params, &test_params::get_bool>   out_bool;
+    flxParameterOutInt<test_params, &test_params::get_int>     out_int;
+    flxParameterOutFloat<test_params, &test_params::get_float> out_float;
+    flxParameterOutString<test_params, &test_params::get_str>  out_string;
 
-    spParameterInBool<test_params, &test_params::set_bool>   in_bool;
-    spParameterInInt<test_params, &test_params::set_int>     in_int = {0, 144};
+    flxParameterInBool<test_params, &test_params::set_bool>   in_bool;
+    flxParameterInInt<test_params, &test_params::set_int>     in_int = {0, 144};
 
-    spParameterInFloat<test_params, &test_params::set_float> in_float = {
+    flxParameterInFloat<test_params, &test_params::set_float> in_float = {
                                             {"Value One", 10.},
                                             {"Value Two", 22.},
                                             {"Value Three", 33.},        
                                             {"Value Four", 44.},      
                                             {"Value Five", 155.}                       
                                         };
-    spParameterInString<test_params, &test_params::set_str>  in_string;  
+    flxParameterInString<test_params, &test_params::set_str>  in_string;  
 
-    spParameterInVoid<test_params, &test_params::set_void>   in_void;   
+    flxParameterInVoid<test_params, &test_params::set_void>   in_void;   
 };
 
 // Method implementation
@@ -311,7 +311,7 @@ void test_params::set_void(void){
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
 
 
-spLogger  logger;
+flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(3000);    // Timer 
@@ -349,7 +349,7 @@ void setup() {
     spark.add(testProps);
 
     // What's connected
-    spDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = spark.connectedDevices();
 
     Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
 

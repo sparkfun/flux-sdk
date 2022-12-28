@@ -116,7 +116,7 @@ extern _spFSSDMMCard &_theSDMMCard;
 
 // wrapper around the SD file system singleton -
 
-class spFSSDMMCard : public spIFileSystem, public spSystemType<spFSSDMMCard>
+class spFSSDMMCard : public spIFileSystem, public flxSystemType<spFSSDMMCard>
 {
 
   public:

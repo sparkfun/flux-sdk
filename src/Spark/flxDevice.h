@@ -1,10 +1,10 @@
 /*
  *
- * spDevice.h
+ * flxDevice.h
  *
  * Class that defines the interface between the system and the underlying device driver
  *
- * Provides the following capabiliites
+ * Provides the following capabilities
  *
  *   - Method to determine if underlying device is connected to the system
  *   - Methods to manage, serialize and describe device properties
@@ -20,7 +20,7 @@
 #include <Arduino.h>
 #include <vector>
 
-#include "spCoreDevice.h"
+#include "flxCoreDevice.h"
 #include "spSpark.h"
 
 //----------------------------------------------------------------------------------
@@ -28,17 +28,17 @@
 //----------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------
-// spDeviceI2CType()
+// flxDeviceI2CType()
 //
-// This subclass of spDevice via template allows the core device class to
+// This subclass of flxDevice via template allows the core device class to
 // access the static list of addresses to get the default address without
 // requiring the subclass to implement a method to do this.
 //
 // Devices should subclass from this object using the following pattern:
 //
-//   class <classname> : spDeviceI2CType<classname>, ...
+//   class <classname> : flxDeviceI2CType<classname>, ...
 //
-template <typename T, typename B = spDevice> class spDeviceI2CType : public B
+template <typename T, typename B = flxDevice> class flxDeviceI2CType : public B
 {
   public:
     // get the default address for the device. If none exists,
@@ -60,7 +60,7 @@ template <typename T, typename B = spDevice> class spDeviceI2CType : public B
 
         return onInitialize(wirePort);
     }
-    bool initialize(spBusI2C &i2cDriver)
+    bool initialize(flxBusI2C &i2cDriver)
     {
 
         // call the superclasses begin method.
@@ -119,12 +119,12 @@ template <typename T, typename B = spDevice> class spDeviceI2CType : public B
     }
 
     // Device Kind Typing
-    static spDeviceKind_t kind(void)
+    static flxDeviceKind_t kind(void)
     {
-        return spDeviceKindI2C;
+        return flxDeviceKindI2C;
     }
 
-    spDeviceKind_t getKind(void)
+    flxDeviceKind_t getKind(void)
     {
         return kind();
     }
@@ -135,17 +135,17 @@ template <typename T, typename B = spDevice> class spDeviceI2CType : public B
 //----------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------
-// spDeviceSPIType()
+// flxDeviceSPIType()
 //
 //
-template <typename T, typename B = spDevice> class spDeviceSPIType : public B
+template <typename T, typename B = flxDevice> class flxDeviceSPIType : public B
 {
   public:
     bool initialize(SPIClass &spiPort)
     {
 
         // Everything is ready to have the driver start talking to the SPI BUS.
-        // Last step, setup ings
+        // Last step, setup 
         // Magnetometer
         uint8_t cs = chipSelect();
         pinMode(cs, OUTPUT);
@@ -153,7 +153,7 @@ template <typename T, typename B = spDevice> class spDeviceSPIType : public B
 
         return onInitialize(spiPort);
     }
-    bool initialize(spBusSPI &spiDriver)
+    bool initialize(flxBusSPI &spiDriver)
     {
 
         // call the superclasses begin method.
@@ -220,12 +220,12 @@ template <typename T, typename B = spDevice> class spDeviceSPIType : public B
     }
 
     // Device Kind Typing
-    static spDeviceKind_t kind(void)
+    static flxDeviceKind_t kind(void)
     {
-        return spDeviceKindSPI;
+        return flxDeviceKindSPI;
     }
 
-    spDeviceKind_t getKind(void)
+    flxDeviceKind_t getKind(void)
     {
         return kind();
     }

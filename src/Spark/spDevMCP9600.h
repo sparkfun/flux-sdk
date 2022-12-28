@@ -11,14 +11,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_MCP9600.h"
 
 // What is the name used to ID this device?
 #define kMCP9600DeviceName "MCP9600"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevMCP9600 : public spDeviceI2CType<spDevMCP9600>, public MCP9600
+class spDevMCP9600 : public flxDeviceI2CType<spDevMCP9600>, public MCP9600
 {
 
   public:
@@ -26,7 +26,7 @@ class spDevMCP9600 : public spDeviceI2CType<spDevMCP9600>, public MCP9600
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kMCP9600DeviceName;
@@ -62,22 +62,22 @@ class spDevMCP9600 : public spDeviceI2CType<spDevMCP9600>, public MCP9600
 
   public:
     // property objs
-    spPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_AmbientResolution, &spDevMCP9600::set_AmbientResolution> ambient_resolution
+    flxPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_AmbientResolution, &spDevMCP9600::set_AmbientResolution> ambient_resolution
       = { RES_ZERO_POINT_0625, { { "0.0625", RES_ZERO_POINT_0625 }, { "0.25", RES_ZERO_POINT_25 } } };
 
-    spPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_ThermocoupleResolution, &spDevMCP9600::set_ThermocoupleResolution> thermocouple_resolution
+    flxPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_ThermocoupleResolution, &spDevMCP9600::set_ThermocoupleResolution> thermocouple_resolution
       = { RES_18_BIT, { { "18-bit", RES_18_BIT }, { "16-bit", RES_16_BIT },
                         { "14-bit", RES_14_BIT }, { "12-bit", RES_12_BIT } } };
 
-    spPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_ThermocoupleType, &spDevMCP9600::set_ThermocoupleType> thermocouple_type
+    flxPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_ThermocoupleType, &spDevMCP9600::set_ThermocoupleType> thermocouple_type
       = { TYPE_K, { { "Type K", TYPE_K }, { "Type J", TYPE_J },
                     { "Type T", TYPE_T }, { "Type N", TYPE_N },
                     { "Type S", TYPE_S }, { "Type E", TYPE_E },
                     { "Type B", TYPE_B }, { "Type R", TYPE_R } } };
 
-    spPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_FilterCoefficient, &spDevMCP9600::set_FilterCoefficient> filter_coefficent = { 0, 0, 7 };
+    flxPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_FilterCoefficient, &spDevMCP9600::set_FilterCoefficient> filter_coefficent = { 0, 0, 7 };
 
-    spPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_BurstSamples, &spDevMCP9600::set_BurstSamples> burst_samples
+    flxPropertyRWUint8<spDevMCP9600, &spDevMCP9600::get_BurstSamples, &spDevMCP9600::set_BurstSamples> burst_samples
       = { SAMPLES_1, { { "1", SAMPLES_1 }, { "2", SAMPLES_2 },
                        { "4", SAMPLES_4 }, { "8", SAMPLES_8 },
                        { "16", SAMPLES_16 }, { "32", SAMPLES_32 },
@@ -100,8 +100,8 @@ class spDevMCP9600 : public spDeviceI2CType<spDevMCP9600>, public MCP9600
   public:
     // Output args
 
-    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_ThermocoupleTemp> thermocouple_temp;
-    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_AmbientTemp> ambient_temp;
-    spParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_TempDelta> temp_delta;
+    flxParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_ThermocoupleTemp> thermocouple_temp;
+    flxParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_AmbientTemp> ambient_temp;
+    flxParameterOutFloat<spDevMCP9600, &spDevMCP9600::read_TempDelta> temp_delta;
     
 };

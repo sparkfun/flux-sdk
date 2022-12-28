@@ -29,7 +29,7 @@ void spSettingsSave::setFallback(flxStorage *pStorage)
 //----------------------------------------------------------------------------------
 
 // General save routine
-bool spSettingsSave::saveObjectToStorage(spObject* pObject, flxStorage *pStorage)
+bool spSettingsSave::saveObjectToStorage(flxObject* pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;
@@ -54,14 +54,14 @@ bool spSettingsSave::saveSystem(void)
 }
 //----------------------------------------------------------------------------------
 // save a specific object
-bool spSettingsSave::save(spObject &theObject)
+bool spSettingsSave::save(flxObject &theObject)
 {
     return save(&theObject);
 }
 
 //----------------------------------------------------------------------------------
 // Save settings for a object
-bool spSettingsSave::save(spObject *pObject)
+bool spSettingsSave::save(flxObject *pObject)
 {
     if (!_primaryStorage)
         return false;
@@ -69,13 +69,13 @@ bool spSettingsSave::save(spObject *pObject)
     bool status = saveObjectToStorage(pObject, _primaryStorage);
 
     if(!status)
-        spLog_E(F("Unable to save %s to %s"), pObject->name(), _primaryStorage->name());
+        flxLog_E(F("Unable to save %s to %s"), pObject->name(), _primaryStorage->name());
 
     // Save to secondary ? 
     if (fallbackSave() && _fallbackStorage !=nullptr)
     {
         if (!saveObjectToStorage(pObject, _fallbackStorage))
-            spLog_W(F("Unable to save %s to the fallback system, %s"), pObject->name(), _fallbackStorage->name());
+            flxLog_W(F("Unable to save %s to the fallback system, %s"), pObject->name(), _fallbackStorage->name());
     }
 
     return status;
@@ -85,7 +85,7 @@ bool spSettingsSave::save(spObject *pObject)
 //----------------------------------------------------------------------------------
 // Restore section
 //----------------------------------------------------------------------------------
-bool spSettingsSave::restoreObjectFromStorage(spObject* pObject, flxStorage *pStorage)
+bool spSettingsSave::restoreObjectFromStorage(flxObject* pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;
@@ -109,14 +109,14 @@ bool spSettingsSave::restoreSystem(void)
 
 //----------------------------------------------------------------------------------
 // restore a specific object
-bool spSettingsSave::restore(spObject &theObject)
+bool spSettingsSave::restore(flxObject &theObject)
 {
     return restore(&theObject);
 }
 
 //----------------------------------------------------------------------------------
 // pointer version
-bool spSettingsSave::restore(spObject *pObject)
+bool spSettingsSave::restore(flxObject *pObject)
 {
 
     if (!_primaryStorage)
@@ -127,7 +127,7 @@ bool spSettingsSave::restore(spObject *pObject)
     char * strSource = nullptr;
     if(!status)
     {
-        spLog_D(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
+        flxLog_D(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
 
 
         // Save to secondary ? 
@@ -135,12 +135,12 @@ bool spSettingsSave::restore(spObject *pObject)
         {
             status = restoreObjectFromStorage(pObject, _fallbackStorage);
             if (!status)
-                spLog_D(F("Unable to restore %s from the fallback system, %s"), pObject->name(), _fallbackStorage->name());
+                flxLog_D(F("Unable to restore %s from the fallback system, %s"), pObject->name(), _fallbackStorage->name());
             else 
             {
-                //spLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
+                //flxLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
                 // We restored from fallback, now save to main storage -- TODO - should this be a setting
-                spLog_D(F("Saving settings to %s"), _primaryStorage->name());
+                flxLog_D(F("Saving settings to %s"), _primaryStorage->name());
                 strSource = (char*)_fallbackStorage->name();
                 bool tmp = fallbackSave();
                 fallbackSave=false;
@@ -152,9 +152,9 @@ bool spSettingsSave::restore(spObject *pObject)
         strSource = (char*) _primaryStorage->name();
 
     if (status)
-        spLog_N(F("restored from %s"), strSource);
+        flxLog_N(F("restored from %s"), strSource);
     else
-        spLog_N(F("unable to restore settings, using defaults"));
+        flxLog_N(F("unable to restore settings, using defaults"));
 
     return status;
 
@@ -181,7 +181,7 @@ void spSettingsSave::restore_fallback(void)
         return;
 
     if (!restoreObjectFromStorage(&spark, _fallbackStorage))
-        spLog_E(F("Unable to restore settings from %s"), _fallbackStorage->name());
+        flxLog_E(F("Unable to restore settings from %s"), _fallbackStorage->name());
 }
 //----------------------------------------------------------------------------------
 void spSettingsSave::save_fallback(void)
@@ -190,16 +190,16 @@ void spSettingsSave::save_fallback(void)
         return;
 
     if (!saveObjectToStorage(&spark, _fallbackStorage))
-        spLog_E(F("Unable to save settings to %s"), _fallbackStorage->name());
+        flxLog_E(F("Unable to save settings to %s"), _fallbackStorage->name());
 }
 //------------------------------------------------------------------------------
 // Events
 // Slots for signals - Enables saving and restoring settings base on events
-void spSettingsSave::listenForSave(spSignalVoid &theEvent)
+void spSettingsSave::listenForSave(flxSignalVoid &theEvent)
 {
     theEvent.call(this, &spSettingsSave::saveEvent_CB);
 };
-void spSettingsSave::listenForRestore(spSignalVoid &theEvent)
+void spSettingsSave::listenForRestore(flxSignalVoid &theEvent)
 {
     theEvent.call(this, &spSettingsSave::restoreEvent_CB);
 };

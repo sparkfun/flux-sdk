@@ -60,7 +60,7 @@ void flxStorageEEPROM::initialize(void)
 
     if (!this->validStorage())
     {
-        spLog_I("EEPROM - Initializing");
+        flxLog_I("EEPROM - Initializing");
         this->initStorage();
     }
 
@@ -308,7 +308,7 @@ void flxStorageEEPROM::endBlock(flxStorageBlockEEPROM *dummy)
 {
     if ( ! _initialized )
     {
-        spLog_E("EEPROM - Invalid sequence call - endBlock() before beginBlock()");
+        flxLog_E("EEPROM - Invalid sequence call - endBlock() before beginBlock()");
         return;
     }
     _theBlock._locked = false;
@@ -357,7 +357,7 @@ bool flxStorageBlockEEPROM::writeBytes(size_t sz, char *buffer)
 {
     if ( !_storage )
     {
-        spLog_E("flxStorage - EEPROM. Block storage not initialized.");
+        flxLog_E("flxStorage - EEPROM. Block storage not initialized.");
         return false;
     }
 
@@ -368,7 +368,7 @@ bool flxStorageBlockEEPROM::readBytes(size_t sz, char *buffer)
 {
     if ( !_storage )
     {
-        spLog_E("flxStorage - EEPROM. Block storage not initialized.");
+        flxLog_E("flxStorage - EEPROM. Block storage not initialized.");
         return false;
     }
     return _storage->readBytes(this, sz, buffer);

@@ -12,13 +12,13 @@
 #include "Arduino.h"
 
 #include "SparkFun_Qwiic_Twist_Arduino_Library.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kTwistDeviceName "TWIST"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevTwist : public spDeviceI2CType<spDevTwist>, public TWIST
+class spDevTwist : public flxDeviceI2CType<spDevTwist>, public TWIST
 {
 
   public:
@@ -27,7 +27,7 @@ class spDevTwist : public spDeviceI2CType<spDevTwist>, public TWIST
     //-----------------------------------------------------------------
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kTwistDeviceName;
@@ -45,8 +45,8 @@ class spDevTwist : public spDeviceI2CType<spDevTwist>, public TWIST
 
     // Events
     // Our output event
-    spSignalBool on_clicked;
-    spSignalInt on_twist;
+    flxSignalBool on_clicked;
+    flxSignalInt on_twist;
 
     bool loop(void);
 
@@ -77,13 +77,13 @@ class spDevTwist : public spDeviceI2CType<spDevTwist>, public TWIST
     uint8_t _ledBlue = 128;
 
   public:
-    spPropertyRWUint8<spDevTwist, &spDevTwist::get_press_mode, &spDevTwist::set_press_mode> pressMode
+    flxPropertyRWUint8<spDevTwist, &spDevTwist::get_press_mode, &spDevTwist::set_press_mode> pressMode
       = { 1, { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } } };
-    spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_red, &spDevTwist::set_led_red> ledRed;
-    spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_green, &spDevTwist::set_led_green> ledGreen;
-    spPropertyRWUint8<spDevTwist, &spDevTwist::get_led_blue, &spDevTwist::set_led_blue> ledBlue;
+    flxPropertyRWUint8<spDevTwist, &spDevTwist::get_led_red, &spDevTwist::set_led_red> ledRed;
+    flxPropertyRWUint8<spDevTwist, &spDevTwist::get_led_green, &spDevTwist::set_led_green> ledGreen;
+    flxPropertyRWUint8<spDevTwist, &spDevTwist::get_led_blue, &spDevTwist::set_led_blue> ledBlue;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutBool<spDevTwist, &spDevTwist::read_button_state> buttonState;
-    spParameterOutInt<spDevTwist, &spDevTwist::get_twist_count> twistCount;
+    flxParameterOutBool<spDevTwist, &spDevTwist::read_button_state> buttonState;
+    flxParameterOutInt<spDevTwist, &spDevTwist::get_twist_count> twistCount;
 };

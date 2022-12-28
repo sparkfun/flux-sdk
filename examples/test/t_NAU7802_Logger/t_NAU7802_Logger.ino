@@ -5,7 +5,7 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spLogger.h>
+#include <Spark/flxLogger.h>
 #include <Spark/spFmtJSON.h>
 #include <Spark/spFmtCSV.h>
 #include <Spark/spTimer.h>
@@ -36,7 +36,7 @@
 // Note: setting internal buffer sizes using template to minimize alloc calls. 
 spFormatCSV fmtCSV;
 
-spLogger  logger;
+flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(kDefaultLogInterval);    // Timer 
@@ -74,7 +74,7 @@ void setup() {
     // What devices has the system detected?
     // List them and add them to the logger
 
-    spDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = spark.connectedDevices();
 
     // The device list can be added directly to the logger object using an 
     // add() method call. This will only add devices with output parameters. 
@@ -141,7 +141,7 @@ void loop() {
     {
       char c = Serial.read(); // Read the character
 
-      spDeviceContainer myDevices = spark.connectedDevices();
+      flxDeviceContainer myDevices = spark.connectedDevices();
       
       for (int i = 0; i < myDevices.size(); i++)
       {

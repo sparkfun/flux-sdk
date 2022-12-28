@@ -52,7 +52,7 @@ class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWrite
 
             if (sz == std::string::npos)
             {
-                spLog_W(F("%s:Invalid Device=Channel ID : %s"), name(), keyvalue.c_str());
+                flxLog_W(F("%s:Invalid Device=Channel ID : %s"), name(), keyvalue.c_str());
                 continue;
             }
             _deviceToChannel[sp_utils::strtrim(keyvalue.substr(0, sz))] = sp_utils::strtrim(keyvalue.substr(sz + 1));
@@ -103,7 +103,7 @@ class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWrite
                     value = sp_utils::to_string(kv.value().as<unsigned int>());
                 else
                 {
-                    spLog_W(F("%s: Unknown data field type"), name());
+                    flxLog_W(F("%s: Unknown data field type"), name());
                     continue;
                 }
 
@@ -131,7 +131,7 @@ class spThingSpeak : public spMQTTESP32SecureCore<spThingSpeak>, public spIWrite
     }
 
     // Device=Channel ID property
-    spPropertyRWString<spThingSpeak, &spThingSpeak::get_channelList, &spThingSpeak::set_channelList> deviceList;
+    flxPropertyRWString<spThingSpeak, &spThingSpeak::get_channelList, &spThingSpeak::set_channelList> deviceList;
 
   private:
     std::map<std::string, std::string> _deviceToChannel;

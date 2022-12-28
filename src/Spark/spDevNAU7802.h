@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_Qwiic_Scale_NAU7802_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kNAU7802DeviceName "NAU7802"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevNAU7802 : public spDeviceI2CType<spDevNAU7802>, public NAU7802
+class spDevNAU7802 : public flxDeviceI2CType<spDevNAU7802>, public NAU7802
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kNAU7802DeviceName;
@@ -61,13 +61,13 @@ private:
     void calculate_calibration_factor(const float &weight_in_units);
 
 public:
-    spPropertyRWUint<spDevNAU7802, &spDevNAU7802::get_zero_offset, &spDevNAU7802::set_zero_offset> zeroOffset;
-    spPropertyRWFloat<spDevNAU7802, &spDevNAU7802::get_calibration_factor, &spDevNAU7802::set_calibration_factor> calibrationFactor;
+    flxPropertyRWUint<spDevNAU7802, &spDevNAU7802::get_zero_offset, &spDevNAU7802::set_zero_offset> zeroOffset;
+    flxPropertyRWFloat<spDevNAU7802, &spDevNAU7802::get_calibration_factor, &spDevNAU7802::set_calibration_factor> calibrationFactor;
 
     // Define our input parameters - specify the get functions to call.
-    spParameterInVoid<spDevNAU7802, &spDevNAU7802::calculate_zero_offset> calculateZeroOffset;
-    spParameterInFloat<spDevNAU7802, &spDevNAU7802::calculate_calibration_factor> calculateCalibrationFactor;
+    flxParameterInVoid<spDevNAU7802, &spDevNAU7802::calculate_zero_offset> calculateZeroOffset;
+    flxParameterInFloat<spDevNAU7802, &spDevNAU7802::calculate_calibration_factor> calculateCalibrationFactor;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevNAU7802, &spDevNAU7802::read_weight> weight;
+    flxParameterOutFloat<spDevNAU7802, &spDevNAU7802::read_weight> weight;
 };

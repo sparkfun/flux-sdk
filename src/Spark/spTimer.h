@@ -5,7 +5,7 @@
 
 #include "spSpark.h"
 
-class spTimer : public spActionType<spTimer>
+class spTimer : public flxActionType<spTimer>
 {
 
     // for our timing
@@ -24,10 +24,10 @@ class spTimer : public spActionType<spTimer>
     };
 
     // Our output event
-    spSignalVoid on_interval;
+    flxSignalVoid on_interval;
 
     // Property  - interval for the timer
-    spPropertyInt<spTimer> interval;
+    flxPropertyInt<spTimer> interval;
 
     bool loop(void)
     {

@@ -7,7 +7,7 @@ There are two types of Parameter objects with the framework: Input Parameters an
 
 ### Parameter Attributes
 The following are key attributes of parameters within the framework
-* Parameters can be added to any classed derived from the spOperation class
+* Parameters can be added to any classed derived from the flxOperation class
 * Parameter objects are typed
 * Parameter objects can act like a function
 * Parameter objects allow introspection - they can be discovered and manipulated at runtime via software
@@ -53,25 +53,25 @@ These parameter objects are used to define a input parameter to an operation. Be
 Within the definition of the class the parameter is for, the input parameter is defined using the following pattern:
 
 ```C++
-spParameterInType<ClassName, &ClassName::Writer>  input_name = {optional data limit values};
+flxParameterInType<ClassName, &ClassName::Writer>  input_name = {optional data limit values};
 ```
 Where:
-* spParameterInType - the type of the input parameter class to use 
+* flxParameterInType - the type of the input parameter class to use 
 * ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in. 
 * Writer - the name of the _write_ method the parameter should call when it's value is set. **NOTE**: A reference, `& operator`, to the writer is provided
 
 ##### Available Input Parameter Types:
 
-* spParameterInBool - bool parameter
-* spParameterInInt8  - integer8 parameter
-* spParameterInInt16  - integer16 parameter
-* spParameterInInt  - integer parameter
-* spParameterInUint8 - unsigned integer8
-* spParameterInUint16 - unsigned integer15
-* spParameterInUint - unsigned integer
-* spParameterInFloat - float
-* spParameterInDouble - double
-* spParameterInString - string -> std::string
+* flxParameterInBool - bool parameter
+* flxParameterInInt8  - integer8 parameter
+* flxParameterInInt16  - integer16 parameter
+* flxParameterInInt  - integer parameter
+* flxParameterInUint8 - unsigned integer8
+* flxParameterInUint16 - unsigned integer15
+* flxParameterInUint - unsigned integer
+* flxParameterInFloat - float
+* flxParameterInDouble - double
+* flxParameterInString - string -> std::string
 
 ##### Writer Methods
 
@@ -91,14 +91,14 @@ Note
 ##### Example
 
 ```C++
-class MyClass : public spObject
+class MyClass : public flxObject
 {
 private:
     void write_myInput(int value);
 
 public:
    // Define an input parameter
-   spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input;
+   flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input;
 }
 ```
 Note
@@ -119,7 +119,7 @@ Additionally, the method `clearDataLimit()` can be called to delete the current 
 Using the example from above:
 ```C++
     // Define an input parameter with a range of -29 to 144
-    spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { -28, 144 };
+    flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { -28, 144 };
 ```
 
 To set/change the range value at runtime, the method ```setDataLimitRange(min, max)``` is called on the input parameter object.
@@ -147,7 +147,7 @@ To set the valid values at parameter definition, just set the declared parameter
 Using the example from above:
 ```C++
 // Define an input parameter with a range of -29 to 144
-spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {
+flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {
                                         {"Value One", 22},
                                         {"Value Two", 44},
                                         {"Value Three", 66},        
@@ -193,25 +193,25 @@ These parameter objects are used to define a output parameter to an operation. B
 Within the definition of the class the parameter is for, the output parameter is defined using the following pattern:
 
 ```C++
-spParameterOutType<ClassName, &ClassName::Reader>  output_name;
+flxParameterOutType<ClassName, &ClassName::Reader>  output_name;
 ```
 Where:
-* spParameterOutType - the type of the output parameter class to use 
+* flxParameterOutType - the type of the output parameter class to use 
 * ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in. 
 * Reader - the name of the _read_ method the parameter should call when it's value is retrieved. **NOTE**: A reference, `& operator`, to the reader is provided
 
 ##### Available Output Parameter Types:
 
-* spParameterOutBool - bool parameter
-* spParameterOutInt8  - integer 8 parameter
-* spParameterOutInt16  - integer 16 parameter
-* spParameterOutInt  - integer parameter
-* spParameterOutUint8 - unsigned 8 integer
-* spParameterOutUint16 - unsigned 16 integer
-* spParameterOutUint - unsigned integer
-* spParameterOutFloat - float
-* spParameterOutDouble - double
-* spParameterOutString - string -> std::string
+* flxParameterOutBool - bool parameter
+* flxParameterOutInt8  - integer 8 parameter
+* flxParameterOutInt16  - integer 16 parameter
+* flxParameterOutInt  - integer parameter
+* flxParameterOutUint8 - unsigned 8 integer
+* flxParameterOutUint16 - unsigned 16 integer
+* flxParameterOutUint - unsigned integer
+* flxParameterOutFloat - float
+* flxParameterOutDouble - double
+* flxParameterOutString - string -> std::string
 
 ##### Reader Methods
 
@@ -231,14 +231,14 @@ Note
 ##### Example
 
 ```C++
-class MyClass : public spObject
+class MyClass : public flxObject
 {
 private:
     int read_myOutput(void);
 
 public:
    // Define an output parameter
-   spParameterOutInt<MyClass, &MyClass::read_MyOutput>  my_output;
+   flxParameterOutInt<MyClass, &MyClass::read_MyOutput>  my_output;
 }
 ```
 Note
@@ -254,25 +254,25 @@ For outputs that have array values, an array output parameter is declared. These
 Within the definition of the class the parameter is for, the output array parameter is defined using the following pattern:
 
 ```C++
-spParameterOutArrayType<ClassName, &ClassName::Reader>  output_name;
+flxParameterOutArrayType<ClassName, &ClassName::Reader>  output_name;
 ```
 Where:
-* spParameterOutArrayType - the type of the output parameter class to use 
+* flxParameterOutArrayType - the type of the output parameter class to use 
 * ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in. 
 * Reader - the name of the _read_ method the parameter should call when it's value is retrieved. **NOTE**: A reference, `& operator`, to the reader is provided
 
 ##### Available Output Parameter Types:
 
-* spParameterOutArrayBool - bool parameter
-* spParameterOutArrayInt8  - integer 8 parameter
-* spParameterOutArrayInt16  - integer 16 parameter
-* spParameterOutArrayInt  - integer parameter
-* spParameterOutArrayUint8 - unsigned 8 integer
-* spParameterOutArrayUint16 - unsigned 16 integer
-* spParameterOutArrayUint - unsigned integer
-* spParameterOutArrayFloat - float
-* spParameterOutArrayDouble - double
-* spParameterOutArrayString - string -> std::string
+* flxParameterOutArrayBool - bool parameter
+* flxParameterOutArrayInt8  - integer 8 parameter
+* flxParameterOutArrayInt16  - integer 16 parameter
+* flxParameterOutArrayInt  - integer parameter
+* flxParameterOutArrayUint8 - unsigned 8 integer
+* flxParameterOutArrayUint16 - unsigned 16 integer
+* flxParameterOutArrayUint - unsigned integer
+* flxParameterOutArrayFloat - float
+* flxParameterOutArrayDouble - double
+* flxParameterOutArrayString - string -> std::string
 
 ##### Reader Methods
 
@@ -313,14 +313,14 @@ Note:
 ##### Example
 
 ```C++
-class MyClass : public spObject
+class MyClass : public flxObject
 {
 private:
     bool read_myOutput(flxDataArrayInt *array);
 
 public:
    // Define an output parameter
-   spParameterOutArrayInt<MyClass, &MyClass::read_MyOutput>  my_output;
+   flxParameterOutArrayInt<MyClass, &MyClass::read_MyOutput>  my_output;
 }
 ```
 Note

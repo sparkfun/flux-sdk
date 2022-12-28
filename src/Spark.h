@@ -12,7 +12,7 @@
 #pragma once
 
 #include "Spark/flxCore.h"
-#include "Spark/spDevice.h"
+#include "Spark/flxDevice.h"
 
 #include "Spark/spSpark.h"
 

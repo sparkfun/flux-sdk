@@ -90,7 +90,7 @@ bool spDevBioHub::initialize( int connectResetPin, int connectMfioPin )
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevBioHub::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevBioHub::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // The MAX32664 does not respond on the I2C bus until it has been reset correctly via its reset pin.
     // So we cannot ping it, or read its registers here - unless we know the pins.

@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_SCD4x_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kSCD40DeviceName "SCD40"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSCD40 : public spDeviceI2CType<spDevSCD40>, public SCD4x
+class spDevSCD40 : public flxDeviceI2CType<spDevSCD40>, public SCD4x
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kSCD40DeviceName;
@@ -64,16 +64,16 @@ private:
     bool _rh = false;
 
 public:
-    spPropertyRWBool<spDevSCD40, &spDevSCD40::get_auto_calibrate, &spDevSCD40::set_auto_calibrate> autoCalibrate;
+    flxPropertyRWBool<spDevSCD40, &spDevSCD40::get_auto_calibrate, &spDevSCD40::set_auto_calibrate> autoCalibrate;
     // Define the sensor altitude in metres above sea level, so RH and CO2 are compensated for atmospheric pressure
     // Default altitude is 0m
-    spPropertyRWUint<spDevSCD40, &spDevSCD40::get_altitude_compensation, &spDevSCD40::set_altitude_compensation> altitudeCompensation;
+    flxPropertyRWUint<spDevSCD40, &spDevSCD40::get_altitude_compensation, &spDevSCD40::set_altitude_compensation> altitudeCompensation;
     // Define how warm the sensor is compared to ambient, so RH and T are temperature compensated. Has no effect on the CO2 reading
     // Default offset is 4C
-    spPropertyRWFloat<spDevSCD40, &spDevSCD40::get_temperature_offset, &spDevSCD40::set_temperature_offset> temperatureOffset;
+    flxPropertyRWFloat<spDevSCD40, &spDevSCD40::get_temperature_offset, &spDevSCD40::set_temperature_offset> temperatureOffset;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutUint<spDevSCD40, &spDevSCD40::read_CO2> co2PPM;    
-    spParameterOutFloat<spDevSCD40, &spDevSCD40::read_temperature_C> temperatureC;    
-    spParameterOutFloat<spDevSCD40, &spDevSCD40::read_humidity> humidity;    
+    flxParameterOutUint<spDevSCD40, &spDevSCD40::read_CO2> co2PPM;    
+    flxParameterOutFloat<spDevSCD40, &spDevSCD40::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<spDevSCD40, &spDevSCD40::read_humidity> humidity;    
 };

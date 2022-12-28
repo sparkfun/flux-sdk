@@ -34,7 +34,7 @@ spDevAMG8833::spDevAMG8833()
 
 // Static method used to determine if this device is connected
 
-bool spDevAMG8833::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevAMG8833::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     if (address == 0x69)
     {
@@ -129,7 +129,7 @@ bool spDevAMG8833::onInitialize(TwoWire &wirePort)
     if (result)
         _begun = true;
     else
-        spLog_E("AMG8833 - begin failed");
+        flxLog_E("AMG8833 - begin failed");
 
     return result;
 }

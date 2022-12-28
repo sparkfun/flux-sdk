@@ -39,7 +39,7 @@ float spDevAHT20::read_humidity()
 
 // Static method used to determine if this device is connected
 
-bool spDevAHT20::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevAHT20::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -48,14 +48,14 @@ bool spDevAHT20::isConnected(spBusI2C &i2cDriver, uint8_t address)
     uint8_t triggerMeasurement[3] = { 0xAC, 0x33, 0x00 };
     if (!i2cDriver.write(address, triggerMeasurement, 3))
     {
-        spLog_E("AHT20 isConnected triggerMeasurement failed");
+        flxLog_E("AHT20 isConnected triggerMeasurement failed");
         return false;
     }
     delay(80);
     uint8_t results[7];
     if (i2cDriver.receiveResponse(address, results, 7) != 7)
     {
-        spLog_E("AHT20 isConnected receiveResponse failed");
+        flxLog_E("AHT20 isConnected receiveResponse failed");
         return false;
     }
 
@@ -76,7 +76,7 @@ bool spDevAHT20::isConnected(spBusI2C &i2cDriver, uint8_t address)
     if (crc == results[6])
         return true;
 
-    spLog_E("AHT20 CRC failed: 0x%02x vs 0x%02x", crc, results[6]);
+    flxLog_E("AHT20 CRC failed: 0x%02x vs 0x%02x", crc, results[6]);
     return false;
 }
 
@@ -94,7 +94,7 @@ bool spDevAHT20::onInitialize(TwoWire &wirePort)
     bool result = AHT20::begin(wirePort);
 
     if (!result)
-        spLog_E("AHT20 - begin failed");
+        flxLog_E("AHT20 - begin failed");
 
     return result;
 }

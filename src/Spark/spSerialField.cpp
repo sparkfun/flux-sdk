@@ -7,7 +7,7 @@
 
 #include <Arduino.h>
 
-#include "spCoreLog.h"
+#include "flxCoreLog.h"
 #include "spSerialField.h"
 //
 // ----------------------------------------------------------------------
@@ -577,7 +577,7 @@ bool spSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 
         if (nRead == 0)
         {
-            spLog_W("Error reading from serial device");
+            flxLog_W("Error reading from serial device");
             delay(100);
             continue;
         }

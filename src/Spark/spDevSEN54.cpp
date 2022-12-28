@@ -55,7 +55,7 @@ spDevSEN54::spDevSEN54()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevSEN54::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevSEN54::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // Don't ping the SEN54. It does not like it...
 

@@ -54,7 +54,7 @@ spDevTMF882X::spDevTMF882X()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevTMF882X::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevTMF882X::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -79,7 +79,7 @@ bool spDevTMF882X::onInitialize(TwoWire &wirePort)
 
     _begun = SparkFun_TMF882X::begin(wirePort, address());
     if (!_begun)
-        spLog_E("TMF882X - begin failed");
+        flxLog_E("TMF882X - begin failed");
     return _begun;
 }
 
@@ -92,7 +92,7 @@ uint16_t spDevTMF882X::get_report_period()
         struct tmf882x_mode_app_config tofConfig;
         if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
         {
-            spLog_E("TMF882X set_report_period - unable to get device configuration");
+            flxLog_E("TMF882X set_report_period - unable to get device configuration");
             return _reportPeriod;
         }
         
@@ -108,7 +108,7 @@ void spDevTMF882X::set_report_period(uint16_t period)
         struct tmf882x_mode_app_config tofConfig;
         if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
         {
-            spLog_E("TMF882X set_report_period - unable to get device configuration");
+            flxLog_E("TMF882X set_report_period - unable to get device configuration");
             return;
         }
         
@@ -119,7 +119,7 @@ void spDevTMF882X::set_report_period(uint16_t period)
 
         if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
         {
-            spLog_E("TMF882X set_report_period- unable to set device configuration");
+            flxLog_E("TMF882X set_report_period- unable to set device configuration");
             return;
         }
     }
@@ -134,7 +134,7 @@ void spDevTMF882X::factory_calibration()
         struct tmf882x_mode_app_config tofConfig;
         if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
         {
-            spLog_E("TMF882X factory_calibration - unable to get device configuration");
+            flxLog_E("TMF882X factory_calibration - unable to get device configuration");
             return;
         }
         
@@ -147,20 +147,20 @@ void spDevTMF882X::factory_calibration()
 
         if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
         {
-            spLog_E("TMF882X factory_calibration - unable to set device configuration");
+            flxLog_E("TMF882X factory_calibration - unable to set device configuration");
             return;
         }
 
         struct tmf882x_mode_app_calib factoryCal;
         if (!SparkFun_TMF882X::factoryCalibration(factoryCal))
-            spLog_E("TMF882X factory_calibration - factory calibration failed");
+            flxLog_E("TMF882X factory_calibration - factory calibration failed");
 
         tofConfig.report_period_ms = _reportPeriod;
         tofConfig.kilo_iterations = originalIterations;
 
         if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
         {
-            spLog_E("TMF882X factory_calibration - unable to restore device configuration");
+            flxLog_E("TMF882X factory_calibration - unable to restore device configuration");
             return;
         }
     }

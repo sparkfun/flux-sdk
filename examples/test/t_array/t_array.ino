@@ -5,7 +5,7 @@
 
 // Spark framework 
 #include <Spark.h>
-#include <Spark/spLogger.h>
+#include <Spark/flxLogger.h>
 #include <Spark/spFmtJSON.h>
 #include <Spark/spFmtCSV.h>
 #include <Spark/spTimer.h>
@@ -37,7 +37,7 @@
 spFormatJSON<4000> fmtJSON;
 spFormatCSV fmtCSV;
 
-spLogger  logger;
+flxLogger  logger;
 
 // Enable a timer with a default timer value - this is the log interval
 spTimer   timer(kDefaultLogInterval);    // Timer 

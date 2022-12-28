@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_SGP40_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kSGP40DeviceName "SGP40"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSGP40 : public spDeviceI2CType<spDevSGP40>, public SGP40
+class spDevSGP40 : public flxDeviceI2CType<spDevSGP40>, public SGP40
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kSGP40DeviceName;
@@ -55,9 +55,9 @@ private:
 
 public:
     // Define our input parameters
-    spParameterInFloat<spDevSGP40, &spDevSGP40::write_rh> rh;
-    spParameterInFloat<spDevSGP40, &spDevSGP40::write_temperature> temperature;
+    flxParameterInFloat<spDevSGP40, &spDevSGP40::write_rh> rh;
+    flxParameterInFloat<spDevSGP40, &spDevSGP40::write_temperature> temperature;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutInt<spDevSGP40, &spDevSGP40::read_voc> vocIndex;    
+    flxParameterOutInt<spDevSGP40, &spDevSGP40::read_voc> vocIndex;    
 };

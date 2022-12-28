@@ -26,10 +26,10 @@ class spIWiFiCredentialSource
   public:
     virtual std::string getSSID() = 0;
     virtual std::string getPassword() = 0;
-    virtual spSignalVoid &getUpdateEvent(void) = 0;
+    virtual flxSignalVoid &getUpdateEvent(void) = 0;
 };
 
-class spSetWifiCredentials : public spActionType<spSetWifiCredentials>
+class spSetWifiCredentials : public flxActionType<spSetWifiCredentials>
 {
 public:
     spSetWifiCredentials() : _source{nullptr}, _targetDevice{nullptr}
@@ -53,16 +53,16 @@ public:
         // Actual data?
         if (password.length() > 0 && ssid.length() > 0)
         {
-            spLog_I(F("Updating WiFi Credentials. Network: %s"), ssid.c_str());
+            flxLog_I(F("Updating WiFi Credentials. Network: %s"), ssid.c_str());
             if (_targetDevice->isConnected())
                 _targetDevice->disconnect();
             _targetDevice->setSSID(ssid);
             _targetDevice->setPassword(password);
 
             if (_targetDevice->connect())
-                spLog_I(F("Connected to %s"), ssid.c_str());
+                flxLog_I(F("Connected to %s"), ssid.c_str());
             else
-                spLog_E(F("Unable to connect to %s"), ssid.c_str());
+                flxLog_E(F("Unable to connect to %s"), ssid.c_str());
         }
     }
     void setCredentialSource(spIWiFiCredentialSource *theSource)
@@ -72,13 +72,13 @@ public:
 
         _source = theSource;
 
-        spSignalVoid &theEvent = theSource->getUpdateEvent();
+        flxSignalVoid &theEvent = theSource->getUpdateEvent();
 
         // Register with the event.
         theEvent.call(this, &spSetWifiCredentials::onNewCredentials);
     }
 
-    spPropertyBool<spSetWifiCredentials> enabled = {true};
+    flxPropertyBool<spSetWifiCredentials> enabled = {true};
 
   private:
     spIWiFiCredentialSource *_source;

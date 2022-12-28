@@ -7,7 +7,7 @@
 #include "spSpark.h"
 #include "flxStorage.h"
 
-class spSettingsSave : public spActionType<spSettingsSave>
+class spSettingsSave : public flxActionType<spSettingsSave>
 {
 
   private:
@@ -32,7 +32,7 @@ class spSettingsSave : public spActionType<spSettingsSave>
         // Enabled?
         if (saveOnEvent())
         {
-            spLog_I(F("Saving System Settings."));
+            flxLog_I(F("Saving System Settings."));
             save_settings();
         }
     }
@@ -69,15 +69,15 @@ class spSettingsSave : public spActionType<spSettingsSave>
     bool saveSystem(void);
 
     // save a specific object
-    bool save(spObject &theObject);
-    bool save(spObject *pObject);
+    bool save(flxObject &theObject);
+    bool save(flxObject *pObject);
 
     // Restore settings - if no parameter is passed in, the entire system is restored
     bool restoreSystem(void);
 
     // restore a specific object
-    bool restore(spObject &theObject);
-    bool restore(spObject *pObject);
+    bool restore(flxObject &theObject);
+    bool restore(flxObject *pObject);
     void reset(void);
 
 
@@ -88,23 +88,23 @@ class spSettingsSave : public spActionType<spSettingsSave>
 
     //------------------------------------------------------------------------------
     // Slots for signals - Enables saving and restoring settings base on events
-    void listenForSave(spSignalVoid &theEvent);
-    void listenForRestore(spSignalVoid &theEvent);
+    void listenForSave(flxSignalVoid &theEvent);
+    void listenForRestore(flxSignalVoid &theEvent);
 
     // Properties.
-    spPropertyBool<spSettingsSave> saveOnEvent = {true};
-    spPropertyBool<spSettingsSave> restoreOnEvent = {true};
+    flxPropertyBool<spSettingsSave> saveOnEvent = {true};
+    flxPropertyBool<spSettingsSave> restoreOnEvent = {true};
 
-    spPropertyBool<spSettingsSave> fallbackSave = {false};    
-    spPropertyBool<spSettingsSave> fallbackRestore = {true};
+    flxPropertyBool<spSettingsSave> fallbackSave = {false};    
+    flxPropertyBool<spSettingsSave> fallbackRestore = {true};
 
     // Our input parameters
-    spParameterInVoid<spSettingsSave, &spSettingsSave::save_settings> saveSettings;
-    spParameterInVoid<spSettingsSave, &spSettingsSave::restore_settings> restoreSettings;
-    spParameterInVoid<spSettingsSave, &spSettingsSave::reset> clearSettings;
+    flxParameterInVoid<spSettingsSave, &spSettingsSave::save_settings> saveSettings;
+    flxParameterInVoid<spSettingsSave, &spSettingsSave::restore_settings> restoreSettings;
+    flxParameterInVoid<spSettingsSave, &spSettingsSave::reset> clearSettings;
 
-    spParameterInVoid<spSettingsSave, &spSettingsSave::restore_fallback> restoreFallback;
-    spParameterInVoid<spSettingsSave, &spSettingsSave::save_fallback> saveFallback;    
+    flxParameterInVoid<spSettingsSave, &spSettingsSave::restore_fallback> restoreFallback;
+    flxParameterInVoid<spSettingsSave, &spSettingsSave::save_fallback> saveFallback;    
 
 
 private:
@@ -133,8 +133,8 @@ private:
         spark.add(this);
     }
 
-    bool saveObjectToStorage(spObject*, flxStorage *);
-    bool restoreObjectFromStorage(spObject*, flxStorage *);    
+    bool saveObjectToStorage(flxObject*, flxStorage *);
+    bool restoreObjectFromStorage(flxObject*, flxStorage *);    
 
     flxStorage * _primaryStorage;
     flxStorage * _fallbackStorage;

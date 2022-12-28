@@ -13,7 +13,7 @@
 
 // Define a class that uses the properties of the system
 
-class test_properties : public spObject
+class test_properties : public flxObject
 {
 
     bool   _b_data=false;
@@ -81,16 +81,16 @@ public:
 
     };
     // Define standard properties 
-    spPropertyBool<test_properties>     prop_bool;
-    spPropertyInt<test_properties>      prop_int;
-    spPropertyFloat<test_properties>    prop_float;
-    spPropertyString<test_properties>   prop_str;
+    flxPropertyBool<test_properties>     prop_bool;
+    flxPropertyInt<test_properties>      prop_int;
+    flxPropertyFloat<test_properties>    prop_float;
+    flxPropertyString<test_properties>   prop_str;
 
     // Define RW (getter/setter) Properties
-    spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
-    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;    
-    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float;        
-    spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;    
+    flxPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
+    flxPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;    
+    flxPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float;        
+    flxPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;    
 };
 
 

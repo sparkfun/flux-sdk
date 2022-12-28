@@ -16,7 +16,7 @@
 
 // Define a class that uses the properties of the system
 
-class test_properties : public spActionType<test_properties>
+class test_properties : public flxActionType<test_properties>
 {
 
     bool    _b_data=false;
@@ -163,32 +163,32 @@ public:
 
     };
     // Define standard properties 
-    spPropertyBool<test_properties>     prop_bool;
-    spPropertyInt8<test_properties>     prop_int8;
-    spPropertyInt16<test_properties>     prop_int16;    
-    spPropertyInt<test_properties>      prop_int;    
-    spPropertyUint8<test_properties>    prop_uint8;
-    spPropertyUint16<test_properties>    prop_uint16;    
-    spPropertyUint<test_properties>     prop_uint;        
-    spPropertyFloat<test_properties>    prop_float;
-    spPropertyDouble<test_properties>    prop_double;    
-    spPropertyString<test_properties>   prop_str;
+    flxPropertyBool<test_properties>     prop_bool;
+    flxPropertyInt8<test_properties>     prop_int8;
+    flxPropertyInt16<test_properties>     prop_int16;    
+    flxPropertyInt<test_properties>      prop_int;    
+    flxPropertyUint8<test_properties>    prop_uint8;
+    flxPropertyUint16<test_properties>    prop_uint16;    
+    flxPropertyUint<test_properties>     prop_uint;        
+    flxPropertyFloat<test_properties>    prop_float;
+    flxPropertyDouble<test_properties>    prop_double;    
+    flxPropertyString<test_properties>   prop_str;
 
     // Define RW (getter/setter) Properties
-    spPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
+    flxPropertyRWBool<test_properties, &test_properties::get_bool, &test_properties::set_bool> rw_prop_bool;
 
-    spPropertyRWInt8<test_properties, &test_properties::get_int8, &test_properties::set_int8> rw_prop_int8;    
-    spPropertyRWInt16<test_properties, &test_properties::get_int16, &test_properties::set_int16> rw_prop_int16;        
-    spPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;        
+    flxPropertyRWInt8<test_properties, &test_properties::get_int8, &test_properties::set_int8> rw_prop_int8;    
+    flxPropertyRWInt16<test_properties, &test_properties::get_int16, &test_properties::set_int16> rw_prop_int16;        
+    flxPropertyRWInt<test_properties, &test_properties::get_int, &test_properties::set_int> rw_prop_int;        
 
-    spPropertyRWUint8<test_properties, &test_properties::get_uint8, &test_properties::set_uint8> rw_prop_uint8;    
-    spPropertyRWUint16<test_properties, &test_properties::get_uint16, &test_properties::set_uint16> rw_prop_uint16;        
-    spPropertyRWUint<test_properties, &test_properties::get_uint, &test_properties::set_uint> rw_prop_uint;        
+    flxPropertyRWUint8<test_properties, &test_properties::get_uint8, &test_properties::set_uint8> rw_prop_uint8;    
+    flxPropertyRWUint16<test_properties, &test_properties::get_uint16, &test_properties::set_uint16> rw_prop_uint16;        
+    flxPropertyRWUint<test_properties, &test_properties::get_uint, &test_properties::set_uint> rw_prop_uint;        
     
-    spPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float;        
-    spPropertyRWDouble<test_properties, &test_properties::get_double, &test_properties::set_double> rw_prop_double;        
+    flxPropertyRWFloat<test_properties, &test_properties::get_float, &test_properties::set_float> rw_prop_float;        
+    flxPropertyRWDouble<test_properties, &test_properties::get_double, &test_properties::set_double> rw_prop_double;        
 
-    spPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;    
+    flxPropertyRWString<test_properties, &test_properties::get_str, &test_properties::set_str> rw_prop_str;    
 };
 
 

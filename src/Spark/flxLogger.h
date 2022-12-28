@@ -19,7 +19,7 @@
 #include "spSpark.h"
 
 // Define the QwiicLog class
-class spLogger : public spActionType<spLogger>
+class flxLogger : public flxActionType<flxLogger>
 {
 
   private:
@@ -38,7 +38,7 @@ class spLogger : public spActionType<spLogger>
 
     
   public:
-    spLogger();
+    flxLogger();
 
     // Template trick - use template varargs to allow multiple objs to be
     // added as part of the constructor call. Note, first arg is a writer,
@@ -46,32 +46,32 @@ class spLogger : public spActionType<spLogger>
     // method calls va_add() to recurse on the arg list.
     //
     // This pattern is used on constructors and add() methods
-    template <typename... Args> spLogger(spOutputFormat *a1, Args &&...args) : spLogger()
+    template <typename... Args> flxLogger(spOutputFormat *a1, Args &&...args) : flxLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spOutputFormat &a1, Args &&...args) : spLogger()
+    template <typename... Args> flxLogger(spOutputFormat &a1, Args &&...args) : flxLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spOperation *a1, Args &...args) : spLogger()
+    template <typename... Args> flxLogger(flxOperation *a1, Args &...args) : flxLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spOperation &a1, Args &...args) : spLogger()
+    template <typename... Args> flxLogger(flxOperation &a1, Args &...args) : flxLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spParameterOut *a1, Args &...args) : spLogger()
+    template <typename... Args> flxLogger(flxParameterOut *a1, Args &...args) : flxLogger()
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> spLogger(spParameterOut &a1, Args &...args) : spLogger()
+    template <typename... Args> flxLogger(flxParameterOut &a1, Args &...args) : flxLogger()
     {
         va_add(a1, args...);
     }
@@ -81,12 +81,12 @@ class spLogger : public spActionType<spLogger>
 
     // Used to register the event we want to listen to, which will trigger this
     // activity.
-    void listen(spSignalVoid &theEvent)
+    void listen(flxSignalVoid &theEvent)
     {
 
         // register the logObservation() method on this instance. When an event
         // is triggered, th logObservation method is called
-        theEvent.call(this, &spLogger::logObservation);
+        theEvent.call(this, &flxLogger::logObservation);
     }
 
     // Used some template magic to support all event types.
@@ -103,7 +103,7 @@ class spLogger : public spActionType<spLogger>
     // logObservation template.
     template <typename T> void listen(T &theEvent)
     {
-        theEvent.call(this, &spLogger::logObservation<typename T::value_type>);
+        theEvent.call(this, &flxLogger::logObservation<typename T::value_type>);
     }
 
     //----------------------------------------------------------------------------
@@ -112,7 +112,7 @@ class spLogger : public spActionType<spLogger>
     // These set of routines are setup to log an actual event. Outputting
     // the value and the name of the object that triggered the event
 
-    void logEvent(spOperation *theObj)
+    void logEvent(flxOperation *theObj)
     {
         // TODO: Probably need to do more here than dump out the value, but
         // for now this works
@@ -121,15 +121,15 @@ class spLogger : public spActionType<spLogger>
 
     // Used to register the event we want to listen to, which will trigger this
     // activity.
-    void listenLogEvent(spSignalVoid &theEvent, spOperation *theObj)
+    void listenLogEvent(flxSignalVoid &theEvent, flxOperation *theObj)
     {
-        theEvent.call(this, &spLogger::logEvent, theObj);
+        theEvent.call(this, &flxLogger::logEvent, theObj);
     }
 
     // Used some template magic to support all event types.
     // Need:
     //   - a callback that takes an arg from the signal - any type
-    template <typename T> void logEvent(spOperation *theObj, T value)
+    template <typename T> void logEvent(flxOperation *theObj, T value)
     {
         // TODO: Probably need to do more here than dump out the value, but
         // for now this works
@@ -139,9 +139,9 @@ class spLogger : public spActionType<spLogger>
     //
     // Note: Using the defined parameter type of the signal to drive the
     // logObservation template.
-    template <typename T> void listenLogEvent(T &theEvent, spOperation *theObj)
+    template <typename T> void listenLogEvent(T &theEvent, flxOperation *theObj)
     {
-        theEvent.call(this, &spLogger::logEvent<typename T::value_type>, theObj);
+        theEvent.call(this, &flxLogger::logEvent<typename T::value_type>, theObj);
     }
 
     // Add routines with var args. Allows any combo of writer, param or spBase
@@ -160,42 +160,42 @@ class spLogger : public spActionType<spLogger>
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spOperation &a1, Args &&...args)
+    template <typename... Args> void add(flxOperation &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spOperation *a1, Args &&...args)
+    template <typename... Args> void add(flxOperation *a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spParameterOut *a1, Args &&...args)
+    template <typename... Args> void add(flxParameterOut *a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spParameterOut &a1, Args &&...args)
+    template <typename... Args> void add(flxParameterOut &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spParameterOutList &a1, Args &&...args)
+    template <typename... Args> void add(flxParameterOutList &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spProperty &a1, Args &&...args)
+    template <typename... Args> void add(flxProperty &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spProperty *a1, Args &&...args)
+    template <typename... Args> void add(flxProperty *a1, Args &&...args)
     {
         va_add(a1, args...);
     }
 
-    template <typename... Args> void add(spPropertyList &a1, Args &&...args)
+    template <typename... Args> void add(flxPropertyList &a1, Args &&...args)
     {
         va_add(a1, args...);
     }
@@ -214,7 +214,7 @@ class spLogger : public spActionType<spLogger>
 
     // Timestamp property
 
-    spPropertyRWUint<spLogger, &spLogger::get_ts_type, &spLogger::set_ts_type> timestampMode = {
+    flxPropertyRWUint<flxLogger, &flxLogger::get_ts_type, &flxLogger::set_ts_type> timestampMode = {
         TimeStampNone,
         {{"No Timestamp", TimeStampNone},
          {"Milliseconds since program start", TimeStampMillis},
@@ -225,28 +225,28 @@ class spLogger : public spActionType<spLogger>
          {"ISO8601 Timestamp with Time Zone", TimeStampISO8601TZ}}};
 
     // output parameter for the timestamp
-    spParameterOutString<spLogger, &spLogger::get_timestamp> timestamp;
+    flxParameterOutString<flxLogger, &flxLogger::get_timestamp> timestamp;
 
     // Sample number - this increments and outputs a number for each sample taken.
-    spPropertyRWBool<spLogger, &spLogger::get_num_mode, &spLogger::set_num_mode> numberMode = {false};
+    flxPropertyRWBool<flxLogger, &flxLogger::get_num_mode, &flxLogger::set_num_mode> numberMode = {false};
 
-    spParameterOutUint<spLogger, &spLogger::get_sample_number> sampleNumber;
+    flxParameterOutUint<flxLogger, &flxLogger::get_sample_number> sampleNumber;
 
-    spPropertyUint<spLogger> numberIncrement = {1, 1, 10000};
+    flxPropertyUint<flxLogger> numberIncrement = {1, 1, 10000};
 
-    spParameterInUint<spLogger, &spLogger::reset_sample_number> resetSampleNumber = {0, 10000};
+    flxParameterInUint<flxLogger, &flxLogger::reset_sample_number> resetSampleNumber = {0, 10000};
 
   private:
     // Output devices
     std::vector<spOutputFormat *> _Formatters;
 
     // The things we're logging
-    spOperationContainer _objsToLog;
-    spParameterOutList _paramsToLog;
-    spPropertyList _propsToLog;
+    flxOperationContainer _objsToLog;
+    flxParameterOutList _paramsToLog;
+    flxPropertyList _propsToLog;
 
-    void logScalar(spParameterOutScalar *);
-    void logArray(spParameterOutArray *);
+    void logScalar(flxParameterOutScalar *);
+    void logArray(flxParameterOutArray *);
 
     // Timestamp things
     Timestamp_t _timestampType;
@@ -258,7 +258,7 @@ class spLogger : public spActionType<spLogger>
     //
     // Note - the array object is dynamically allocated.
 
-    template <typename T> void logArrayType(spParameterOutArray *pParam)
+    template <typename T> void logArrayType(flxParameterOutArray *pParam)
     {
         T *theArray = (T *)pParam->get();
 
@@ -270,7 +270,7 @@ class spLogger : public spActionType<spLogger>
     }
 
     // same as above, just adding precision support for our float/double types
-    template <typename T> void logArrayType(spParameterOutArray *pParam, uint16_t precision)
+    template <typename T> void logArrayType(flxParameterOutArray *pParam, uint16_t precision)
     {
         T *theArray = (T *)pParam->get();
 
@@ -296,9 +296,9 @@ class spLogger : public spActionType<spLogger>
             theFormatter->logValue(tag, value, precision);
     }
 
-    void logSection(const char *section_name, spParameterOutList &params);
+    void logSection(const char *section_name, flxParameterOutList &params);
 
-    void logSection(const std::string &name, spParameterOutList &params)
+    void logSection(const std::string &name, flxParameterOutList &params)
     {
         logSection(name.c_str(), params);
     }
@@ -338,27 +338,27 @@ class spLogger : public spActionType<spLogger>
             _Formatters.push_back(writer);
     }
 
-    void _add(spOperation &op)
+    void _add(flxOperation &op)
     {
         _add(&op);
     }
-    void _add(spOperation *op)
+    void _add(flxOperation *op)
     {
         if (op != nullptr)
             _objsToLog.push_back(op);
     }
 
-    void _add(spParameterOut &param)
+    void _add(flxParameterOut &param)
     {
         _paramsToLog.push_back(&param);
     }
-    void _add(spParameterOut *param)
+    void _add(flxParameterOut *param)
     {
         if (param != nullptr)
             _paramsToLog.push_back(param);
     }
 
-    void _add(spParameterOutList &parameterList)
+    void _add(flxParameterOutList &parameterList)
     {
         for (auto param : parameterList)
         {
@@ -366,7 +366,7 @@ class spLogger : public spActionType<spLogger>
         }
     }
     // Internal method to add the contents of a device list
-    void _add(spOperationContainer &deviceList)
+    void _add(flxOperationContainer &deviceList)
     {
         // Only add devices that have output parameters ..
         for (auto device : deviceList)
@@ -376,15 +376,15 @@ class spLogger : public spActionType<spLogger>
         }
     }
 
-    void _add(spProperty *prop)
+    void _add(flxProperty *prop)
     {
         _propsToLog.push_back(prop);
     }
-    void _add(spProperty &prop)
+    void _add(flxProperty &prop)
     {
         _add(&prop);
     }
-    void _add(spPropertyList &propList)
+    void _add(flxPropertyList &propList)
     {
         for (auto prop : propList)
         {

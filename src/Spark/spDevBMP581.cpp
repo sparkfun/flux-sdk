@@ -46,7 +46,7 @@ spDevBMP581::spDevBMP581()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevBMP581::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevBMP581::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -72,7 +72,7 @@ bool spDevBMP581::onInitialize(TwoWire &wirePort)
 
     if (result != BMP5_OK)
     {
-        spLog_E("BMP581 Sensor error: %d", result);
+        flxLog_E("BMP581 Sensor error: %d", result);
         return false;
     }
 

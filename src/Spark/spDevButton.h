@@ -12,13 +12,13 @@
 #include "Arduino.h"
 
 #include "SparkFun_Qwiic_Button.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kButtonDeviceName "BUTTON"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevButton : public spDeviceI2CType<spDevButton>, public QwiicButton
+class spDevButton : public flxDeviceI2CType<spDevButton>, public QwiicButton
 {
 
   public:
@@ -26,7 +26,7 @@ class spDevButton : public spDeviceI2CType<spDevButton>, public QwiicButton
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kButtonDeviceName;
@@ -42,7 +42,7 @@ class spDevButton : public spDeviceI2CType<spDevButton>, public QwiicButton
 
     // Events
     // Our output event
-    spSignalBool on_clicked;
+    flxSignalBool on_clicked;
 
     bool loop(void);
 
@@ -62,10 +62,10 @@ class spDevButton : public spDeviceI2CType<spDevButton>, public QwiicButton
     uint8_t _ledBrightness = 128;
 
   public:
-    spPropertyRWUint8<spDevButton, &spDevButton::get_press_mode, &spDevButton::set_press_mode> pressMode
+    flxPropertyRWUint8<spDevButton, &spDevButton::get_press_mode, &spDevButton::set_press_mode> pressMode
       = { 1, { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } } }; // 0 = Click (Toggle) mode. 1 = Press mode.
-    spPropertyRWUint8<spDevButton, &spDevButton::get_led_brightness, &spDevButton::set_led_brightness> ledBrightness;
+    flxPropertyRWUint8<spDevButton, &spDevButton::get_led_brightness, &spDevButton::set_led_brightness> ledBrightness;
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutBool<spDevButton, &spDevButton::read_button_state> buttonState;
+    flxParameterOutBool<spDevButton, &spDevButton::read_button_state> buttonState;
 };

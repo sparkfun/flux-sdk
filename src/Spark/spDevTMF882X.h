@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_TMF882X_Library.h"
 
 // What is the name used to ID this device?
 #define kTMF882XDeviceName "TMF882x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevTMF882X : public spDeviceI2CType<spDevTMF882X>, public SparkFun_TMF882X
+class spDevTMF882X : public flxDeviceI2CType<spDevTMF882X>, public SparkFun_TMF882X
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kTMF882XDeviceName;
@@ -79,16 +79,16 @@ private:
 public:
     // Define our output parameters - specify the get functions to call.
     // Strictly, these should be uint32_t
-    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_confidence> confidence;    
-    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_distance> distance;    
-    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_channel> channel;    
-    spParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_sub_capture> subCapture;    
-    spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_photon_count> photonCount;    
-    spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ref_photon_count> refPhotonCount;    
-    spParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ambient_light> ambientLight;    
+    flxParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_confidence> confidence;    
+    flxParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_distance> distance;    
+    flxParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_channel> channel;    
+    flxParameterOutArrayUint<spDevTMF882X, &spDevTMF882X::read_sub_capture> subCapture;    
+    flxParameterOutUint<spDevTMF882X, &spDevTMF882X::read_photon_count> photonCount;    
+    flxParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ref_photon_count> refPhotonCount;    
+    flxParameterOutUint<spDevTMF882X, &spDevTMF882X::read_ambient_light> ambientLight;    
 
-    spPropertyRWUint16<spDevTMF882X, &spDevTMF882X::get_report_period, &spDevTMF882X::set_report_period> reportPeriod
+    flxPropertyRWUint16<spDevTMF882X, &spDevTMF882X::get_report_period, &spDevTMF882X::set_report_period> reportPeriod
         = { 460, 6, 460 };
 
-    spParameterInVoid<spDevTMF882X, &spDevTMF882X::factory_calibration> factoryCalibration;    
+    flxParameterInVoid<spDevTMF882X, &spDevTMF882X::factory_calibration> factoryCalibration;    
 };

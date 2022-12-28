@@ -7,7 +7,7 @@ It's worth noting that properties don't reflect the input or output data from an
 
 ### Property Attributes
 The following are key attributes of properties within the framework
-* Properties can be added to any classed derived from the spObject class
+* Properties can be added to any classed derived from the flxObject class
 * Properties can be read (get) and written (set) to
 * Property objects are typed
 * Property objects can act like a variable
@@ -52,33 +52,33 @@ These property objects define a typed property and provided storage for this pro
 #### Declaring the Property
 Within the definition of the class the property is for, the property is defined using the following pattern:
 ```C++
-    spPropertyType<ClassName>  property_name = {optional initial value, optional data limit};
+    flxPropertyType<ClassName>  property_name = {optional initial value, optional data limit};
 ```
 Where:
-* spPropertyType - the type of the property class being used. 
+* flxPropertyType - the type of the property class being used. 
 * ClassName - the class name that the property is for. The name of the class type the property is being defined in. 
 
 Available Property Types:
 
-* spPropertyBool
-* spPropertyInt8
-* spPropertyInt16
-* spPropertyInt
-* spPropertyUint8
-* spPropertyUint16
-* spPropertyUint
-* spPropertyFloat
-* spPropertyDouble
-* spPropertyString
+* flxPropertyBool
+* flxPropertyInt8
+* flxPropertyInt16
+* flxPropertyInt
+* flxPropertyUint8
+* flxPropertyUint16
+* flxPropertyUint
+* flxPropertyFloat
+* flxPropertyDouble
+* flxPropertyString
 
 ##### Example
 
 ```C++
-class MyClass : public spObject
+class MyClass : public flxObject
 {
 public:
    // Define my property
-   spPropertyInt<MyClass>  my_property;
+   flxPropertyInt<MyClass>  my_property;
 
 }
 ```
@@ -90,11 +90,11 @@ The initial value for a property can be set in it's declaration statement by ass
 In the above example, setting an initial value of 42 to *my_property* looks like:
 
 ```C++
-class MyClass : public spObject
+class MyClass : public flxObject
 {
 public:
    // Define my property
-   spPropertyInt<MyClass>  my_property = {42};
+   flxPropertyInt<MyClass>  my_property = {42};
 
 }
 ```
@@ -134,26 +134,26 @@ By calling methods on read and write of the property, the Read/Write property ob
 Within the definition of a class the property is for, the property is defined using the following pattern:
 
 ```C++
-spPropertyRWType<ClassName, &ClassName::Getter, &ClassName::Setter>  property_name;
+flxPropertyRWType<ClassName, &ClassName::Getter, &ClassName::Setter>  property_name;
 ```
 Where:
-* spPropertyRWType - the type of the property class being used. 
+* flxPropertyRWType - the type of the property class being used. 
 * ClassName - the class name that the property is for. The name of the class type the property is being defined in. 
 * Getter - the name of the _get_ method the property should call when it's value is requested. **NOTE**: A reference, `& operator`, to the getter is provided
 * Setter - the name of the _set_ method the property should call when it's value is set.  **NOTE**: A reference, `& operator`, to the getter is provided
 
 ##### Available Property Types:
 
-* spPropertyRWBool - bool property
-* spPropertyRWInt8  - integer 8 property
-* spPropertyRWInt16  - integer 16 property
-* spPropertyRWInt  - integer property
-* spPropertyRWUint8 - unsigned 8 integer
-* spPropertyRWUint16 - unsigned 16 integer
-* spPropertyRWUint - unsigned integer
-* spPropertyRWFloat - float
-* spPropertyRWDouble - double
-* spPropertyRWString - string -> std::string
+* flxPropertyRWBool - bool property
+* flxPropertyRWInt8  - integer 8 property
+* flxPropertyRWInt16  - integer 16 property
+* flxPropertyRWInt  - integer property
+* flxPropertyRWUint8 - unsigned 8 integer
+* flxPropertyRWUint16 - unsigned 16 integer
+* flxPropertyRWUint - unsigned integer
+* flxPropertyRWFloat - float
+* flxPropertyRWDouble - double
+* flxPropertyRWString - string -> std::string
 
 ##### Getter Methods
 
@@ -188,7 +188,7 @@ Note
 ##### Example
 
 ```C++
-class MyClass2 : public spObject
+class MyClass2 : public flxObject
 {
 private:
     int  get_myProp(void);
@@ -196,7 +196,7 @@ private:
 
 public:
    // Define my property
-   spPropertyRWInt<MyClass2, &MyClass2::get_myProp, &MyClass2::set_myProp>  my_rwproperty;
+   flxPropertyRWInt<MyClass2, &MyClass2::get_myProp, &MyClass2::set_myProp>  my_rwproperty;
 
 }
 ```
@@ -250,7 +250,7 @@ Using the example from above:
 
 ```C++
     // Define an input parameter with a range of -29 to 144
-    spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { -28, 144 };
+    flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { -28, 144 };
 ```
 
 If providing an initial value, the declaration has the form ```{initial value, min, max}```.
@@ -258,7 +258,7 @@ If providing an initial value, the declaration has the form ```{initial value, m
 ```C++
     // Define an input parameter with an initial value of
     // 1, and a range of -29 to 144
-    spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { 01, -28, 144 };
+    flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { 01, -28, 144 };
 ```
 
 To set/change the range value at runtime, the method ```setDataLimitRange(min, max)``` is called on the input parameter object.
@@ -286,7 +286,7 @@ To set the valid values at parameter definition, just set the declared parameter
 Using the example from above:
 ```C++
 // Define an input parameter with a range of -29 to 144
-spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {
+flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {
                                         {"Value One", 22},
                                         {"Value Two", 44},
                                         {"Value Three", 66},        
@@ -299,7 +299,7 @@ If providing an initial value, the declaration has the form ```{initial value, v
 
 ```C++
 // Define an initial value of 22, and a valid value set. 
-spParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {22, {
+flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {22, {
                                         {"Value One", 22},
                                         {"Value Two", 44},
                                         {"Value Three", 66},        

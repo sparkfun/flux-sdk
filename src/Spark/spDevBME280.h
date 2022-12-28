@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFunBME280.h"
 
 // What is the name used to ID this device?
 #define kBME280DeviceName "BME280"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevBME280 : public spDeviceI2CType<spDevBME280>, public BME280
+class spDevBME280 : public flxDeviceI2CType<spDevBME280>, public BME280
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kBME280DeviceName;
@@ -54,11 +54,11 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_Humidity> humidity;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureF> temperatureF;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureC> temperatureC;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_Pressure> pressure;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeM> altitudeM;
-    spParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeF> altitudeF;
+    flxParameterOutFloat<spDevBME280, &spDevBME280::read_Humidity> humidity;
+    flxParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureF> temperatureF;
+    flxParameterOutFloat<spDevBME280, &spDevBME280::read_TemperatureC> temperatureC;
+    flxParameterOutFloat<spDevBME280, &spDevBME280::read_Pressure> pressure;
+    flxParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeM> altitudeM;
+    flxParameterOutFloat<spDevBME280, &spDevBME280::read_AltitudeF> altitudeF;
 
 };

@@ -65,7 +65,7 @@ float spDevMicroPressure::read_pressure_bar()
 
 // Static method used to determine if this device is connected
 
-bool spDevMicroPressure::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevMicroPressure::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -92,7 +92,7 @@ bool spDevMicroPressure::onInitialize(TwoWire &wirePort)
     bool result = SparkFun_MicroPressure::begin(address(), wirePort);
 
     if (!result)
-        spLog_E("MicroPressure - begin failed");
+        flxLog_E("MicroPressure - begin failed");
 
     return result;
 }

@@ -54,7 +54,7 @@ bool spWiFiESP32::connect(void)
     // Do we have credentials?
     if (SSID().length() == 0 || password().length() == 0 )
     {
-        spLog_E(F("WiFi: No credentials provided. Unable to connect"));
+        flxLog_E(F("WiFi: No credentials provided. Unable to connect"));
         return false;
     }
 
@@ -62,22 +62,22 @@ bool spWiFiESP32::connect(void)
     WiFi.mode(WIFI_STA);
     WiFi.begin(SSID().c_str(), password().c_str());
     
-    spLog_I_(F("Connecting to WiFi..."));
+    flxLog_I_(F("Connecting to WiFi..."));
 
     int i=0;
     while(WiFi.status() != WL_CONNECTED)
     {
         delay(500);
-        spLog_N_(F("."));
+        flxLog_N_(F("."));
         i++;
         if ( i > kMaxConnectionTries)
         {
-            spLog_E(F("Error connecting to WiFi access point - %s"), SSID().c_str());
+            flxLog_E(F("Error connecting to WiFi access point - %s"), SSID().c_str());
             WiFi.disconnect(true);
             return false;
         }
     }
-    spLog_N(F("Connected to %s"), SSID().c_str());
+    flxLog_N(F("Connected to %s"), SSID().c_str());
     // okay, we're connected.
     _wasConnected = true;
     on_connectionChange.emit(true);
@@ -93,7 +93,7 @@ void spWiFiESP32::disconnect(void)
     {
         if ( !WiFi.disconnect(true) )
         {
-            spLog_E(F("WiFi disconnect() - error disconnecting"));
+            flxLog_E(F("WiFi disconnect() - error disconnecting"));
         }
     }
     if ( _wasConnected )

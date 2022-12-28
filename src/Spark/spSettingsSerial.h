@@ -4,7 +4,7 @@
 
 #include "spSpark.h"
 #include "flxCore.h"
-#include "spDevice.h"
+#include "flxDevice.h"
 
 #define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
@@ -13,7 +13,7 @@
 #define kReadBufferNoMatch 251
 
 
-class spSettingsSerial : public spActionType<spSettingsSerial>
+class spSettingsSerial : public flxActionType<spSettingsSerial>
 {
 
   public:
@@ -26,48 +26,48 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         setSystemRoot(&spark);
     }
 
-    void setSystemRoot(spObjectContainer *theRoot)
+    void setSystemRoot(flxObjectContainer *theRoot)
     {
         _systemRoot = theRoot;
     }
     // Draw Settings Page entries -- this is the entry pont for this menu
 
-    bool drawPage(spObject *);
-    bool drawPage(spObject *, spProperty *);
-    bool drawPage(spOperation *);
-    bool drawPage(spOperation *, spParameter *);
-    bool drawPage(spOperation *, spParameterIn *);
-    bool drawPage(spObject *, spParameterIn *, flxDataLimit * );
-    bool drawPage(spObject *, spProperty *, flxDataLimit * );
-    bool drawPage(spObjectContainer *);
-    bool drawPage(spOperationContainer *);
-    bool drawPage(spActionContainer *);
-    bool drawPage(spDeviceContainer *);
+    bool drawPage(flxObject *);
+    bool drawPage(flxObject *, flxProperty *);
+    bool drawPage(flxOperation *);
+    bool drawPage(flxOperation *, flxParameter *);
+    bool drawPage(flxOperation *, flxParameterIn *);
+    bool drawPage(flxObject *, flxParameterIn *, flxDataLimit * );
+    bool drawPage(flxObject *, flxProperty *, flxDataLimit * );
+    bool drawPage(flxObjectContainer *);
+    bool drawPage(flxOperationContainer *);
+    bool drawPage(flxActionContainer *);
+    bool drawPage(flxDeviceContainer *);
 
     // Our output event
-    spSignalVoid on_finished;
+    flxSignalVoid on_finished;
 
     bool loop();
 
   protected:
-    bool drawPageParamInVoid(spOperation *, spParameterIn *);
+    bool drawPageParamInVoid(flxOperation *, flxParameterIn *);
 
     // Draw menu entries
-    int drawMenu(spObject *, uint);
-    int drawMenu(spOperation *, uint);
-    int drawMenu(spObjectContainer *, uint);
-    int drawMenu(spOperationContainer *, uint);
-    int drawMenu(spActionContainer *, uint);
-    int drawMenu(spDeviceContainer *, uint);
+    int drawMenu(flxObject *, uint);
+    int drawMenu(flxOperation *, uint);
+    int drawMenu(flxObjectContainer *, uint);
+    int drawMenu(flxOperationContainer *, uint);
+    int drawMenu(flxActionContainer *, uint);
+    int drawMenu(flxDeviceContainer *, uint);
     int drawMenu(std::vector<std::string> &, uint );
     
     // Select menu entries
-    int selectMenu(spObject *, uint);
-    int selectMenu(spOperation *, uint);
-    int selectMenu(spObjectContainer *, uint);
-    int selectMenu(spOperationContainer *, uint);
-    int selectMenu(spActionContainer *, uint);
-    int selectMenu(spDeviceContainer *, uint);
+    int selectMenu(flxObject *, uint);
+    int selectMenu(flxOperation *, uint);
+    int selectMenu(flxObjectContainer *, uint);
+    int selectMenu(flxOperationContainer *, uint);
+    int selectMenu(flxActionContainer *, uint);
+    int selectMenu(flxDeviceContainer *, uint);
 
     // get the selected menu item
     uint8_t getMenuSelection(uint max, uint timeout = 30);
@@ -84,10 +84,10 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     void drawEntryBanner(void);
     
     //-----------------------------------------------------------------------------
-    // drawPage()  - spContainer version
+    // drawPage()  - flxContainer version
     //
 
-    template <class T> bool drawPage(spContainer<T> *pCurrent)
+    template <class T> bool drawPage(flxContainer<T> *pCurrent)
     {
 
         if (!pCurrent)
@@ -109,7 +109,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
             else if (nMenuItems < 0)
             {
                 Serial.println("Error generating menu entries.");
-                spLog_E("Error generating menu entries");
+                flxLog_E("Error generating menu entries");
                 return false;
             }
 
@@ -139,7 +139,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     };
 
     //-----------------------------------------------------------------------------
-    // drawMenu()  - spContainer version
+    // drawMenu()  - flxContainer version
     //
     // Draws the menu portion specific to the object.
     //   - The object name and description - pre-amble
@@ -150,15 +150,15 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     //
     //      N = The current menu entry -- (the last entry number used)
 
-    template <class T> int drawMenu(spContainer<T> *pCurrent, uint level)
+    template <class T> int drawMenu(flxContainer<T> *pCurrent, uint level)
     {
 
         if (!pCurrent)
             return -1;
 
-        // First, cascade to the spObject portion of the menu
+        // First, cascade to the flxObject portion of the menu
 
-        int returnLevel = drawMenu((spObject *)pCurrent, level);
+        int returnLevel = drawMenu((flxObject *)pCurrent, level);
 
         if (returnLevel < 0)
             return returnLevel; // error happened
@@ -180,15 +180,15 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     // selectMenu() - container version
     //
     // Called with a menu item is selected.
-    template <class T> int selectMenu(spContainer<T> *pCurrent, uint level)
+    template <class T> int selectMenu(flxContainer<T> *pCurrent, uint level)
     {
 
         if (!pCurrent)
             return -1;
 
-        // First, cascade to the spObject portion of the menu
+        // First, cascade to the flxObject portion of the menu
 
-        int returnLevel = selectMenu((spObject *)pCurrent, level);
+        int returnLevel = selectMenu((flxObject *)pCurrent, level);
 
         // returnLevel < 0 = ERROR
         if (returnLevel < 0)
@@ -217,21 +217,21 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
         //
         // Find the class type and "downcast it"
 
-        if (spIsType<spObjectContainer>(pNext))
+        if (flxIsType<flxObjectContainer>(pNext))
         {
-            drawPage(reinterpret_cast<spObjectContainer *>(pNext));
+            drawPage(reinterpret_cast<flxObjectContainer *>(pNext));
         }
-        else if (spIsType<spDeviceContainer>(pNext))
+        else if (flxIsType<flxDeviceContainer>(pNext))
         {
-            drawPage(reinterpret_cast<spDeviceContainer *>(pNext));
+            drawPage(reinterpret_cast<flxDeviceContainer *>(pNext));
         }
-        else if (spIsType<spActionContainer>(pNext))
+        else if (flxIsType<flxActionContainer>(pNext))
         {
-            drawPage(reinterpret_cast<spActionContainer *>(pNext));
+            drawPage(reinterpret_cast<flxActionContainer *>(pNext));
         }
-        else if (spIsType<spOperationContainer>(pNext))
+        else if (flxIsType<flxOperationContainer>(pNext))
         {
-            drawPage(reinterpret_cast<spOperationContainer *>(pNext));
+            drawPage(reinterpret_cast<flxOperationContainer *>(pNext));
         }
         else
             drawPage(pNext);
@@ -244,7 +244,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     // drawPage()  - property with a limit edition
 
     template <class T>
-    bool drawPage(spObject *pCurrent, T *pEntity, flxDataLimit *propLimit, bool showValue = false)
+    bool drawPage(flxObject *pCurrent, T *pEntity, flxDataLimit *propLimit, bool showValue = false)
     {
         if (!pCurrent || !pEntity || !propLimit)
             return false;
@@ -276,7 +276,7 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
             else if (nMenuItems < 0)
             {
                 Serial.println("Error generating menu entries.");
-                spLog_E("Error generating menu entries");
+                flxLog_E("Error generating menu entries");
                 return false;
             }
 
@@ -318,9 +318,9 @@ class spSettingsSerial : public spActionType<spSettingsSerial>
     };
     void drawMenuEntry(uint item, flxDescriptor *pDesc);
     void drawMenuEntry(uint item, const char *);
-    void drawPageHeader(spObject *, const char *szItem = nullptr);
-    void drawPageFooter(spObject *);
+    void drawPageHeader(flxObject *, const char *szItem = nullptr);
+    void drawPageFooter(flxObject *);
     // root for the system
 
-    spObjectContainer *_systemRoot;
+    flxObjectContainer *_systemRoot;
 };

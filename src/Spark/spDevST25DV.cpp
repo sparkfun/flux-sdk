@@ -44,7 +44,7 @@ spDevST25DV::spDevST25DV()
 
 //----------------------------------------------------------------------------------------------------------
 // Static method used to determine if devices is connected before creating this object (if creating dynamically)
-bool spDevST25DV::isConnected(spBusI2C &i2cDriver, uint8_t address)
+bool spDevST25DV::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -63,12 +63,12 @@ bool spDevST25DV::isConnected(spBusI2C &i2cDriver, uint8_t address)
 
     if ((icRef == 0x50) || (icRef == 0x51))
     {
-        spLog_I("ST25DV: isConnected icRef 0x%x", icRef);
+        flxLog_I("ST25DV: isConnected icRef 0x%x", icRef);
         return true;
     }
     else
     {
-        spLog_E("ST25DV: isConnected unexpected icRef 0x%x", icRef);
+        flxLog_E("ST25DV: isConnected unexpected icRef 0x%x", icRef);
         return false;
     }
 }
@@ -85,7 +85,7 @@ bool spDevST25DV::onInitialize(TwoWire &wirePort)
     bool rc = SFE_ST25DV64KC_NDEF::begin(wirePort);
 
     if (!rc)
-        spLog_E("ST25DV - begin failed");
+        flxLog_E("ST25DV - begin failed");
 
     return rc;
 }
@@ -110,7 +110,7 @@ std::string spDevST25DV::get_ssid()
 }
 void spDevST25DV::set_ssid(std::string newSsid)
 {
-    spLog_I("ST25DV: set_ssid called with SSID \"%s\"", newSsid); // DELETE ME !
+    flxLog_I("ST25DV: set_ssid called with SSID \"%s\"", newSsid); // DELETE ME !
 }
 std::string spDevST25DV::get_password()
 {
@@ -131,7 +131,7 @@ std::string spDevST25DV::get_password()
 }
 void spDevST25DV::set_password(std::string newPassword)
 {
-    spLog_I("ST25DV: set_ssid called with password \"%s\"", newPassword); // DELETE ME !
+    flxLog_I("ST25DV: set_ssid called with password \"%s\"", newPassword); // DELETE ME !
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ bool spDevST25DV::loop(void)
 
     if (millis() > (lastMillis + 15000)) // Check tag every 15 seconds to avoid possible I2C/RF collisions
     {
-        spLog_I("ST25DV: checking WiFi record");
+        flxLog_I("ST25DV: checking WiFi record");
 
         if (SFE_ST25DV64KC_NDEF::RFFieldDetected()) // Do a quick RF check first
         {
@@ -160,7 +160,7 @@ bool spDevST25DV::loop(void)
             {
                 strcpy(_previousPassword, _readPassword); // Update the previous SSID and Password
                 strcpy(_previousSsid, _readSsid);
-                spLog_I("ST25DV: new WiFi record detected! SSID:\"%s\" Password:\"%s\"", _readSsid, _readPassword); // DELETE ME !
+                flxLog_I("ST25DV: new WiFi record detected! SSID:\"%s\" Password:\"%s\"", _readSsid, _readPassword); // DELETE ME !
                 new_WiFi_record.emit();
                 result = true;
             }

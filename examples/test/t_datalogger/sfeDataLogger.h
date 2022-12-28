@@ -7,7 +7,7 @@
 #include <Spark.h>
 #include <Spark/spFmtCSV.h>
 #include <Spark/spFmtJSON.h>
-#include <Spark/spLogger.h>
+#include <Spark/flxLogger.h>
 #include <Spark/spSerial.h>
 #include <Spark/spTimer.h>
 
@@ -43,11 +43,11 @@ static const uint8_t kAppBioHubReset = 17; // Use the TXD pin as the bio hub res
 static const uint8_t kAppBioHubMFIO = 16;  // Use the RXD pin as the bio hub mfio pin
 
 // IoT Client Icludes
-#include <Spark/spAWSIoT.h>
-#include <Spark/spAzureIoT.h>
+#include <Spark/flxIoTAWS.h>
+#include <Spark/flxIoTAzure.h>
 #include <Spark/spMQTTESP32.h>
 #include <Spark/spThingSpeak.h>
-#include <Spark/spWrHTTP.h>
+#include <Spark/flxIoTHTTP.h>
 
 //------------------------------------------
 // Default log interval in milli secs
@@ -136,12 +136,12 @@ private:
 
     // Define our log type properties
 
-    spPropertyRWUint8<sfeDataLogger, &sfeDataLogger::get_logTypeSD, &sfeDataLogger::set_logTypeSD>   
+    flxPropertyRWUint8<sfeDataLogger, &sfeDataLogger::get_logTypeSD, &sfeDataLogger::set_logTypeSD>   
                 sdCardLogType = { kAppLogTypeCSV, { {"Disabled", kAppLogTypeNone},
                                                     {"CSV Format", kAppLogTypeCSV},
                                                     {"JSON Format", kAppLogTypeJSON} } };
 
-    spPropertyRWUint8<sfeDataLogger, &sfeDataLogger::get_logTypeSer, &sfeDataLogger::set_logTypeSer> 
+    flxPropertyRWUint8<sfeDataLogger, &sfeDataLogger::get_logTypeSer, &sfeDataLogger::set_logTypeSer> 
                 serialLogType = { kAppLogTypeCSV, { {"Disabled", kAppLogTypeNone},
                                                     {"CSV Format", kAppLogTypeCSV},
                                                     {"JSON Format", kAppLogTypeJSON} } };
@@ -155,7 +155,7 @@ private:
     spFormatCSV _fmtCSV;
 
     // Our logger
-    spLogger _logger;
+    flxLogger _logger;
 
     // Timer for event logging
     spTimer _timer;
@@ -187,14 +187,14 @@ private:
     spMQTTESP32 _mqttClient;
 
     // AWS
-    spAWSIoT _iotAWS;
+    flxIoTAWS _iotAWS;
 
     // Thingspeak
     spThingSpeak _iotThingSpeak;
 
     // azure
-    spAzureIoT _iotAzure;
+    flxIoTAzure _iotAzure;
 
     // HTTP/URL Post
-    spHTTPIoT _iotHTTP;
+    flxIoTHTTP _iotHTTP;
 };

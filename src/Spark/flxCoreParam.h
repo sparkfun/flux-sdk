@@ -1,6 +1,6 @@
 
 
-// spCoreParam.h
+// flxCoreParam.h
 //
 // Defines the objects that make up the "parameter" system of the framework
 
@@ -9,24 +9,24 @@
 #include <string>
 #include <vector>
 
-#include "spCoreInterface.h"
-#include "spCoreProps.h"
+#include "flxCoreInterface.h"
+#include "flxCoreProps.h"
 #include "flxCoreTypes.h"
 #include "spUtils.h"
 
 //----------------------------------------------------------------------------------------
-// spParameter
+// flxParameter
 //
 // Base/Core Parameter Class
 //
 // From an abstract sense, a basic parameter   - nothing more
 
-class spParameter : public flxDescriptor
+class flxParameter : public flxDescriptor
 {
     bool _isEnabled;
 
   public:
-    spParameter() : _isEnabled{true} {};
+    flxParameter() : _isEnabled{true} {};
 
     bool enabled(void)
     {
@@ -43,10 +43,10 @@ class spParameter : public flxDescriptor
 // We want to bin parameters as input and output for storing different
 // arguments lists per object type via overloading. So define some simple classes
 
-class spParameterIn : public spParameter
+class flxParameterIn : public flxParameter
 {
   public:
-    virtual spEditResult_t editValue(flxDataEditor &) = 0;
+    virtual flxEditResult_t editValue(flxDataEditor &) = 0;
     virtual bool setValue(flxDataVariable &) = 0;
     virtual flxDataLimit *dataLimit(void) = 0;
     std::string to_string()
@@ -57,14 +57,14 @@ class spParameterIn : public spParameter
 
 #define kParameterOutFlagArray 0x01
 
-// class spParameterOut : public spParameter, public flxDataOut
-class spParameterOut : public spParameter
+// class flxParameterOut : public flxParameter, public flxDataOut
+class flxParameterOut : public flxParameter
 {
   public:
-    spParameterOut() : _flags{0}
+    flxParameterOut() : _flags{0}
     {
     }
-    spParameterOut(uint8_t flags) : _flags{flags}
+    flxParameterOut(uint8_t flags) : _flags{flags}
     {
     }
 
@@ -77,7 +77,7 @@ class spParameterOut : public spParameter
 
     // This is used with covariant returns values of the sub-classes.
     // Returns the property pointer for a given class
-    virtual spParameterOut *accessor() = 0;
+    virtual flxParameterOut *accessor() = 0;
 
     // flags -- used to highlight attributes of the output
 
@@ -96,23 +96,23 @@ class spParameterOut : public spParameter
     uint8_t _flags;
 };
 // simple def - list of parameters
-using spParameterInList = std::vector<spParameterIn *>;
-using spParameterOutList = std::vector<spParameterOut *>;
+using flxParameterInList = std::vector<flxParameterIn *>;
+using flxParameterOutList = std::vector<flxParameterOut *>;
 
 //----------------------------------------------------------------------------------------
-// spParameterContainer
+// flxParameterContainer
 //
 // Define interface/class to manage a list of input and output parameters
 //
 //
 // The intent is to add this into other classes that want to expose parameters.
 //
-class _spParameterContainer
+class _flxParameterContainer
 {
 
   public:
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterIn *newParam, bool head=false)
+    void addParameter(flxParameterIn *newParam, bool head=false)
     {
         // Insert at the head?
         if (head)
@@ -122,12 +122,12 @@ class _spParameterContainer
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterIn &newParam, bool head=false)
+    void addParameter(flxParameterIn &newParam, bool head=false)
     {
         addParameter(&newParam, head);
     };
     //---------------------------------------------------------------------------------
-    void removeParameter(spParameterIn *rmParam)
+    void removeParameter(flxParameterIn *rmParam)
     {
         auto iter = std::find(_input_parameters.begin(), _input_parameters.end(), rmParam);
 
@@ -136,7 +136,7 @@ class _spParameterContainer
     }
 
     //---------------------------------------------------------------------------------    
-    void removeParameter(spParameterIn &rmParam)
+    void removeParameter(flxParameterIn &rmParam)
     {
         removeParameter(&rmParam);
     } 
@@ -148,7 +148,7 @@ class _spParameterContainer
     }
 
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterOut *newParam, bool head=false)
+    void addParameter(flxParameterOut *newParam, bool head=false)
     {
         // Insert at the head?
         if (head)
@@ -158,13 +158,13 @@ class _spParameterContainer
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(spParameterOut &newParam, bool head=false)
+    void addParameter(flxParameterOut &newParam, bool head=false)
     {
         addParameter(&newParam, head);
     };
 
     //---------------------------------------------------------------------------------
-    void removeParameter(spParameterOut *rmParam)
+    void removeParameter(flxParameterOut *rmParam)
     {
         auto iter = std::find(_output_parameters.begin(), _output_parameters.end(), rmParam);
 
@@ -173,7 +173,7 @@ class _spParameterContainer
     }
 
     //---------------------------------------------------------------------------------    
-    void removeParameter(spParameterOut &rmParam)
+    void removeParameter(flxParameterOut &rmParam)
     {
         removeParameter(&rmParam);
     }    
@@ -184,53 +184,53 @@ class _spParameterContainer
     }
 
     //---------------------------------------------------------------------------------
-    spParameterOutList &getOutputParameters(void)
+    flxParameterOutList &getOutputParameters(void)
     {
         return _output_parameters;
     };
 
     //---------------------------------------------------------------------------------
-    spParameterInList &getInputParameters(void)
+    flxParameterInList &getInputParameters(void)
     {
         return _input_parameters;
     };
 
   private:
-    spParameterInList _input_parameters;
-    spParameterOutList _output_parameters;
+    flxParameterInList _input_parameters;
+    flxParameterOutList _output_parameters;
 };
 
 //----------------------------------------------------------------------------------------------------
-// spParameterOutScalar
+// flxParameterOutScalar
 
-class spParameterOutScalar : public spParameterOut, public flxDataOut
+class flxParameterOutScalar : public flxParameterOut, public flxDataOut
 {
   public:
     // mostly a
-    spParameterOutScalar *accessor()
+    flxParameterOutScalar *accessor()
     {
         return this;
     }
     virtual flxDataType_t type(void) = 0;
 };
 //----------------------------------------------------------------------------------------------------
-// spParameterOut
+// flxParameterOut
 //
 // Output Parameter Template
 //
 //
 
 template <class T, class Object, T (Object::*_getter)()>
-class _spParameterOut : public _flxDataOut<T>, public spParameterOutScalar
+class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-    _spParameterOut() : my_object(0)
+    _flxParameterOut() : my_object(0)
     {
     }
 
-    _spParameterOut(Object *me) : my_object(me)
+    _flxParameterOut(Object *me) : my_object(me)
     {
     }
     //---------------------------------------------------------------------------------
@@ -252,9 +252,9 @@ class _spParameterOut : public _flxDataOut<T>, public spParameterOutScalar
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spParameterContainer
-        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
-                      "spParameterOut: type parameter of this class must derive from _spParameterContainer");
+        // my_object must be derived from _flxParameterContainer
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
+                      "flxParameterOut: type parameter of this class must derive from _flxParameterContainer");
 
         my_object = obj;
         assert(my_object);
@@ -288,7 +288,7 @@ class _spParameterOut : public _flxDataOut<T>, public spParameterOutScalar
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return (T)0;
         }
         return (my_object->*_getter)();
@@ -344,29 +344,29 @@ class _spParameterOut : public _flxDataOut<T>, public spParameterOutScalar
 };
 
 // Define by type
-template <class Object, bool (Object::*_getter)()> using spParameterOutBool = _spParameterOut<bool, Object, _getter>;
+template <class Object, bool (Object::*_getter)()> using flxParameterOutBool = _flxParameterOut<bool, Object, _getter>;
 
 template <class Object, int8_t (Object::*_getter)()>
-using spParameterOutInt8 = _spParameterOut<int8_t, Object, _getter>;
+using flxParameterOutInt8 = _flxParameterOut<int8_t, Object, _getter>;
 
 template <class Object, int16_t (Object::*_getter)()>
-using spParameterOutInt16 = _spParameterOut<int16_t, Object, _getter>;
+using flxParameterOutInt16 = _flxParameterOut<int16_t, Object, _getter>;
 
-template <class Object, int (Object::*_getter)()> using spParameterOutInt = _spParameterOut<int, Object, _getter>;
+template <class Object, int (Object::*_getter)()> using flxParameterOutInt = _flxParameterOut<int, Object, _getter>;
 
 template <class Object, uint8_t (Object::*_getter)()>
-using spParameterOutUint8 = _spParameterOut<uint8_t, Object, _getter>;
+using flxParameterOutUint8 = _flxParameterOut<uint8_t, Object, _getter>;
 
 template <class Object, uint16_t (Object::*_getter)()>
-using spParameterOutUint16 = _spParameterOut<uint16_t, Object, _getter>;
+using flxParameterOutUint16 = _flxParameterOut<uint16_t, Object, _getter>;
 
-template <class Object, uint (Object::*_getter)()> using spParameterOutUint = _spParameterOut<uint, Object, _getter>;
+template <class Object, uint (Object::*_getter)()> using flxParameterOutUint = _flxParameterOut<uint, Object, _getter>;
 
 template <class Object, float (Object::*_getter)()>
-class spParameterOutFloat : public _spParameterOut<float, Object, _getter>
+class flxParameterOutFloat : public _flxParameterOut<float, Object, _getter>
 {
   public:
-    spParameterOutFloat() : _precision(3)
+    flxParameterOutFloat() : _precision(3)
     {
     }
     void setPrecision(uint16_t prec)
@@ -383,10 +383,10 @@ class spParameterOutFloat : public _spParameterOut<float, Object, _getter>
 };
 
 template <class Object, double (Object::*_getter)()>
-class spParameterOutDouble : public _spParameterOut<double, Object, _getter>
+class flxParameterOutDouble : public _flxParameterOut<double, Object, _getter>
 {
   public:
-    spParameterOutDouble() : _precision(3)
+    flxParameterOutDouble() : _precision(3)
     {
     }
     void setPrecision(uint16_t prec)
@@ -402,19 +402,19 @@ class spParameterOutDouble : public _spParameterOut<double, Object, _getter>
     uint16_t _precision;
 };
 //----------------------------------------------------------------------------------------------------
-// spParameterOutString
+// flxParameterOutString
 //
 // Strings are special
 // Output Parameter Template
 //
 //
 template <class Object, std::string (Object::*_getter)()>
-class spParameterOutString : public spParameterOutScalar, public _flxDataOutString
+class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutString
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-    spParameterOutString() : my_object(0)
+    flxParameterOutString() : my_object(0)
     {
     }
 
@@ -435,9 +435,9 @@ class spParameterOutString : public spParameterOutScalar, public _flxDataOutStri
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spParameterContainer
-        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
-                      "spParameterOutString: type parameter of this class must derive from _spParameterContainer");
+        // my_object must be derived from _flxParameterContainer
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
+                      "flxParameterOutString: type parameter of this class must derive from _flxParameterContainer");
 
         my_object = obj;
         assert(my_object);
@@ -471,7 +471,7 @@ class spParameterOutString : public spParameterOutScalar, public _flxDataOutStri
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return std::string("");
         }
 
@@ -528,16 +528,16 @@ class spParameterOutString : public spParameterOutScalar, public _flxDataOutStri
 };
 
 //----------------------------------------------------------------------------------------------------
-// spParameterOutArray
+// flxParameterOutArray
 
-class spParameterOutArray : public spParameterOut
+class flxParameterOutArray : public flxParameterOut
 {
   public:
-    spParameterOutArray() : spParameterOut{kParameterOutFlagArray}
+    flxParameterOutArray() : flxParameterOut{kParameterOutFlagArray}
     {
     }
 
-    spParameterOutArray *accessor()
+    flxParameterOutArray *accessor()
     {
         return this;
     }
@@ -548,13 +548,13 @@ class spParameterOutArray : public spParameterOut
 //---------------------------------------------------------------------------------------
 
 template <class T, class Object, bool (Object::*_getter)(flxDataArrayType<T> *)>
-class spParameterOutArrayType : public spParameterOutArray
+class flxParameterOutArrayType : public flxParameterOutArray
 {
 
     Object *my_object; // Pointer to the containing object
 
   public:
-    spParameterOutArrayType() : my_object(0)
+    flxParameterOutArrayType() : my_object(0)
     {
     }
 
@@ -578,9 +578,9 @@ class spParameterOutArrayType : public spParameterOutArray
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spParameterContainer
-        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
-                      "spParameterOutArray: type parameter of this class must derive from _spParameterContainer");
+        // my_object must be derived from _flxParameterContainer
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
+                      "flxParameterOutArray: type parameter of this class must derive from _flxParameterContainer");
 
         my_object = obj;
         assert(my_object);
@@ -618,7 +618,7 @@ class spParameterOutArrayType : public spParameterOutArray
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return nullptr;
         }
         flxDataArrayType<T> *data = new flxDataArrayType<T>;
@@ -643,31 +643,31 @@ class spParameterOutArrayType : public spParameterOutArray
 
 // Define by type
 template <class Object, bool (Object::*_getter)(flxDataArrayType<bool> *)>
-using spParameterOutArrayBool = spParameterOutArrayType<bool, Object, _getter>;
+using flxParameterOutArrayBool = flxParameterOutArrayType<bool, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<int8_t> *)>
-using spParameterOutArrayInt8 = spParameterOutArrayType<int8_t, Object, _getter>;
+using flxParameterOutArrayInt8 = flxParameterOutArrayType<int8_t, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<int16_t> *)>
-using spParameterOutArrayInt16 = spParameterOutArrayType<int16_t, Object, _getter>;
+using flxParameterOutArrayInt16 = flxParameterOutArrayType<int16_t, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<int> *)>
-using spParameterOutArrayInt = spParameterOutArrayType<int, Object, _getter>;
+using flxParameterOutArrayInt = flxParameterOutArrayType<int, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<uint8_t> *)>
-using spParameterOutArrayUint8 = spParameterOutArrayType<uint8_t, Object, _getter>;
+using flxParameterOutArrayUint8 = flxParameterOutArrayType<uint8_t, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<uint16_t> *)>
-using spParameterOutArrayUint16 = spParameterOutArrayType<uint16_t, Object, _getter>;
+using flxParameterOutArrayUint16 = flxParameterOutArrayType<uint16_t, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<uint> *)>
-using spParameterOutArrayUint = spParameterOutArrayType<uint, Object, _getter>;
+using flxParameterOutArrayUint = flxParameterOutArrayType<uint, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<float> *)>
-class spParameterOutArrayFloat : public spParameterOutArrayType<float, Object, _getter>
+class flxParameterOutArrayFloat : public flxParameterOutArrayType<float, Object, _getter>
 {
   public:
-    spParameterOutArrayFloat() : _precision(3)
+    flxParameterOutArrayFloat() : _precision(3)
     {
     }
     void setPrecision(uint16_t prec)
@@ -684,10 +684,10 @@ class spParameterOutArrayFloat : public spParameterOutArrayType<float, Object, _
 };
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<double> *)>
-class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object, _getter>
+class flxParameterOutArrayDouble : public flxParameterOutArrayType<double, Object, _getter>
 {
   public:
-    spParameterOutArrayDouble() : _precision(3)
+    flxParameterOutArrayDouble() : _precision(3)
     {
     }
     void setPrecision(uint16_t prec)
@@ -704,13 +704,13 @@ class spParameterOutArrayDouble : public spParameterOutArrayType<double, Object,
 };
 
 template <class Object, bool (Object::*_getter)(flxDataArrayString *)>
-class spParameterOutArrayString : public spParameterOutArray
+class flxParameterOutArrayString : public flxParameterOutArray
 {
 
     Object *my_object; // Pointer to the containing object
 
   public:
-    spParameterOutArrayString() : my_object(0)
+    flxParameterOutArrayString() : my_object(0)
     {
     }
 
@@ -733,9 +733,9 @@ class spParameterOutArrayString : public spParameterOutArray
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spParameterContainer
-        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
-                      "spParameterOutArray: type parameter of this class must derive from _spParameterContainer");
+        // my_object must be derived from _flxParameterContainer
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
+                      "flxParameterOutArray: type parameter of this class must derive from _flxParameterContainer");
 
         my_object = obj;
         assert(my_object);
@@ -772,7 +772,7 @@ class spParameterOutArrayString : public spParameterOutArray
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
             return nullptr;
         }
         flxDataArrayString *data = new flxDataArrayString;
@@ -791,22 +791,22 @@ class spParameterOutArrayString : public spParameterOutArray
 //-----------------------------------------------------------------------------------
 
 template <class T, class Object, void (Object::*_setter)(T const &)>
-class _spParameterIn : public spParameterIn, public _flxDataIn<T>
+class _flxParameterIn : public flxParameterIn, public _flxDataIn<T>
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-    _spParameterIn() : my_object(0)
+    _flxParameterIn() : my_object(0)
     {
     }
 
     // Limit data range
-    _spParameterIn(T min, T max)
+    _flxParameterIn(T min, T max)
     {
         _flxDataIn<T>::setDataLimitRange(min, max);
     }
     // Limit data set
-    _spParameterIn(std::initializer_list<std::pair<const std::string, T>> limitSet)
+    _flxParameterIn(std::initializer_list<std::pair<const std::string, T>> limitSet)
     {
         _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
@@ -829,9 +829,9 @@ class _spParameterIn : public spParameterIn, public _flxDataIn<T>
 
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spParameterContainer
-        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
-                      "spParameterIn: type parameter of this class must derive from _spParameterContainer");
+        // my_object must be derived from _flxParameterContainer
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
+                      "flxParameterIn: type parameter of this class must derive from _flxParameterContainer");
 
         my_object = obj;
         assert(my_object);
@@ -865,7 +865,7 @@ class _spParameterIn : public spParameterIn, public _flxDataIn<T>
 
         if (!my_object)
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
             return;
         }
 
@@ -882,7 +882,7 @@ class _spParameterIn : public spParameterIn, public _flxDataIn<T>
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(flxDataEditor &theEditor)
+    flxEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         T value = 0;
@@ -893,12 +893,12 @@ class _spParameterIn : public spParameterIn, public _flxDataIn<T>
         {
             // do we have a dataLimit set, and if so are we in limits?
             if (!_flxDataIn<T>::isValueValid(value))
-                return spEditOutOfRange;
+                return flxEditOutOfRange;
 
             set(value);
         }
 
-        return bSuccess ? spEditSuccess : spEditFailure;
+        return bSuccess ? flxEditSuccess : flxEditFailure;
     }
     bool setValue(flxDataVariable &value)
     {
@@ -922,44 +922,44 @@ class _spParameterIn : public spParameterIn, public _flxDataIn<T>
 
 // bool
 template <class Object, void (Object::*_setter)(bool const &)>
-using spParameterInBool = _spParameterIn<bool, Object, _setter>;
+using flxParameterInBool = _flxParameterIn<bool, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(int8_t const &)>
-using spParameterInInt8 = _spParameterIn<int8_t, Object, _setter>;
+using flxParameterInInt8 = _flxParameterIn<int8_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(int16_t const &)>
-using spParameterInInt16 = _spParameterIn<int16_t, Object, _setter>;
+using flxParameterInInt16 = _flxParameterIn<int16_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(int const &)>
-using spParameterInInt = _spParameterIn<int, Object, _setter>;
+using flxParameterInInt = _flxParameterIn<int, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint8_t const &)>
-using spParameterInUint8 = _spParameterIn<uint8_t, Object, _setter>;
+using flxParameterInUint8 = _flxParameterIn<uint8_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint16_t const &)>
-using spParameterInUint16 = _spParameterIn<uint16_t, Object, _setter>;
+using flxParameterInUint16 = _flxParameterIn<uint16_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint const &)>
-using spParameterInUint = _spParameterIn<uint, Object, _setter>;
+using flxParameterInUint = _flxParameterIn<uint, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(float const &)>
-using spParameterInFloat = _spParameterIn<float, Object, _setter>;
+using flxParameterInFloat = _flxParameterIn<float, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(double const &)>
-using spParameterInDouble = _spParameterIn<double, Object, _setter>;
+using flxParameterInDouble = _flxParameterIn<double, Object, _setter>;
 
 // strings are special.
 template <class Object, void (Object::*_setter)(std::string const &)>
-class spParameterInString : public spParameterIn, _flxDataInString
+class flxParameterInString : public flxParameterIn, _flxDataInString
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-    spParameterInString() : my_object(0)
+    flxParameterInString() : my_object(0)
     {
     }
 
-    spParameterInString(Object *me) : my_object(me)
+    flxParameterInString(Object *me) : my_object(me)
     {
     }
     //---------------------------------------------------------------------------------
@@ -980,9 +980,9 @@ class spParameterInString : public spParameterIn, _flxDataInString
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spParameterContainer
-        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
-                      "spParameterIn: type parameter of this class must derive from _spParameterContainer");
+        // my_object must be derived from _flxParameterContainer
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
+                      "flxParameterIn: type parameter of this class must derive from _flxParameterContainer");
 
         my_object = obj;
         assert(my_object);
@@ -1016,7 +1016,7 @@ class spParameterInString : public spParameterIn, _flxDataInString
 
         if (!my_object)
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
             return;
         }
 
@@ -1033,7 +1033,7 @@ class spParameterInString : public spParameterIn, _flxDataInString
     // editValue()
     //
     // Send the property value to the passed in editor for -- well -- editing
-    spEditResult_t editValue(flxDataEditor &theEditor)
+    flxEditResult_t editValue(flxDataEditor &theEditor)
     {
 
         std::string value = "";
@@ -1043,7 +1043,7 @@ class spParameterInString : public spParameterIn, _flxDataInString
         if (bSuccess) // success
             set(value);
 
-        return bSuccess ? spEditSuccess : spEditFailure;
+        return bSuccess ? flxEditSuccess : flxEditFailure;
     }
     flxDataLimit *dataLimit(void)
     {
@@ -1065,23 +1065,23 @@ class spParameterInString : public spParameterIn, _flxDataInString
 
 // Need a wedge class to make it easy to cast to a void outside of the template
 
-class spParameterInVoidType : public spParameterIn
+class flxParameterInVoidType : public flxParameterIn
 {
   public:
     virtual void set(void) = 0;
 };
 
 // VOID input parameter -- function call, no params
-template <class Object, void (Object::*_setter)()> class spParameterInVoid : public spParameterInVoidType
+template <class Object, void (Object::*_setter)()> class flxParameterInVoid : public flxParameterInVoidType
 {
     Object *my_object; // Pointer to the containing object
 
   public:
-    spParameterInVoid() : my_object(0)
+    flxParameterInVoid() : my_object(0)
     {
     }
 
-    spParameterInVoid(Object *me) : my_object(me)
+    flxParameterInVoid(Object *me) : my_object(me)
     {
     }
     //---------------------------------------------------------------------------------
@@ -1101,9 +1101,9 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     // Also the containing object is needed to call the getter/setter methods on that object
     void operator()(Object *obj)
     {
-        // my_object must be derived from _spParameterContainer
-        static_assert(std::is_base_of<_spParameterContainer, Object>::value,
-                      "spParameterIn: type parameter of this class must derive from _spParameterContainer");
+        // my_object must be derived from _flxParameterContainer
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
+                      "flxParameterIn: type parameter of this class must derive from _flxParameterContainer");
 
         my_object = obj;
         assert(my_object);
@@ -1136,7 +1136,7 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     {
         if (!my_object)
         {
-            spLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            flxLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
             return;
         }
 
@@ -1153,9 +1153,9 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
     // editValue()
     //
     // there is nothing to edit - this method just supports the interface
-    spEditResult_t editValue(flxDataEditor &theEditor)
+    flxEditResult_t editValue(flxDataEditor &theEditor)
     {
-        return spEditSuccess;
+        return flxEditSuccess;
     };
     flxDataLimit *dataLimit(void)
     {
@@ -1184,7 +1184,7 @@ template <class Object, void (Object::*_setter)()> class spParameterInVoid : pub
 #define spRegisterDesc(_obj_name_, _name_, _desc_) _obj_name_(this, _name_, _desc_)
 
 // Define a object type that supports parameter lists (input and output)
-class spOperation : public spObject, public _spParameterContainer
+class flxOperation : public flxObject, public _flxParameterContainer
 {
   public:
     virtual flxTypeID getType(void)
@@ -1198,12 +1198,12 @@ class spOperation : public spObject, public _spParameterContainer
     }
 };
 
-using spOperationContainer = spContainer<spOperation *>;
+using flxOperationContainer = flxContainer<flxOperation *>;
 //-----------------------------------------
 // Spark Actions
 //
-// spAction - just to enable grouping of actions
-class spAction : public spOperation
+// flxAction - just to enable grouping of actions
+class flxAction : public flxOperation
 {
 public:
     virtual bool initialize(void)
@@ -1213,10 +1213,10 @@ public:
 
 };
 // Container for actions
-using spActionContainer = spContainer<spAction *>;
+using flxActionContainer = flxContainer<flxAction *>;
 
 // For subclasses
-template <typename T> class spActionType : public spAction
+template <typename T> class flxActionType : public flxAction
 {
   public:
     // ---------------------------------------------------------------
@@ -1246,7 +1246,7 @@ template <typename T> class spActionType : public spAction
 // KDB - Temporary ...
 
 template <typename T>
-class spSystemType : public spActionType<T> {
+class flxSystemType : public flxActionType<T> {
 
 public:
     // setup and lifecycle of the file system interface
@@ -1264,4 +1264,4 @@ public:
     }
     virtual bool power(void) = 0;
 };
-// End - spCoreParam.h
+// End - flxCoreParam.h

@@ -2,7 +2,7 @@
 
 #include "spFileRotate.h"
 #include "spUtils.h"
-#include "spClock.h"
+#include "flxClock.h"
 
 // number of writes between flushes
 #define kFlushIncrement 2
@@ -53,10 +53,10 @@ bool spFileRotate::openNextLogFile(bool bSendEvent)
 
     if (!_currentFile)
     {
-        spLog_E(F("File Rotate - Unable to create file %s"), _currentFilename.c_str());
+        flxLog_E(F("File Rotate - Unable to create file %s"), _currentFilename.c_str());
         return false;
     }
-    _secsFileOpen = spClock.epoch();
+    _secsFileOpen = flxClock.epoch();
 
     _flushCount = 0; // new file, new start
 
@@ -85,7 +85,7 @@ void spFileRotate::write(const char *value, bool newline)
 
     if (!_theFS)
     {
-        spLog_E(F("File Rotate - Unable to output to file. No filesystem set"));
+        flxLog_E(F("File Rotate - Unable to output to file. No filesystem set"));
         return;
     }
 
@@ -103,7 +103,7 @@ void spFileRotate::write(const char *value, bool newline)
         _currentFile.write((uint8_t *)"\n", 1);
 
     // Will we need to rotate?
-    if (spClock.epoch() - _secsFileOpen() > _secsRotPeriod)
+    if (flxClock.epoch() - _secsFileOpen() > _secsRotPeriod)
     {
         // open the next file, send the new file event. This will cause
         // the next line out to be a "start of the file line" (i.e. header)

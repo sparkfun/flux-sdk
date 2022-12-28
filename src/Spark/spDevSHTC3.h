@@ -12,7 +12,7 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_SHTC3.h"
 
 // What is the name used to ID this device?
@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSHTC3 : public spDeviceI2CType<spDevSHTC3>, public SHTC3
+class spDevSHTC3 : public flxDeviceI2CType<spDevSHTC3>, public SHTC3
 {
 
 public:
@@ -28,7 +28,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kSHTC3DeviceName;
@@ -58,7 +58,7 @@ private:
 
 public:
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevSHTC3, &spDevSHTC3::read_humidity> humidity;    
-    spParameterOutFloat<spDevSHTC3, &spDevSHTC3::read_temperature_C> temperatureC;    
-    spParameterOutFloat<spDevSHTC3, &spDevSHTC3::read_temperature_F> temperatureF;    
+    flxParameterOutFloat<spDevSHTC3, &spDevSHTC3::read_humidity> humidity;    
+    flxParameterOutFloat<spDevSHTC3, &spDevSHTC3::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<spDevSHTC3, &spDevSHTC3::read_temperature_F> temperatureF;    
 };

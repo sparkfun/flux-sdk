@@ -12,14 +12,14 @@
 
 #include "Arduino.h"
 
-#include "spDevice.h"
+#include "flxDevice.h"
 #include "SparkFun_SDP3x_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kSDP3XDeviceName "SDP3x"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class spDevSDP3X : public spDeviceI2CType<spDevSDP3X>, public SDP3X
+class spDevSDP3X : public flxDeviceI2CType<spDevSDP3X>, public SDP3X
 {
 
 public:
@@ -27,7 +27,7 @@ public:
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
-    static bool isConnected(spBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
     static const char *getDeviceName()
     {
         return kSDP3XDeviceName;
@@ -64,12 +64,12 @@ private:
     bool _begun = false;
 
 public:
-    spPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_temperature_compensation, &spDevSDP3X::set_temperature_compensation> temperatureCompensation
+    flxPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_temperature_compensation, &spDevSDP3X::set_temperature_compensation> temperatureCompensation
         = { 1, { { "Differential Pressure", 0 }, { "Mass Flow", 1 } } };
-    spPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_measurement_averaging, &spDevSDP3X::set_measurement_averaging> measurementAveraging
+    flxPropertyRWUint8<spDevSDP3X, &spDevSDP3X::get_measurement_averaging, &spDevSDP3X::set_measurement_averaging> measurementAveraging
         = { 0, { { "Disabled", 0 }, { "Enabled", 1 } } };
 
     // Define our output parameters - specify the get functions to call.
-    spParameterOutFloat<spDevSDP3X, &spDevSDP3X::read_temperature_C> temperatureC;    
-    spParameterOutFloat<spDevSDP3X, &spDevSDP3X::read_pressure> pressure;    
+    flxParameterOutFloat<spDevSDP3X, &spDevSDP3X::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<spDevSDP3X, &spDevSDP3X::read_pressure> pressure;    
 };

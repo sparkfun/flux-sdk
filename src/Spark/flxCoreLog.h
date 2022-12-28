@@ -6,103 +6,103 @@
 #include <WString.h>
 #include <stdarg.h>
 
-#include "spCoreInterface.h"
+#include "flxCoreInterface.h"
 // Lets enable logging
 #define SP_LOGGING_ENABLED
 
 // Define logging levels
 typedef enum
 {
-    spLogNone,
-    spLogError,
-    spLogWarning,
-    spLogInfo,
-    spLogDebug,
-    spLogVerbose
-} spLogLevel_t;
+    flxLogNone,
+    flxLogError,
+    flxLogWarning,
+    flxLogInfo,
+    flxLogDebug,
+    flxLogVerbose
+} flxLogLevel_t;
 
 // ----------------------------------------------------------------------------
-// spLoggingDriver()
+// flxLoggingDriver()
 //
 // This class actually does the log work. It allows the backend of the logging
 // system to be changed as needed. For example if you want to use a native
 // log system.
 
-class spLoggingDriver
+class flxLoggingDriver
 {
 
     // Very simple interface - just follow a standard printf() format, but with
     // log level also passed in
   public:
-    virtual int logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args) = 0;
+    virtual int logPrintf(const flxLogLevel_t level, bool newline, const char *fmt, va_list args) = 0;
 
-    virtual void setLogLevel(spLogLevel_t level)
+    virtual void setLogLevel(flxLogLevel_t level)
     {
     }
 };
 
 #ifdef THIS_IS_NOT_WORKING_ON_ESP32
 // // ----------------------------------------------------------------------------
-// // spLoggingDrvESP32  -
+// // flxLoggingDrvESP32  -
 // //
 // // Sends log output to the ESP32 native, IDF system
 
-// class spLoggingDrvESP32 : public spLoggingDriver
+// class flxLoggingDrvESP32 : public flxLoggingDriver
 // {
 // public:
-//     spLoggingDrvESP32(){}
+//     flxLoggingDrvESP32(){}
 
-//     int logPrintf(const spLogLevel_t level, const char *fmt, va_list args);
+//     int logPrintf(const flxLogLevel_t level, const char *fmt, va_list args);
 
-//     void setLogLevel(spLogLevel_t level);
+//     void setLogLevel(flxLogLevel_t level);
 // private:
-//    uint getESPLevel(const spLogLevel_t level);
+//    uint getESPLevel(const flxLogLevel_t level);
 // };
 #endif
 // ----------------------------------------------------------------------------
-// spLoggingDrvDefault  - our Default driver for log output
+// flxLoggingDrvDefault  - our Default driver for log output
 
-class spLoggingDrvDefault : public spLoggingDriver
+class flxLoggingDrvDefault : public flxLoggingDriver
 {
   public:
-    spLoggingDrvDefault() : _wrOutput(nullptr)
+    flxLoggingDrvDefault() : _wrOutput(nullptr)
     {
     }
 
-    int logPrintf(const spLogLevel_t level, bool newline, const char *fmt, va_list args);
+    int logPrintf(const flxLogLevel_t level, bool newline, const char *fmt, va_list args);
 
-    void setOutput(spWriter &theWriter)
+    void setOutput(flxWriter &theWriter)
     {
         setOutput(&theWriter);
     }
-    void setOutput(spWriter *theWriter)
+    void setOutput(flxWriter *theWriter)
     {
         _wrOutput = theWriter;
     }
 
   private:
     // our output device
-    spWriter *_wrOutput;
+    flxWriter *_wrOutput;
 };
 
 // ----------------------------------------------------------------------------
 // main interface for the logging system
-class spLogging
+class flxLogging
 {
   public:
     // this is a singleton
-    static spLogging &get(void)
+    static flxLogging &get(void)
     {
-        static spLogging instance;
+        static flxLogging instance;
         return instance;
     }
     //-------------------------------------------------------------------------
     // Delete copy and assignment constructors - b/c this is singleton.
-    spLogging(spLogging const &) = delete;
-    void operator=(spLogging const &) = delete;
+    flxLogging(flxLogging const &) = delete;
+    void operator=(flxLogging const &) = delete;
 
     //-------------------------------------------------------------------------
-    void setLogLevel(spLogLevel_t level)
+    void setLogLevel(flxLogLevel_t level)
     {
         _logLevel = level;
         if (_pLogDriver)
@@ -110,12 +110,12 @@ class spLogging
     }
 
     //-------------------------------------------------------------------------
-    spLogLevel_t logLevel(void)
+    flxLogLevel_t logLevel(void)
     {
         return _logLevel;
     }
     //-------------------------------------------------------------------------
-    void setLogDriver(spLoggingDriver &theDriver)
+    void setLogDriver(flxLoggingDriver &theDriver)
     {
 
         _pLogDriver = &theDriver;
@@ -124,7 +124,7 @@ class spLogging
 
     //-------------------------------------------------------------------------
     // generic log interface
-    int logPrintf(const spLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...)
+    int logPrintf(const flxLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...)
     {
         int retval = 0;
         if (_pLogDriver && level <= _logLevel )
@@ -138,7 +138,7 @@ class spLogging
     }
     //-------------------------------------------------------------------------
     // generic log interface
-    int logPrintf(const spLogLevel_t level, bool newline, const char *fmt, ...)
+    int logPrintf(const flxLogLevel_t level, bool newline, const char *fmt, ...)
     {
         int retval = 0;
         if (_pLogDriver && level <= _logLevel)
@@ -152,83 +152,83 @@ class spLogging
     }
 
   private:
-    spLogging() : _logLevel{spLogWarning}, _pLogDriver{nullptr}
+    flxLogging() : _logLevel{flxLogWarning}, _pLogDriver{nullptr}
     {
     }
 
-    spLogLevel_t _logLevel;
+    flxLogLevel_t _logLevel;
 
-    spLoggingDriver *_pLogDriver;
+    flxLoggingDriver *_pLogDriver;
 };
-extern spLogging &spLog;
+extern flxLogging &flxLog;
 
 // Define log macros used throughout the system for logging
 #ifdef SP_LOGGING_ENABLED
 
-#define spLog_V(format, ...) spLog.logPrintf(spLogVerbose, true, format, ##__VA_ARGS__)
-#define spLog_D(format, ...) spLog.logPrintf(spLogDebug, true, format, ##__VA_ARGS__)
-#define spLog_I(format, ...) spLog.logPrintf(spLogInfo, true, format, ##__VA_ARGS__)
-#define spLog_W(format, ...) spLog.logPrintf(spLogWarning, true, format, ##__VA_ARGS__)
-#define spLog_E(format, ...) spLog.logPrintf(spLogError, true, format, ##__VA_ARGS__)
-#define spLog_N(format, ...) spLog.logPrintf(spLogNone, true, format, ##__VA_ARGS__)
+#define flxLog_V(format, ...) flxLog.logPrintf(flxLogVerbose, true, format, ##__VA_ARGS__)
+#define flxLog_D(format, ...) flxLog.logPrintf(flxLogDebug, true, format, ##__VA_ARGS__)
+#define flxLog_I(format, ...) flxLog.logPrintf(flxLogInfo, true, format, ##__VA_ARGS__)
+#define flxLog_W(format, ...) flxLog.logPrintf(flxLogWarning, true, format, ##__VA_ARGS__)
+#define flxLog_E(format, ...) flxLog.logPrintf(flxLogError, true, format, ##__VA_ARGS__)
+#define flxLog_N(format, ...) flxLog.logPrintf(flxLogNone, true, format, ##__VA_ARGS__)
 
 // versions what don't end with a newline ...
-#define spLog_V_(format, ...) spLog.logPrintf(spLogVerbose, false, format, ##__VA_ARGS__)
-#define spLog_D_(format, ...) spLog.logPrintf(spLogDebug, false, format, ##__VA_ARGS__)
-#define spLog_I_(format, ...) spLog.logPrintf(spLogInfo, false, format, ##__VA_ARGS__)
-#define spLog_W_(format, ...) spLog.logPrintf(spLogWarning, false, format, ##__VA_ARGS__)
-#define spLog_E_(format, ...) spLog.logPrintf(spLogError, false, format, ##__VA_ARGS__)
-#define spLog_N_(format, ...) spLog.logPrintf(spLogNone, false, format, ##__VA_ARGS__)
+#define flxLog_V_(format, ...) flxLog.logPrintf(flxLogVerbose, false, format, ##__VA_ARGS__)
+#define flxLog_D_(format, ...) flxLog.logPrintf(flxLogDebug, false, format, ##__VA_ARGS__)
+#define flxLog_I_(format, ...) flxLog.logPrintf(flxLogInfo, false, format, ##__VA_ARGS__)
+#define flxLog_W_(format, ...) flxLog.logPrintf(flxLogWarning, false, format, ##__VA_ARGS__)
+#define flxLog_E_(format, ...) flxLog.logPrintf(flxLogError, false, format, ##__VA_ARGS__)
+#define flxLog_N_(format, ...) flxLog.logPrintf(flxLogNone, false, format, ##__VA_ARGS__)
 
 #else
 
-#define spLog_V(format, ...)                                                                                           \
+#define flxLog_V(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_D(format, ...)                                                                                           \
+#define flxLog_D(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_I(format, ...)                                                                                           \
+#define flxLog_I(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_W(format, ...)                                                                                           \
+#define flxLog_W(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_E(format, ...)                                                                                           \
+#define flxLog_E(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_N(format, ...)                                                                                           \
+#define flxLog_N(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
 
 // no newline
-#define spLog_V_(format, ...)                                                                                           \
+#define flxLog_V_(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_D_(format, ...)                                                                                           \
+#define flxLog_D_(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_I_(format, ...)                                                                                           \
+#define flxLog_I_(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_W_(format, ...)                                                                                           \
+#define flxLog_W_(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_E_(format, ...)                                                                                           \
+#define flxLog_E_(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define spLog_N_(format, ...)                                                                                           \
+#define flxLog_N_(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
