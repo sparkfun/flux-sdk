@@ -4,15 +4,15 @@
  */
 
 // Spark framework 
-#include <Spark.h>
-#include <Spark/flxLogger.h>
-#include <Spark/flxFmtJSON.h>
-#include <Spark/flxFmtCSV.h>
-#include <Spark/flxTimer.h>
-#include <Spark/flxSerial.h>
+#include <Flux.h>
+#include <Flux/flxLogger.h>
+#include <Flux/flxFmtJSON.h>
+#include <Flux/flxFmtCSV.h>
+#include <Flux/flxTimer.h>
+#include <Flux/flxSerial.h>
 
 // get testing
-#include <Spark/flxDevNAU7802.h>
+#include <Flux/flxDevNAU7802.h>
 
 
 //------------------------------------------

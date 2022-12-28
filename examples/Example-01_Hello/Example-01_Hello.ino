@@ -6,9 +6,9 @@
 #include "Arduino.h"
 
 // Spark framework 
-#include <Spark.h>
-#include <Spark/flxDevBME280.h>
-#include <Spark/flxDevCCS811.h>
+#include <Flux.h>
+#include <Flux/flxDevBME280.h>
+#include <Flux/flxDevCCS811.h>
 
 /////////////////////////////////////////////////////////////////////////
 //

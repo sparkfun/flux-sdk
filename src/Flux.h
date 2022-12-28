@@ -1,6 +1,6 @@
 /*
  *---------------------------------------------------------------------------------
- * Spark.h
+ * Flux.h
  *
  * 
  * 
@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include "Spark/flxCore.h"
-#include "Spark/flxDevice.h"
+#include "Flux/flxCore.h"
+#include "Flux/flxDevice.h"
 
-#include "Spark/spSpark.h"
+#include "Flux/spSpark.h"
 

@@ -4,72 +4,72 @@
  */
 
 // Spark framework 
-#include <Spark.h>
-#include <Spark/flxLogger.h>
-#include <Spark/flxFmtJSON.h>
-#include <Spark/flxFmtCSV.h>
-#include <Spark/flxTimer.h>
-#include <Spark/flxSerial.h>
+#include <Flux.h>
+#include <Flux/flxLogger.h>
+#include <Flux/flxFmtJSON.h>
+#include <Flux/flxFmtCSV.h>
+#include <Flux/flxTimer.h>
+#include <Flux/flxSerial.h>
 
 
 // settings storage
-#include <Spark/flxStorageESP32Pref.h>
-#include <Spark/flxStorageJSONPref.h>
-#include <Spark/flxSettings.h>
-#include <Spark/flxSettingsSerial.h>
+#include <Flux/flxStorageESP32Pref.h>
+#include <Flux/flxStorageJSONPref.h>
+#include <Flux/flxSettings.h>
+#include <Flux/flxSettingsSerial.h>
 
 // Testing for device calls
-#include <Spark/flxDevButton.h>
+#include <Flux/flxDevButton.h>
 
 // SD Card output
-#include <Spark/flxFSSDMMCard.h>
-#include <Spark/flxFileRotate.h>
+#include <Flux/flxFSSDMMCard.h>
+#include <Flux/flxFileRotate.h>
 
 // WiFi Testing
-#include <Spark/flxWiFiESP32.h>
+#include <Flux/flxWiFiESP32.h>
 
 //NTP
-#include <Spark/flxNTPESP32.h>
+#include <Flux/flxNTPESP32.h>
 
 // NFC device
-#include <Spark/flxDevST25DV.h>
+#include <Flux/flxDevST25DV.h>
 
 // SPI Devices
 // The onboard IMU 
-#include <Spark/flxDevISM330.h>
+#include <Flux/flxDevISM330.h>
 static const uint8_t IMU_CS = 5;
 // The onboard Magnetometer
-#include <Spark/flxDevMMC5983.h>
+#include <Flux/flxDevMMC5983.h>
 static const uint8_t MAG_CS = 27;
 
 // Biometric Hub
-#include <Spark/flxDevBioHub.h>
+#include <Flux/flxDevBioHub.h>
 static const uint8_t BIO_HUB_RESET = 17; // Use the TXD pin as the bio hub reset pin
 static const uint8_t BIO_HUB_MFIO = 16; // Use the RXD pin as the bio hub mfio pin
 
 
 // MQTT
 //#define TEST_MQTT
-#include <Spark/flxMQTTESP32.h>
+#include <Flux/flxMQTTESP32.h>
 
 // AWS IoT
 // UNCOMMENT TO TEST AWS
 //#define TEST_AWS
-#include <Spark/flxIoTAWS.h>
+#include <Flux/flxIoTAWS.h>
 
 // ThingSpeak outpout
 // Uncomment to test Thingspeak mqtt
 //#define TEST_THINGSPEAK
-#include <Spark/flxIoTThingSpeak.h>
+#include <Flux/flxIoTThingSpeak.h>
 
 
 //Azure IoT 
 //#define TEST_AZURE_IOT
-#include <Spark/flxIoTAzure.h>
+#include <Flux/flxIoTAzure.h>
 
 // HTTP output (call a URL with a JSON Payload)
 //#define TEST_HTTP_IOT
-#include <Spark/flxIoTHTTP.h>
+#include <Flux/flxIoTHTTP.h>
 
 
 #define OPENLOG_ESP32

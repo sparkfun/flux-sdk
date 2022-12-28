@@ -8,9 +8,9 @@
 #include "Arduino.h"
 
 // Spark framework 
-#include <Spark.h>
-#include <Spark/flxStorageESP32Pref.h>
-#include <Spark/flxSettings.h>
+#include <Flux.h>
+#include <Flux/flxStorageESP32Pref.h>
+#include <Flux/flxSettings.h>
 
 #include <math.h>
 

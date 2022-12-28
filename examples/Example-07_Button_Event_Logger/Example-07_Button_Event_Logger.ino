@@ -4,13 +4,13 @@
  */
 
 // Spark framework 
-#include <Spark.h>
-#include <Spark/flxLogger.h>
-#include <Spark/flxFmtCSV.h>
-#include <Spark/flxSerial.h>
+#include <Flux.h>
+#include <Flux/flxLogger.h>
+#include <Flux/flxFmtCSV.h>
+#include <Flux/flxSerial.h>
 
-#include <Spark/flxDevButton.h> // For get testing
-#include <Spark/flxDevTwist.h> // For get testing
+#include <Flux/flxDevButton.h> // For get testing
+#include <Flux/flxDevTwist.h> // For get testing
 
 
 /////////////////////////////////////////////////////////////////////////

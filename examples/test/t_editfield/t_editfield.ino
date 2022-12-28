@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "Spark.h"
+#include "Flux.h"
 #include "Spark/flxSerialField.h"
 
 flxSerialField myField;

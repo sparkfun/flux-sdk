@@ -4,10 +4,10 @@
  */
 
 // Spark framework 
-#include <Spark.h>
-#include <Spark/flxDevTwist.h>
-#include <Spark/flxDevButton.h>
-#include <Spark/flxSerial.h>
+#include <Flux.h>
+#include <Flux/flxDevTwist.h>
+#include <Flux/flxDevButton.h>
+#include <Flux/flxSerial.h>
 
 
 

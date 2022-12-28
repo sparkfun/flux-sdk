@@ -4,31 +4,31 @@
  */
 
 // Spark framework 
-#include <Spark.h>
-#include <Spark/flxLogger.h>
-#include <Spark/flxFmtJSON.h>
-#include <Spark/flxFmtCSV.h>
-#include <Spark/flxTimer.h>
-#include <Spark/flxSerial.h>
+#include <Flux.h>
+#include <Flux/flxLogger.h>
+#include <Flux/flxFmtJSON.h>
+#include <Flux/flxFmtCSV.h>
+#include <Flux/flxTimer.h>
+#include <Flux/flxSerial.h>
 
 
 // settings storage
-#include <Spark/flxStorageESP32Pref.h>
-#include <Spark/flxSettings.h>
-#include <Spark/flxSettingsSerial.h>
+#include <Flux/flxStorageESP32Pref.h>
+#include <Flux/flxSettings.h>
+#include <Flux/flxSettingsSerial.h>
 
 // Testing for device calls
-#include <Spark/flxDevButton.h>
+#include <Flux/flxDevButton.h>
 
 // SD Card output
-#include <Spark/flxFSSDMMCard.h>
-#include <Spark/flxFileRotate.h>
+#include <Flux/flxFSSDMMCard.h>
+#include <Flux/flxFileRotate.h>
 
 // WiFi Testing
-#include <Spark/flxWiFiESP32.h>
+#include <Flux/flxWiFiESP32.h>
 
 //NTP
-#include <Spark/flxNTPESP32.h>
+#include <Flux/flxNTPESP32.h>
 
 //#define OPENLOG_ESP32
 #ifdef OPENLOG_ESP32

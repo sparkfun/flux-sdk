@@ -8,7 +8,7 @@
 #include "Arduino.h"
 
 // Spark framework 
-#include <Spark.h>
+#include <Flux.h>
 
 
 // Define a class that uses the parameters of the system

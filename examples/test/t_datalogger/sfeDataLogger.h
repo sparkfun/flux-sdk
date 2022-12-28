@@ -4,50 +4,50 @@
  */
 
 // Spark framework
-#include <Spark.h>
-#include <Spark/flxFmtCSV.h>
-#include <Spark/flxFmtJSON.h>
-#include <Spark/flxLogger.h>
-#include <Spark/flxSerial.h>
-#include <Spark/flxTimer.h>
+#include <Flux.h>
+#include <Flux/flxFmtCSV.h>
+#include <Flux/flxFmtJSON.h>
+#include <Flux/flxLogger.h>
+#include <Flux/flxSerial.h>
+#include <Flux/flxTimer.h>
 
 // settings storage
-#include <Spark/flxSettings.h>
-#include <Spark/flxSettingsSerial.h>
-#include <Spark/flxStorageESP32Pref.h>
-#include <Spark/flxStorageJSONPref.h>
+#include <Flux/flxSettings.h>
+#include <Flux/flxSettingsSerial.h>
+#include <Flux/flxStorageESP32Pref.h>
+#include <Flux/flxStorageJSONPref.h>
 
 // SD Card output
-#include <Spark/flxFSSDMMCard.h>
-#include <Spark/flxFileRotate.h>
+#include <Flux/flxFSSDMMCard.h>
+#include <Flux/flxFileRotate.h>
 
 // WiFi and NTP
-#include <Spark/flxWiFiESP32.h>
-#include <Spark/flxNTPESP32.h>
+#include <Flux/flxWiFiESP32.h>
+#include <Flux/flxNTPESP32.h>
 
 // NFC device
-#include <Spark/flxDevST25DV.h>
+#include <Flux/flxDevST25DV.h>
 
 // SPI Devices
 // The onboard IMU
-#include <Spark/flxDevISM330.h>
+#include <Flux/flxDevISM330.h>
 static const uint8_t kAppOnBoardIMUCS = 5;
 
 // The onboard Magnetometer
-#include <Spark/flxDevMMC5983.h>
+#include <Flux/flxDevMMC5983.h>
 static const uint8_t kAppOnBoardMAGCS = 27;
 
 // Biometric Hub -- requires pins to be set on startup
-#include <Spark/flxDevBioHub.h>
+#include <Flux/flxDevBioHub.h>
 static const uint8_t kAppBioHubReset = 17; // Use the TXD pin as the bio hub reset pin
 static const uint8_t kAppBioHubMFIO = 16;  // Use the RXD pin as the bio hub mfio pin
 
 // IoT Client Icludes
-#include <Spark/flxIoTAWS.h>
-#include <Spark/flxIoTAzure.h>
-#include <Spark/flxMQTTESP32.h>
-#include <Spark/flxIoTThingSpeak.h>
-#include <Spark/flxIoTHTTP.h>
+#include <Flux/flxIoTAWS.h>
+#include <Flux/flxIoTAzure.h>
+#include <Flux/flxMQTTESP32.h>
+#include <Flux/flxIoTThingSpeak.h>
+#include <Flux/flxIoTHTTP.h>
 
 //------------------------------------------
 // Default log interval in milli secs
