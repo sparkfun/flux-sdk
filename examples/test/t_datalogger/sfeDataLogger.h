@@ -65,7 +65,7 @@ static const uint8_t kAppBioHubMFIO = 16;  // Use the RXD pin as the bio hub mfi
 /////////////////////////////////////////////////////////////////////////
 // Define our application class for the data logger
 /////////////////////////////////////////////////////////////////////////
-class sfeDataLogger : public spApplication
+class sfeDataLogger : public flxApplication
 {
 private:
     //---------------------------------------------------------------------------

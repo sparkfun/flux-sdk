@@ -130,7 +130,7 @@ private:
         spRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage.");        
 
 
-        spark.add(this);
+        flux.add(this);
     }
 
     bool saveObjectToStorage(flxObject*, flxStorage *);

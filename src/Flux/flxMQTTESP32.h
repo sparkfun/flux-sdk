@@ -249,7 +249,7 @@ public:
     {
         this->setName("MQTT Client", "A generic MQTT Client");
 
-        spark.add(this);
+        flux.add(this);
     }
     // for the Writer interface
     void write(int data)
@@ -555,7 +555,7 @@ public:
     {
         this->setName("MQTT Secure Client", "A secure MQTT client");
 
-        spark.add(this);
+        flux.add(this);
     }
     // for the Writer interface
     void write(int data)

@@ -66,7 +66,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
 
         spRegister(deviceList, "Channels", "Comma separated list of <device name>=<thingspeak channel ID");
 
-        spark.add(this);
+        flux.add(this);
     }
 
     void write(JsonDocument &jsonDoc)

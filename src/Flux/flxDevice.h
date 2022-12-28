@@ -75,7 +75,7 @@ template <typename T, typename B = flxDevice> class flxDeviceI2CType : public B
     }
     bool initialize(void)
     {
-        return initialize(spark.i2cDriver());
+        return initialize(flux.i2cDriver());
     }
     // version where a address is passed in
     bool initialize(uint8_t address)
@@ -168,7 +168,7 @@ template <typename T, typename B = flxDevice> class flxDeviceSPIType : public B
 
     bool initialize(void)
     {
-        return initialize(spark.spiDriver());
+        return initialize(flux.spiDriver());
     }
     // version where a CS pin is passed in
     bool initialize(uint8_t cs)

@@ -108,7 +108,7 @@ void setup() {
 
     // Add serial settings to spark - the spark loop call will take care
     // of everything else.
-    spark.add(serialSettings);
+    flux.add(serialSettings);
 
     // wire up the NTP to the wifi network object. When the connection status changes, 
     // the NTP client will start and stop.
@@ -117,7 +117,7 @@ void setup() {
 
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
-    spark.start();  
+    flux.start();  
 
     if (wifiConnection.isConnected())
         Serial.println("Connected to Wifi!");
@@ -169,7 +169,7 @@ void setup() {
     // What devices has the system detected?
     // List them and add them to the logger
 
-    flxDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = flux.connectedDevices();
 
     // The device list can be added directly to the logger object using an 
     // add() method call. This will only add devices with output parameters. 
@@ -197,7 +197,7 @@ void setup() {
 
     ////////////
     // getAll() testing
-    auto allButtons = spark.get<flxDevButton>();
+    auto allButtons = flux.get<flxDevButton>();
 
     Serial.printf("Number of buttons: %d \n\r", allButtons->size());
     for( auto button: *allButtons)
@@ -227,7 +227,7 @@ void loop() {
     // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    if(spark.loop())        // will return true if an action did something
+    if(flux.loop())        // will return true if an action did something
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 

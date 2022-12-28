@@ -40,7 +40,7 @@ public:
 
         setName("NTP Client", "NTP Time Synch Client");
 
-        spark.add(this);
+        flux.add(this);
     };
 
     bool start(void);

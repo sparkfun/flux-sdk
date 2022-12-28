@@ -69,18 +69,18 @@ bool flxDevBioHub::initialize( int connectResetPin, int connectMfioPin )
     pinMode(_mfioPin, INPUT_PULLUP); // To be used as an interrupt later
 
     uint8_t identity[2] = { 0xFF, 0x00 };
-    bool couldBeBio = spark.i2cDriver().write(getDefaultAddress(), identity, 2);
+    bool couldBeBio = flux.i2cDriver().write(getDefaultAddress(), identity, 2);
     if (couldBeBio)
     {
         uint8_t mcuType[2];
-        couldBeBio &= spark.i2cDriver().receiveResponse(getDefaultAddress(), mcuType, 2) == 2;
+        couldBeBio &= flux.i2cDriver().receiveResponse(getDefaultAddress(), mcuType, 2) == 2;
         couldBeBio &= (mcuType[0] == 0x00); // 0x00: SUCCESS
         couldBeBio &= (mcuType[1] == 0x01); // 0x00: MAX32625; 0x01: MAX32660/MAX32664
     }
 
     if (couldBeBio)
     {
-        TwoWire *wirePort = spark.i2cDriver().getWirePort();
+        TwoWire *wirePort = flux.i2cDriver().getWirePort();
         if (onInitialize(*wirePort))
             return true;
     }

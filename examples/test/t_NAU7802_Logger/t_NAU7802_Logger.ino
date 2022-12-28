@@ -58,7 +58,7 @@ void setup() {
     
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
-    spark.start();  
+    flux.start();  
 
     // Logging is done at an interval - using an interval timer. 
     // Connect logger to the timer event
@@ -74,7 +74,7 @@ void setup() {
     // What devices has the system detected?
     // List them and add them to the logger
 
-    flxDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = flux.connectedDevices();
 
     // The device list can be added directly to the logger object using an 
     // add() method call. This will only add devices with output parameters. 
@@ -102,7 +102,7 @@ void setup() {
 
     ////////////
     // get() testing
-    auto devs = spark.get<flxDevNAU7802>();
+    auto devs = flux.get<flxDevNAU7802>();
 
     Serial.printf("Number of NAU7802 devices: %d \n\r", devs->size());
     for( auto dev : *devs)
@@ -132,7 +132,7 @@ void loop() {
     // Just call the spark framework loop() method. Spark will maanage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    if(spark.loop())        // will return true if an action did something
+    if(flux.loop())        // will return true if an action did something
         digitalWrite(LED_BUILTIN, HIGH); 
 
     ////////////
@@ -141,7 +141,7 @@ void loop() {
     {
       char c = Serial.read(); // Read the character
 
-      flxDeviceContainer myDevices = spark.connectedDevices();
+      flxDeviceContainer myDevices = flux.connectedDevices();
       
       for (int i = 0; i < myDevices.size(); i++)
       {

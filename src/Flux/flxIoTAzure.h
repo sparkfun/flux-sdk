@@ -59,7 +59,7 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         spRegister(deviceID, "Device ID", "The device id for the Azure IoT device");
         spRegister(deviceKey, "Device Key", "The device key for the Azure IoT device");
 
-        spark.add(this);
+        flux.add(this);
     }
 
     // for the Writer interface

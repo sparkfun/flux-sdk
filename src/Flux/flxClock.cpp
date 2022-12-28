@@ -24,7 +24,7 @@ _flxClock::_flxClock() : _defaultClock{nullptr}, _referenceClock{nullptr}, _last
     // Set name and description
     setName("Epoch Clock", "Seconds since Unix Epoch");
 
-    spark.add(this);
+    flux.add(this);
 
 #ifdef DEFAULT_DEFINED
     setDefaultClock(&defaultClock);

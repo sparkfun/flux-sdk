@@ -18,7 +18,7 @@ class flxTimer : public flxActionType<flxTimer>
         spRegister(interval, "interval", "The ms time interval for the timer");
         interval = start;
         
-        spark.add(this);
+        flux.add(this);
 
         setName("Timer", "A reoccurring timer");
     };

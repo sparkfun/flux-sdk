@@ -39,7 +39,7 @@ void setup() {
     Wire.begin();
 
     // Setup Spark - this triggers an autoload, which should skip over the BME280
-    spark.start();
+    flux.start();
 
     // init devices
     if (!myBME.initialize() )

@@ -10,7 +10,7 @@
 
 bool flxDevice::initialize()
 {
-    spark.add(this);
+    flux.add(this);
 
     return true;
 }
@@ -24,7 +24,7 @@ bool flxDevice::initialize()
 bool flxDeviceFactory::addressInUse(uint8_t address)
 {
     // loop over connected/created devices - if the address is a match, return true
-    for (auto device : spark.connectedDevices())
+    for (auto device : flux.connectedDevices())
     {
         if (device->address() == address)
             return true;

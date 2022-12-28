@@ -36,7 +36,7 @@ public:
     {
         spRegister(enabled, "Enabled", "Enable updating WiFi credentials from an external device.");
 
-        spark.add(this);
+        flux.add(this);
     };
 
     void setWiFiDevice(flxIWiFiDevice *theDevice)

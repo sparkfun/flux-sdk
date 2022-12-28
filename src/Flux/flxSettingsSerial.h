@@ -23,7 +23,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
         setName("Serial System Settings", "Set system settings via the Serial Console");
 
         // Default root is our system
-        setSystemRoot(&spark);
+        setSystemRoot(&flux);
     }
 
     void setSystemRoot(flxObjectContainer *theRoot)

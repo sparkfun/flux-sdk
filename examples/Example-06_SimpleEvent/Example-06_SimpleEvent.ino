@@ -39,10 +39,10 @@ void setup() {
     
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
-    spark.start();  
+    flux.start();  
 
 
-    auto theTwists = spark.get<flxDevTwist>();
+    auto theTwists = flux.get<flxDevTwist>();
 
     for ( auto pTwist : *theTwists)
     {
@@ -56,7 +56,7 @@ void setup() {
     if ( theTwists->size() == 0)
         Serial.println("No Twist Connected.");
 
-    auto theButtons = spark.get<flxDevButton>();
+    auto theButtons = flux.get<flxDevButton>();
 
     for ( auto pButton : *theButtons)        
     {
@@ -89,7 +89,7 @@ void loop() {
     // Just call the spark framework loop() method. Spark will maanage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    if(spark.loop())        // will return true if an action did something
+    if(flux.loop())        // will return true if an action did something
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 

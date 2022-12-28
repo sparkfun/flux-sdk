@@ -45,7 +45,7 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
         // at startup, current file count == startNumber-1
         _currentFileNumber = startNumber.get() - 1;
 
-        spark.add(this);
+        flux.add(this);
 
     };
 

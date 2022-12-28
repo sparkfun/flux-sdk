@@ -17,7 +17,7 @@ public:
     flxIoTAWS()
     {
         setName("AWS IoT", "Connection to AWs IoT");
-        spark.add(this);
+        flux.add(this);
     }
     
     // for the Writer interface

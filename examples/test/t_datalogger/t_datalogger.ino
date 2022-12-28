@@ -38,7 +38,7 @@ void setup() {
 #endif
 
     // Start up the framework
-    spark.start();
+    flux.start();
 
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 
@@ -54,7 +54,7 @@ void loop() {
     // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    if(spark.loop())        // will return true if an action did something
+    if(flux.loop())        // will return true if an action did something
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 

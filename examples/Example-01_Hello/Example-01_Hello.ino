@@ -38,7 +38,7 @@ void setup() {
     Wire.begin();
 
     // Setup Spark, but don't have the framework autoload devices
-    spark.start(false);
+    flux.start(false);
 
     
     // init devices

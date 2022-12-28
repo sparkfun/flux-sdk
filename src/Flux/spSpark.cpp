@@ -14,11 +14,11 @@ static flxLoggingDrvDefault _logDriver;
 #define kApplicationHashIDTag "Application ID"
 
 // Global object - for quick access to Spark.
-spSpark &spark = spSpark::get();
+flxFlux &flux = flxFlux::get();
 //-------------------------------------------------------
 //
 // Note: Autoload is true by default
-bool spSpark::start(bool bAutoLoad)
+bool flxFlux::start(bool bAutoLoad)
 {
 
     // setup our logging system.
@@ -88,7 +88,7 @@ bool spSpark::start(bool bAutoLoad)
 //
 // Returns true if an action returns true - aka did something
 //
-bool spSpark::loop(void)
+bool flxFlux::loop(void)
 {
 
     // Pump our actions by calling there loop methods
@@ -118,9 +118,9 @@ bool spSpark::loop(void)
 // that autoload picked up the device before the user added it/created it.
 // This leads to having "dups" in our connected device list.
 //
-// To pevent this, if a device added that is not autoload, we have the
+// To prevent this, if a device added that is not autoload, we have the
 // device list checked and pruned!
-void spSpark::add(flxDevice *theDevice)
+void flxFlux::add(flxDevice *theDevice)
 {
     if (!theDevice->autoload())
         flxDeviceFactory::get().pruneAutoload(theDevice, Devices);
@@ -131,7 +131,7 @@ void spSpark::add(flxDevice *theDevice)
 #define kApplicationHashIDSize 24
 
 //---------------------------------------------------------------------------------
-bool spSpark::save(flxStorage *pStorage)
+bool flxFlux::save(flxStorage *pStorage)
 {
     // Write a block to the storage system that has a has of or name/desc
     // Use this to validate that the settings in the storage system are ours
@@ -173,7 +173,7 @@ bool spSpark::save(flxStorage *pStorage)
 };
 
 //---------------------------------------------------------------------------------
-bool spSpark::restore(flxStorage *pStorage)
+bool flxFlux::restore(flxStorage *pStorage)
 {
     // Do we have our ID block in storage? If not, then there's no need to continue
     // since the data isn't for this app
@@ -186,7 +186,7 @@ bool spSpark::restore(flxStorage *pStorage)
     // a quick check to validate the storage source. 
     //
     // Note for external sources (files...etc), we load in and validate based on 
-    // source name. This makes it easlier to manually write out a settings file
+    // source name. This makes it easier to manually write out a settings file
     bool status;
     if (pStorage->kind() == flxStorage::flxStorageKindInternal)
     {

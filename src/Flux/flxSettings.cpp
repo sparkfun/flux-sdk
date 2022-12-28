@@ -50,7 +50,7 @@ bool flxSettingsSave::saveObjectToStorage(flxObject* pObject, flxStorage *pStora
 
 bool flxSettingsSave::saveSystem(void)
 {
-    return save(&spark);
+    return save(&flux);
 }
 //----------------------------------------------------------------------------------
 // save a specific object
@@ -104,7 +104,7 @@ bool flxSettingsSave::restoreObjectFromStorage(flxObject* pObject, flxStorage *p
 //----------------------------------------------------------------------------------
 bool flxSettingsSave::restoreSystem(void)
 {
-    return restore(&spark);
+    return restore(&flux);
 }
 
 //----------------------------------------------------------------------------------
@@ -180,7 +180,7 @@ void flxSettingsSave::restore_fallback(void)
     if (!_fallbackStorage)
         return;
 
-    if (!restoreObjectFromStorage(&spark, _fallbackStorage))
+    if (!restoreObjectFromStorage(&flux, _fallbackStorage))
         flxLog_E(F("Unable to restore settings from %s"), _fallbackStorage->name());
 }
 //----------------------------------------------------------------------------------
@@ -189,7 +189,7 @@ void flxSettingsSave::save_fallback(void)
     if (!_fallbackStorage)
         return;
 
-    if (!saveObjectToStorage(&spark, _fallbackStorage))
+    if (!saveObjectToStorage(&flux, _fallbackStorage))
         flxLog_E(F("Unable to save settings to %s"), _fallbackStorage->name());
 }
 //------------------------------------------------------------------------------

@@ -29,7 +29,7 @@ public:
 
         setName("WiFi Network", "WiFi network connection for the system");
 
-        spark.add(this);
+        flux.add(this);
     };
 
     // Properties 

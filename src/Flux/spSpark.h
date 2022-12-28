@@ -9,22 +9,22 @@
 
 
 
-class spApplication;
+class flxApplication;
 
-// happy functions for happy users.
-bool spark_start(bool bAutoLoad = true);
-bool spark_loop();
+// // happy functions for happy users.
+// bool spark_start(bool bAutoLoad = true);
+// bool spark_loop();
 
 // Define the main framework class  - note it's a singleton
-class spSpark : public flxObjectContainer
+class flxFlux : public flxObjectContainer
 {
 
   public:
     // spark is a singleton
-    static spSpark &get(void)
+    static flxFlux &get(void)
     {
 
-        static spSpark instance;
+        static flxFlux instance;
         return instance;
     }
 
@@ -50,8 +50,8 @@ class spSpark : public flxObjectContainer
     void add(flxDevice *theDevice);
 
     // This is a singleton class - so delete copy & assignment constructors
-    spSpark(spSpark const &) = delete;
-    void operator=(spSpark const &) = delete;
+    flxFlux(flxFlux const &) = delete;
+    void operator=(flxFlux const &) = delete;
 
     // leaving containers public - not sure if this is helpful
     flxDeviceContainer Devices;
@@ -77,7 +77,7 @@ class spSpark : public flxObjectContainer
     // example - getting all the buttons :
     // -------------------------------
     //
-    //  auto buttons = spark.getAll<flxDevButton>();
+    //  auto buttons = flux.getAll<flxDevButton>();
     //
     //  Serial.printf("Number of buttons: %d \n\r", buttons->size());
     //  for( auto b : *buttons)
@@ -201,18 +201,18 @@ class spSpark : public flxObjectContainer
         return (const char*)szDeviceID;
     }
 
-    void setApplication(spApplication &theApp)
+    void setApplication(flxApplication &theApp)
     {
         setApplication(&theApp);
     }
 
-    void setApplication(spApplication *theApp)
+    void setApplication(flxApplication *theApp)
     {
         if (theApp)
             _theApplication = theApp;
     }
 
-    spApplication * application(void)
+    flxApplication * application(void)
     {
         return _theApplication;
     }
@@ -224,10 +224,10 @@ class spSpark : public flxObjectContainer
     std::string _strVersion;
     uint32_t    _uiVersion;
 
-    spApplication * _theApplication;
+    flxApplication * _theApplication;
 
     // Note private constructor...
-    spSpark() : _strVersion{"0"}, _uiVersion{0}, _theApplication{nullptr}
+    flxFlux() : _strVersion{"0"}, _uiVersion{0}, _theApplication{nullptr}
     {
 
         // setup some default heirarchy things ...
@@ -266,25 +266,25 @@ class spSpark : public flxObjectContainer
 
 // have a "global" variable that allows access to the spark environment from anywhere...
 
-extern spSpark &spark;
+extern flxFlux &flux;
 
 // Define our application class interface.
-class spApplication : public flxActionType<spApplication>
+class flxApplication : public flxActionType<flxApplication>
 {
 
 public:
-    spApplication()
+    flxApplication()
     {
-        spark.setApplication(this);
+        flux.setApplication(this);
     }
     
-    // Method is called before device auto-load, settings restoratoin and action initalization
+    // Method is called before device auto-load, settings restoration and action initialization
     virtual bool setup(void)
     {
         return true;
     }
 
-    // Called after everthing is loaded, restored and initialize
+    // Called after everything is loaded, restored and initialize
     virtual bool start(void)
     {
         return true;
@@ -292,6 +292,6 @@ public:
 
     void setVersion(const char *strVersion, uint32_t uiVersion)
     {
-        spark.setVersion(strVersion, uiVersion);
+        flux.setVersion(strVersion, uiVersion);
     }
 };

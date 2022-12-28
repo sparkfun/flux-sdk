@@ -31,7 +31,7 @@ flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{fal
 
     spRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
 
-    spark.add(this);
+    flux.add(this);
 }
 //----------------------------------------------------------------------------
 // logScalar()

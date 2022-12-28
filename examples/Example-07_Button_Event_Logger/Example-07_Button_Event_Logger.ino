@@ -48,7 +48,7 @@ void setup() {
     Serial.println("\n---- Startup ----");
     
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
-    spark.start();  
+    flux.start();  
 
     // We want to output CSV to the serial console.
     //  - Add Serial to our formatters
@@ -60,7 +60,7 @@ void setup() {
     // What devices has the system detected?
     // List them
 
-    flxDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = flux.connectedDevices();
 
     // The device list can be added directly to the logger object using an 
     // add() method call. This will only add devices with output parameters. 
@@ -90,7 +90,7 @@ void setup() {
 
     // Identify any buttons
     // Add their on_clicked events as logger triggers
-    auto buttons = spark.get<flxDevButton>();
+    auto buttons = flux.get<flxDevButton>();
     
     Serial.printf("Number of buttons: %d\r\n", buttons->size());
 
@@ -109,7 +109,7 @@ void setup() {
 
     // Identify any Qwiic Twists
     // Add their on_clicked and on_twist events as logger triggers
-    auto twists = spark.get<flxDevTwist>();
+    auto twists = flux.get<flxDevTwist>();
     
     Serial.printf("Number of twists: %d\r\n", twists->size());
 
@@ -141,7 +141,7 @@ void loop() {
     // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    if(spark.loop())        // will return true if an action did something
+    if(flux.loop())        // will return true if an action did something
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 

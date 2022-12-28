@@ -918,9 +918,9 @@ void flxSettingsSerial::drawEntryBanner(void)
 {
     // Let's draw a header as we enter 
 
-    spark.writeBanner();
+    flux.writeBanner();
 
-    Serial.printf("Device ID: %s\n\r", spark.deviceId());
+    Serial.printf("Device ID: %s\n\r", flux.deviceId());
 
     time_t t_now;
     time(&t_now);

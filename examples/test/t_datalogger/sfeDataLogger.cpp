@@ -116,7 +116,7 @@ bool sfeDataLogger::setup()
 
     // Add serial settings to spark - the spark loop call will take care
     // of everything else.
-    spark.add(_serialSettings);
+    flux.add(_serialSettings);
 
     // wire up the NTP to the wifi network object. When the connection status changes,
     // the NTP client will start and stop.
@@ -141,7 +141,7 @@ bool sfeDataLogger::setup()
 void sfeDataLogger::setupNFDevice(void)
 {
     // do we have a NFC device connected?
-    auto nfcDevices = spark.get<flxDevST25DV>();
+    auto nfcDevices = flux.get<flxDevST25DV>();
 
     if (nfcDevices->size() == 0)
         return;
@@ -250,7 +250,7 @@ void sfeDataLogger::set_logTypeSer(uint8_t logType)
 bool sfeDataLogger::start()
 {
     // printout the device ID
-    flxLog_I(F("Device ID: %s"), spark.deviceId());
+    flxLog_I(F("Device ID: %s"), flux.deviceId());
 
     // Write out the SD card stats
     if (_theSDCard.enabled())
@@ -281,7 +281,7 @@ bool sfeDataLogger::start()
     // What devices has the system detected?
     // List them and add them to the logger
 
-    flxDeviceContainer myDevices = spark.connectedDevices();
+    flxDeviceContainer myDevices = flux.connectedDevices();
 
     // The device list can be added directly to the logger object using an
     // add() method call. This will only add devices with output parameters.

@@ -407,7 +407,7 @@ void setup() {
     Serial.println("\n---- Startup of the Save/Restore tests ----");
 
     flxSettings.setStorage(myStorage);
-    spark.add(myTest);
+    flux.add(myTest);
 
     Serial.println("object Added, reseting storage");
     flxSettings.reset();

@@ -341,15 +341,15 @@ void setup() {
     flxSettings.listenForSave(serialSettings.on_finished);
 
     // Start Spark 
-    spark.start();  
+    flux.start();  
 
     // our testing parameter and property objects.
-    spark.add(testParams);
+    flux.add(testParams);
 
-    spark.add(testProps);
+    flux.add(testProps);
 
     // What's connected
-    flxDeviceContainer  myDevices = spark.connectedDevices();
+    flxDeviceContainer  myDevices = flux.connectedDevices();
 
     Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
 
@@ -363,7 +363,7 @@ void setup() {
 
     // Add serial settings to spark - the spark loop call will take care
     // of everything else.
-    spark.add(serialSettings);
+    flux.add(serialSettings);
 }
 
 //---------------------------------------------------------------------
@@ -376,7 +376,7 @@ void loop() {
     // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    spark.loop();
+    flux.loop();
 
     // Our loop delay 
     delay(500);                       

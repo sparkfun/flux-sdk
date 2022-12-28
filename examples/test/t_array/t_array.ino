@@ -58,7 +58,7 @@ void setup() {
     Serial.println("\n---- Startup ----");
     
     // start framework
-    spark.start(false);  // pass in false flag - prevents auto-load
+    flux.start(false);  // pass in false flag - prevents auto-load
 
     // Logging is done at an interval - using an interval timer. 
     // Connect logger to the timer event
@@ -92,7 +92,7 @@ void loop() {
     // Just call the spark framework loop() method. Spark will manage
     // the dispatch of processing to the components that were added 
     // to the system during setup.
-    if(spark.loop())        // will return true if an action did something
+    if(flux.loop())        // will return true if an action did something
         digitalWrite(LED_BUILTIN, HIGH); 
 
     // Our loop delay 
