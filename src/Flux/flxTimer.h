@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include "spSpark.h"
+#include "flxFlux.h"
 
 class flxTimer : public flxActionType<flxTimer>
 {

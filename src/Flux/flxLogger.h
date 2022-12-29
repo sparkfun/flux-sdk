@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "flxOutput.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 
 // Define the QwiicLog class
 class flxLogger : public flxActionType<flxLogger>

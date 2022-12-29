@@ -7,7 +7,7 @@
 #include "flxCoreInterface.h"
 #include "flxFS.h"
 #include "flxNetwork.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 
 #include <ArduinoMqttClient.h>
 #include <WiFiClientSecure.h>

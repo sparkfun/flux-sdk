@@ -4,7 +4,7 @@
 
 #include "flxSerial.h"
 #include "flxSettings.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 #include "flxStorage.h"
 
 // for logging - define output driver on the stack

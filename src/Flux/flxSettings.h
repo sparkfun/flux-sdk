@@ -4,7 +4,7 @@
 #pragma once
 
 #include "flxCore.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 #include "flxStorage.h"
 
 class flxSettingsSave : public flxActionType<flxSettingsSave>

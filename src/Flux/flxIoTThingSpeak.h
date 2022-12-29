@@ -5,7 +5,7 @@
 #include "flxMQTTESP32.h"
 
 #include "flxFmtJSON.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 #include "flxUtils.h"
 
 #include <map>

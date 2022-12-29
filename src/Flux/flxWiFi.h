@@ -5,7 +5,7 @@
 // Implements WiFi specific interfaces and an action to set password via
 // an external device/source (NFC for example)
 
-#include "spSpark.h"
+#include "flxFlux.h"
 #include <string>
 
 // Define interfaces for WifiDevice and WiFiCredentialSource

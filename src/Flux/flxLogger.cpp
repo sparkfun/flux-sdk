@@ -5,7 +5,7 @@
  */
 
 #include "flxLogger.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 #include <string.h>
 #include <time.h>
 

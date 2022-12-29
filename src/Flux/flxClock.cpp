@@ -2,7 +2,7 @@
 
 #include "flxClock.h"
 
-#include "spSpark.h"
+#include "flxFlux.h"
 
 // A little hacky - maybe ...
 #ifdef ESP32

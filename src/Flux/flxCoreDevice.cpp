@@ -5,7 +5,7 @@
  */
 
 #include "flxCoreDevice.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 
 
 bool flxDevice::initialize()

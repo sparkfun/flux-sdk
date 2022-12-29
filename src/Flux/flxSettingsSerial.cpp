@@ -1,6 +1,6 @@
 
 
-#include "spSpark.h"
+#include "flxFlux.h"
 #include "flxSettingsSerial.h"
 #include "flxSerialField.h"
 #include "flxUtils.h"

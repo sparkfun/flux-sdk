@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "spSpark.h"
+#include "flxFlux.h"
 #include "flxCore.h"
 #include "flxCoreInterface.h"
 #include "flxFS.h"

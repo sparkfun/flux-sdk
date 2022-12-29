@@ -4,7 +4,7 @@
 
 #ifdef ESP32
 
-#include "spSpark.h"
+#include "flxFlux.h"
 #include "flxNetwork.h"
 #include "flxWiFi.h"
 

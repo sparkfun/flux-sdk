@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "flxCoreDevice.h"
-#include "spSpark.h"
+#include "flxFlux.h"
 
 //----------------------------------------------------------------------------------
 // I2C device classes
