@@ -1,12 +1,12 @@
 {
-    "name": "SparkFun Spark Framework Arduino Library",
+    "name": "SparkFun Flux Framework Arduino Library",
     "version": "1.0",
     "keywords": "Framework",
-    "description": "Library to quickly build complext embedded applications",
+    "description": "Library to quickly build complex embedded applications",
     "repository":
     {
         "type": "git",
-        "url": "https://github.com/sparkfun/SparkFun_Spark.git"
+        "url": "https://github.com/sparkfun/SparkFun_Flux.git"
     },
     "frameworks": "arduino",
     "platforms": "*"
