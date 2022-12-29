@@ -14,5 +14,5 @@
 #include "Flux/flxCore.h"
 #include "Flux/flxDevice.h"
 
-#include "Flux/spSpark.h"
+#include "Flux/flxFlux.h"
 
