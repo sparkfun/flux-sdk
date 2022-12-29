@@ -11,8 +11,8 @@
 
 sfeDataLogger::sfeDataLogger() : _logTypeSD{kAppLogTypeNone}, _logTypeSer{kAppLogTypeNone}, _timer{kDefaultLogInterval}
 {
-    spRegister(sdCardLogType, "SD Card Format", "Enable and set the output format");
-    spRegister(serialLogType, "Serial Console Format", "Enable and set the output format");
+    flxRegister(sdCardLogType, "SD Card Format", "Enable and set the output format");
+    flxRegister(serialLogType, "Serial Console Format", "Enable and set the output format");
 
     // Add the format changing props to the logger - makese more sense from a UX standpont.
     _logger.addProperty(sdCardLogType);

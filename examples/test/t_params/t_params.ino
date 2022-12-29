@@ -29,25 +29,25 @@ public:
 
     test_params(){
 
-        spRegister(out_bool);
-        spRegister(out_int, "MyInteger", "Testing Int output parameter");
-        spRegister(out_int8, "Int8 Out", "Testing Int8 output parameter");        
-        spRegister(out_int16, "Int16 Out", "Testing Int16 output parameter");                
-        spRegister(out_uint8, "UInt8 Out", "Testing UInt8 output parameter");                
-        spRegister(out_uint16, "UInt16 Out", "Testing UInt16 output parameter");                        
-        spRegister(out_float, "Float Out");
-        spRegister(out_string, "Out String", "Testing a String Output Parameter");        
+        flxRegister(out_bool);
+        flxRegister(out_int, "MyInteger", "Testing Int output parameter");
+        flxRegister(out_int8, "Int8 Out", "Testing Int8 output parameter");        
+        flxRegister(out_int16, "Int16 Out", "Testing Int16 output parameter");                
+        flxRegister(out_uint8, "UInt8 Out", "Testing UInt8 output parameter");                
+        flxRegister(out_uint16, "UInt16 Out", "Testing UInt16 output parameter");                        
+        flxRegister(out_float, "Float Out");
+        flxRegister(out_string, "Out String", "Testing a String Output Parameter");        
 
-        spRegister(in_bool, "BOOL IN");
-        spRegister(in_int8, "Int8 In");        
-        spRegister(in_int16, "Int16 In");            
-        spRegister(in_int, "InInt", "Testing Integer Input Parameter");
-        spRegister(in_uint8, "UInt8 In");                
-        spRegister(in_uint16, "UInt16 In");                        
-        spRegister(in_float);
-        spRegister(in_string);
+        flxRegister(in_bool, "BOOL IN");
+        flxRegister(in_int8, "Int8 In");        
+        flxRegister(in_int16, "Int16 In");            
+        flxRegister(in_int, "InInt", "Testing Integer Input Parameter");
+        flxRegister(in_uint8, "UInt8 In");                
+        flxRegister(in_uint16, "UInt16 In");                        
+        flxRegister(in_float);
+        flxRegister(in_string);
 
-        spRegister(out_int_arr, "Output Int Array", "Testing array output");
+        flxRegister(out_int_arr, "Output Int Array", "Testing array output");
 
     }
     

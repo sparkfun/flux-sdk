@@ -25,15 +25,15 @@ public:
 
     test_properties(){
 
-        spRegister(prop_bool);
-        spRegister(prop_int, "MyInteger", "Testing integer property");
-        spRegister(prop_float, "FloatValue");
-        spRegister(prop_str, "stringProp", "Testing a StringProperty");        
+        flxRegister(prop_bool);
+        flxRegister(prop_int, "MyInteger", "Testing integer property");
+        flxRegister(prop_float, "FloatValue");
+        flxRegister(prop_str, "stringProp", "Testing a StringProperty");        
 
-        spRegister(rw_prop_bool);
-        spRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property");
-        spRegister(rw_prop_str);
-        spRegister(rw_prop_float);
+        flxRegister(rw_prop_bool);
+        flxRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property");
+        flxRegister(rw_prop_str);
+        flxRegister(rw_prop_float);
     }
     
 

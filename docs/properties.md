@@ -101,12 +101,12 @@ public:
 
 #### Runtime Registration
 
-When an instance of the object that contains the property is created, the property is registered with that object using the ```spRegister()``` function. This step connects the object instance with the property. 
+When an instance of the object that contains the property is created, the property is registered with that object using the ```flxRegister()``` function. This step connects the object instance with the property. 
 
-The calling sequence for spRegister is:
+The calling sequence for flxRegister is:
 
 ```C++
-    spRegister(Object [, Name][,Description]);
+    flxRegister(Object [, Name][,Description]);
 ```
 Where:
 
@@ -121,7 +121,7 @@ For the example above, the registration call looks like:
 MyClass()     
 {
     // Register our property
-    spRegister(my_property);
+    flxRegister(my_property);
 }
 ```
 
@@ -204,17 +204,17 @@ Note
 > * By convention declaring the getters and setters as private. This can be optional
 > * The getter and setter methods must be declared before defining the property
 > * The use of `set_` and `get_` prefixes on the setter and getter methods help identify the methods as supporting a property.
-> * If an initial value is set for a RW property it it's declaration statement, the *setter* method called with the initial value when the property is registered via *spRegister()*.
+> * If an initial value is set for a RW property it it's declaration statement, the *setter* method called with the initial value when the property is registered via *flxRegister()*.
 
 
 #### Runtime Registration
 
-When an instance of the object that contains the property is created, the property is registered with that object using the ```spRegister()``` function. This step connects the object instance with the property. 
+When an instance of the object that contains the property is created, the property is registered with that object using the ```flxRegister()``` function. This step connects the object instance with the property. 
 
-The calling sequence for spRegister is:
+The calling sequence for flxRegister is:
 
 ```C++
-    spRegister(Object [, Name][,Description]);
+    flxRegister(Object [, Name][,Description]);
 ```
 Where:
 
@@ -229,7 +229,7 @@ For the example above, the registration call looks like:
 MyClass2()     
 {
     // Register our property
-    spRegister(my_rwproperty);
+    flxRegister(my_rwproperty);
 }
 ```
 Note: If an initial value was set for the property, the value is passed to the *setter* method as part of the registration process.

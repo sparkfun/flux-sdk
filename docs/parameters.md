@@ -330,12 +330,12 @@ Note
 
 ### Runtime Registration
 
-When an instance of the object that contains the parameter is created, the parameter is registered with that object using the ```spRegister()``` function. This step connects the object instance with the parameter. 
+When an instance of the object that contains the parameter is created, the parameter is registered with that object using the ```flxRegister()``` function. This step connects the object instance with the parameter. 
 
-The calling sequence for spRegister is:
+The calling sequence for flxRegister is:
 
 ```C++
-    spRegister(Object [, Name][,Description]);
+    flxRegister(Object [, Name][,Description]);
 ```
 Where:
 
@@ -350,8 +350,8 @@ For the example above, the registration call looks like:
 MyClass()     
 {
     // Register our input parameter
-    spRegister(my_input);
-    spRegister(my_output, "calibration", "Calibrated data output");
+    flxRegister(my_input);
+    flxRegister(my_output, "calibration", "Calibrated data output");
 }
 ```
  

@@ -34,27 +34,27 @@ public:
 
     test_properties(){
 
-        spRegister(prop_bool, "bool_prop", "Testting bool property");
-        spRegister(prop_int8, "int8_prop", "Testing int8 property");        
-        spRegister(prop_int16, "int16_prop", "Testing int16 property");                
-        spRegister(prop_int, "int32_prop", "Testing int32 property");
-        spRegister(prop_uint8, "uint8_prop", "Testing uint8 property");        
-        spRegister(prop_uint16, "uint16_prop", "Testing uint16 property");                
-        spRegister(prop_uint, "uint32_prop", "Testing uint32 property");        
-        spRegister(prop_float, "float_prop", "Testing Float property");
-        spRegister(prop_double, "double_prop", "Testing a double property");        
-        spRegister(prop_str, "string_prop", "Testing a StringProperty");        
+        flxRegister(prop_bool, "bool_prop", "Testting bool property");
+        flxRegister(prop_int8, "int8_prop", "Testing int8 property");        
+        flxRegister(prop_int16, "int16_prop", "Testing int16 property");                
+        flxRegister(prop_int, "int32_prop", "Testing int32 property");
+        flxRegister(prop_uint8, "uint8_prop", "Testing uint8 property");        
+        flxRegister(prop_uint16, "uint16_prop", "Testing uint16 property");                
+        flxRegister(prop_uint, "uint32_prop", "Testing uint32 property");        
+        flxRegister(prop_float, "float_prop", "Testing Float property");
+        flxRegister(prop_double, "double_prop", "Testing a double property");        
+        flxRegister(prop_str, "string_prop", "Testing a StringProperty");        
 
-        spRegister(rw_prop_bool, "rw_bool", "Testing RW bool property");
-        spRegister(rw_prop_int8, "rw_int8", "Testing RW integer8 property");
-        spRegister(rw_prop_int16, "rw_int16", "Testing RW integer16 property");        
-        spRegister(rw_prop_int, "rw_int", "Testing RW integer property");        
-        spRegister(rw_prop_uint8, "rw_uint8", "Testing RW uinteger8 property");
-        spRegister(rw_prop_uint16, "rw_uint16", "Testing RW uinteger16 property");        
-        spRegister(rw_prop_uint, "rw_uint", "Testing RW uinteger property");                
-        spRegister(rw_prop_float, "rw_float", "Testing RW float property");         
-        spRegister(rw_prop_double, "rw_double", "Testing RW double property");        
-        spRegister(rw_prop_str, "rw_string", "Testing RW string property");        
+        flxRegister(rw_prop_bool, "rw_bool", "Testing RW bool property");
+        flxRegister(rw_prop_int8, "rw_int8", "Testing RW integer8 property");
+        flxRegister(rw_prop_int16, "rw_int16", "Testing RW integer16 property");        
+        flxRegister(rw_prop_int, "rw_int", "Testing RW integer property");        
+        flxRegister(rw_prop_uint8, "rw_uint8", "Testing RW uinteger8 property");
+        flxRegister(rw_prop_uint16, "rw_uint16", "Testing RW uinteger16 property");        
+        flxRegister(rw_prop_uint, "rw_uint", "Testing RW uinteger property");                
+        flxRegister(rw_prop_float, "rw_float", "Testing RW float property");         
+        flxRegister(rw_prop_double, "rw_double", "Testing RW double property");        
+        flxRegister(rw_prop_str, "rw_string", "Testing RW string property");        
 
         setName("Test Properties");
     }

@@ -32,13 +32,13 @@ public:
 
         setName("Test Properties", "Property testing object");
 
-        spRegister(prop_bool);
+        flxRegister(prop_bool);
         
-        spRegister(prop_int, "MyInteger", "Testing integer property - No initial value, a set Limit set");
-        spRegister(prop_int_set, "Int Set Test", "Testing integer property - with limit set in init");  
+        flxRegister(prop_int, "MyInteger", "Testing integer property - No initial value, a set Limit set");
+        flxRegister(prop_int_set, "Int Set Test", "Testing integer property - with limit set in init");  
 
 
-        spRegister(prop_uint_range, "Uint Range Test", "No initial value, range limit set");    
+        flxRegister(prop_uint_range, "Uint Range Test", "No initial value, range limit set");    
         // Change to a validation set:
         prop_uint_range.addDataLimitValidValue( {
                                             {"Value One", 22},
@@ -47,10 +47,10 @@ public:
                                             {"Value Four", 88},      
                                             {"Value Five", 110}                       
                                         });
-        spRegister(prop_uint16, "Uint16 Test", "Uint 16, standard prop, initial value");
+        flxRegister(prop_uint16, "Uint16 Test", "Uint 16, standard prop, initial value");
         //prop_uint16.setDataLimitRange(43, 98);
 
-        spRegister(prop_float, "FloatValue", "Float with an initial value and a limit range");
+        flxRegister(prop_float, "FloatValue", "Float with an initial value and a limit range");
         // change to a data limit set
         prop_float.addDataLimitValidValue("ONE K", 1000.);
         prop_float.addDataLimitValidValue("TWO K", 2000.);
@@ -58,16 +58,16 @@ public:
         prop_float.addDataLimitValidValue("FOUR K", 4000.);
 
 
-        //spRegister(prop_str, "stringProp", "Testing a StringProperty");        
+        //flxRegister(prop_str, "stringProp", "Testing a StringProperty");        
 
-        spRegister(rw_prop_bool);
-        spRegister(rw_prop_float, "RW Float", "Float property with a range limit");                
+        flxRegister(rw_prop_bool);
+        flxRegister(rw_prop_float, "RW Float", "Float property with a range limit");                
         // Register the RW int property and add the data limit set.
-        spRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property with data limit set");        
+        flxRegister(rw_prop_int, "rw_int", "Testing Read/Write integer property with data limit set");        
 
-        spRegister(rw_prop_uint16, "RW UInt16", "UInt 16 RW property, with an initial value");
+        flxRegister(rw_prop_uint16, "RW UInt16", "UInt 16 RW property, with an initial value");
 
-        spRegister(rw_prop_str);
+        flxRegister(rw_prop_str);
         
 
     }
@@ -194,19 +194,19 @@ public:
 
         setName("Parameter Test", "Used to test input and output parameters");
 
-        spRegister(out_bool, "Output Bool", "Test an output bool parameter");
-        spRegister(out_int, "MyInteger", "Testing Int output parameter");
-        spRegister(out_float, "Float Out");
-        spRegister(out_string, "Out String", "Testing a String Output Parameter");        
+        flxRegister(out_bool, "Output Bool", "Test an output bool parameter");
+        flxRegister(out_int, "MyInteger", "Testing Int output parameter");
+        flxRegister(out_float, "Float Out");
+        flxRegister(out_string, "Out String", "Testing a String Output Parameter");        
 
-        spRegister(in_bool, "in bool", "test input of a bool value");
+        flxRegister(in_bool, "in bool", "test input of a bool value");
         
-        spRegister(in_int,  "in int", "test input of a int value with a range limit");
+        flxRegister(in_int,  "in int", "test input of a int value with a range limit");
 
-        spRegister(in_string, "in string", "test input of a string value");
-        spRegister(in_float, "in float", "test input of a float value");
+        flxRegister(in_string, "in string", "test input of a string value");
+        flxRegister(in_float, "in float", "test input of a float value");
 
-        spRegister(in_void, "in void", "test input parameter of type void");
+        flxRegister(in_void, "in void", "test input parameter of type void");
     };
     
 

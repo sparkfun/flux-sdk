@@ -25,21 +25,21 @@ test_device::test_device()
     setName("test_device", "For testing output array parameters");
 
     // Register parameters
-    spRegister(array_bool, "bool.array", "Array Parameter Test");
-    spRegister(array_int8, "int8.array", "Array Parameter Test");
-    spRegister(array_int16, "int16.array", "Array Parameter Test");
-    spRegister(array_int, "int.array", "Array Parameter Test");
-    spRegister(array_uint8, "uint8.array", "Array Parameter Test");
-    spRegister(array_uint16, "uint16.array", "Array Parameter Test");
-    spRegister(array_uint, "uint.array", "Array Parameter Test");
+    flxRegister(array_bool, "bool.array", "Array Parameter Test");
+    flxRegister(array_int8, "int8.array", "Array Parameter Test");
+    flxRegister(array_int16, "int16.array", "Array Parameter Test");
+    flxRegister(array_int, "int.array", "Array Parameter Test");
+    flxRegister(array_uint8, "uint8.array", "Array Parameter Test");
+    flxRegister(array_uint16, "uint16.array", "Array Parameter Test");
+    flxRegister(array_uint, "uint.array", "Array Parameter Test");
     
-    spRegister(array_float, "float.array", "Array Parameter Test");
+    flxRegister(array_float, "float.array", "Array Parameter Test");
     array_float.setPrecision(4);
     
-    spRegister(array_double, "double.array", "Array Parameter Test");
+    flxRegister(array_double, "double.array", "Array Parameter Test");
     array_double.setPrecision(6);
 
-    spRegister(array_string, "string.array", "Array Parameter Test");
+    flxRegister(array_string, "string.array", "Array Parameter Test");
 }
 
 //----------------------------------------------------------------------------------------------------------
