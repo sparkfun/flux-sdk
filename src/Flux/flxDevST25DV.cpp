@@ -38,8 +38,8 @@ flxDevST25DV::flxDevST25DV()
     setDescription("ST25DV Dynamic RFID Tag");
 
     // Register Properties
-    spRegister(ssid, "WiFi Record SSID", "The Service Set Identifier held in the WiFi record");
-    spRegister(password, "WiFi Record Key / Password", "The key (password) held in the WiFi record");
+    flxRegister(ssid, "WiFi Record SSID", "The Service Set Identifier held in the WiFi record");
+    flxRegister(password, "WiFi Record Key / Password", "The key (password) held in the WiFi record");
 }
 
 //----------------------------------------------------------------------------------------------------------

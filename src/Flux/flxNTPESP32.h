@@ -28,15 +28,15 @@ private:
 public:
     flxNTPESP32() : _isEnabled{true}, _theNetwork{nullptr}, _startupDelay{0}
     {
-        spRegister(enabled, "Enabled", "Enable or Disable the NTP Client");
+        flxRegister(enabled, "Enabled", "Enable or Disable the NTP Client");
 
 
         // NTP servers
-        spRegister(ntpServerOne, "NTP Server One", "The primary NTP server to use");
-        spRegister(ntpServerTwo, "NTP Server Two", "The secondary NTP server to use");
+        flxRegister(ntpServerOne, "NTP Server One", "The primary NTP server to use");
+        flxRegister(ntpServerTwo, "NTP Server Two", "The secondary NTP server to use");
 
         // Timezone
-        spRegister(timeZone, "The Time Zone", "Time zone setting string for the device");
+        flxRegister(timeZone, "The Time Zone", "Time zone setting string for the device");
 
         setName("NTP Client", "NTP Time Synch Client");
 

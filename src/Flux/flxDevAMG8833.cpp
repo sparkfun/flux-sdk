@@ -24,12 +24,12 @@ flxDevAMG8833::flxDevAMG8833()
     setDescription("AMG8833 Grid-EYE infrared array");
 
     // Register output params
-    spRegister(deviceTemperatureC, "Device Temperature (C)", "The device temperature in degrees C");
-    spRegister(pixelTemperatures, "Pixel Temperatures (C)", "The 64 pixel temperatures in degrees C");
+    flxRegister(deviceTemperatureC, "Device Temperature (C)", "The device temperature in degrees C");
+    flxRegister(pixelTemperatures, "Pixel Temperatures (C)", "The 64 pixel temperatures in degrees C");
     pixelTemperatures.setPrecision(2);
 
     // Register property
-    spRegister(frameRate, "Frame Rate (FPS)", "Frame Rate (Frames Per Second)");
+    flxRegister(frameRate, "Frame Rate (FPS)", "Frame Rate (Frames Per Second)");
 }
 
 // Static method used to determine if this device is connected

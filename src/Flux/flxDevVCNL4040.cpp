@@ -37,15 +37,15 @@ flxDevVCNL4040::flxDevVCNL4040()
     setDescription("VCNL4040 Proximity Sensor");
 
     // Register parameters
-    spRegister(proximity, "Proximity", "Proximity : high values indicate close proximity");
-    spRegister(lux, "Lux", "The light level in lux");
+    flxRegister(proximity, "Proximity", "Proximity : high values indicate close proximity");
+    flxRegister(lux, "Lux", "The light level in lux");
 
     // Register read-write properties
-    spRegister(ledCurrent, "LED Current (mA)", "The LED current in milliamps)");
-    spRegister(irDutyCycle, "IR Duty Cycle", "The InfraRed duty cycle");
-    spRegister(proximityIntegrationTime, "Proximity Integration Time", "The proximity measurement integration time");
-    spRegister(proximityResolution, "Proximity Resolution", "The proximity measurement resolution");
-    spRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "The ambient light level integration time in milliseconds");
+    flxRegister(ledCurrent, "LED Current (mA)", "The LED current in milliamps)");
+    flxRegister(irDutyCycle, "IR Duty Cycle", "The InfraRed duty cycle");
+    flxRegister(proximityIntegrationTime, "Proximity Integration Time", "The proximity measurement integration time");
+    flxRegister(proximityResolution, "Proximity Resolution", "The proximity measurement resolution");
+    flxRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "The ambient light level integration time in milliseconds");
 }
 
 //----------------------------------------------------------------------------------------------------------

@@ -37,12 +37,12 @@ flxDevVL53L5::flxDevVL53L5()
     setDescription("VL53L5 Distance Sensor");
 
     // Register parameters
-    spRegister(distance, "Distance (mm)", "The measured distances in mm");
+    flxRegister(distance, "Distance (mm)", "The measured distances in mm");
 
     // Register read-write properties
-    spRegister(integrationTime, "Integration Time", "The selected integration time in milliseconds");
-    spRegister(sharpenerPercent, "Sharpener Percent", "The selected sharpener value in percent");
-    spRegister(targetOrder, "Target Order", "The selected targeting mode");
+    flxRegister(integrationTime, "Integration Time", "The selected integration time in milliseconds");
+    flxRegister(sharpenerPercent, "Sharpener Percent", "The selected sharpener value in percent");
+    flxRegister(targetOrder, "Target Order", "The selected targeting mode");
 }
 
 //----------------------------------------------------------------------------------------------------------

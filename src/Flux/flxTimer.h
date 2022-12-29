@@ -15,7 +15,7 @@ class flxTimer : public flxActionType<flxTimer>
     flxTimer(int start = 500) : _lastLogTime(0)
     {
 
-        spRegister(interval, "interval", "The ms time interval for the timer");
+        flxRegister(interval, "interval", "The ms time interval for the timer");
         interval = start;
         
         flux.add(this);

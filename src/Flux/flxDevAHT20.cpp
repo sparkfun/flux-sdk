@@ -23,8 +23,8 @@ flxDevAHT20::flxDevAHT20()
     setDescription("AHT20 Temperature and Humidity sensor");
 
     // Register output params
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

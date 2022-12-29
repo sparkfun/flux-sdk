@@ -580,7 +580,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
             return (T)0;
         }
 
@@ -591,7 +591,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
             return; // would normally throw an exception, but not very Arduino like!
         }
 
@@ -889,7 +889,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
             return "";
         }
 
@@ -901,7 +901,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this property.");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
             return;
         }
 

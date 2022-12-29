@@ -37,12 +37,12 @@ flxDevBioHub::flxDevBioHub()
     setDescription("MAX30101 Biometric Hub");
 
     // Register parameters
-    spRegister(heartRate, "Heart Rate (BPM)", "Heart Rate (Beats Per Minute)");
-    spRegister(confidence, "Confidence Level (%)", "Confidence Level (%)");
-    spRegister(O2, "Oxygen Saturation (%)", "Oxygen Saturation (%)");
-    spRegister(status, "Status", "Status");
-    spRegister(eStatus, "Extended Status", "Extended Status");
-    spRegister(O2R, "Oxygen R Value", "Oxygen R Value");
+    flxRegister(heartRate, "Heart Rate (BPM)", "Heart Rate (Beats Per Minute)");
+    flxRegister(confidence, "Confidence Level (%)", "Confidence Level (%)");
+    flxRegister(O2, "Oxygen Saturation (%)", "Oxygen Saturation (%)");
+    flxRegister(status, "Status", "Status");
+    flxRegister(eStatus, "Extended Status", "Extended Status");
+    flxRegister(O2R, "Oxygen R Value", "Oxygen R Value");
 }
 
 // The Bio Hub is a special case. We need to know the reset and mfio pins in order to

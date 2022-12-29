@@ -36,14 +36,14 @@ flxDevTwist::flxDevTwist()
     setDescription("The SparkFun Qwiic Twist RGB Encoder");
     
     // Register Property
-    spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
-    spRegister(ledRed, "LED Red", "Sets the red LED brightness");
-    spRegister(ledGreen, "LED Green", "Sets the green LED brightness");
-    spRegister(ledBlue, "LED Blue", "Sets the blue LED brightness");
+    flxRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
+    flxRegister(ledRed, "LED Red", "Sets the red LED brightness");
+    flxRegister(ledGreen, "LED Green", "Sets the green LED brightness");
+    flxRegister(ledBlue, "LED Blue", "Sets the blue LED brightness");
 
     // Register parameters
-    spRegister(buttonState);
-    spRegister(twistCount);
+    flxRegister(buttonState);
+    flxRegister(twistCount);
 }
 
 //----------------------------------------------------------------------------------------------------------

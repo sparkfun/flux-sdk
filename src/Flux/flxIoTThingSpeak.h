@@ -64,7 +64,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
     {
         setName("ThingSpeak MQTT", "Connection to ThingSpeak");
 
-        spRegister(deviceList, "Channels", "Comma separated list of <device name>=<thingspeak channel ID");
+        flxRegister(deviceList, "Channels", "Comma separated list of <device name>=<thingspeak channel ID");
 
         flux.add(this);
     }

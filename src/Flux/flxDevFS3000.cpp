@@ -24,11 +24,11 @@ flxDevFS3000::flxDevFS3000()
     setDescription("FS3000 air velocity sensor");
 
     // Register output params
-    spRegister(flow_mps, "Flow (MPS)", "Flow (Metres Per Second)");
-    spRegister(flow_mph, "Flow (MPH)", "Flow (Miles Per Hour)");
+    flxRegister(flow_mps, "Flow (MPS)", "Flow (Metres Per Second)");
+    flxRegister(flow_mph, "Flow (MPH)", "Flow (Miles Per Hour)");
 
     // Register property
-    spRegister(fs3000version, "FS3000 Version", "FS3000 Sensor Version");
+    flxRegister(fs3000version, "FS3000 Version", "FS3000 Sensor Version");
 }
 
 // Methods to read the parameters

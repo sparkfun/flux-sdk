@@ -35,11 +35,11 @@ flxDevButton::flxDevButton()
     setDescription("The SparkFun Qwiic Button");
 
     // Register Property
-    spRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
-    spRegister(ledBrightness, "LED brightness", "Set the LED brightness");
+    flxRegister(pressMode, "Press Mode", "Select Press Mode or Click (Toggle) Mode");
+    flxRegister(ledBrightness, "LED brightness", "Set the LED brightness");
 
     // Register parameters
-    spRegister(buttonState, "Button State", "The current state of the button");
+    flxRegister(buttonState, "Button State", "The current state of the button");
 }
 
 //----------------------------------------------------------------------------------------------------------

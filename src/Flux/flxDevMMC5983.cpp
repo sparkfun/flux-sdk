@@ -41,17 +41,17 @@ flxDevMMC5983Base::flxDevMMC5983Base() : _begun{false}
     // to support managed properties/public properties
 
     // Register parameters
-    spRegister(magX, "X Field (Gauss)", "The X field strength in Gauss");
-    spRegister(magY, "Y Field (Gauss)", "The Y field strength in Gauss");
-    spRegister(magZ, "Z Field (Gauss)", "The Z field strength in Gauss");
+    flxRegister(magX, "X Field (Gauss)", "The X field strength in Gauss");
+    flxRegister(magY, "Y Field (Gauss)", "The Y field strength in Gauss");
+    flxRegister(magZ, "Z Field (Gauss)", "The Z field strength in Gauss");
     magX.setPrecision(5);
     magY.setPrecision(5);
     magZ.setPrecision(5);
-    spRegister(temperature, "Temperature (C)", "The ambient temperature in degrees C");
+    flxRegister(temperature, "Temperature (C)", "The ambient temperature in degrees C");
 
     // Register properties
-    spRegister(filterBandwidth, "Filter Bandwidth (Hz)", "The filter bandwidth in Hz");
-    spRegister(autoReset, "Auto-Reset", "Auto-Reset");
+    flxRegister(filterBandwidth, "Filter Bandwidth (Hz)", "The filter bandwidth in Hz");
+    flxRegister(autoReset, "Auto-Reset", "Auto-Reset");
 }
 
 bool flxDevMMC5983Base::onInitialize(void)

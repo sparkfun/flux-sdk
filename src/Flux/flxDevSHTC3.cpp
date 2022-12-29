@@ -37,9 +37,9 @@ flxDevSHTC3::flxDevSHTC3()
     setDescription("SHTC3 Humidity and Temperature Sensor");
 
     // Register parameters
-    spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(temperatureF, "Temperature (F)", "The temperature in degrees F");
+    flxRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(temperatureF, "Temperature (F)", "The temperature in degrees F");
 }
 
 //----------------------------------------------------------------------------------------------------------

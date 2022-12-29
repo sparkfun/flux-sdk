@@ -37,40 +37,40 @@ flxDevGNSS::flxDevGNSS()
     setDescription("u-blox GNSS");
 
     // Register parameters
-    spRegister(year, "Year", "Year");
-    spRegister(month, "Month", "Month");
-    spRegister(day, "Day", "Day Of Month");
-    spRegister(hour, "Hour", "Hour");
-    spRegister(min, "Minute", "Minute");
-    spRegister(sec, "Second", "Second");
-    spRegister(latitude, "Latitude (deg)", "Latitude in degrees");
+    flxRegister(year, "Year", "Year");
+    flxRegister(month, "Month", "Month");
+    flxRegister(day, "Day", "Day Of Month");
+    flxRegister(hour, "Hour", "Hour");
+    flxRegister(min, "Minute", "Minute");
+    flxRegister(sec, "Second", "Second");
+    flxRegister(latitude, "Latitude (deg)", "Latitude in degrees");
     latitude.setPrecision(7);
-    spRegister(longitude, "Longitude (deg)", "Longitude in degrees");
+    flxRegister(longitude, "Longitude (deg)", "Longitude in degrees");
     longitude.setPrecision(7);
-    spRegister(altitude, "Altitude (m)", "Altitude above geoid in metres");
-    spRegister(altitudeMSL, "Altitude MSL (m)", "Altitude above Mean Sea Level in metres");
-    spRegister(SIV, "SIV", "Satellites In View");
-    spRegister(fixType, "Fix Type", "Fix Type");
-    spRegister(carrierSolution, "Carrier Solution", "Carrier Solution");
-    spRegister(groundSpeed, "Ground Speed (m/s)", "Ground speed in metres per second");
-    spRegister(heading, "Heading (deg)", "Heading / course in degrees");
-    spRegister(PDOP, "PDOP", "Position Dilution Of Precision");
-    spRegister(horizontalAccEst, "Horizontal Accuracy Estimate (m)", "Horizontal Position Accuracy Estimate");
-    spRegister(verticalAccEst, "Vertical Accuracy Estimate (m)", "Vertical Position Accuracy Estimate");
-    spRegister(TOW, "TOW (ms)", "Time Of Week in milliseconds");
-    spRegister(iso8601, "ISO8601", "Date and time in ISO 8601 format");
-    spRegister(YYYYMMDD, "YYYYMMDD", "Year/Month/Date");
-    spRegister(YYYYDDMM, "YYYYDDMM", "Year/Date/Month");
-    spRegister(DDMMYYYY, "DDMMYYYY", "Date/Month/Year");
-    spRegister(HHMMSS, "HHMMSS", "Hour:Minute:Second");
-    spRegister(fixTypeStr, "Fix Type (String)", "Fix type in string format");
-    spRegister(carrierSolutionStr, "Carrier Solution (String)", "Carrier solution in string format");
+    flxRegister(altitude, "Altitude (m)", "Altitude above geoid in metres");
+    flxRegister(altitudeMSL, "Altitude MSL (m)", "Altitude above Mean Sea Level in metres");
+    flxRegister(SIV, "SIV", "Satellites In View");
+    flxRegister(fixType, "Fix Type", "Fix Type");
+    flxRegister(carrierSolution, "Carrier Solution", "Carrier Solution");
+    flxRegister(groundSpeed, "Ground Speed (m/s)", "Ground speed in metres per second");
+    flxRegister(heading, "Heading (deg)", "Heading / course in degrees");
+    flxRegister(PDOP, "PDOP", "Position Dilution Of Precision");
+    flxRegister(horizontalAccEst, "Horizontal Accuracy Estimate (m)", "Horizontal Position Accuracy Estimate");
+    flxRegister(verticalAccEst, "Vertical Accuracy Estimate (m)", "Vertical Position Accuracy Estimate");
+    flxRegister(TOW, "TOW (ms)", "Time Of Week in milliseconds");
+    flxRegister(iso8601, "ISO8601", "Date and time in ISO 8601 format");
+    flxRegister(YYYYMMDD, "YYYYMMDD", "Year/Month/Date");
+    flxRegister(YYYYDDMM, "YYYYDDMM", "Year/Date/Month");
+    flxRegister(DDMMYYYY, "DDMMYYYY", "Date/Month/Year");
+    flxRegister(HHMMSS, "HHMMSS", "Hour:Minute:Second");
+    flxRegister(fixTypeStr, "Fix Type (String)", "Fix type in string format");
+    flxRegister(carrierSolutionStr, "Carrier Solution (String)", "Carrier solution in string format");
 
     // Register read-write properties
-    spRegister(measurementRate, "Measurement Rate (ms)", "Set the measurement interval in milliseconds");
+    flxRegister(measurementRate, "Measurement Rate (ms)", "Set the measurement interval in milliseconds");
 
     // Register our input parameters
-    spRegister(factoryDefault, "Restore Factory Defaults", "Restore Factory Defaults - takes 5 seconds");
+    flxRegister(factoryDefault, "Restore Factory Defaults", "Restore Factory Defaults - takes 5 seconds");
 }
 
 //----------------------------------------------------------------------------------------------------------

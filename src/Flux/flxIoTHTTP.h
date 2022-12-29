@@ -194,14 +194,14 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
                      _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr},
                      _wifiClient{nullptr}
     {
-        spRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
+        flxRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
 
-        spRegister(URL, "URL", "The URL to call with log information");
+        flxRegister(URL, "URL", "The URL to call with log information");
 
-        spRegister(caCertificate, "CA Certificate",
+        flxRegister(caCertificate, "CA Certificate",
                    "The Certificate Authority certificate. If set, the connection is secure");
 
-        spRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
+        flxRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
     };
 
     ~flxIoTHTTPBase()

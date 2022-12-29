@@ -37,10 +37,10 @@ flxDevSGP30::flxDevSGP30()
     setDescription("SGP30 Air Quality Sensor");
 
     // Register parameters
-    spRegister(tvoc, "TVOC (PPB)", "Total Volatile Organic Compounds in Parts Per Billion");
-    spRegister(co2, "CO2 (PPM)", "CO2 concentration in Parts Per Million");
-    spRegister(h2, "H2 (PPM)", "Hydrogen concentration in Parts Per Million");
-    spRegister(ethanol, "Ethanol (PPM)", "Ethanol concentration in Parts Per Million");
+    flxRegister(tvoc, "TVOC (PPB)", "Total Volatile Organic Compounds in Parts Per Billion");
+    flxRegister(co2, "CO2 (PPM)", "CO2 concentration in Parts Per Million");
+    flxRegister(h2, "H2 (PPM)", "Hydrogen concentration in Parts Per Million");
+    flxRegister(ethanol, "Ethanol (PPM)", "Ethanol concentration in Parts Per Million");
 }
 
 //----------------------------------------------------------------------------------------------------------

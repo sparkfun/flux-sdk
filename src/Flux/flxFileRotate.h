@@ -35,12 +35,12 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
         setName("File Rotate",
                 "Writes output to a file on the provided filesystem. Rotates files after a given time period.");
 
-        spRegister(rotatePeriod, "Rotate Period", "Time between file rotation.");
-        spRegister(startNumber, "File Start Number", "The Number the filename rotation starts with");
-        spRegister(filePrefix, "Filename Prefix", "The prefix string for the generated filenames");
+        flxRegister(rotatePeriod, "Rotate Period", "Time between file rotation.");
+        flxRegister(startNumber, "File Start Number", "The Number the filename rotation starts with");
+        flxRegister(filePrefix, "Filename Prefix", "The prefix string for the generated filenames");
 
         // hidden prop
-        spRegister(_secsFileOpen);
+        flxRegister(_secsFileOpen);
 
         // at startup, current file count == startNumber-1
         _currentFileNumber = startNumber.get() - 1;

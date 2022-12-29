@@ -38,12 +38,12 @@ flxDevSDP3X::flxDevSDP3X()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(temperatureCompensation, "Temperature Compensation", "Temperature compensation mode");
-    spRegister(measurementAveraging, "Measurement Averaging", "Measurement averaging");
+    flxRegister(temperatureCompensation, "Temperature Compensation", "Temperature compensation mode");
+    flxRegister(measurementAveraging, "Measurement Averaging", "Measurement averaging");
 
     // Register parameters
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(pressure, "Pressure (Pa)", "Atmospheric pressure in Pascals");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(pressure, "Pressure (Pa)", "Atmospheric pressure in Pascals");
 }
 
 //----------------------------------------------------------------------------------------------------------

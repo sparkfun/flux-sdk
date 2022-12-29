@@ -22,9 +22,9 @@ public:
     flxWiFiESP32() : _wasConnected{false}, _isEnabled{true}
     {
 
-        spRegister(SSID, "Network Name", "The SSID of the WiFi network");
-        spRegister(password, "Password", "The Password to connect to the WiFi network");
-        spRegister(enabled, "Enabled", "Enable or Disable the WiFi Network connection");
+        flxRegister(SSID, "Network Name", "The SSID of the WiFi network");
+        flxRegister(password, "Password", "The Password to connect to the WiFi network");
+        flxRegister(enabled, "Enabled", "Enable or Disable the WiFi Network connection");
 
 
         setName("WiFi Network", "WiFi network connection for the system");

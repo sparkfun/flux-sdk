@@ -33,8 +33,8 @@ flxDevCCS811::flxDevCCS811() //: CCS811(kCCS811AddressDefault)
     setDescription("An air quality sensor from AMS");
 
     // Register output params
-    spRegister(co2, "CO2", "CO2 reading");
-    spRegister(tvoc, "VOC", "Volatile Organic Compound reading");    
+    flxRegister(co2, "CO2", "CO2 reading");
+    flxRegister(tvoc, "VOC", "Volatile Organic Compound reading");    
 
 }
 

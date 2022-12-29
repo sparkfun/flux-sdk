@@ -24,13 +24,13 @@ flxDevMicroPressure::flxDevMicroPressure()
     setDescription("MPR series Micro-Pressure sensor from Honeywell");
 
     // Register output params
-    spRegister(pressure_PSI, "Pressure (PSI)", "Atmospheric pressure in Pounds per Square Inch");
-    spRegister(pressure_Pa, "Pressure (Pa)", "Atmospheric pressure in Pascals");
-    spRegister(pressure_kPa, "Pressure (kPa)", "Atmospheric pressure in kilo-Pascals");
-    spRegister(pressure_torr, "Pressure (torr)", "Atmospheric pressure in torr");
-    spRegister(pressure_inHg, "Pressure (inHg)", "Atmospheric pressure in inches of mercury");
-    spRegister(pressure_atm, "Pressure (atm)", "Atmospheric pressure in atmospheres");
-    spRegister(pressure_bar, "Pressure (bar)", "Atmospheric pressure in bar");
+    flxRegister(pressure_PSI, "Pressure (PSI)", "Atmospheric pressure in Pounds per Square Inch");
+    flxRegister(pressure_Pa, "Pressure (Pa)", "Atmospheric pressure in Pascals");
+    flxRegister(pressure_kPa, "Pressure (kPa)", "Atmospheric pressure in kilo-Pascals");
+    flxRegister(pressure_torr, "Pressure (torr)", "Atmospheric pressure in torr");
+    flxRegister(pressure_inHg, "Pressure (inHg)", "Atmospheric pressure in inches of mercury");
+    flxRegister(pressure_atm, "Pressure (atm)", "Atmospheric pressure in atmospheres");
+    flxRegister(pressure_bar, "Pressure (bar)", "Atmospheric pressure in bar");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

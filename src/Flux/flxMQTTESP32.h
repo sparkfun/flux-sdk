@@ -84,17 +84,17 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     flxMQTTESP32Base()
         : _isEnabled{false}, _theNetwork{nullptr}, _mqttClient(_wifiClient), _txBufferSize{0}, _dynamicBufferSize{0}
     {
-        spRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
+        flxRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
 
-        spRegister(port, "Port", "The MQTT broker port to connect to.");
-        spRegister(server, "Server", "The MQTT server to connect to.");
-        spRegister(topic, "MQTT Topic", "The MQTT topic to publish to.");
-        spRegister(clientName, "Client Name", "Name of this device used for MQTT Communications");
+        flxRegister(port, "Port", "The MQTT broker port to connect to.");
+        flxRegister(server, "Server", "The MQTT server to connect to.");
+        flxRegister(topic, "MQTT Topic", "The MQTT topic to publish to.");
+        flxRegister(clientName, "Client Name", "Name of this device used for MQTT Communications");
 
-        spRegister(username, "Username", "Username to connect to an MQTT broker, if required");
-        spRegister(password, "Password", "Password to connect to an MQTT broker, if required");
+        flxRegister(username, "Username", "Username to connect to an MQTT broker, if required");
+        flxRegister(password, "Password", "Password to connect to an MQTT broker, if required");
 
-        spRegister(bufferSize, "Buffer Size", "MQTT payload buffer size. If 0, the buffer size is dynamic");
+        flxRegister(bufferSize, "Buffer Size", "MQTT payload buffer size. If 0, the buffer size is dynamic");
     };
 
     ~flxMQTTESP32Base()
@@ -459,14 +459,14 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
   public:
     flxMQTTESP32SecureCore() : _pCACert{nullptr}, _pClientCert{nullptr}, _pClientKey{nullptr}, _fileSystem{nullptr}
     {
-        spRegister(caCertificate, "CA Certificate",
+        flxRegister(caCertificate, "CA Certificate",
                    "The Certificate Authority certificate. If set, the connection is secure");
-        spRegister(clientCertificate, "Client Certificate", "The certificate for the client connection");
-        spRegister(clientKey, "Client Key", "The secure key used for client verification");
+        flxRegister(clientCertificate, "Client Certificate", "The certificate for the client connection");
+        flxRegister(clientKey, "Client Key", "The secure key used for client verification");
 
-        spRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
-        spRegister(clientCertFilename, "Client Cert Filename", "The File to load the client certificate from");
-        spRegister(clientKeyFilename, "Client Key Filename", "The File to load the client key from");
+        flxRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
+        flxRegister(clientCertFilename, "Client Cert Filename", "The File to load the client certificate from");
+        flxRegister(clientKeyFilename, "Client Key Filename", "The File to load the client key from");
     }
 
     //---------------------------------------------------------

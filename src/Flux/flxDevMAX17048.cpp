@@ -23,9 +23,9 @@ flxDevMAX17048::flxDevMAX17048()
     setDescription("MAX17048 LiPo Battery Fuel Gauge");
 
     // Register output params
-    spRegister(voltageV, "Voltage (V)", "Battery voltage (Volts)");
-    spRegister(stateOfCharge, "State Of Charge (%)", "Battery state of charge (%)");
-    spRegister(changeRate, "Change Rate (%/hr)", "Battery charge change rate (%/hr)");
+    flxRegister(voltageV, "Voltage (V)", "Battery voltage (Volts)");
+    flxRegister(stateOfCharge, "State Of Charge (%)", "Battery state of charge (%)");
+    flxRegister(changeRate, "Change Rate (%/hr)", "Battery charge change rate (%/hr)");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

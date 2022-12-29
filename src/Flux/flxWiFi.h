@@ -34,7 +34,7 @@ class flxSetWifiCredentials : public flxActionType<flxSetWifiCredentials>
 public:
     flxSetWifiCredentials() : _source{nullptr}, _targetDevice{nullptr}
     {
-        spRegister(enabled, "Enabled", "Enable updating WiFi credentials from an external device.");
+        flxRegister(enabled, "Enabled", "Enable updating WiFi credentials from an external device.");
 
         flux.add(this);
     };

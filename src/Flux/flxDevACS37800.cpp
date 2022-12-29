@@ -40,24 +40,24 @@ flxDevACS37800::flxDevACS37800()
     // to support managed properties/public properties
 
     // Register parameters
-    spRegister(volts, "Voltage", "Volts (Instantaneous)");
-    spRegister(amps, "Current", "Amps (Instantaneous)");
-    spRegister(watts, "Power", "Watts (Instantaneous)");
-    spRegister(voltsRMS, "Voltage (RMS)", "Volts (Root Mean Square)");
-    spRegister(ampsRMS, "Current (RMS)", "Amps (Root Mean Square)");
-    spRegister(powerActive, "Power (Active)", "Watts");
-    spRegister(powerReactive, "Power (Reactive)", "VAR");
-    spRegister(powerApparent, "Power (Apparent)", "VA");
-    spRegister(powerFactor, "Power Factor", "Power Factor");
-    spRegister(positiveAngle, "Power Angle", "True: Lagging; False: Leading");
-    spRegister(positivePowerFactor, "Power Factor Sign", "True: Consumed; False: Generated");
+    flxRegister(volts, "Voltage", "Volts (Instantaneous)");
+    flxRegister(amps, "Current", "Amps (Instantaneous)");
+    flxRegister(watts, "Power", "Watts (Instantaneous)");
+    flxRegister(voltsRMS, "Voltage (RMS)", "Volts (Root Mean Square)");
+    flxRegister(ampsRMS, "Current (RMS)", "Amps (Root Mean Square)");
+    flxRegister(powerActive, "Power (Active)", "Watts");
+    flxRegister(powerReactive, "Power (Reactive)", "VAR");
+    flxRegister(powerApparent, "Power (Apparent)", "VA");
+    flxRegister(powerFactor, "Power Factor", "Power Factor");
+    flxRegister(positiveAngle, "Power Angle", "True: Lagging; False: Leading");
+    flxRegister(positivePowerFactor, "Power Factor Sign", "True: Consumed; False: Generated");
 
     // Register properties
-    spRegister(numberOfSamples, "Number of samples", "The number of samples used in RMS calculations. For DC measurement: set to 1023");
-    spRegister(bypassNenable, "Bypass n enable", "Defines how the RMS is calculated. For DC measurement: set to N Samples");
-    spRegister(senseResistance, "Sense resistance", "Define the voltage sense resistance (Ohms)");
-    spRegister(dividerResistance, "Divider resistance", "Define the voltage divider resistance (Ohms)");
-    spRegister(currentRange, "Current range", "Define the sensor current range (Amps)");
+    flxRegister(numberOfSamples, "Number of samples", "The number of samples used in RMS calculations. For DC measurement: set to 1023");
+    flxRegister(bypassNenable, "Bypass n enable", "Defines how the RMS is calculated. For DC measurement: set to N Samples");
+    flxRegister(senseResistance, "Sense resistance", "Define the voltage sense resistance (Ohms)");
+    flxRegister(dividerResistance, "Divider resistance", "Define the voltage divider resistance (Ohms)");
+    flxRegister(currentRange, "Current range", "Define the sensor current range (Amps)");
 }
 
 //----------------------------------------------------------------------------------------------------------

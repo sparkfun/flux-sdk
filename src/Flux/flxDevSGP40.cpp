@@ -37,10 +37,10 @@ flxDevSGP40::flxDevSGP40()
     setDescription("SGP40 Air Quality Sensor");
 
     // Register parameters
-    spRegister(vocIndex, "VOC Index", "Volatile Organic Compounds Index");
+    flxRegister(vocIndex, "VOC Index", "Volatile Organic Compounds Index");
 
-    spRegister(rh, "Humidity (%RH)", "The relative humidity in %");
-    spRegister(temperature, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(rh, "Humidity (%RH)", "The relative humidity in %");
+    flxRegister(temperature, "Temperature (C)", "The temperature in degrees C");
 }
 
 //----------------------------------------------------------------------------------------------------------

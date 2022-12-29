@@ -115,19 +115,19 @@ private:
         // Set name and description
         setName("Save Settings", "Save, Restore and Reset System settings.");
 
-        spRegister(saveOnEvent, "Save Events", "Save settings on save events.");
-        spRegister(restoreOnEvent, "Restore Events", "Restore settings on restore events.");
+        flxRegister(saveOnEvent, "Save Events", "Save settings on save events.");
+        flxRegister(restoreOnEvent, "Restore Events", "Restore settings on restore events.");
 
-        spRegister(fallbackRestore, "Fallback Restore", "If unable to restore settings, use the fallback source.");
-        spRegister(fallbackSave, "Fallback Save", "Save settings also saves the fallback storage.");        
+        flxRegister(fallbackRestore, "Fallback Restore", "If unable to restore settings, use the fallback source.");
+        flxRegister(fallbackSave, "Fallback Save", "Save settings also saves the fallback storage.");        
 
 
-        spRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
-        spRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
-        spRegister(clearSettings, "Clear Settings", "Erase saved settings.");
+        flxRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
+        flxRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
+        flxRegister(clearSettings, "Clear Settings", "Erase saved settings.");
 
-        spRegister(saveFallback, "Save to Fallback", "Save system settings the the fallback storage.");                
-        spRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage.");        
+        flxRegister(saveFallback, "Save to Fallback", "Save system settings the the fallback storage.");                
+        flxRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage.");        
 
 
         flux.add(this);

@@ -23,9 +23,9 @@ flxDevMS8607::flxDevMS8607()
     setDescription("MS8607 Pressure, Humidity and Temperature sensor");
 
     // Register output params
-    spRegister(pressure_mbar, "Pressure (mbar)", "Atmospheric pressure in milli-bar");
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
+    flxRegister(pressure_mbar, "Pressure (mbar)", "Atmospheric pressure in milli-bar");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

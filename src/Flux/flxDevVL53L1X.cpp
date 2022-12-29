@@ -37,15 +37,15 @@ flxDevVL53L1X::flxDevVL53L1X()
     setDescription("VL53L1X Distance Sensor");
 
     // Register parameters
-    spRegister(distance, "Distance (mm)", "The measured distance in mm");
-    spRegister(rangeStatus, "Range Status", "The measurement range status : 0 = good");
-    spRegister(signalRate, "Signal Rate", "The measurement signal rate");
+    flxRegister(distance, "Distance (mm)", "The measured distance in mm");
+    flxRegister(rangeStatus, "Range Status", "The measurement range status : 0 = good");
+    flxRegister(signalRate, "Signal Rate", "The measurement signal rate");
 
     // Register read-write properties
-    spRegister(distanceMode, "Distance Mode", "The selected distance mode: short or long");
-    spRegister(intermeasurementPeriod, "Inter-Measurement Period (ms)", "The inter-measurement period in milliseconds");
-    spRegister(crosstalk, "Crosstalk", "The crosstalk compensation in counts-per-second");
-    spRegister(offset, "Offset", "The measurement offset in mm");
+    flxRegister(distanceMode, "Distance Mode", "The selected distance mode: short or long");
+    flxRegister(intermeasurementPeriod, "Inter-Measurement Period (ms)", "The inter-measurement period in milliseconds");
+    flxRegister(crosstalk, "Crosstalk", "The crosstalk compensation in counts-per-second");
+    flxRegister(offset, "Offset", "The measurement offset in mm");
 }
 
 //----------------------------------------------------------------------------------------------------------

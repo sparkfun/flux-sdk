@@ -24,32 +24,32 @@ flxDevRV8803::flxDevRV8803()
     setDescription("RV8803 Real Time Clock");
 
     // Register output params
-    spRegister(readDateUSA, "Read Date (MM/DD/YYYY)", "Read the date in USA format");
-    spRegister(readDate, "Read Date (DD/MM/YY)", "Read the date");
-    spRegister(readTime, "Read Time (HH:MM:SS)", "Read the time");
-    spRegister(readISO8601, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS)", "Read the date and time in ISO8601 format");
-    spRegister(readISO8601TZ, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS+HH:MM)", "Read the date and time in ISO8601 format with time zone");
-    spRegister(readDayOfWeek, "Read the day of week", "Read the day of week (Monday, Tuesday, etc)");
-    spRegister(readDayOfWeekShort, "Read the day of week (short)", "Read the day of week (Mon, Tue, etc)");
-    spRegister(readOrdinal, "Read the day of month (ordinal)", "Read the day of month in ordinal form (1st, 2nd, 3rd etc)");
-    spRegister(readMonth, "Read the month", "Read the name of the month (January, February etc)");
-    spRegister(readMonthShort, "Read the month (short)", "Read the name of the month (Jan, Feb etc)");
-    spRegister(readYear, "Read the year", "Read the year (2022 etc)");
-    spRegister(getEpoch, "Get Epoch", "Get the time in seconds since the Epoch");
+    flxRegister(readDateUSA, "Read Date (MM/DD/YYYY)", "Read the date in USA format");
+    flxRegister(readDate, "Read Date (DD/MM/YY)", "Read the date");
+    flxRegister(readTime, "Read Time (HH:MM:SS)", "Read the time");
+    flxRegister(readISO8601, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS)", "Read the date and time in ISO8601 format");
+    flxRegister(readISO8601TZ, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS+HH:MM)", "Read the date and time in ISO8601 format with time zone");
+    flxRegister(readDayOfWeek, "Read the day of week", "Read the day of week (Monday, Tuesday, etc)");
+    flxRegister(readDayOfWeekShort, "Read the day of week (short)", "Read the day of week (Mon, Tue, etc)");
+    flxRegister(readOrdinal, "Read the day of month (ordinal)", "Read the day of month in ordinal form (1st, 2nd, 3rd etc)");
+    flxRegister(readMonth, "Read the month", "Read the name of the month (January, February etc)");
+    flxRegister(readMonthShort, "Read the month (short)", "Read the name of the month (Jan, Feb etc)");
+    flxRegister(readYear, "Read the year", "Read the year (2022 etc)");
+    flxRegister(getEpoch, "Get Epoch", "Get the time in seconds since the Epoch");
 
     // Register input params
-    spRegister(setEpoch, "Set Epoch", "Set the time since the Epoch");
-    spRegister(setSeconds, "Set the seconds", "Set the seconds");
-    spRegister(setMinutes, "Set the minutes", "Set the minutes");
-    spRegister(setHours, "Set the hours", "Set the hours");
-    spRegister(setDate, "Set the date", "Set the date");
-    spRegister(setWeekday, "Set the weekday", "Set the weekday: 0=Sunday, 6=Saturday");
-    spRegister(setMonth, "Set the month", "Set the month");
-    spRegister(setYear, "Set the year", "Set the year");
+    flxRegister(setEpoch, "Set Epoch", "Set the time since the Epoch");
+    flxRegister(setSeconds, "Set the seconds", "Set the seconds");
+    flxRegister(setMinutes, "Set the minutes", "Set the minutes");
+    flxRegister(setHours, "Set the hours", "Set the hours");
+    flxRegister(setDate, "Set the date", "Set the date");
+    flxRegister(setWeekday, "Set the weekday", "Set the weekday: 0=Sunday, 6=Saturday");
+    flxRegister(setMonth, "Set the month", "Set the month");
+    flxRegister(setYear, "Set the year", "Set the year");
 
     // Register read-write properties
-    spRegister(offsetEpoch, "Offset Epoch", "Default false. Set to true if time.h requires an offset to 1970");
-    spRegister(timeZoneQuarterHours, "The Time Zone offset", "The Time Zone offset in quarter hours (15 minute increments)");
+    flxRegister(offsetEpoch, "Offset Epoch", "Default false. Set to true if time.h requires an offset to 1970");
+    flxRegister(timeZoneQuarterHours, "The Time Zone offset", "The Time Zone offset in quarter hours (15 minute increments)");
 }
 
 // Static method used to determine if this device is connected

@@ -56,8 +56,8 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
     {
         setName("Azure IoT", "Connection to Azure IoT");
 
-        spRegister(deviceID, "Device ID", "The device id for the Azure IoT device");
-        spRegister(deviceKey, "Device Key", "The device key for the Azure IoT device");
+        flxRegister(deviceID, "Device ID", "The device id for the Azure IoT device");
+        flxRegister(deviceKey, "Device Key", "The device key for the Azure IoT device");
 
         flux.add(this);
     }

@@ -23,8 +23,8 @@ flxDevLPS25HB::flxDevLPS25HB()
     setDescription("LPS25HB Temperature and Pressure sensor");
 
     // Register output params
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(pressurehPa, "Pressure (hPa)", "The atmospheric pressure in hPa");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(pressurehPa, "Pressure (hPa)", "The atmospheric pressure in hPa");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

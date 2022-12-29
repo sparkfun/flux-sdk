@@ -40,14 +40,14 @@ flxDevSCD30::flxDevSCD30()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(measurementInterval, "Measurement Interval", "Interval between measurements (s)");
-    spRegister(altitudeCompensation, "Altitude Compensation", "Define the sensor altitude in metres above sea level");
-    spRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
+    flxRegister(measurementInterval, "Measurement Interval", "Interval between measurements (s)");
+    flxRegister(altitudeCompensation, "Altitude Compensation", "Define the sensor altitude in metres above sea level");
+    flxRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
 
     // Register parameters
-    spRegister(co2PPM, "CO2 (PPM)", "CO2 concentration in Parts Per Million");
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
+    flxRegister(co2PPM, "CO2 (PPM)", "CO2 concentration in Parts Per Million");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
 }
 
 //----------------------------------------------------------------------------------------------------------

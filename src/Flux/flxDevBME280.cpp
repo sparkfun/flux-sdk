@@ -40,12 +40,12 @@ flxDevBME280::flxDevBME280()
     setDescription("The Bosch BME280 Atmospheric Sensor");
 
     // Register parameters
-    spRegister(humidity, "Humidity", "The sensed humidity value");
-    spRegister(temperatureF, "TemperatureF", "The sensed Temperature in degrees Fahrenheit");
-    spRegister(temperatureC, "TemperatureC", "The sensed Temperature in degrees Celsius");
-    spRegister(pressure, "Pressure", "The sensed pressure");
-    spRegister(altitudeM, "AltitudeM", "The sensed altitude in meters");
-    spRegister(altitudeF, "AltitudeF", "The sensed altitude in feet");
+    flxRegister(humidity, "Humidity", "The sensed humidity value");
+    flxRegister(temperatureF, "TemperatureF", "The sensed Temperature in degrees Fahrenheit");
+    flxRegister(temperatureC, "TemperatureC", "The sensed Temperature in degrees Celsius");
+    flxRegister(pressure, "Pressure", "The sensed pressure");
+    flxRegister(altitudeM, "AltitudeM", "The sensed altitude in meters");
+    flxRegister(altitudeF, "AltitudeF", "The sensed altitude in feet");
 }
 
 //----------------------------------------------------------------------------------------------------------

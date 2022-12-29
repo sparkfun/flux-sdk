@@ -40,17 +40,17 @@ flxDevSEN54::flxDevSEN54()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
+    flxRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
 
     // Register parameters
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
-    spRegister(massConcentrationPm1p0, "Particle Mass Concentration (1um)", "The concentration of 0.3-1.0 micron particles in ug/m^3");
-    spRegister(massConcentrationPm2p5, "Particle Mass Concentration (2.5um)", "The concentration of 0.3-2.5 micron particles in ug/m^3");
-    spRegister(massConcentrationPm4p0, "Particle Mass Concentration (4um)", "The concentration of 0.3-4.0 micron particles in ug/m^3");
-    spRegister(massConcentrationPm10p0, "Particle Mass Concentration (10um)", "The concentration of 0.3-10.0 micron particles in ug/m^3");
-    spRegister(vocIndex, "VOC Index", "The VOC Index measured in index points (1-500)");
-    spRegister(noxIndex, "NOx Index", "The NOx Index measured in index points (1-500)");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
+    flxRegister(massConcentrationPm1p0, "Particle Mass Concentration (1um)", "The concentration of 0.3-1.0 micron particles in ug/m^3");
+    flxRegister(massConcentrationPm2p5, "Particle Mass Concentration (2.5um)", "The concentration of 0.3-2.5 micron particles in ug/m^3");
+    flxRegister(massConcentrationPm4p0, "Particle Mass Concentration (4um)", "The concentration of 0.3-4.0 micron particles in ug/m^3");
+    flxRegister(massConcentrationPm10p0, "Particle Mass Concentration (10um)", "The concentration of 0.3-10.0 micron particles in ug/m^3");
+    flxRegister(vocIndex, "VOC Index", "The VOC Index measured in index points (1-500)");
+    flxRegister(noxIndex, "NOx Index", "The NOx Index measured in index points (1-500)");
 }
 
 //----------------------------------------------------------------------------------------------------------

@@ -288,7 +288,7 @@ class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
             return (T)0;
         }
         return (my_object->*_getter)();
@@ -471,7 +471,7 @@ class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutSt
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
             return std::string("");
         }
 
@@ -618,7 +618,7 @@ class flxParameterOutArrayType : public flxParameterOutArray
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
             return nullptr;
         }
         flxDataArrayType<T> *data = new flxDataArrayType<T>;
@@ -772,7 +772,7 @@ class flxParameterOutArrayString : public flxParameterOutArray
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this output parameter ");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
             return nullptr;
         }
         flxDataArrayString *data = new flxDataArrayString;
@@ -865,7 +865,7 @@ class _flxParameterIn : public flxParameterIn, public _flxDataIn<T>
 
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this input parameter ");
             return;
         }
 
@@ -1016,7 +1016,7 @@ class flxParameterInString : public flxParameterIn, _flxDataInString
 
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this input parameter ");
             return;
         }
 
@@ -1136,7 +1136,7 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify spRegister() was called on this input parameter ");
+            flxLog_E("Containing object not set. Verify flxRegister() was called on this input parameter ");
             return;
         }
 
@@ -1173,15 +1173,15 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
 // Use some macro magic to determine which actual call to make based on the number of passed in
 // parameters..
 #define _spGetRegAttributeMacro(_1, _2, _3, _NAME_, ...) _NAME_
-#define spRegister(...) _spGetRegAttributeMacro(__VA_ARGS__, spRegisterDesc, spRegisterName, spRegisterObj)(__VA_ARGS__)
+#define flxRegister(...) _spGetRegAttributeMacro(__VA_ARGS__, flxRegisterDesc, flxRegisterName, flxRegisterObj)(__VA_ARGS__)
 
-#define spRegisterObj(_obj_name_) _obj_name_(this, #_obj_name_)
+#define flxRegisterObj(_obj_name_) _obj_name_(this, #_obj_name_)
 
 // User provided Name
-#define spRegisterName(_obj_name_, _name_) _obj_name_(this, _name_)
+#define flxRegisterName(_obj_name_, _name_) _obj_name_(this, _name_)
 
 // User provided Name and description
-#define spRegisterDesc(_obj_name_, _name_, _desc_) _obj_name_(this, _name_, _desc_)
+#define flxRegisterDesc(_obj_name_, _name_, _desc_) _obj_name_(this, _name_, _desc_)
 
 // Define a object type that supports parameter lists (input and output)
 class flxOperation : public flxObject, public _flxParameterContainer

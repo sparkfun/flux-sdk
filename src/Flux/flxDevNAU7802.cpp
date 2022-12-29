@@ -40,13 +40,13 @@ flxDevNAU7802::flxDevNAU7802()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(zeroOffset, "Zero Offset", "The scale zero offset");
-    spRegister(calibrationFactor, "Calibration Factor", "Used to convert the scale ADU into units");
+    flxRegister(zeroOffset, "Zero Offset", "The scale zero offset");
+    flxRegister(calibrationFactor, "Calibration Factor", "Used to convert the scale ADU into units");
 
     // Register parameters
-    spRegister(weight, "Weight", "Weight in units - as set by the calibrationFactor");
-    spRegister(calculateZeroOffset, "Calculate Zero Offset", "Perform a zero offset calibration. Sets the scale weight to zero");
-    spRegister(calculateCalibrationFactor, "Calculate Calibration Factor", "Perform a scale calibration. Sets the scale weight to this many units");
+    flxRegister(weight, "Weight", "Weight in units - as set by the calibrationFactor");
+    flxRegister(calculateZeroOffset, "Calculate Zero Offset", "Perform a zero offset calibration. Sets the scale weight to zero");
+    flxRegister(calculateCalibrationFactor, "Calculate Calibration Factor", "Perform a scale calibration. Sets the scale weight to this many units");
 }
 
 //----------------------------------------------------------------------------------------------------------

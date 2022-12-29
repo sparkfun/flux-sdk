@@ -36,16 +36,16 @@ flxDevMCP9600::flxDevMCP9600()
     setDescription("Microchip MCP9600 Thermocouple Amplifier");
 
     // register properties
-    spRegister(ambient_resolution, "Ambient Resolution", "Ambient temperature resolution in fractions of degrees C");
-    spRegister(thermocouple_resolution, "Thermocouple Resolution", "Thermocouple temperature full-scale resolution in bits");
-    spRegister(thermocouple_type, "Thermocouple Type", "The thermocouple type");
-    spRegister(filter_coefficent, "Filter Coefficient", "The filter coefficient");
-    spRegister(burst_samples, "Burst Samples", "The number of samples in burst mode");
+    flxRegister(ambient_resolution, "Ambient Resolution", "Ambient temperature resolution in fractions of degrees C");
+    flxRegister(thermocouple_resolution, "Thermocouple Resolution", "Thermocouple temperature full-scale resolution in bits");
+    flxRegister(thermocouple_type, "Thermocouple Type", "The thermocouple type");
+    flxRegister(filter_coefficent, "Filter Coefficient", "The filter coefficient");
+    flxRegister(burst_samples, "Burst Samples", "The number of samples in burst mode");
 
     // register parameters
-    spRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature in degrees C");
-    spRegister(ambient_temp, "Ambient temperature", "Ambient temperature in degrees C");
-    spRegister(temp_delta, "Temperature delta", "Difference between the thermocouple temperature and ambient in degrees C");
+    flxRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature in degrees C");
+    flxRegister(ambient_temp, "Ambient temperature", "Ambient temperature in degrees C");
+    flxRegister(temp_delta, "Temperature delta", "Difference between the thermocouple temperature and ambient in degrees C");
 }
 
 //----------------------------------------------------------------------------------------------------------

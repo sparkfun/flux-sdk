@@ -13,23 +13,23 @@ flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{fal
 {
     setName("Logger", "Data logging action");
 
-    spRegister(timestampMode, "Timestamp Mode", "Enable the output and set the format of a log entry timestamp.");
+    flxRegister(timestampMode, "Timestamp Mode", "Enable the output and set the format of a log entry timestamp.");
 
     // Register the timestamp output parameter, then remove it from the action parameter list - we want this hidden
     // from the menu system. We register to connect the parameter to this instance.
-    spRegister(timestamp, "Time");
+    flxRegister(timestamp, "Time");
     removeParameter(timestamp);
 
     // Sample number things
 
-    spRegister(numberMode, "Sample Numbering", "An incremental count of the current log entry.");
-    spRegister(numberIncrement, "Numbering Increment", "Increment amount for Sample Numbering");
+    flxRegister(numberMode, "Sample Numbering", "An incremental count of the current log entry.");
+    flxRegister(numberIncrement, "Numbering Increment", "Increment amount for Sample Numbering");
 
     // Register and remove the output parameter in a simpler manner as the Timestamp
-    spRegister(sampleNumber, "Entry");
+    flxRegister(sampleNumber, "Entry");
     removeParameter(sampleNumber);
 
-    spRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
+    flxRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
 
     flux.add(this);
 }

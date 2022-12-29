@@ -40,14 +40,14 @@ flxDevSCD40::flxDevSCD40()
     // to support managed properties/public properties
 
     // Register Property
-    spRegister(autoCalibrate, "Auto Calibration", "Enable / disable automatic calibration");
-    spRegister(altitudeCompensation, "Altitude Compensation", "Define the sensor altitude in metres above sea level");
-    spRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
+    flxRegister(autoCalibrate, "Auto Calibration", "Enable / disable automatic calibration");
+    flxRegister(altitudeCompensation, "Altitude Compensation", "Define the sensor altitude in metres above sea level");
+    flxRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
 
     // Register parameters
-    spRegister(co2PPM, "CO2 (PPM)", "The CO2 concentration in Parts Per Million");
-    spRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    spRegister(humidity, "Humidity (%RH)", "The releative humidity in %");
+    flxRegister(co2PPM, "CO2 (PPM)", "The CO2 concentration in Parts Per Million");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(humidity, "Humidity (%RH)", "The releative humidity in %");
 }
 
 //----------------------------------------------------------------------------------------------------------

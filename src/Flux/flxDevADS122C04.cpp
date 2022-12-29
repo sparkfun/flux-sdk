@@ -33,15 +33,15 @@ flxDevADS122C04::flxDevADS122C04()
     _wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode
     _sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second
 
-    spRegister(wireMode, "Wire mode", "Wire mode");
+    flxRegister(wireMode, "Wire mode", "Wire mode");
     
-    spRegister(sampleRate, "Sample rate", "Sample rate");
+    flxRegister(sampleRate, "Sample rate", "Sample rate");
 
     // Register output params
-    spRegister(temperatureC, "Probe temperature (C)", "The probe temperature in degrees C");
-    spRegister(temperatureF, "Probe temperature (F)", "The probe temperature in degrees F");
-    spRegister(internalTemperature, "Internal temperature (C)", "The ADS122C04 internal temperature (C)");
-    spRegister(rawVoltage, "Raw voltage (V)", "The raw ADC voltage (V)");
+    flxRegister(temperatureC, "Probe temperature (C)", "The probe temperature in degrees C");
+    flxRegister(temperatureF, "Probe temperature (F)", "The probe temperature in degrees F");
+    flxRegister(internalTemperature, "Internal temperature (C)", "The ADS122C04 internal temperature (C)");
+    flxRegister(rawVoltage, "Raw voltage (V)", "The raw ADC voltage (V)");
 
 }
 

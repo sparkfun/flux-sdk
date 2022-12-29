@@ -40,23 +40,23 @@ flxDevISM330Base::flxDevISM330Base()
     // to support managed properties/public properties
 
     // Register parameters
-    spRegister(accelX, "Accel X (milli-g)", "Accelerometer X (milli-g)");
-    spRegister(accelY, "Accel Y (milli-g)", "Accelerometer Y (milli-g)");
-    spRegister(accelZ, "Accel Z (milli-g)", "Accelerometer Z (milli-g)");
-    spRegister(gyroX, "Gyro X (milli-dps)", "Gyro X (milli-dps)");
-    spRegister(gyroY, "Gyro Y (milli-dps)", "Gyro Y (milli-dps)");
-    spRegister(gyroZ, "Gyro Z (milli-dps)", "Gyro Z (milli-dps)");
-    spRegister(temperature, "Temperature (C)", "The gyro temperature in degrees C");
+    flxRegister(accelX, "Accel X (milli-g)", "Accelerometer X (milli-g)");
+    flxRegister(accelY, "Accel Y (milli-g)", "Accelerometer Y (milli-g)");
+    flxRegister(accelZ, "Accel Z (milli-g)", "Accelerometer Z (milli-g)");
+    flxRegister(gyroX, "Gyro X (milli-dps)", "Gyro X (milli-dps)");
+    flxRegister(gyroY, "Gyro Y (milli-dps)", "Gyro Y (milli-dps)");
+    flxRegister(gyroZ, "Gyro Z (milli-dps)", "Gyro Z (milli-dps)");
+    flxRegister(temperature, "Temperature (C)", "The gyro temperature in degrees C");
 
     // Register properties
-    spRegister(accelDataRate, "Accel Data Rate (Hz)", "Accelerometer Data Rate (Hz)");
-    spRegister(accelFullScale, "Accel Full Scale (g)", "Accelerometer Full Scale (g)");
-    spRegister(gyroDataRate, "Gyro Data Rate (Hz)", "Gyro Data Rate (Hz)");
-    spRegister(gyroFullScale, "Gyro Full Scale (dps)", "Gyro Full SCale (dps)");
-    spRegister(accelFilterLP2, "Accel Filter LP2", "Accelerometer Filter LP2");
-    spRegister(gyroFilterLP1, "Gyro Filter LP1", "Gyro Filter LP1");
-    spRegister(accelSlopeFilter, "Accel Slope Filter", "Accelerometer Slope Filter");
-    spRegister(gyroLP1Bandwidth, "Gyro LP1 Filter Bandwidth", "Gyro LP1 Filter Bandwidth");
+    flxRegister(accelDataRate, "Accel Data Rate (Hz)", "Accelerometer Data Rate (Hz)");
+    flxRegister(accelFullScale, "Accel Full Scale (g)", "Accelerometer Full Scale (g)");
+    flxRegister(gyroDataRate, "Gyro Data Rate (Hz)", "Gyro Data Rate (Hz)");
+    flxRegister(gyroFullScale, "Gyro Full Scale (dps)", "Gyro Full SCale (dps)");
+    flxRegister(accelFilterLP2, "Accel Filter LP2", "Accelerometer Filter LP2");
+    flxRegister(gyroFilterLP1, "Gyro Filter LP1", "Gyro Filter LP1");
+    flxRegister(accelSlopeFilter, "Accel Slope Filter", "Accelerometer Slope Filter");
+    flxRegister(gyroLP1Bandwidth, "Gyro LP1 Filter Bandwidth", "Gyro LP1 Filter Bandwidth");
 }
 
 // Base version of on Initialize

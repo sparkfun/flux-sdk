@@ -40,8 +40,8 @@ flxDevBMP384::flxDevBMP384()
     setDescription("The Bosch BMP384 Pressure and Temperature Sensor");
 
     // Register parameters
-    spRegister(temperatureC, "Temperature (C)", "The sensed temperature in degrees Celsius");
-    spRegister(pressure, "Pressure (Pa)", "The sensed pressure in Pascals");
+    flxRegister(temperatureC, "Temperature (C)", "The sensed temperature in degrees Celsius");
+    flxRegister(pressure, "Pressure (Pa)", "The sensed pressure in Pascals");
 }
 
 //----------------------------------------------------------------------------------------------------------

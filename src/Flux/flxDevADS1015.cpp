@@ -26,18 +26,18 @@ flxDevADS1015::flxDevADS1015()
 
     // Register Properties
 
-    spRegister(sampleRate, "Sample Rate", "The sample rate in Hz");    
-    spRegister(gain, "Gain", "Programmable gain setting");
+    flxRegister(sampleRate, "Sample Rate", "The sample rate in Hz");    
+    flxRegister(gain, "Gain", "Programmable gain setting");
 
     // Register output params
-    spRegister(channel0, "Channel 0 Single-Ended (mV)", "Channel 0 Single-Ended (millivolts)");
-    spRegister(channel1, "Channel 1 Single-Ended (mV)", "Channel 1 Single-Ended (millivolts)");
-    spRegister(channel2, "Channel 2 Single-Ended (mV)", "Channel 2 Single-Ended (millivolts)");
-    spRegister(channel3, "Channel 3 Single-Ended (mV)", "Channel 3 Single-Ended (millivolts)");
-    spRegister(differential_0_minus_1, "Differential: P0 N1 (mV)", "Differential: Channel 0 - Channel 1 (millivolts)");
-    spRegister(differential_0_minus_3, "Differential: P0 N3 (mV)", "Differential: Channel 0 - Channel 3 (millivolts)");
-    spRegister(differential_1_minus_3, "Differential: P1 N3 (mV)", "Differential: Channel 1 - Channel 3 (millivolts)");
-    spRegister(differential_2_minus_3, "Differential: P2 N3 (mV)", "Differential: Channel 2 - Channel 3 (millivolts)");
+    flxRegister(channel0, "Channel 0 Single-Ended (mV)", "Channel 0 Single-Ended (millivolts)");
+    flxRegister(channel1, "Channel 1 Single-Ended (mV)", "Channel 1 Single-Ended (millivolts)");
+    flxRegister(channel2, "Channel 2 Single-Ended (mV)", "Channel 2 Single-Ended (millivolts)");
+    flxRegister(channel3, "Channel 3 Single-Ended (mV)", "Channel 3 Single-Ended (millivolts)");
+    flxRegister(differential_0_minus_1, "Differential: P0 N1 (mV)", "Differential: Channel 0 - Channel 1 (millivolts)");
+    flxRegister(differential_0_minus_3, "Differential: P0 N3 (mV)", "Differential: Channel 0 - Channel 3 (millivolts)");
+    flxRegister(differential_1_minus_3, "Differential: P1 N3 (mV)", "Differential: Channel 1 - Channel 3 (millivolts)");
+    flxRegister(differential_2_minus_3, "Differential: P2 N3 (mV)", "Differential: Channel 2 - Channel 3 (millivolts)");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

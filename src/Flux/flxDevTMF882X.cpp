@@ -39,17 +39,17 @@ flxDevTMF882X::flxDevTMF882X()
     setDescription("TMF882x Time-Of-Flight Sensor");
 
     // Register parameters
-    spRegister(confidence, "Confidence", "The distance measurement confidence");
-    spRegister(distance, "Distance (mm)", "The measured distance in mm");
-    spRegister(channel, "Channel", "The measurement channel");
-    spRegister(subCapture, "Sub Capture", "The measurement sub-capture");
-    spRegister(photonCount, "Photon Count", "The measurement photon count");
-    spRegister(refPhotonCount, "Ref Photon Count", "The reference photon count");
-    spRegister(ambientLight, "Ambient Light", "The ambient light level");
+    flxRegister(confidence, "Confidence", "The distance measurement confidence");
+    flxRegister(distance, "Distance (mm)", "The measured distance in mm");
+    flxRegister(channel, "Channel", "The measurement channel");
+    flxRegister(subCapture, "Sub Capture", "The measurement sub-capture");
+    flxRegister(photonCount, "Photon Count", "The measurement photon count");
+    flxRegister(refPhotonCount, "Ref Photon Count", "The reference photon count");
+    flxRegister(ambientLight, "Ambient Light", "The ambient light level");
 
-    spRegister(reportPeriod, "Report Period (ms)", "The reporting period in milliseconds)");
+    flxRegister(reportPeriod, "Report Period (ms)", "The reporting period in milliseconds)");
 
-    spRegister(factoryCalibration, "Perform Factory Calibration", "Perform Factory Calibration - requires minimal ambient light and no target within 40 cm");
+    flxRegister(factoryCalibration, "Perform Factory Calibration", "Perform Factory Calibration - requires minimal ambient light and no target within 40 cm");
 }
 
 //----------------------------------------------------------------------------------------------------------
