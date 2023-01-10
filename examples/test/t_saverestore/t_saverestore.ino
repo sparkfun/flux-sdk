@@ -406,7 +406,7 @@ void setup() {
     while (!Serial);
     Serial.println("\n---- Startup of the Save/Restore tests ----");
 
-    flxSettings.setStorage(myStorage);
+    flxSettings.setStorage(&myStorage);
     flux.add(myTest);
 
     Serial.println("object Added, reseting storage");
