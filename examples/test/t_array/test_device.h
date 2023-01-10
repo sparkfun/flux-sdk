@@ -9,7 +9,7 @@
 
 #include "Arduino.h"
 
-#include "Spark/flxDevice.h"
+#include "Flux/flxDevice.h"
 
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
