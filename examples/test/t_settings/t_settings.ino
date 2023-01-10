@@ -336,7 +336,7 @@ void setup() {
     Serial.println("\n---- Startup Serial Settings Test ----");
     
 
-    flxSettings.setStorage(myStorage);
+    flxSettings.setStorage(&myStorage);
     // Have settings save when editing is complete.
     flxSettings.listenForSave(serialSettings.on_finished);
 
