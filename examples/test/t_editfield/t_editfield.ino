@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Flux.h"
-#include "Spark/flxSerialField.h"
+#include "Flux/flxSerialField.h"
 
 flxSerialField myField;
 
