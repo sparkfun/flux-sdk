@@ -101,7 +101,7 @@ void setup() {
     //wifiConnection.password = "";
 
     // set the settings storage system for spark
-    flxSettings.setStorage(myStorage);
+    flxSettings.setStorage(&myStorage);
 
     // Have settings saved when editing is complete.
     flxSettings.listenForSave(serialSettings.on_finished);
