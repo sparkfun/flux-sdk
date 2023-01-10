@@ -50,11 +50,6 @@ void setup() {
         BMEIsConnected=true;
     }
 
-    myBME.celsius = false;
-    bool bb = myBME.celsius;
-
-    bb = !bb;
-
     digitalWrite(LED_BUILTIN, LOW);  // board LED off
 }
 
@@ -68,9 +63,16 @@ void loop() {
     Serial.print("Device: "); Serial.println(myBME.name());
     if (BMEIsConnected){
 
+        flxParameterOutScalar * param;
         // Loop over the output parameters of this device and print name and value
-        for (auto param : myBME.getOutputParameters() )
+        //
+        // Note - the output parameter list handles scalars and arrays - the BME just has
+        //        scalars, so we cast to a scalar.
+
+        for (flxParameterOut *paramOut : myBME.getOutputParameters() )
         {
+
+            param = (flxParameterOutScalar*)paramOut;
 
             Serial.print(" "); Serial.print(param->name()); Serial.print(" = ");
 
