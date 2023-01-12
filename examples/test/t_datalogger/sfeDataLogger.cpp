@@ -17,6 +17,15 @@ sfeDataLogger::sfeDataLogger() : _logTypeSD{kAppLogTypeNone}, _logTypeSer{kAppLo
     // Add the format changing props to the logger - makese more sense from a UX standpont.
     _logger.addProperty(sdCardLogType);
     _logger.addProperty(serialLogType);
+
+    // sleep properties
+    flxRegister(sleepEnabled, "Enable System Sleep", "If enabled, sleep the system ");
+    flxRegister(sleepInterval,"Sleep Interval (S)", "The interval the system will sleep for");
+    flxRegister(wakeInterval, "Wake Interval (S)", "The interval the system will operate between sleep period");    
+
+    // set some simple defaults
+    sleepInterval = 10;
+    wakeInterval = 10;
 }
 
 //---------------------------------------------------------------------------

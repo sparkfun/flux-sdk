@@ -146,6 +146,12 @@ private:
                                                     {"CSV Format", kAppLogTypeCSV},
                                                     {"JSON Format", kAppLogTypeJSON} } };
 
+    // System sleep properties
+                                                    // Property  - interval for the timer
+    flxPropertyInt<sfeDataLogger>   sleepInterval = {5, 86400};
+    flxPropertyInt<sfeDataLogger>   wakeInterval = {5, 86400};    
+    flxPropertyBool<sfeDataLogger>  sleepEnabled = {false};
+
   private:
     // Class members -- that make up the apllication structure
 
