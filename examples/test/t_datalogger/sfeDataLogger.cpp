@@ -4,6 +4,8 @@
  */
 
 #include "sfeDataLogger.h"
+#include "esp_sleep.h"
+
 
 //---------------------------------------------------------------------------
 // Constructor
@@ -319,5 +321,48 @@ bool sfeDataLogger::start()
 
     flxLog_N("");
 
+    // set our system start time im millis
+    _startTime = millis();
     return true;
+}
+
+//---------------------------------------------------------------------------
+void sfeDataLogger::enterSleepMode()
+{
+
+    if (!sleepEnabled())
+        return;
+
+    esp_sleep_config_gpio_isolate();
+
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC8M, ESP_PD_OPTION_OFF);
+    esp_sleep_pd_config(ESP_PD_DOMAIN_VDDSDIO, ESP_PD_OPTION_OFF);
+
+    esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
+
+    unsigned long long period = sleepInterval() * 1000000ULL;
+
+    esp_sleep_enable_timer_wakeup(period); 
+
+    esp_deep_sleep_start(); // see you on the otherside 
+
+}
+//---------------------------------------------------------------------------
+// loop()
+//
+// Called during the operational loop of the system.
+
+bool sfeDataLogger::loop()
+{
+    // Is sleep enabled and if so, is it time to sleep the system
+    if (sleepEnabled() && millis() - _startTime > wakeInterval()*1000)
+    {
+        enterSleepMode();
+    }
+
+    return false;
 }

@@ -134,6 +134,8 @@ private:
     // Called after the system is loaded, restored and initialized
     bool start();
 
+    bool loop();
+
     // Define our log type properties
 
     flxPropertyRWUint8<sfeDataLogger, &sfeDataLogger::get_logTypeSD, &sfeDataLogger::set_logTypeSD>   
@@ -147,12 +149,14 @@ private:
                                                     {"JSON Format", kAppLogTypeJSON} } };
 
     // System sleep properties
-                                                    // Property  - interval for the timer
     flxPropertyInt<sfeDataLogger>   sleepInterval = {5, 86400};
     flxPropertyInt<sfeDataLogger>   wakeInterval = {5, 86400};    
     flxPropertyBool<sfeDataLogger>  sleepEnabled = {false};
 
   private:
+
+    void enterSleepMode(void);
+
     // Class members -- that make up the apllication structure
 
     // Create a JSON and CSV output formatters.
@@ -203,4 +207,7 @@ private:
 
     // HTTP/URL Post
     flxIoTHTTP _iotHTTP;
+
+    // For the sleep timer
+    unsigned long _startTime = 0;
 };
