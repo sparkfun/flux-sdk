@@ -1421,6 +1421,11 @@ template <class T> class flxContainer : public flxObject
         _vector.pop_back();
     }
 
+    void insert(typename std::vector<T>::iterator it, T value)
+    {
+       _vector.insert(it, value);
+    }
+
     auto back(void) -> decltype(_vector.back())
     {
         return _vector.back();
