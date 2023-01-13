@@ -58,7 +58,7 @@ bool flxDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 
     uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); // Should return 0x60 or 0x58
 
-    flxLog_I("BME280 isConnected chip ID 0x%02x", chipID);
+    //flxLog_I("BME280 isConnected chip ID 0x%02x", chipID);
 
     return (chipID == 0x58 || chipID == 0x60);
 }
