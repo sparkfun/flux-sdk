@@ -209,7 +209,11 @@ class flxFlux : public flxObjectContainer
     void setApplication(flxApplication *theApp)
     {
         if (theApp)
+        {
             _theApplication = theApp;
+            // set the app as the first entry of our actions list
+            Actions.insert(Actions.begin(), (flxAction*)theApp);
+        }
     }
 
     flxApplication * application(void)
