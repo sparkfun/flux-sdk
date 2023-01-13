@@ -280,8 +280,44 @@ public:
     flxApplication()
     {
         flux.setApplication(this);
+
+        // Set a name/descriptor that shows up in the menu system.
+        ((flxObject*)this)->setName("Application Settings", "Main Application Settings");
     }
     
+    // Name things - the overall base object of the system has a descriptor - we want this
+    // method signature to name the app, but also allow this app object (which is an action)
+    // to be used in the menuing system ... so
+    //          - override the flxDescriptor methods on the app object
+    //              -- use a descriptor instance variable to store the data
+    //          - Methods called on the application will get these name/desc values
+    //          - Methods called on sub-class objects get the base object name/desc
+    // So we can use the same methods is both cases, but leverage the fact that 
+    // the base descriptor class methods are not virtual. 
+
+    void setName(const char *name)
+    {
+        appDesc.setName(name);
+    }
+    void setDescription(const char *desc)
+    {
+        appDesc.setDescription(desc);
+    }
+    void setName(const char *name, const char *desc)
+    {
+        this->setName(name);
+        this->setDescription(desc);
+    }    
+    const char *name(void)
+    {
+        return appDesc.name();
+    }
+
+    const char *description(void)
+    {
+        return appDesc.description();
+    }
+
     // Method is called before device auto-load, settings restoration and action initialization
     virtual bool setup(void)
     {
@@ -298,4 +334,7 @@ public:
     {
         flux.setVersion(strVersion, uiVersion);
     }
+private:
+    flxDescriptor appDesc;
+
 };
