@@ -7,6 +7,8 @@
 #include "esp_sleep.h"
 
 
+RTC_DATA_ATTR static int boot_count = 0;
+
 //---------------------------------------------------------------------------
 // Constructor
 //
@@ -26,8 +28,8 @@ sfeDataLogger::sfeDataLogger() : _logTypeSD{kAppLogTypeNone}, _logTypeSer{kAppLo
     flxRegister(wakeInterval, "Wake Interval (S)", "The interval the system will operate between sleep period");    
 
     // set some simple defaults
-    sleepInterval = 10;
-    wakeInterval = 10;
+    sleepInterval = 20;
+    wakeInterval = 30;
 }
 
 //---------------------------------------------------------------------------
@@ -260,6 +262,11 @@ void sfeDataLogger::set_logTypeSer(uint8_t logType)
 // Called after the system is loaded, restored and initialized
 bool sfeDataLogger::start()
 {
+
+    // Waking up from a sleep (boot count isn't zero)
+    if (boot_count != 0)
+        flxLog_I(F("Starting system from deep sleep - wake period is %d seconds"), wakeInterval());
+
     // printout the device ID
     flxLog_I(F("Device ID: %s"), flux.deviceId());
 
@@ -308,7 +315,7 @@ bool sfeDataLogger::start()
     // Loop over the device list - note that it is iterable.
     for (auto device : myDevices)
     {
-        flxLog_N_(F("\tDevice: %s, Output Number: %d\n\r"), device->name(), device->nOutputParameters());
+        flxLog_I(F("\tDevice: %s, Output Number: %d"), device->name(), device->nOutputParameters());
         if (device->nOutputParameters() > 0)
             _logger.add(device);
     }
@@ -333,6 +340,8 @@ void sfeDataLogger::enterSleepMode()
     if (!sleepEnabled())
         return;
 
+    flxLog_I(F("Starting device deep sleep for %d secs"), sleepInterval());
+
     esp_sleep_config_gpio_isolate();
 
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_OFF);
@@ -347,6 +356,8 @@ void sfeDataLogger::enterSleepMode()
     unsigned long long period = sleepInterval() * 1000000ULL;
 
     esp_sleep_enable_timer_wakeup(period); 
+
+    boot_count=1;
 
     esp_deep_sleep_start(); // see you on the otherside 
 

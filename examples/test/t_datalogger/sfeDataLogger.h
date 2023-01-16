@@ -5,6 +5,7 @@
 
 // Spark framework
 #include <Flux.h>
+#include <Flux/flxCoreLog.h>
 #include <Flux/flxFmtCSV.h>
 #include <Flux/flxFmtJSON.h>
 #include <Flux/flxLogger.h>
