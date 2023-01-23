@@ -395,6 +395,7 @@ bool flxStorageESP32Block::valueExists(const char *tag)
 // flxStorageESP32Pref
 //------------------------------------------------------------------------------
 
+#ifdef _NOT_WORKING
 // Testing of secure NFS setup
 
 bool flxStorageESP32Pref::setupNVSSecurePartition(void)
@@ -436,6 +437,7 @@ bool flxStorageESP32Pref::setupNVSSecurePartition(void)
     return true;
 }  
 
+#endif
 //
 // Interface for a storage system to persist state of a system
 
@@ -446,10 +448,10 @@ flxStorageESP32Pref::flxStorageESP32Pref() : _readOnly{false}
 
     // Setup the NVS partition - prefs storage - as encrypted
 
-    if (!setupNVSSecurePartition())
-        flxLog_N(F(" Preference storage is not encrypted"));
-    else
-        flxLog_I(F("On-board preference storage is encrypted"));
+    // if (!setupNVSSecurePartition())
+    //     flxLog_N(F(" Preference storage is not encrypted"));
+    // else
+    //     flxLog_I(F("On-board preference storage is encrypted"));
 }
 
 // public methods to manage a block
