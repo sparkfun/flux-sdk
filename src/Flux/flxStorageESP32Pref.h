@@ -105,6 +105,8 @@ public:
     void resetStorage();
 
 private:
+    bool setupNVSSecurePartition(void);
+
     // The block used to interface with the system
     flxStorageESP32Block _theBlock;
     Preferences _prefs;

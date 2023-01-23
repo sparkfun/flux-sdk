@@ -392,7 +392,50 @@ bool flxStorageESP32Block::valueExists(const char *tag)
     return _prefs->isKey(szHash);
 }
 //------------------------------------------------------------------------------
-// flxStorage
+// flxStorageESP32Pref
+//------------------------------------------------------------------------------
+
+// Testing of secure NFS setup
+
+bool flxStorageESP32Pref::setupNVSSecurePartition(void)
+{
+    // do we have a secure partition
+
+    const esp_partition_t *partition = esp_partition_find_first(ESP_PARTITION_TYPE_DATA,
+                                                                ESP_PARTITION_SUBTYPE_DATA_NVS_KEYS,
+                                                                "nvs_key");
+    if (partition == NULL)
+    {
+        flxLog_W_(F("No secure key storage partition found."));
+        return false;
+    }
+
+    // Okay, we have a nvs key partition, does it contain keys?
+    nvs_sec_cfg_t cfg;
+    if (ESP_OK != nvs_flash_read_security_cfg(partition, &cfg)) 
+    {
+        // Okay, no keys in the partiion - generate and store keys
+        if ( ESP_OK != nvs_flash_generate_keys(partition, &cfg))
+        {
+            // Failed to gen and store keys
+            flxLog_W_(F("Unable to generate secure storage keys."));
+            return false;
+        }
+    }
+    // we:
+    //  - Have NVS keys
+    //  - The NVS keys are stored in the nvs_key partiion 
+    //
+    // Initialize the default nvs partition to be read via encryption
+
+    if (ESP_OK != nvs_flash_secure_init(&cfg))
+    {
+        flxLog_W_(F("Error initializing preference storage as encrypted."));
+        return false;
+    } 
+    return true;
+}  
+
 //
 // Interface for a storage system to persist state of a system
 
@@ -400,6 +443,13 @@ flxStorageESP32Pref::flxStorageESP32Pref() : _readOnly{false}
 {
     _theBlock.setPrefs(&_prefs);
     setName("ESP32 Preferences", "Device setting storage using the ESP32 Preferences");
+
+    // Setup the NVS partition - prefs storage - as encrypted
+
+    if (!setupNVSSecurePartition())
+        flxLog_N(F(" Preference storage is not encrypted"));
+    else
+        flxLog_I(F("On-board preference storage is encrypted"));
 }
 
 // public methods to manage a block
