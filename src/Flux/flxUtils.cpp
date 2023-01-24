@@ -5,6 +5,8 @@
 #include <math.h>
 #include <string.h>
 
+#include <Arduino.h>
+
 #include "flxCoreLog.h"
 //-------------------------------------------------------------------------
 // dtostr()
@@ -249,4 +251,25 @@ std::string flx_utils::strtrim(const std::string& str, const std::string& whites
     const auto strRange = strEnd - strBegin + 1;
 
     return str.substr(strBegin, strRange);
+}
+// Simple data encoder - using a randome number gnerator and XOR
+// because this uses xor - encode/decode are the same 
+
+static void simple_encode(uint8_t *source, uint8_t *dest, size_t len, uint32_t key)
+{
+    randomSeed(key);
+
+    for(int i =0; i < len; i++)
+        *dest++ = *source++ ^ random(1,255);
+
+}
+void flx_utils::encode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key)
+{
+    simple_encode(source, dest, len ,key);
+}
+
+
+void flx_utils::decode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key)
+{
+    simple_encode(source, dest, len ,key);    
 }

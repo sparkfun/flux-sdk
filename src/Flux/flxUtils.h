@@ -36,6 +36,9 @@ std::string to_string(bool const data);
 
 std::string strtrim(const std::string& str, const std::string& whitespace = " \t");
 
+void encode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key);
+void decode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key);
+
 } // namespace flx_utils
 
 /*
