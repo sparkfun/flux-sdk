@@ -1,4 +1,16 @@
 /*
+ *---------------------------------------------------------------------------------
+ *
+ * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * This software includes information which is proprietary to and a
+ * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
+ * to anyone outside of this organization. Reproduction by any means
+ * whatsoever is  prohibited without express written permission.
+ * 
+ *---------------------------------------------------------------------------------
+ */
+ 
+/*
  * Spark Framework demo - logging
  *
  */
@@ -151,8 +163,8 @@ private:
 
     // System sleep properties
     flxPropertyInt<sfeDataLogger>   sleepInterval = {5, 86400};
-    flxPropertyInt<sfeDataLogger>   wakeInterval = {5, 86400};    
-    flxPropertyBool<sfeDataLogger>  sleepEnabled = {false};
+    flxPropertyInt<sfeDataLogger>   wakeInterval = {60, 86400};    
+    flxPropertyBool<sfeDataLogger>  sleepEnabled = {true};
 
   private:
 
