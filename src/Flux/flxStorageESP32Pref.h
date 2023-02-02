@@ -46,6 +46,8 @@ public:
     bool writeFloat(const char* tag, float data);
     bool writeDouble(const char* tag, double data);
     bool writeString(const char* tag, const char* data);
+    bool writeBytes(const char* tag, const uint8_t* data, size_t len);    
+
 
     bool readBool(const char* tag, bool& value);
     bool readInt8(const char* tag, int8_t& value);
@@ -57,6 +59,7 @@ public:
     bool readFloat(const char* tag, float& value);
     bool readDouble(const char* tag, double& value);
     size_t readString(const char* tag, char* data, size_t len);
+    size_t readBytes(const char* tag, uint8_t* data, size_t len);    
 
     bool valueExists(const char* tag);
 

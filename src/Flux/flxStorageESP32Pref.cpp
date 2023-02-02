@@ -199,6 +199,28 @@ bool flxStorageESP32Block::writeString(const char *tag, const char *value)
 
     return (_prefs->putString(szHash, value) > 0);
 }
+
+//------------------------------------------------------------------------
+// Write out an array of bytes
+
+bool flxStorageESP32Block::writeBytes(const char *tag, const uint8_t *value, size_t len)
+{
+    if (!tag_is_valid(tag) || !_prefs || _readOnly)
+        return false;
+
+    // the value length is 0, just return true. Otherwise the esp pref system
+    // returns an error.
+    
+    if (!value || len == 0)
+        return true;
+
+    char szHash[kESP32HashTagSize] = {0};
+
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+        return false;
+
+    return (_prefs->putBytes(szHash, (void*)value, len) > 0);
+}
 //------------------------------------------------------------------------
 // Read value section
 //------------------------------------------------------------------------
@@ -390,6 +412,24 @@ size_t flxStorageESP32Block::readString(const char *tag, char *data, size_t len)
     return _prefs->getString(szHash, data, len);
 }
 
+//------------------------------------------------------------------------
+size_t flxStorageESP32Block::readBytes(const char *tag, uint8_t *data, size_t len)
+{
+    if (!tag_is_valid(tag) || !_prefs)
+        return 0;
+
+    char szHash[kESP32HashTagSize];
+
+    if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
+        return 0;
+
+    if (!_prefs->isKey(szHash))
+        return 0;
+
+    size_t nBytes = _prefs->getBytesLength(szHash);
+
+    return _prefs->getBytes(szHash, data, (nBytes < len ? nBytes : len));
+}
 //------------------------------------------------------------------------------
 bool flxStorageESP32Block::valueExists(const char *tag)
 {

@@ -147,6 +147,28 @@ bool flxStorageJSONBlock::writeString(const char *tag, const char *value)
     return false;
 
 }
+
+//------------------------------------------------------------------------
+// Write out a byte array
+bool flxStorageJSONBlock::writeBytes(const char *tag, const uint8_t *value, size_t len)
+{
+
+    if (!_jSection.isNull() && !_readOnly)
+    {
+        JsonArray jArr;
+
+        jArr = _jSection.createNestedArray(tag);
+
+        for(int i=0; i < len; i++)
+            jArr.add(value[i]);
+
+        return true;
+
+    }
+    return false;
+
+}
+
 //------------------------------------------------------------------------
 // Read value section
 //------------------------------------------------------------------------
@@ -271,7 +293,29 @@ size_t flxStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 
 
 }
+//------------------------------------------------------------------------
+size_t flxStorageJSONBlock::readBytes(const char *tag, uint8_t *data, size_t len)
+{
 
+    if (_jSection.isNull() || !_jSection.containsKey(tag) || len < 1)
+        return 0;
+
+    JsonArray jArr = (_jSection)[tag];
+
+    int i=0;
+    for(JsonVariant v : jArr)
+    {
+        *data++ = (uint8_t)v.as<int>();
+        i++;
+
+        if(i == len)
+            break;
+    }
+
+    return i;
+
+
+}
 //------------------------------------------------------------------------------
 bool flxStorageJSONBlock::valueExists(const char *tag)
 {

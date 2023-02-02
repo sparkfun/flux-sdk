@@ -115,6 +115,8 @@ class flxStorageBlock
     virtual bool writeFloat(const char *tag, float data) = 0;
     virtual bool writeDouble(const char *tag, double data) = 0;
     virtual bool writeString(const char *tag, const char *data) = 0;
+    virtual bool writeBytes(const char * tag, const uint8_t* data, size_t len) = 0;
+
     virtual flxStorage::flxStorageKind_t kind(void)=0;
     
     // Overloaded versions
@@ -170,6 +172,8 @@ class flxStorageBlock
     virtual bool readFloat(const char *tag, float &value) = 0;
     virtual bool readDouble(const char *tag, double &value) = 0;
     virtual size_t readString(const char *tag, char *data, size_t len) = 0;
+    virtual size_t readBytes(const char *tag, uint8_t *data, size_t len) = 0;
+
 
     // overload reads
 
