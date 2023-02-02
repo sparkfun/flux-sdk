@@ -203,7 +203,7 @@ class flxFlux : public flxObjectContainer
 
         if ( szDeviceID[sizeof(szDeviceID)-1] == 0)
         {
-            snprintf(szDeviceID, sizeof(szDeviceID)-1, "%012llX", ESP.getEfuseMac());
+            snprintf(szDeviceID, sizeof(szDeviceID)-1, "%016llX", ESP.getEfuseMac());
 
             szDeviceID[sizeof(szDeviceID)-1] = 1;
         }
