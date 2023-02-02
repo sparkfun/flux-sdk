@@ -214,5 +214,8 @@ class flxStorageBlock
         return readDouble(tag, value);
     };
 
+    bool saveSecureString(flxStorageBlock *stBlk, const char * tag, char * data);
+    bool restoreSecureString(flxStorageBlock *stBlk, const char * tag, char * data, size_t len);
+
 };
 
