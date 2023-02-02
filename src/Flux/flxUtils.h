@@ -50,6 +50,10 @@ std::string strtrim(const std::string& str, const std::string& whitespace = " \t
 void encode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key);
 void decode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key);
 
+// AES encode/decode
+bool encode_data_aes( uint8_t * key, unsigned char iv[16], char * source, char * output, size_t len );
+bool decode_data_aes( uint8_t * key, unsigned char iv[16], char * source, char * output, size_t len );
+
 } // namespace flx_utils
 
 /*

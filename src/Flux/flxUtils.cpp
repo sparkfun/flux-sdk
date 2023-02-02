@@ -19,6 +19,9 @@
 #include <Arduino.h>
 
 #include "flxCoreLog.h"
+
+#include "mbedtls/aes.h"
+
 //-------------------------------------------------------------------------
 // dtostr()
 //
@@ -283,4 +286,68 @@ void flx_utils::encode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t
 void flx_utils::decode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key)
 {
     simple_encode(source, dest, len ,key);    
+}
+
+
+bool flx_utils::encode_data_aes( uint8_t key[32], unsigned char iv[16], char * source, char * output, size_t len )
+{
+    if (!source || !output)
+        return false;
+
+    // Expect intputs to be in 16 byte blocks.
+    if (len % 16 != 0 )
+    {
+        flxLog_E(F("Invalid data encryption block size."));
+        return false;
+    }
+
+    mbedtls_aes_context ctxAES;
+    int rc = mbedtls_aes_setkey_enc(&ctxAES, key, 256);
+    if (rc != 0 )
+    {
+        flxLog_E(F("Invalid encryption key length"));
+        return false;
+    }
+    rc = mbedtls_aes_crypt_cbc (&ctxAES, MBEDTLS_AES_ENCRYPT, len, iv, (unsigned char*)source, (unsigned char*)output);
+
+    if (rc != 0 )
+    {
+        flxLog_E(F("Invalid encryption key length"));
+        return false;
+    }
+
+    mbedtls_aes_free(&ctxAES);
+
+    return true;
+}
+bool flx_utils::decode_data_aes( uint8_t * key, unsigned char iv[16], char * source, char * output, size_t len )
+{
+    if (!source || !output)
+        return false;
+
+    // Expect intputs to be in 16 byte blocks.
+    if (len % 16 != 0 )
+    {
+        flxLog_E(F("Invalid data encryption block size."));
+        return false;
+    }
+
+    mbedtls_aes_context ctxAES;
+    int rc = mbedtls_aes_setkey_dec(&ctxAES, key, 256);
+    if (rc != 0 )
+    {
+        flxLog_E(F("Invalid decryption key length"));
+        return false;
+    }
+    rc = mbedtls_aes_crypt_cbc (&ctxAES, MBEDTLS_AES_DECRYPT, len, iv, (unsigned char*)source, (unsigned char*)output);
+
+    if (rc != 0 )
+    {
+        flxLog_E(F("Invalid decryption key length"));
+        return false;
+    }
+
+    mbedtls_aes_free(&ctxAES);
+
+    return true;
 }
