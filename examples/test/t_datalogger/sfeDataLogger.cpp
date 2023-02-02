@@ -18,9 +18,18 @@
 #include "sfeDataLogger.h"
 #include "esp_sleep.h"
 
+//TESTING
+//#include <Flux/flxUtils.h>
 
 RTC_DATA_ATTR static int boot_count = 0;
 
+
+// Application keys
+// NOTE: Gen a base 64 key  % openssl rand -base64 32
+//       Convert into ascii ints in python %    data = [ord(c) for c in ss]
+//       Jam into the below array
+static uint8_t _app_jump[] = {104,72,67,51,74,67,108,99,104,112,77,100,55,106,56,78,68,69,108,98,118,
+                                51,65,90,48,51,82,111,120,56,52,49,70,76,103,77,84,49,85,99,117,66,111,61};
 //---------------------------------------------------------------------------
 // Constructor
 //
@@ -42,6 +51,8 @@ sfeDataLogger::sfeDataLogger() : _logTypeSD{kAppLogTypeNone}, _logTypeSer{kAppLo
     // set some simple defaults
     sleepInterval = 20;
     wakeInterval = 30;
+
+    flux.setAppToken(_app_jump, sizeof(_app_jump));
 }
 
 //---------------------------------------------------------------------------
@@ -268,6 +279,55 @@ void sfeDataLogger::set_logTypeSer(uint8_t logType)
         _fmtJSON.add(flxSerial());
 }
 
+// static void _testingEncode()
+// {
+
+//     char * key = "1234567kjueswabcoiu223smzx2he1as";
+
+//     char * source = "Now is the time for all good men to come to the aid of their country";
+
+//     unsigned char IV[16];
+
+//     memcpy(IV, flux.deviceId(), sizeof(IV));
+
+//     int len = strlen(source);
+
+//     int remander = len % 16;
+
+//     int buffer_size = (len/16 + (remander > 0 ? 1 : 0))*16;
+
+//     char input_buffer[buffer_size+1];
+//     memset(input_buffer, '\0', sizeof(input_buffer));
+//     memcpy(input_buffer, source, len);
+
+//     char encoded_buffer[buffer_size+1];
+//     memset(encoded_buffer, '\0', sizeof(encoded_buffer));
+
+//     if (!flx_utils::encode_data_aes((uint8_t*)key, IV, input_buffer, encoded_buffer, buffer_size) )
+//     {
+//         flxLog_I("Errror encoding test");
+//         return;
+//     }
+
+//     flxLog_I_("Encoded data: ");
+//     for(int i=0; i < buffer_size; i++)
+//         Serial.printf("%X", (uint8_t)encoded_buffer[i]);
+//     Serial.println();
+
+//     // Okay, can we remake the string?
+//     memcpy(IV, flux.deviceId(), sizeof(IV));
+//     memset(input_buffer, '\0', sizeof(input_buffer));
+
+//     if (!flx_utils::decode_data_aes((uint8_t*)key, IV, encoded_buffer, input_buffer, buffer_size) )
+//     {
+//         flxLog_I("Errror decoding test");
+//         return;
+//     }
+
+//     flxLog_I_("Decoded data: %s", input_buffer);
+
+
+// }
 //---------------------------------------------------------------------------
 // start()
 //
@@ -339,6 +399,8 @@ bool sfeDataLogger::start()
     setupBioHub();
 
     flxLog_N("");
+
+    //_testingEncode();
 
     // set our system start time im millis
     _startTime = millis();
