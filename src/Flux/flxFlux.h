@@ -231,6 +231,11 @@ class flxFlux : public flxObjectContainer
     {
         return _theApplication;
     }
+
+    void setAppToken(uint8_t *data, size_t len);
+
+    bool getAppToken(uint8_t token[32]);
+
   private:
 
     flxBusI2C     _i2cDriver;
@@ -241,8 +246,11 @@ class flxFlux : public flxObjectContainer
 
     flxApplication * _theApplication;
 
+    uint8_t _token[32];
+    bool _hasToken;
+
     // Note private constructor...
-    flxFlux() : _strVersion{"0"}, _uiVersion{0}, _theApplication{nullptr}
+    flxFlux() : _strVersion{"0"}, _uiVersion{0}, _theApplication{nullptr}, _token{0}, _hasToken{false}
     {
 
         // setup some default heirarchy things ...

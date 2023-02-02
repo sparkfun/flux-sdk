@@ -18,6 +18,9 @@
 #include "flxFlux.h"
 #include "flxStorage.h"
 
+
+#include "mbedtls/base64.h"
+
 // for logging - define output driver on the stack
 
 static flxLoggingDrvDefault _logDriver;
@@ -234,4 +237,36 @@ bool flxFlux::restore(flxStorage *pStorage)
     }
     // call superclass
     return flxObjectContainer::restore(pStorage);
+}
+
+//---------------------------------------------------------------------------------
+//
+// This expects an input array of a base64 32 byte (256 bit) token/key
+//
+// This is generated:
+//      Gen a base 64 key  % openssl rand -base64 32
+//      Convert into ascii ints in python %    data = [ord(c) for c in ss]
+//      Map those numbers into a uint8_t array (i.e. uint8_t mykey[] = {...];)
+//
+void flxFlux::setAppToken(uint8_t *data, size_t len)
+{
+    if (!data || len == 0)
+        return;
+
+    unsigned char szBuffer[len + 1];
+    memcpy(szBuffer, data, len);
+
+    // convert the token to something we can use.
+    size_t outlen;
+    mbedtls_base64_decode(_token, sizeof(_token), &outlen, szBuffer, len);
+    _hasToken = true;
+}
+//---------------------------------------------------------------------------------
+bool flxFlux::getAppToken(uint8_t outtok[32])
+{
+    if (!_hasToken)
+        return false;
+
+    memcpy(outtok, _token, 32);
+    return true;
 }
