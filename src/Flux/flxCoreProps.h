@@ -412,10 +412,13 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     {
         bool status = true;
 
+        // If this is a secure string and storage is internal, the strings are stored 
+        // encrypted
+        if ( stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
+            return stBlk->saveSecureString(name(), get().c_str() );
+
         // If we are saving to an external source, we don't save hidden values or secure values.
-        //
         // But, for secure props, we to write the key and a blank string (makes it easlier to enter values)
-        // later on... 
 
         // We don't save hidden or secure properties if this is an external source
         if ( stBlk->kind() == flxStorage::flxStorageKindInternal || !_isHidden)
@@ -433,9 +436,18 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     //---------------------------------------------------------------------------------
     bool restore(flxStorageBlock *stBlk)
     {
-        char szBuffer[kMaxPropertyString];
+        char szBuffer[kMaxPropertyString]={0};
+        size_t len;
 
-        size_t len = stBlk->readString(name(), szBuffer, sizeof(szBuffer));
+        if ( stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
+        {
+            if (!stBlk->restoreSecureString(name(), szBuffer, sizeof(szBuffer)))
+                return false;
+
+            len = strlen(szBuffer);
+        }
+        else
+            len = stBlk->readString(name(), szBuffer, sizeof(szBuffer));
 
         if (len > 0)
             set(szBuffer);
@@ -479,6 +491,7 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
         return false;
     };
 private:
+
     bool _isHidden;
     bool _isSecure;
 };
