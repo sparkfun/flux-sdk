@@ -21,7 +21,7 @@
 //TESTING
 //#include <Flux/flxUtils.h>
 
-RTC_DATA_ATTR static int boot_count = 0;
+RTC_DATA_ATTR int boot_count = 0;
 
 
 // Application keys
@@ -337,7 +337,24 @@ bool sfeDataLogger::start()
 
     // Waking up from a sleep (boot count isn't zero)
     if (boot_count != 0)
-        flxLog_I(F("Starting system from deep sleep - wake period is %d seconds"), wakeInterval());
+    {
+        flxLog_I(F("Starting system from deep sleep - boot_count %d - wake period is %d seconds"), boot_count, wakeInterval());
+
+        // Print the wakeup reason
+        esp_sleep_wakeup_cause_t wakeup_reason;
+        wakeup_reason = esp_sleep_get_wakeup_cause();
+        switch(wakeup_reason)
+        {
+          case ESP_SLEEP_WAKEUP_EXT0 : flxLog_I(F("Wakeup caused by external signal using RTC_IO")); break;
+          case ESP_SLEEP_WAKEUP_EXT1 : flxLog_I(F("Wakeup caused by external signal using RTC_CNTL")); break;
+          case ESP_SLEEP_WAKEUP_TIMER : flxLog_I(F("Wakeup caused by timer")); break;
+          case ESP_SLEEP_WAKEUP_TOUCHPAD : flxLog_I(F("Wakeup caused by touchpad")); break;
+          case ESP_SLEEP_WAKEUP_ULP : flxLog_I(F("Wakeup caused by ULP program")); break;
+          default : flxLog_I(F("Wakeup was not caused by deep sleep: %d"), (int)wakeup_reason); break;
+        }
+    }
+
+    boot_count++;
 
     // printout the device ID
     flxLog_I(F("Device ID: %s"), flux.deviceId());
@@ -416,10 +433,10 @@ void sfeDataLogger::enterSleepMode()
 
     flxLog_I(F("Starting device deep sleep for %d secs"), sleepInterval());
 
-    esp_sleep_config_gpio_isolate();
+    //esp_sleep_config_gpio_isolate(); // Don't. This causes: E (33643) gpio: gpio_sleep_set_pull_mode(827): GPIO number error
 
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_OFF);
-    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF);
+    //esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF); // Don't disable RTC SLOW MEM - otherwise boot_count (RTC_DATA_ATTR) becomes garbage
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
     esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_OFF);
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC8M, ESP_PD_OPTION_OFF);
@@ -430,8 +447,6 @@ void sfeDataLogger::enterSleepMode()
     unsigned long long period = sleepInterval() * 1000000ULL;
 
     esp_sleep_enable_timer_wakeup(period); 
-
-    boot_count=1;
 
     esp_deep_sleep_start(); // see you on the otherside 
 
