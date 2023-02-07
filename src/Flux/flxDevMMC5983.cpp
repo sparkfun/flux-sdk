@@ -200,10 +200,22 @@ bool flxDevMMC5983_SPI::onInitialize(SPIClass &spiPort)
 {
 
     bool result = SFE_MMC5983MA::begin(chipSelect(), spiPort);
+
+    // begin calls isConnected internally - wh8ich reads the Product ID Register.
+    // Occasionally, reading the Product ID Register returns 0xFF instead of the expected 0x30.
+    // Not sure why? Possibly something to do with the "OTP Read"?
+    // The solution is to do a softReset and then repeat the begin.
+    if (!result)
+    {
+        flxLog_W("MMC5983_SPI onInitialize: device did not begin (1st try). Attempting a softReset");
+        SFE_MMC5983MA::softReset();
+        result = SFE_MMC5983MA::begin(chipSelect(), spiPort);
+    }
+
     if (result)
         result = flxDevMMC5983Base::onInitialize();
     else
-        flxLog_E("MMC5983_SPI onInitialize: device did not begin");
+        flxLog_E("MMC5983_SPI onInitialize: device did not begin (2nd try)");
 
     return result;
 }
