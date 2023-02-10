@@ -436,21 +436,35 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     //---------------------------------------------------------------------------------
     bool restore(flxStorageBlock *stBlk)
     {
-        char szBuffer[kMaxPropertyString]={0};
         size_t len;
 
+        // Secure string? 
         if ( stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
         {
-            if (!stBlk->restoreSecureString(name(), szBuffer, sizeof(szBuffer)))
+            // get buffer length 
+            len = stBlk->getBytesLength(name());
+            if (!len)
                 return false;
 
-            len = strlen(szBuffer);
+            char szBuffer[len];
+            if (!stBlk->restoreSecureString(name(), szBuffer, len) ) 
+                return false;
+
+            set(szBuffer);
         }
         else
+        {
+            len = stBlk->getStringLength(name());
+            if (!len)
+                return false; 
+
+            char szBuffer[len + 1]= {'\0'};
             len = stBlk->readString(name(), szBuffer, sizeof(szBuffer));
 
-        if (len > 0)
             set(szBuffer);
+
+        }
+
 
         return true;
     };
