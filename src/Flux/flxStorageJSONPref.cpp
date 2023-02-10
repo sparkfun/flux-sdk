@@ -293,6 +293,18 @@ size_t flxStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 
 
 }
+//------------------------------------------------------------------------------
+size_t flxStorageJSONBlock::getStringLength(const char *tag)
+{
+
+    if (_jSection.isNull() || !_jSection.containsKey(tag))
+        return 0;
+
+    std::string value = (_jSection)[tag];
+
+    return value.size();
+
+}
 //------------------------------------------------------------------------
 size_t flxStorageJSONBlock::readBytes(const char *tag, uint8_t *data, size_t len)
 {
@@ -314,6 +326,18 @@ size_t flxStorageJSONBlock::readBytes(const char *tag, uint8_t *data, size_t len
 
     return i;
 
+
+}
+//------------------------------------------------------------------------------
+size_t flxStorageJSONBlock::getBytesLength(const char *tag)
+{
+
+    if (_jSection.isNull() || !_jSection.containsKey(tag))
+        return 0;
+
+    JsonArray jArr = (_jSection)[tag];
+
+    return jArr.size();
 
 }
 //------------------------------------------------------------------------------

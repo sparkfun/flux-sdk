@@ -61,6 +61,9 @@ public:
     size_t readString(const char* tag, char* data, size_t len);
     size_t readBytes(const char* tag, uint8_t* data, size_t len);    
 
+    size_t getStringLength(const char *tag);
+    size_t getBytesLength(const char *tag);
+
     bool valueExists(const char* tag);
 
     flxStorage::flxStorageKind_t kind(void)

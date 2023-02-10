@@ -171,8 +171,11 @@ class flxStorageBlock
     virtual bool readUInt32(const char *tag, uint32_t &value) = 0;
     virtual bool readFloat(const char *tag, float &value) = 0;
     virtual bool readDouble(const char *tag, double &value) = 0;
+    virtual size_t getStringLength(const char *tag) = 0;
     virtual size_t readString(const char *tag, char *data, size_t len) = 0;
     virtual size_t readBytes(const char *tag, uint8_t *data, size_t len) = 0;
+    virtual size_t getBytesLength(const char *tag) = 0;
+
 
 
     // overload reads
