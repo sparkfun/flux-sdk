@@ -50,3 +50,64 @@ Upon creation, AWS IoT presents you with a list of downloadable certificates and
 
 At this point, the new AWS IoT thing is created and listed on the AWS IoT Things Console
 ![New Thing Listed](images/iot_aws_thing_list.png)
+
+### Security Policy
+To write to the IoT device, a security policy that enables this is needed, and the policy needs to be assigned to the devices certificate.
+
+To create a Policy, select the ***Manage > Security > Policies*** menu item from the left side menu of the AWS IoT panel. Once on this page, select the **Create policy** button to create a new policy.
+
+![New Policy](images/iot_aws_thing_policy.png)
+
+When entering the policy, provide a name that fits your need. For this example the name **NewThing23Policy** is used. For the Policy document, you can manually enter the security entires, or enter them as a JSON document. The JSON document used for this example is:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Subscribe",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Receive",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:GetThingShadow",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "iot:UpdateThingShadow",
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+![Create Policy](images/iot_aws_thing_create_policy.png)
+
+Once the policy is created, go back to the IoT Device/Thing created above and associate this policy to the device Certificate.
+
+* Go to your device ***Manage > All devices > Things***
+* Select the device - ***TestThing23** for this example
+* Select the ***Certificates*** tab
+* Select the listed Certificate (it's a very long hex number)
+* At the bottom right of the page, select the ***Attach policies*** button and select the Policy created above. 
+
+![Attach Policy](images/iot_aws_iot_attach_policy.png)
+
+At this point, AWS IoT is ready for a device to connect and receive data. 
