@@ -111,3 +111,51 @@ Once the policy is created, go back to the IoT Device/Thing created above and as
 ![Attach Policy](images/iot_aws_iot_attach_policy.png)
 
 At this point, AWS IoT is ready for a device to connect and receive data. 
+
+## Adding an AWS IoT Connection in the Flux Framework
+
+To add an AWS IoT device as a destination for the output of a Flux Framework based system, the application being created needs the following:
+* Network Connectivity
+* A source for JSON output from the device
+* A source to store the security keys/certificates needed to connect to the AWS IoT device. 
+
+For this example, we show out to connect the output of a data logger in the framework to the AWS IoT device. 
+
+First - add an AWS IoT framework to your object
+
+```c++
+// include our header
+#include <Flux/flxIoTAWS.h>
+
+// later in your code/header - declare an AWS IoT object. 
+// In this example, this is a class variable ...
+
+// AWS
+    flxIoTAWS _iotAWS;
+```
+During the setup of the framework - at initialization, the following steps finish the basic setup of the AWS object.
+
+```c++
+    // AWS - give the object a name and description
+    _iotAWS.setName("AWS IoT", "Connect to an AWS Iot Thing");
+
+    // Connect the AWS connection to the Wi-Fi connection being used.
+    // Note: The framework will manage connect/disconnect events.
+    _iotAWS.setNetwork(&_wifiConnection);
+
+    // certs/keys could be added manually (if they were static arrays in
+    // the application code) In this example, we load them in via an
+    // attached SD card, so we connect the fileSystem to the AWS object.
+    // The AWS object is provided filenames, an automatically loads 
+    // the keys/value
+
+    // Add the filesystem to load certs/keys from the SD card
+    _iotAWS.setFileSystem(&_theSDCard);
+
+    // Finally, we add the iotAWS device to the JSON format output
+    // from our data logger being used in this example. With this
+    // connection made, when output is logged, the JSON version of
+    // the output is passed to the AWS connection, and then posted
+    // to the AWS IoT device.
+    _fmtJSON.add(_iotAWS);
+```
