@@ -159,3 +159,68 @@ During the setup of the framework - at initialization, the following steps finis
     // to the AWS IoT device.
     _fmtJSON.add(_iotAWS);
 ```
+
+Once the Flux AWS IoT object is integrated into the application, the specifics for the AWS IoT Thing must be configured. This includes the following:
+* Server name/host 
+* MQTT topic to update
+* Client Name - The AWS IoT Thing Name
+* CA Certificate chain
+* Client Certificate
+* Client Key
+
+### Server Name/Hostname
+This value is obtained from the AWS IoT Device page for the created device. When on this page, select the ***Device Shadows*** tab, and then select the ***Classic Shadow** shadow, which is listed.
+![Shadow Details](images/iot_aws_iot_dev_attr.png)
+
+Selecting the ***Classic Shadow** entry provides the Server Name/Hostname for the device, as well as the MQTT topic for this device.
+
+![Shadow Details](images/iot_aws_iot_shadow_details.png)
+
+Note: The server name is obtained from the Device Shadow URL entry
+
+### MQTT Topic
+The MQTT topic value is based uses the ***MQTT topic prefix*** from above, and has the value ***update** added to it. So for this example, the MQTT topic is: 
+``` $aws/things/TestThing23/shadow/update```
+
+### Client Name
+This is the AWS IoT name of the thing. For the provided example, the value is ***TestThing23***
+
+### CA Certificate chain
+This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
+
+### Client Certificate
+This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
+
+### Client Key
+This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
+
+## Setting Properties
+The above property values must be set on the Flux AWS IoT object before use. They can be set in code, like any framework object property, or via a JSON file that is loaded by the system at startup. For the Flux AWS IoT example outlined in this document, the entries in the settings JSON file are as follows:
+
+```json
+"AWS IoT": {
+    "Enabled": false,
+    "Port": 8883,
+    "Server": "avgpd2wdr5s6u-ats.iot.us-east-1.amazonaws.com",
+    "MQTT Topic": "$aws/things/TestThing23/shadow/update",
+    "Client Name": "TestThing23",
+    "Buffer Size": 0,
+    "Username": "",
+    "Password": "",
+    "CA Certificate": "",
+    "Client Certificate": "",
+    "Client Key": "",
+    "CA Cert Filename": "AmazonRootCA1.pem",
+    "Client Cert Filename": "TestThing23_DevCert.crt",
+    "Client Key Filename": "TestThing23_Private.key"
+  },
+```
+
+## Operation
+Once the Flux-based device is configured and running, updates in AWS IoT are listed in the ***Activity*** tab of the devices page. For the test device in this document, this page looks like:
+
+![Shadow Activity](images/iot_aws_iot_shadow_updates.png)
+
+Opening up an update, you can see the data being set to AWS IoT in a JSON format.
+
+![Shadow Data](images/iot_aws_iot_shadow_data.png)
