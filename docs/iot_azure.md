@@ -4,7 +4,7 @@ One of the key features of the Flux Framework is it's simplified access to IoT s
 
 The following is covered by this document:
 
-* Device creation in AWS
+* Device creation Azure
 * Adding a device to a Flux Framework Device
 * Securely connecting the device
 * How data is posted from the Flux Framework to the Azure Device
