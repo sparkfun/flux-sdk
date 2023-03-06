@@ -1,4 +1,4 @@
-# Creating and Connecting to an Azure IoT Device )
+# Creating and Connecting to an Azure IoT Device
 
 One of the key features of the Flux Framework is it's simplified access to IoT service providers. This document outlines how an Azure IoT device is used by the Flux framework. 
 
