@@ -165,11 +165,40 @@ The above property values must be set on the Flux Azure IoT object before use. T
   },
 ```
 
-## Operation
-Once the Flux-based device is configured and running, updates in AWS IoT are listed in the ***Activity*** tab of the devices page. For the test device in this document, this page looks like:
+## Operation and Monitoring
 
-![Shadow Activity](images/iot_aws_iot_shadow_updates.png)
+Once the Flux-based device is configured and running, the Azure IoT capability in Flux posts messages via MQTT to the connected Azure Device via it's IoT Hub. Messages to the device are posted as ***Telemetry Data*** for the device.
 
-Opening up an update, you can see the data being set to AWS IoT in a JSON format.
+The easiest method to view the Telemetry data being sent to an Azure Iot Device is via the Azure IoT Hub extension for the Visual Studio Code editor. 
 
-![Shadow Data](images/iot_aws_iot_shadow_data.png)
+![Azure IoT Hub Extension](images/iot_az_iot_hub_ext.png)
+
+Once installed, and connected to Azure via the Azure Account extension, you can connect to the target IoT Hub, and monitor telemetry data for a IoT device.
+
+### Connect to your Azure IoT Hub
+
+On the Explorer pain of Visual Studio Code, click on the **...** menu of the **AZURE IOT HUB** section. In the popup menu, select the **Select IoT Hub** menu entry. 
+
+![Select IoT Hub](images/iot_az_iot_hub_sel.png)
+
+The available IoT Hubs are displayed in the editors command prompt. Select the desired hub and press enter (or click).
+
+![Select IoT Hub](images/iot_az_iot_hub_sel_menu.png)
+
+The hub is then displayed in the **AZURE IOT HUB** section of the editor Explorer. Expanding the **Devices** section of the Hub will list the example device created above. 
+
+![Select IoT Hub](images/iot_az_iot_hub_exp.png)
+
+### Monitoring
+
+To monitor the telemetry data send to a device, right click on the device, ***TestDevice2023*** in this example, select the menu entry **Start Monitoring Build-in Event Endpoint**.
+
+![Start Monitoring](images/iot_az_iot_start_mon.png)
+
+Once selected, the editor output console will start displaying output for the selected device. For the above example, with a device that has environmental sensors attached, the output appears as follows:
+
+![Monitor Output](images/iot_az_iot_mon_output.png)
+
+To stop monitoring, click the **Stop Monitoring build-in event endpoint** item that is displayed in the status bar of the editor. 
+
+![Stop Monitoring](images/iot_az_iot_stop_mon.png)
