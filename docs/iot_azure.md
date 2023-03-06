@@ -202,3 +202,6 @@ Once selected, the editor output console will start displaying output for the se
 To stop monitoring, click the **Stop Monitoring build-in event endpoint** item that is displayed in the status bar of the editor. 
 
 ![Stop Monitoring](images/iot_az_iot_stop_mon.png)
+
+A menu option to stop monitoring is also available from the **...** menu of the **AZURE IOT HUB** section in the editor Explorer panel. 
+
