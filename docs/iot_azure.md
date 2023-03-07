@@ -72,7 +72,7 @@ To add an Azure IoT device as a destination for the output of a Flux Framework b
 
 For this example, we show out to connect the output of a data logger in the framework to the Azure IoT device.
 
-First - add an AWS IoT framework to your object
+First - add an Azure IoT framework to your object
 
 ```c++
 // include our header
@@ -147,7 +147,7 @@ The file to download is the ***Baltimore CyberTrust Root*** entry in the **Root 
 
 ## Setting Properties
 
-The above property values must be set on the Flux Azure IoT object before use. They can be set in code, like any framework object property, or via a JSON file that is loaded by the system at startup. For the Flux AWS IoT example outlined in this document, the entries in the settings JSON file are as follows:
+The above property values must be set on the Flux Azure IoT object before use. They can be set in code, like any framework object property, or via a JSON file that is loaded by the system at startup. For the Flux Azure IoT example outlined in this document, the entries in the settings JSON file are as follows:
 
 ```json
 "Azure IoT": {
