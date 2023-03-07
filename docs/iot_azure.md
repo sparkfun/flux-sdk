@@ -9,7 +9,7 @@ The following is covered by this document:
 * Securely connecting the device
 * How data is posted from the Flux Framework to the Azure Device
 
-Currently, the Azure IoT device connection used to post data from the hardware to the Azure IoT Device . Configuration information from Azure IoT to the FLux framework is currently not implemented.
+Currently, the Azure IoT device connection is is a single direction - it is used used to post data from the hardware to the Azure IoT Device. Configuration information from Azure IoT to the FLux framework is currently not implemented.
 
 ## General Operation
 

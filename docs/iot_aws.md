@@ -8,7 +8,7 @@ The following is covered by this document:
 * Securely connecting the device
 * How data is posted from the Flux Framework to the AWS Device via it's Shadow
 
-Currently, the AWS IoT device connection used to post data from the hardware to the IoT AWS Device via the AWS IoT devices **shadow**. Configuration information from AWS IoT to the framework is currently not implemented.
+Currently, the AWS IoT device connection is a single direction - used to post data from the hardware to the IoT AWS Device via the AWS IoT devices **shadow**. Configuration information from AWS IoT to the framework is currently not implemented.
 
 ## General Operation
 
