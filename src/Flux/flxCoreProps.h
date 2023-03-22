@@ -181,10 +181,6 @@ class _flxPropertyContainer
         for (auto property : _properties)
         {
             status = property->restore(stBlk);
-            // KDB Testing
-            if ( !status ){
-                Serial.printf("Error restoring property %s\n\r", property->name());
-            }
             rc = rc && status;
         }
         return rc;
@@ -271,7 +267,7 @@ template <class T, bool HIDDEN, bool SECURE> class _flxPropertyBase : public flx
             bool status = stBlk->write(name(), c);
 
             if (!status)
-                flxLog_E("Error when saving property %s", name());
+                flxLog_E("Error saving property %s", name());
         }
         return status;
     };
