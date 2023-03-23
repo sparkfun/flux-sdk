@@ -38,9 +38,10 @@ bool flxStorageBlock::saveSecureString(const char * tag, const char * data)
 
     int len = strlen(data);
 
-    int remander = len % 16;
+    // Buffer needs to be a multiple of 16 - AES uses 16 byte blocks
+    int remainder = len % 16;
 
-    int buffer_size = (len/16 + (remander > 0 ? 1 : 0))*16;
+    int buffer_size = (len/16 + (remainder > 0 ? 1 : 0))*16;
 
     char input_buffer[buffer_size+1];
     memset(input_buffer, '\0', sizeof(input_buffer));
@@ -81,8 +82,8 @@ bool flxStorageBlock::restoreSecureString(const char * tag, char * data, size_t 
 	if (read_size == 0)
 		return false;
 
-	int remander = read_size % 16;
-    int buffer_size = (read_size/16 + (remander > 0 ? 1 : 0))*16;
+	int remainder = read_size % 16;
+    int buffer_size = (read_size/16 + (remainder > 0 ? 1 : 0))*16;
 
     char input_buffer[buffer_size+1];
     memset(input_buffer, '\0', sizeof(input_buffer));

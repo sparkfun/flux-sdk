@@ -414,7 +414,7 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
             return stBlk->saveSecureString(name(), get().c_str() );
 
         // If we are saving to an external source, we don't save hidden values or secure values.
-        // But, for secure props, we to write the key and a blank string (makes it easlier to enter values)
+        // But, for secure props, we to write the key and a blank string (makes it easier to enter values)
 
         // We don't save hidden or secure properties if this is an external source
         if ( stBlk->kind() == flxStorage::flxStorageKindInternal || !_isHidden)

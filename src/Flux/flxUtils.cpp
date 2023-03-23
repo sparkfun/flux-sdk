@@ -308,7 +308,7 @@ bool flx_utils::encode_data_aes( uint8_t key[32], unsigned char iv[16], char * s
         flxLog_E(F("Invalid encryption key length"));
         return false;
     }
-    rc = mbedtls_aes_crypt_cbc (&ctxAES, MBEDTLS_AES_ENCRYPT, len, iv, (unsigned char*)source, (unsigned char*)output);
+    rc = mbedtls_aes_crypt_cbc(&ctxAES, MBEDTLS_AES_ENCRYPT, len, iv, (unsigned char*)source, (unsigned char*)output);
 
     if (rc != 0 )
     {
