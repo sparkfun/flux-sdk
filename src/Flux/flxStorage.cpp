@@ -20,6 +20,19 @@
 #include "flxFlux.h"
 
 
+//--------------------------------------------------------------------------
+// saveSecureString()
+//
+// Takes in a string, AES encodes it and writes out as a binary blob.
+//
+// Notes:
+//    Uses the device ID and the application token array to create a unique key for 
+//    the process. 
+//
+//    Encryption works on 16 byte blocks - if there is trailing/empty bytes in the 
+//    last block, we fill them with nulls (\0), so in decrypt the result is a c string 
+//    with extra nulls. 
+
 bool flxStorageBlock::saveSecureString(const char * tag, const char * data)
 {
 
@@ -62,6 +75,13 @@ bool flxStorageBlock::saveSecureString(const char * tag, const char * data)
 
    return status;
 }
+
+//--------------------------------------------------------------------------
+// restoreSecureString()
+//
+// The inverse of the above method - decrypts a given string.
+//
+// If the provided buffer isn't long enough, the value is truncated. 
 
 bool flxStorageBlock::restoreSecureString(const char * tag, char * data, size_t len)
 {
