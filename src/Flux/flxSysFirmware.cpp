@@ -51,7 +51,7 @@ void flxSysFirmware::doFactoryReset(void)
     nvs_flash_init();
 
     // Now 
-    flxLog_I(F("Factory reset complete - rebooting..."));
+    flxLog_I(F("\nFactory reset complete - rebooting..."));
 
     delay(500);
 
