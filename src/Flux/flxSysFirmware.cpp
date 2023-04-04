@@ -104,7 +104,7 @@ bool flxSysFirmware::getFirmwareFilename(void)
 
     updateFirmwareFile.setDataLimit(dataLimit);
 
-    // This is a hack to enable interactive UX for the selection of a file to use ...
+    // This is a *hack* to enable interactive UX for the selection of a file to use ...
 
     if ( !_pSerialSettings)
     {
