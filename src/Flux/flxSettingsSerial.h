@@ -279,7 +279,10 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             for (auto item : limitTags)
             {
                 nMenuItems++;
-                drawMenuEntry(nMenuItems, (item.name + " = " + item.data.to_string()).c_str());
+                if (item.name.length() > 0)
+                    drawMenuEntry(nMenuItems, (item.name + " = " + item.data.to_string()).c_str());
+                else
+                    drawMenuEntry(nMenuItems, item.data.to_string().c_str());
             }
 
             if (nMenuItems == 0)
@@ -307,7 +310,8 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
                 Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
                 returnValue = true;
                 break;
-            }
+            }else
+                returnValue = true;  // a number was selected. 
 
             Serial.println(selected);
 
