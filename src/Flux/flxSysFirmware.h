@@ -18,6 +18,7 @@
 #include "flxCore.h"
 #include "flxFlux.h"
 #include "flxSettingsSerial.h"
+#include "flxFS.h"
 
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
@@ -44,7 +45,7 @@ private:
     }
 
 public:
-    flxSysFirmware() : _pSerialSettings{nullptr}
+    flxSysFirmware() : _pSerialSettings{nullptr}, _fileSystem{nullptr}
     {
 
         // Set name and description
@@ -66,6 +67,11 @@ public:
         setSerialSettings(&serSettings);
     }
 
+    //---------------------------------------------------------
+    void setFileSystem(flxIFileSystem *fs)
+    {
+        _fileSystem = fs;
+    }
 
     // Our input parameters/functions
     flxParameterInBool<flxSysFirmware, &flxSysFirmware::factory_reset> factoryReset;
@@ -77,5 +83,8 @@ private:
     flxPropertyHiddenString<flxSysFirmware> updateFirmwareFile;
 
     flxSettingsSerial *_pSerialSettings;
+
+    // Filesystem to load a file from
+    flxIFileSystem *_fileSystem;
     
 };
