@@ -17,9 +17,11 @@
 #include <esp_partition.h>
 #include <esp_ota_ops.h>
 #include <nvs_flash.h>
+#include <Update.h>
 
 #define kFirmwareFileExtension "bin"
 
+const uint kFirmwareUpdatePageSize = 512 * 4;
 //-----------------------------------------------------------------------------------
 // factoryReset()
 //
@@ -172,5 +174,141 @@ bool flxSysFirmware::getFirmwareFilename(void)
 
 
 }
+#define kCodeBS 8
+#define kCodeDEL 127
+#define kCodeSpace 32
+
 //-----------------------------------------------------------------------------------
-// updateFirmwareFromSD()
+bool flxSysFirmware::updateFirmwareFromSD()
+{
+
+    // Have the user select a file
+    if (!getFirmwareFilename())
+        return false;
+
+
+    // double check that the file exists
+
+    if (!_fileSystem->exists(updateFirmwareFile.get().c_str()))
+    {
+        flxLog_E(F("The firmware file, %s, does not exist on the SD card."), updateFirmwareFile.get().c_str());
+        return false;
+    }
+
+    // Let's make sure we have sufficent OTA partitions to support an update. We need at least two
+    // OTA partitions
+
+    int nOTA = 0;
+    esp_partition_iterator_t it;
+
+    for (uint i; i < ESP_PARTITION_SUBTYPE_APP_OTA_MAX - ESP_PARTITION_SUBTYPE_APP_OTA_MIN; i++)
+    {
+        it = esp_partition_find(ESP_PARTITION_TYPE_APP, 
+                (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + i), nullptr);
+
+        if ( it != nullptr)
+        {
+            nOTA++;
+            if (nOTA > 1)
+                break;
+        }
+    }
+
+    if (nOTA < 2)
+    {
+        flxLog_E(F("Invalid partition table on device - unable to update firmware."));
+        return false;
+    }
+
+    flxFSFile fFirmware = _fileSystem->open(updateFirmwareFile.get().c_str(), flxIFileSystem::kFileRead);
+
+    if (!fFirmware)
+    {
+        flxLog_E(F("Error opening firmware file: %s"), updateFirmwareFile.get().c_str());
+        return false;
+    }
+
+    size_t updateSize = fFirmware.size();
+
+    if (updateSize == 0)
+    {
+        flxLog_E(F("Firmware file is empty: %s"), updateFirmwareFile.get().c_str());
+        fFirmware.close();
+        return false;
+    }
+
+    // Crank up the Update system
+    if (!Update.begin(updateSize))
+    {
+        flxLog_E(F("Firmware update startup failed to begin."));
+        fFirmware.close();
+        return false;
+    }
+
+    byte dataArray[kFirmwareUpdatePageSize];
+    uint bytesWritten = 0;
+
+    // update loop
+    flxLog_I("Update Size: %d", updateSize);
+
+    uint bytesToWrite;
+    float fTotal = updateSize;
+    int barWidth = 20;
+    int displayPercent=0;
+    int percentWritten=0;
+
+    // for display update....
+    char chBackSpace[] = {kCodeBS, kCodeSpace, kCodeBS};
+
+
+    flxLog_N_(F("Updating firmware... 00%"));
+
+    while( true ) 
+    {
+        bytesToWrite = fFirmware.available();
+
+        if (!bytesToWrite)
+            break;
+
+        if (bytesToWrite > kFirmwareUpdatePageSize)
+            bytesToWrite = kFirmwareUpdatePageSize;
+
+        fFirmware.read(dataArray, bytesToWrite);
+
+        if (Update.write(dataArray, bytesToWrite) != bytesToWrite)
+        {
+            flxLog_E(F("Error writing firmware to device. Binary might be incorrectly aligned."));
+            break;
+        }
+        bytesWritten += bytesToWrite;
+
+        percentWritten = ((float)bytesWritten/fTotal) * 100;
+        if (percentWritten > displayPercent)
+        {
+            displayPercent = percentWritten;
+            Serial.write(chBackSpace, sizeof(chBackSpace));
+            Serial.write(chBackSpace, sizeof(chBackSpace));
+            Serial.write(chBackSpace, sizeof(chBackSpace));                        
+            flxLog_N_("%2d%%", displayPercent);
+        }
+
+    }
+    fFirmware.close();
+
+    flxLog_N("Firmware upload complete");
+
+    if (Update.end())
+    {
+        if (Update.isFinished())
+        {
+            flxLog_I("Firmware update cmopleted successfully. Rebooting...");
+            delay(1000);
+            esp_restart();
+        }
+    }
+
+    flxLog_E(F("Firmware update failed. Please try again."));
+
+    // We have a file that exixts, we have OTA partitions, lets update 
+    return true;
+}

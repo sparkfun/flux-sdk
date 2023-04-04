@@ -27,6 +27,7 @@ private:
 
     void doFactoryReset(void);
     bool getFirmwareFilename(void);
+    bool updateFirmwareFromSD(void);
 
     //------------------------------------------------------------------------------
     void factory_reset(const bool &doReset)
@@ -40,8 +41,7 @@ private:
     void update_firmware_SD(void)
     {
 
-        // Testing 
-        getFirmwareFilename();
+        bool status = updateFirmwareFromSD();
     }
 
 public:
