@@ -34,6 +34,14 @@ class flxIFile
     virtual size_t size(void) = 0;
 
     virtual size_t read(uint8_t *buf, size_t size) = 0;
+
+    virtual const char * name(void)=0;
+
+    virtual bool isDirectory(void)=0;
+
+    virtual std::string getNextFilename(void)=0;
+
+
 };
 
 
@@ -92,6 +100,31 @@ class flxFSFile
             return _file->size();
 
         return 0;
+    }
+
+    const char * name(void)
+    {
+        if (_file && _file->isValid())
+            return _file->name();
+
+        return nullptr;
+    }
+
+    const bool isDirectory(void)
+    {
+        if (_file && _file->isValid())
+            return (bool)_file->isDirectory();
+
+        return false;
+    }
+
+    std::string getNextFilename(void)
+    {
+        if (_file && _file->isValid())
+            return _file->getNextFilename();
+
+        std::string tmp = "";
+        return tmp;
     }
     
   private:

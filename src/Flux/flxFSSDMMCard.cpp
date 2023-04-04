@@ -123,7 +123,7 @@ flxFSFile _flxFSSDMMCard::open(const char *name, flxFileOpenMode_t mode, bool cr
     // Framework file
     flxFSFile theflxFile;
 
-    if (!_isInitalized || !name || strlen(name) < 4)
+    if (!_isInitalized || !name || strlen(name) == 0)
         return theflxFile;
 
     const char *sdMode = FILE_READ;
@@ -303,4 +303,28 @@ size_t flxFSSDMMCFile::size(void)
         return _file.size();
 
     return 0;
+}
+
+const char * flxFSSDMMCFile::name(void)
+{
+    if (_file)
+        return _file.name();
+
+    return nullptr;
+}
+
+bool flxFSSDMMCFile::isDirectory(void)
+{
+    if (_file)
+        return _file.isDirectory();
+}
+
+std::string flxFSSDMMCFile::getNextFilename(void)
+{
+    std::string tmp = "";
+
+    if (_file)
+        tmp = _file.getNextFileName().c_str();
+
+    return tmp;
 }

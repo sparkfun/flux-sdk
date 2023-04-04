@@ -39,6 +39,12 @@ class flxFSSDMMCFile : public flxIFile
 
     size_t size(void);
 
+    const char * name(void);
+
+    bool isDirectory(void);
+
+    std::string getNextFilename(void);
+
   private:
     friend _flxFSSDMMCard;
 
