@@ -492,10 +492,9 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     }
     bool setValue(flxDataVariable &value)
     {
-
         if (value.type == type())
         {
-            set(value.value.str);
+            set(value.to_string().c_str());
             return true;
         }
         return false;
