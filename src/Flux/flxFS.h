@@ -41,6 +41,8 @@ class flxIFile
 
     virtual std::string getNextFilename(void)=0;
 
+    virtual int available(void) = 0;
+
 
 };
 
@@ -127,6 +129,13 @@ class flxFSFile
         return tmp;
     }
     
+    int available(void)
+    {
+        if (_file && _file->isValid())
+            return (bool)_file->available();
+
+        return 0;
+    }
   private:
     // note use of smart pointer for the file
     std::shared_ptr<flxIFile> _file;

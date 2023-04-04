@@ -45,6 +45,8 @@ class flxFSSDMMCFile : public flxIFile
 
     std::string getNextFilename(void);
 
+    int available(void);
+
   private:
     friend _flxFSSDMMCard;
 

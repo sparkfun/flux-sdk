@@ -317,6 +317,8 @@ bool flxFSSDMMCFile::isDirectory(void)
 {
     if (_file)
         return _file.isDirectory();
+
+    return false;
 }
 
 std::string flxFSSDMMCFile::getNextFilename(void)
@@ -327,4 +329,12 @@ std::string flxFSSDMMCFile::getNextFilename(void)
         tmp = _file.getNextFileName().c_str();
 
     return tmp;
+}
+
+int flxFSSDMMCFile::available(void)
+{
+    if (_file)
+        return _file.available();
+
+    return 0;
 }
