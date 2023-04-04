@@ -67,3 +67,62 @@ void flxSysFirmware::doFactoryReset(void)
     esp_restart();
 
 }
+//-----------------------------------------------------------------------------------
+// getFirmwareFilename()
+
+// Internal method - called to build up a menu, and use the serial settings system to 
+// allow the user to select a firmware file that is on the SD card.
+
+bool flxSysFirmware::getFirmwareFilename(void)
+{
+
+    flxDataLimitSetString dataLimit;
+
+    // TODO: Loop over the files on the SD  card, find the firmware files and add them to
+    // the limit set.
+
+    std::string name = "None";
+    std::string value = "";
+
+    dataLimit.addItem(name, value);
+
+
+    // hack in some values for testing
+    name = "File1";
+    dataLimit.addItem(name, name);
+
+    name = "File2";
+    dataLimit.addItem(name, name);
+
+    name = "File3";
+    dataLimit.addItem(name, name);
+
+    name = "File4";
+    dataLimit.addItem(name, name);            
+
+    // Set the limit on our Filename property
+
+    updateFirmwareFile.setDataLimit(dataLimit);
+
+    // This is a hack to enable interactive UX for the selection of a file to use ...
+
+    if ( !_pSerialSettings)
+    {
+        flxLog_E(F("No Settings interface available."));
+        return false;
+    }
+    bool status =  _pSerialSettings->drawPage(this, &updateFirmwareFile);
+
+    if (status)
+    {
+        flxLog_I(F("Update File is: %s"), updateFirmwareFile.get().c_str());
+    }else
+        flxLog_E(F("Update File not selected"));
+
+
+    return status;
+
+
+}
+//-----------------------------------------------------------------------------------
+// updateFirmwareFromSD()

@@ -17,34 +17,65 @@
 
 #include "flxCore.h"
 #include "flxFlux.h"
+#include "flxSettingsSerial.h"
 
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
 
-  private:
+private:
 
     void doFactoryReset(void);
+    bool getFirmwareFilename(void);
 
     //------------------------------------------------------------------------------
     void factory_reset(const bool &doReset)
     {
         if (doReset)
             doFactoryReset();
+        else
+            flxLog_N(F("\n\rFactory Reset Cancelled"));
     };
 
+    void update_firmware_SD(void)
+    {
+
+        // Testing 
+        getFirmwareFilename();
+    }
+
 public:
-    flxSysFirmware()
+    flxSysFirmware() : _pSerialSettings{nullptr}
     {
 
         // Set name and description
         setName("System", "Reset and Update Options");
 
         flxRegister(factoryReset, "Factory Reset", "Factory reset the device - enter 1 to perform the reset");
-        
-        flux.add(this);
+        flxRegister(updateFirmwareSD, "Update Firmware - SD Card", "Update the firmware from the SD card");
+
+        flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
+
     }
     
+    void setSerialSettings(flxSettingsSerial *pSettings)
+    {
+        _pSerialSettings=pSettings;
+    }
+    void setSerialSettings(flxSettingsSerial &serSettings)
+    {
+        setSerialSettings(&serSettings);
+    }
+
+
     // Our input parameters/functions
     flxParameterInBool<flxSysFirmware, &flxSysFirmware::factory_reset> factoryReset;
+
+    flxParameterInVoid<flxSysFirmware, &flxSysFirmware::update_firmware_SD> updateFirmwareSD;
+
+private:
+    // A property that contains the name of the update firmware file
+    flxPropertyHiddenString<flxSysFirmware> updateFirmwareFile;
+
+    flxSettingsSerial *_pSerialSettings;
     
 };
