@@ -18,6 +18,8 @@
 #include <esp_ota_ops.h>
 #include <nvs_flash.h>
 
+#define kFirmwareFileExtension "bin"
+
 //-----------------------------------------------------------------------------------
 // factoryReset()
 //
@@ -28,7 +30,7 @@ void flxSysFirmware::doFactoryReset(void)
     flxLog_N("\n\r");
     flxLog_I_("Performing Factory Reset...");
 
-    // do we have a factory partiion on the device?
+    // do we have a factory partition on the device?
     esp_partition_iterator_t par_it = esp_partition_find(
             ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_FACTORY, NULL);
 
@@ -67,6 +69,63 @@ void flxSysFirmware::doFactoryReset(void)
     esp_restart();
 
 }
+
+int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
+{
+
+    if ( !_fileSystem)
+    {
+        flxLog_E(F("No filesystem available."));
+        return 0;
+    }
+
+    flxFSFile dirRoot = _fileSystem->open("/", flxIFileSystem::kFileRead, false);
+
+    if (!dirRoot || !dirRoot.isDirectory())
+    {
+        flxLog_E(F("Error accessing SD Card"));
+        return 0;
+    }
+
+    std::string filename;
+    size_t dot;
+
+    std::string blank = "";
+
+    int nFound=0;
+
+    while(true)
+    {
+
+        filename = dirRoot.getNextFilename();
+
+        // empty name == done
+        if (filename.length() == 0)
+            break;
+
+        dot = filename.find_last_of(".");
+        if (dot == std::string::npos)
+            continue; // no file extension
+
+        if (filename.compare(dot+1, strlen(kFirmwareFileExtension), kFirmwareFileExtension))
+            continue;
+
+        // We have a bin file, how about a firmware file - check against our prefix if one set
+        // Note adding one to filename  - it always starts with "/"
+        
+        if (_firmwareFilePrefix.length() > 0 &&  
+                strncmp(_firmwareFilePrefix.c_str(), filename.c_str()+1, _firmwareFilePrefix.length()) != 0)
+            continue; // no match
+
+        // We have a match
+        dataLimit.addItem(blank, filename);
+        nFound++;
+    }
+
+    return nFound;
+
+
+}
 //-----------------------------------------------------------------------------------
 // getFirmwareFilename()
 
@@ -79,27 +138,16 @@ bool flxSysFirmware::getFirmwareFilename(void)
     flxDataLimitSetString dataLimit;
 
     // TODO: Loop over the files on the SD  card, find the firmware files and add them to
-    // the limit set.
+    // the limit set.    
 
-    std::string name = "None";
-    std::string value = "";
+    int nFound= getFirmwareFilesFromSD(dataLimit);
 
-    dataLimit.addItem(name, value);
-
-
-    // hack in some values for testing
-    name = "File1";
-    dataLimit.addItem(name, name);
-
-    name = "File2";
-    dataLimit.addItem(name, name);
-
-    name = "File3";
-    dataLimit.addItem(name, name);
-
-    name = "File4";
-    dataLimit.addItem(name, name);            
-
+    if (nFound == 0 )
+    {
+        flxLog_I(F("No firmware files found on SD card. File naming pattern: %s*.%s"),
+                 _firmwareFilePrefix.c_str(), kFirmwareFileExtension);
+        return false;
+    }
     // Set the limit on our Filename property
 
     updateFirmwareFile.setDataLimit(dataLimit);

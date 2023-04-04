@@ -45,7 +45,7 @@ private:
     }
 
 public:
-    flxSysFirmware() : _pSerialSettings{nullptr}, _fileSystem{nullptr}
+    flxSysFirmware() : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""}
     {
 
         // Set name and description
@@ -68,6 +68,17 @@ public:
     }
 
     //---------------------------------------------------------
+    void setFirmwareFilePrefix(const char * prefix)
+    {
+        if (prefix && strlen(prefix) > 5)
+            _firmwareFilePrefix = prefix;
+    } 
+
+    const char * firmwareFilePrefix(void)
+    {
+        return _firmwareFilePrefix.c_str();
+    }
+    //---------------------------------------------------------
     void setFileSystem(flxIFileSystem *fs)
     {
         _fileSystem = fs;
@@ -79,6 +90,9 @@ public:
     flxParameterInVoid<flxSysFirmware, &flxSysFirmware::update_firmware_SD> updateFirmwareSD;
 
 private:
+
+    int getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit);
+
     // A property that contains the name of the update firmware file
     flxPropertyHiddenString<flxSysFirmware> updateFirmwareFile;
 
@@ -86,5 +100,7 @@ private:
 
     // Filesystem to load a file from
     flxIFileSystem *_fileSystem;
+
+    std::string _firmwareFilePrefix;
     
 };
