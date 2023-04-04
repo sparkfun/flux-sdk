@@ -101,6 +101,12 @@ class flxDataVariable
     flxDataType_t type;
     flxDataAllType_t value;
 
+
+private: 
+    std::string _sValue;
+
+public:
+
     flxDataVariable() : type{flxTypeNone}
     {
     }
@@ -152,8 +158,13 @@ class flxDataVariable
     void set(const char *v)
     {
         type = flxTypeString;
-        value.str = v;
+        _sValue=v;
+        value.str = _sValue.c_str();
     };
+    void set(std::string &v)
+    {
+        set(v.c_str());
+    }
     // gets
     bool get(bool v)
     {
@@ -193,11 +204,11 @@ class flxDataVariable
     }
     char *get(char *)
     {
-        return (char *)value.str;
+        return (char *)_sValue.c_str();
     }
-    char *get(std::string &)
+    std::string get(std::string &)
     {
-        return (char *)value.str;
+        return _sValue;
     }
 
     // is equal?
@@ -239,7 +250,12 @@ class flxDataVariable
     }
     bool isEqual(const char *v)
     {
-        return (type == flxTypeString && strcmp(value.str, v) == 0);
+        return (type == flxTypeString && strcmp(_sValue.c_str(), v) == 0);
+    }
+
+    bool isEqual(std::string &v)
+    {
+        return (type == flxTypeString && _sValue == v);
     }
 
     std::string to_string(void)
@@ -265,7 +281,7 @@ class flxDataVariable
         case flxTypeDouble:
             return flx_utils::to_string(value.d);
         case flxTypeString:
-            return flx_utils::to_string(value.str);
+            return _sValue;
         default:
             break;
         }
