@@ -968,7 +968,9 @@ bool flxSettingsSerial::loop(void)
 
         if (doSave)
             on_finished.emit();
+
+        return true;
     }
 
-    return true;
+    return false;
 }
