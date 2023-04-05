@@ -257,10 +257,9 @@ bool flxSysFirmware::updateFirmwareFromSD()
     int percentWritten=0;
 
     // for display update....
-    char chBackSpace[] = {kCodeBS, kCodeSpace, kCodeBS};
+    char chCR = 13;
 
-
-    flxLog_N_(F("Updating firmware... 00%"));
+    flxLog_N_(F("Updating firmware... (00%%)"));
 
     while( true ) 
     {
@@ -285,10 +284,8 @@ bool flxSysFirmware::updateFirmwareFromSD()
         if (percentWritten > displayPercent)
         {
             displayPercent = percentWritten;
-            Serial.write(chBackSpace, sizeof(chBackSpace));
-            Serial.write(chBackSpace, sizeof(chBackSpace));
-            Serial.write(chBackSpace, sizeof(chBackSpace));                        
-            flxLog_N_("%2d%%", displayPercent);
+            Serial.write(&chCR, 1);
+            flxLog_N_("Updating firmware... (%2d%%)", displayPercent);
         }
 
     }
@@ -300,7 +297,7 @@ bool flxSysFirmware::updateFirmwareFromSD()
     {
         if (Update.isFinished())
         {
-            flxLog_I("Firmware update cmopleted successfully. Rebooting...");
+            flxLog_I("Firmware update completed successfully. Rebooting...");
             delay(1000);
             esp_restart();
         }
