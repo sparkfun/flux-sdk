@@ -143,6 +143,11 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     //----------------------------------------------------------------------------
     virtual bool connect(void)
     {
+
+        // if we don't have a network, or if the network is not connected, return an error
+        if ( !_theNetwork || !_theNetwork->isConnected())
+            return false;
+
         // Already connected?
         if (connected())
             return true;
