@@ -353,6 +353,18 @@ public:
     {
         flux.setVersion(strVersion, uiVersion);
     }
+
+    void setVersion(uint major, uint minor, uint point, const char * desc, uint32_t build )
+    {
+
+        char szBuffer[128];
+        snprintf(szBuffer, sizeof(szBuffer), "%u.%u.%u %s - build %06x", major, minor, point,
+                desc ? desc : "", build);
+
+        uint32_t vernum = major * 10000 + minor * 100 + point;
+
+        setVersion(szBuffer, vernum);
+    }
 private:
     flxDescriptor appDesc;
 
