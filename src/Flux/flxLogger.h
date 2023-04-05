@@ -52,6 +52,9 @@ class flxLogger : public flxActionType<flxLogger>
   public:
     flxLogger();
 
+    // output a general message
+    void logMessage(char * header, char * message);
+    
     // Template trick - use template varargs to allow multiple objs to be
     // added as part of the constructor call. Note, first arg is a writer,
     // object or property to imply some sort of typing to the call. The

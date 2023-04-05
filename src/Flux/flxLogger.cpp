@@ -208,6 +208,34 @@ void flxLogger::logObservation(void)
     }
 }
 //----------------------------------------------------------------------------
+// log message
+//
+// Output a general message to the log output. When called, this will leave a text
+// blurb in a log stream. 
+
+void flxLogger::logMessage(char * header, char * message)
+{
+    // Begin the observation with all our formatters
+    for (auto theFormatter : _Formatters)
+    {
+        // clear out any pending information (normally headers)
+        theFormatter->reset();
+
+        theFormatter->beginObservation();
+        
+        theFormatter->beginSection("Message");
+        theFormatter->logValue(header, message);
+        theFormatter->endSection();
+
+        theFormatter->endObservation();
+        theFormatter->writeObservation();
+        theFormatter->clearObservation();
+        
+        theFormatter->reset();        
+    }
+
+}
+//----------------------------------------------------------------------------
 // Timestamp type property get/set
 //----------------------------------------------------------------------------
 uint flxLogger::get_ts_type(void)
