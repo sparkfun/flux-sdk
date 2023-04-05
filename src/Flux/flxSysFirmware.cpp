@@ -249,7 +249,6 @@ bool flxSysFirmware::updateFirmwareFromSD()
     uint bytesWritten = 0;
 
     // update loop
-    flxLog_I("Update Size: %d", updateSize);
 
     uint bytesToWrite;
     float fTotal = updateSize;
@@ -295,7 +294,7 @@ bool flxSysFirmware::updateFirmwareFromSD()
     }
     fFirmware.close();
 
-    flxLog_N("Firmware upload complete");
+    flxLog_N("  Firmware upload complete");
 
     if (Update.end())
     {
