@@ -139,7 +139,7 @@ public:
         return SFE_UBLOX_GNSS::getUnixEpoch(usec_t, 1);
     }
 
-    void set_epoch(uint32_t refEpoch)
+    void set_epoch(const uint &refEpoch)
     {
         // noop
     }

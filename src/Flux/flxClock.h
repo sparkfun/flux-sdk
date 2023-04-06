@@ -22,7 +22,7 @@ class flxIClock
 {
   public:
     virtual uint32_t epoch(void) = 0;
-    virtual void set_epoch(uint32_t) = 0;
+    virtual void set_epoch(const uint &) = 0;
 };
 
 #ifdef ESP32
@@ -38,7 +38,7 @@ class flxClockESP32 : public flxIClock
         return now;
     }
 
-    void set_epoch(uint32_t refEpoch)
+    void set_epoch(const uint &refEpoch)
     {
         timeval epoch = {(time_t)refEpoch, 0};
         const timeval *tv = &epoch;
