@@ -437,13 +437,21 @@ uint flxDevRV8803::get_epoch()
 
     return RV8803::getEpoch(_offsetEpoch);
 }
+// For the clock interface 
+uint32_t flxDevRV8803::epoch(void)
+{
+    return get_epoch();
+}
 
 // Output parameters
+
+// Note, this also fulfills the clock inteface needs.
 void flxDevRV8803::set_epoch(const uint &epoch)
 {
     if (!RV8803::setEpoch(epoch, _offsetEpoch))
         flxLog_E("RV8803 - set_epoch failed");
 }
+
 void flxDevRV8803::set_seconds(const uint8_t &secs)
 {
     if (!RV8803::setSeconds(secs))

@@ -24,13 +24,14 @@
 #include "Arduino.h"
 #include "SparkFun_RV8803.h"
 #include "flxDevice.h"
+#include "flxClock.h"
 
 
 
 #define kRV8803DeviceName "RV8803"
 
 // Define our class
-class flxDevRV8803 : public flxDeviceI2CType<flxDevRV8803>, public RV8803
+class flxDevRV8803 : public flxDeviceI2CType<flxDevRV8803>, public flxIClock, public RV8803
 {
 
 public:
@@ -52,6 +53,10 @@ public:
 
     bool onInitialize(TwoWire &);
 
+    // for the IClock interface
+    void set_epoch(const uint32_t &);
+    uint32_t epoch(void);
+
 private:
     std::string read_date_USA();
     std::string read_date();
@@ -66,7 +71,7 @@ private:
     uint16_t read_year();
     uint get_epoch();
 
-    void set_epoch(const uint &);
+
     void set_seconds(const uint8_t &);
     void set_minutes(const uint8_t &);
     void set_hours(const uint8_t &);
