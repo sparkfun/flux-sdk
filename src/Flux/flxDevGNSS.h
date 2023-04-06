@@ -25,13 +25,14 @@
 #include "Arduino.h"
 
 #include "flxDevice.h"
+#include "flxClock.h"
 #include "SparkFun_u-blox_GNSS_Arduino_Library.h"
 
 // What is the name used to ID this device?
 #define kGNSSDeviceName "GNSS"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public SFE_UBLOX_GNSS
+class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public SFE_UBLOX_GNSS
 {
 
 public:
@@ -94,6 +95,7 @@ private:
     void set_measurement_rate(uint);
 
 public:
+
     // Define our read-write properties
     flxPropertyRWUint<flxDevGNSS, &flxDevGNSS::get_measurement_rate, &flxDevGNSS::set_measurement_rate> measurementRate;
 
@@ -126,5 +128,20 @@ public:
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_dd_mm_yyyy> DDMMYYYY;    
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_hh_mm_ss> HHMMSS;    
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_fix_string> fixTypeStr;    
-    flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_carrier_soln_string> carrierSolutionStr;    
+    flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_carrier_soln_string> carrierSolutionStr; 
+
+    //-----------------------------------------------------
+    // Clock interface methods -- so the GNSS reciever can be used as a time reference. 
+    uint32_t epoch(void)
+    {
+        uint32_t usec_t;
+
+        return SFE_UBLOX_GNSS::getUnixEpoch(usec_t, 1);
+    }
+
+    void set_epoch(uint32_t refEpoch)
+    {
+        // noop
+    }
+
 };
