@@ -52,7 +52,13 @@ class flxClockESP32 : public flxIClock
 class _flxClock : public flxActionType<_flxClock>
 {
 
-  public:
+private:
+
+  // prop things
+  void set_ref_clock( int );
+  int get_ref_clock(void);
+
+public:
     // flxClock is a singleton
     static _flxClock &get(void)
     {
@@ -74,33 +80,44 @@ class _flxClock : public flxActionType<_flxClock>
 
     void addReferenceClock(flxIClock *clock);
 
+    void addSyncClock(flxIClock *clock);
+
     bool loop(void);
 
     bool initialize(void);
 
-    flxPropertyInt<_flxClock>  referenceClock;
+    flxPropertyRWInt<_flxClock, &_flxClock::get_ref_clock, &_flxClock::set_ref_clock>  referenceClock;
 
-    flxPropertyUint<_flxClock>  updateClockInterval={60};    
+    flxPropertyUint<_flxClock>  updateClockInterval={60};
 
+    flxPropertyUint<_flxClock>  syncClockInterval={60};
 
 
   private:
     _flxClock();
 
-    void updateClock();
+    void updateClock(void);
+    void syncClocks(void);
 
     flxIClock *_defaultClock;
-    flxIClock *_referenceClock;
+    flxIClock *_refClock;
 
     uint32_t _lastRefCheck;
 
+    uint32_t _lastSyncCheck;    
+
     bool _bInitialized;
 
+    // Reference clocks
     std::vector<flxIClock*> _referenceClocks;
 
     // data limit for the above property 
-
     flxDataLimitSetInt  _refClockLimitSet;
+
+    // Sync clocks -- clocks that are synced with this time
+    std::vector<flxIClock*> _syncClocks;   
+
+    int _iRefClock; 
 
 };
 extern _flxClock &flxClock;
