@@ -52,6 +52,10 @@ class flxDescriptor
     {
         return _name.c_str();
     }
+    std::string name_(void)
+    {
+        return _name;
+    }
     void setDescription(const char *new_desc)
     {
         _description = new_desc;
@@ -59,6 +63,10 @@ class flxDescriptor
     const char *description()
     {
         return _description.c_str();
+    }
+    std::string description_(void)
+    {
+        return _description;
     }
 
   protected:
@@ -995,10 +1003,15 @@ template <typename T> class flxDataLimitSetType : public flxDataLimitType<T>
         return false;
     }
 
-    void addItem(std::string &name, T value)
+    void addItem(std::string name, T value)
+    {
+        addItem(name.c_str(), value);
+    }
+
+    void addItem(const char *name, T value)    
     {
         flxDataLimitDesc limit;
-        limit.name = name.c_str();
+        limit.name = name;
         limit.data.set(value);
         flxDataLimit::addLimit(limit);
     }
@@ -1013,7 +1026,7 @@ using flxDataLimitSetInt16 = flxDataLimitSetType<int16_t>;
 using flxDataLimitSetInt = flxDataLimitSetType<int>;
 using flxDataLimitSetUint8 = flxDataLimitSetType<uint8_t>;
 using flxDataLimitSetUint16 = flxDataLimitSetType<uint16_t>;
-using flxDataLimitSetUnt = flxDataLimitSetType<uint>;
+using flxDataLimitSetUint = flxDataLimitSetType<uint>;
 using flxDataLimitSetFloat = flxDataLimitSetType<float>;
 using flxDataLimitSetDouble = flxDataLimitSetType<double>;
 using flxDataLimitSetString = flxDataLimitSetType<std::string>;
