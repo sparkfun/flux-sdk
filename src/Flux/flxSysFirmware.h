@@ -49,7 +49,7 @@ public:
     {
 
         // Set name and description
-        setName("System", "Device Reset and Firmware Update Options");
+        setName("System Update", "Device Reset and Firmware Update Options");
 
         flxRegister(factoryReset, "Factory Reset", "Factory reset the device - enter 1 to perform the reset");
         flxRegister(updateFirmwareSD, "Update Firmware - SD Card", "Update the firmware from the SD card");
