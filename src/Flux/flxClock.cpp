@@ -25,10 +25,6 @@ flxClockESP32 defaultClock;
 // Global object - for quick access to Settings system
 _flxClock &flxClock = _flxClock::get();
 
-// Refresh period if we have a reference clock - time in secs
-
-#define kClockReferenceRefresh 3600
-
 _flxClock::_flxClock() : _defaultClock{nullptr}, _referenceClock{nullptr}, _lastRefCheck{0}, _bInitialized{false}
 {
     // Set name and description
@@ -36,9 +32,26 @@ _flxClock::_flxClock() : _defaultClock{nullptr}, _referenceClock{nullptr}, _last
 
     flux.add(this);
 
+    flxRegister(referenceClock, "Reference Clock", "The current reference clock source");
+
+    flxRegister(updateClockInterval, "Update Interval (Min)", "Main clock update interval in minutes. 0 = No update");
+
+    // 
+    referenceClock.setDataLimit(_refClockLimitSet);
+    _refClockLimitSet.addItem("No Clock", -1);
+
 #ifdef DEFAULT_DEFINED
     setDefaultClock(&defaultClock);
 #endif
+}
+
+void _flxClock::addReferenceClock(flxIClock *clock)
+{
+
+    _referenceClocks.push_back(clock);
+
+    // Add this to the current clock limit -- this creates a "list of available ref clocks"
+    _refClockLimitSet.addItem(((flxObject*)clock)->name(), _referenceClocks.size()-1);
 }
 //----------------------------------------------------------------
 uint32_t _flxClock::epoch()
@@ -80,7 +93,7 @@ void _flxClock::updateClock()
     {
         uint32_t epoch = _referenceClock->epoch();
         if (epoch)
-            _defaultClock->set(epoch);
+            _defaultClock->set_epoch(epoch);
     }
 
     _lastRefCheck = epoch();
@@ -96,7 +109,8 @@ bool _flxClock::initialize(void)
 bool _flxClock::loop(void)
 {
     // Time to refresh?
-    if (_bInitialized && epoch() - _lastRefCheck > kClockReferenceRefresh)
+    if (_bInitialized && updateClockInterval() > 0 &&
+        epoch() - _lastRefCheck > updateClockInterval() * 60)
     {
         updateClock();
         return true;

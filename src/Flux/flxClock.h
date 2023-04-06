@@ -15,12 +15,14 @@
 
 #include "flxCore.h"
 
+#include <vector>
+
 // Define a clock interface -- really just want secs from unix epoch
 class flxIClock
 {
   public:
     virtual uint32_t epoch(void) = 0;
-    virtual void set(uint32_t) = 0;
+    virtual void set_epoch(uint32_t) = 0;
 };
 
 #ifdef ESP32
@@ -36,7 +38,7 @@ class flxClockESP32 : public flxIClock
         return now;
     }
 
-    void set(uint32_t refEpoch)
+    void set_epoch(uint32_t refEpoch)
     {
         timeval epoch = {(time_t)refEpoch, 0};
         const timeval *tv = &epoch;
@@ -70,9 +72,17 @@ class _flxClock : public flxActionType<_flxClock>
 
     void setClockReference(flxIClock *clock);
 
+    void addReferenceClock(flxIClock *clock);
+
     bool loop(void);
 
     bool initialize(void);
+
+    flxPropertyInt<_flxClock>  referenceClock;
+
+    flxPropertyUint<_flxClock>  updateClockInterval={60};    
+
+
 
   private:
     _flxClock();
@@ -85,5 +95,12 @@ class _flxClock : public flxActionType<_flxClock>
     uint32_t _lastRefCheck;
 
     bool _bInitialized;
+
+    std::vector<flxIClock*> _referenceClocks;
+
+    // data limit for the above property 
+
+    flxDataLimitSetInt  _refClockLimitSet;
+
 };
 extern _flxClock &flxClock;
