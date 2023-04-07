@@ -6,7 +6,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 
@@ -14,7 +14,7 @@
 
 #include "flxFlux.h"
 
-
+// No clock value
 #define kNoClock -1
 
 // A little hacky - maybe ...
@@ -28,8 +28,9 @@ flxClockESP32 defaultClock;
 // Global object - for quick access to Settings system
 _flxClock &flxClock = _flxClock::get();
 
-_flxClock::_flxClock() : _defaultClock{nullptr}, _refClock{nullptr}, 
-    _lastRefCheck{0}, _lastSyncCheck{0}, _bInitialized{false}, _iRefClock{kNoClock}
+_flxClock::_flxClock()
+    : _defaultClock{nullptr}, _refClock{nullptr}, _lastRefCheck{0}, _lastConnCheck{0}, _bInitialized{false},
+      _iRefClock{kNoClock}
 {
     // Set name and description
     setName("Epoch Clock", "Seconds since Unix Epoch");
@@ -40,9 +41,15 @@ _flxClock::_flxClock() : _defaultClock{nullptr}, _refClock{nullptr},
 
     flxRegister(updateClockInterval, "Update Interval (Min)", "Main clock update interval in minutes. 0 = No update");
 
-    flxRegister(syncClockInterval, "Dependant Interval (Min)", "Connected dependant clock update interval in minutes. 0 = No update");
+    flxRegister(useAlternativeClock, "Enable Clock Fallback",
+                "Us a valid reference clock if the primary is not available");
 
-    // 
+    flxRegister(connectedClockInterval, "Dependant Interval (Min)",
+                "Connected dependant clock update interval in minutes. 0 = No update");
+
+    flxRegister(updateConnectedOnUpdate, "Update Connected", "Update connected clocks on main clock update");
+
+    //
     referenceClock.setDataLimit(_refClockLimitSet);
     _refClockLimitSet.addItem("No Clock", -1);
 
@@ -79,17 +86,43 @@ int _flxClock::addReferenceClock(flxIClock *clock)
     _referenceClocks.push_back(clock);
 
     // Add this to the current clock limit -- this creates a "list of available ref clocks"
-    _refClockLimitSet.addItem(((flxObject*)clock)->name(), _referenceClocks.size()-1);
+    _refClockLimitSet.addItem(((flxObject *)clock)->name(), _referenceClocks.size() - 1);
 
     return i; // position in the list of things
 }
 
 //----------------------------------------------------------------
-int _flxClock::addSyncClock(flxIClock *clock)
+bool _flxClock::setReferenceClock(flxIClock *theClock)
 {
-    int i = _syncClocks.size();
 
-    _syncClocks.push_back(clock);
+    if (!theClock)
+        return false;
+
+    // In our current reference clock list?
+
+    int iclock = 0;
+    for (flxIClock *aRefClock : _referenceClocks)
+    {
+        if (aRefClock == theClock)
+            break;
+
+        iclock++;
+    }
+    // clock not in the reference list?
+    if (iclock == _referenceClocks.size())
+        iclock = addReferenceClock(theClock);
+
+    // set this clock as the ref clock
+    set_ref_clock(iclock);
+
+    return true;
+}
+//----------------------------------------------------------------
+int _flxClock::addConnectedClock(flxIClock *clock)
+{
+    int i = _connectedClocks.size();
+
+    _connectedClocks.push_back(clock);
 
     return i;
 }
@@ -116,29 +149,59 @@ void _flxClock::setDefaultClock(flxIClock *clock)
 }
 
 //----------------------------------------------------------------
-// Sync clocks
+// Connected clocks
 
-void _flxClock::syncClocks(void)
+void _flxClock::updateConnectedClocks(void)
 {
     uint32_t epoch = _defaultClock->get_epoch();
 
-    for (flxIClock *clock : _syncClocks)
-        clock->set_epoch(epoch);
+    if (!epoch)
+        return;
 
-    _lastSyncCheck = epoch;
+    for (flxIClock *aClock : _connectedClocks)
+        aClock->set_epoch(epoch);
+
+    _lastConnCheck = epoch;
 }
 //----------------------------------------------------------------
 void _flxClock::updateClock()
 {
 
-    // refresh our clock
-    if (_bInitialized && _defaultClock && _refClock)
+    if (!_bInitialized || !_defaultClock)
+        return;
+
+    flxIClock *theClock = _refClock;
+
+    // if we don't have a ref clock, or if the clock is invalid AND
+    // the use alternative clock option set, find another clock!
+    if ((!theClock || !theClock->valid_epoch()) && useAlternativeClock())
     {
-        uint32_t epoch = _refClock->get_epoch();
-        if (epoch)
-            _defaultClock->set_epoch(epoch);
+        //  find a clock with a valid epoch
+        for (flxIClock *aClock : _referenceClocks)
+        {
+            if (aClock->valid_epoch())
+            {
+                theClock = aClock;
+                break;
+            }
+        }
     }
 
+    // do we have a clock with a valid epoch value?
+    if (theClock && theClock->valid_epoch())
+    {
+        uint32_t epoch = theClock->get_epoch();
+        if (epoch)
+        {
+            _defaultClock->set_epoch(epoch);
+
+            // update our connected clocks?
+            if (updateConnectedOnUpdate())
+                updateConnectedClocks();
+        }
+    }
+
+    // mark this check time
     _lastRefCheck = epoch();
 }
 //----------------------------------------------------------------
@@ -149,6 +212,8 @@ bool _flxClock::initialize(void)
     return true;
 }
 
+//----------------------------------------------------------------
+// framwork loop
 bool _flxClock::loop(void)
 {
 
@@ -158,17 +223,15 @@ bool _flxClock::loop(void)
         return false;
 
     // Time to refresh?
-    if (updateClockInterval() > 0 &&
-        epoch() - _lastRefCheck > updateClockInterval() * 60)
+    if (updateClockInterval() > 0 && epoch() - _lastRefCheck > updateClockInterval() * 60)
     {
         updateClock();
         retval = true;
     }
 
-    if ( syncClockInterval() > 0 &&
-        epoch() - _lastSyncCheck > syncClockInterval() * 60)
+    if (connectedClockInterval() > 0 && epoch() - _lastConnCheck > connectedClockInterval() * 60)
     {
-        syncClocks();
+        updateConnectedClocks();
         retval = true;
     }
 
