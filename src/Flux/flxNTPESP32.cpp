@@ -47,7 +47,7 @@ bool flxNTPESP32::get_isEnabled(void)
 }
 
 // Event callback 
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------
 void flxNTPESP32::onConnectionChange(bool bConnected)
 {
     // Are we enabled ...
@@ -59,7 +59,7 @@ void flxNTPESP32::onConnectionChange(bool bConnected)
     else
         stop();
 }
-
+//----------------------------------------------------------
 bool flxNTPESP32::start(void)
 {
     // already running?
@@ -118,12 +118,27 @@ bool flxNTPESP32::start(void)
     return enabled;
 }
 
+//----------------------------------------------------------
 void flxNTPESP32::stop(void)
 {
     // If the sntp system is up, shut it down
     if(sntp_enabled())
         sntp_stop();
 }
-    
+//----------------------------------------------------------
+// Clock interface things 
+//----------------------------------------------------------
+uint flxNTPESP32::get_epoch(void){
+
+    time_t now;
+    time(&now);
+    return now;
+
+}
+
+bool flxNTPESP32::valid_epoch(void)
+{
+    return _isEnabled && sntp_enabled();
+}
 
 #endif

@@ -18,6 +18,8 @@
 #include "flxFlux.h"
 #include "flxNetwork.h"
 
+#include "flxClock.h"
+
 
 #define kNTPServerAddress1 "pool.ntp.org"
 #define kNTPServerAddress2 "time.nist.gov"
@@ -26,7 +28,7 @@
 
 // Use the NTP client on the ESP32 to sync the onboard clock
 
-class flxNTPESP32 : public flxActionType<flxNTPESP32>
+class flxNTPESP32 : public flxActionType<flxNTPESP32>, public flxIClock
 {
 private:
     void set_isEnabled(bool bEnabled);
@@ -79,6 +81,15 @@ public:
     {
         return _startupDelay;
     }
+
+    // timing/clock upating interface methods
+    // Note - the NTP updates run in the background for the ESP32
+
+    uint get_epoch(void);
+    void set_epoch(const uint&){}
+    bool valid_epoch(void);
+
+
     // Properties 
 
     // Enabled/Disabled
