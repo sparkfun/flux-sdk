@@ -21,8 +21,9 @@
 class flxIClock
 {
   public:
-    virtual uint32_t epoch(void) = 0;
-    virtual void set_epoch(const uint &) = 0;
+    virtual uint get_epoch(void) = 0;
+    virtual void set_epoch(const uint&) = 0;
+    virtual bool valid_epoch(void)=0;
 };
 
 #ifdef ESP32
@@ -31,7 +32,8 @@ class flxIClock
 class flxClockESP32 : public flxIClock
 {
   public:
-    uint32_t epoch(void)
+
+    uint get_epoch(void)
     {
         time_t now;
         time(&now);
@@ -45,6 +47,20 @@ class flxClockESP32 : public flxIClock
         timezone utc = {0, 0};
         const timezone *tz = &utc;
         settimeofday(tv, tz);
+    }
+
+    bool valid_epoch(void)
+    {
+        // Determine if the on-board clock is valid by looking
+        // at the current year 
+
+        struct tm *tm_now;
+        time_t now;
+
+        time(&now);
+        tm_now = localtime(&now);
+    
+        return (tm_now && tm_now->tm_year > (2020 - 1900));
     }
 };
 #endif
@@ -78,9 +94,9 @@ public:
 
     void setClockReference(flxIClock *clock);
 
-    void addReferenceClock(flxIClock *clock);
+    int addReferenceClock(flxIClock *clock);
 
-    void addSyncClock(flxIClock *clock);
+    int addSyncClock(flxIClock *clock);
 
     bool loop(void);
 

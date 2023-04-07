@@ -71,26 +71,34 @@ int _flxClock::get_ref_clock(void)
 }
 
 //----------------------------------------------------------------
-void _flxClock::addReferenceClock(flxIClock *clock)
+int _flxClock::addReferenceClock(flxIClock *clock)
 {
+
+    int i = _referenceClocks.size();
 
     _referenceClocks.push_back(clock);
 
     // Add this to the current clock limit -- this creates a "list of available ref clocks"
     _refClockLimitSet.addItem(((flxObject*)clock)->name(), _referenceClocks.size()-1);
+
+    return i; // position in the list of things
 }
 
 //----------------------------------------------------------------
-void _flxClock::addSyncClock(flxIClock *clock)
+int _flxClock::addSyncClock(flxIClock *clock)
 {
+    int i = _syncClocks.size();
+
     _syncClocks.push_back(clock);
+
+    return i;
 }
 
 //----------------------------------------------------------------
 uint32_t _flxClock::epoch()
 {
     if (_defaultClock)
-        return _defaultClock->epoch();
+        return _defaultClock->get_epoch();
 
     // We need something ...
     return millis() / 1000; // TODO - Revisit
@@ -112,7 +120,7 @@ void _flxClock::setDefaultClock(flxIClock *clock)
 
 void _flxClock::syncClocks(void)
 {
-    uint32_t epoch = _defaultClock->epoch();
+    uint32_t epoch = _defaultClock->get_epoch();
 
     for (flxIClock *clock : _syncClocks)
         clock->set_epoch(epoch);
@@ -126,7 +134,7 @@ void _flxClock::updateClock()
     // refresh our clock
     if (_bInitialized && _defaultClock && _refClock)
     {
-        uint32_t epoch = _refClock->epoch();
+        uint32_t epoch = _refClock->get_epoch();
         if (epoch)
             _defaultClock->set_epoch(epoch);
     }
