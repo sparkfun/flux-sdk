@@ -54,8 +54,10 @@ public:
     bool onInitialize(TwoWire &);
 
     // for the IClock interface
-    void set_epoch(const uint32_t &);
-    uint32_t epoch(void);
+
+    uint get_epoch(void);
+    void set_epoch(const uint &);
+    bool valid_epoch(void);
 
 private:
     std::string read_date_USA();
@@ -69,8 +71,6 @@ private:
     std::string read_month();
     std::string read_month_short();
     uint16_t read_year();
-    uint get_epoch();
-
 
     void set_seconds(const uint8_t &);
     void set_minutes(const uint8_t &);

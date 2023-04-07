@@ -437,12 +437,11 @@ uint flxDevRV8803::get_epoch()
 
     return RV8803::getEpoch(_offsetEpoch);
 }
-// For the clock interface 
-uint32_t flxDevRV8803::epoch(void)
-{
-    return get_epoch();
-}
 
+bool flxDevRV8803::valid_epoch(void)
+{
+    return  _begun;
+}
 // Output parameters
 
 // Note, this also fulfills the clock inteface needs.

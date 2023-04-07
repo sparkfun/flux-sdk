@@ -132,7 +132,7 @@ public:
 
     //-----------------------------------------------------
     // Clock interface methods -- so the GNSS reciever can be used as a time reference. 
-    uint32_t epoch(void)
+    uint get_epoch(void)
     {
         uint32_t usec_t;
 
@@ -142,6 +142,11 @@ public:
     void set_epoch(const uint &refEpoch)
     {
         // noop
+    }
+
+    bool valid_epoch(void)
+    {
+        return SFE_UBLOX_GNSS::getTimeValid(1);
     }
 
 };
