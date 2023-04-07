@@ -33,7 +33,7 @@ _flxClock::_flxClock()
       _iRefClock{kNoClock}
 {
     // Set name and description
-    setName("Epoch Clock", "Seconds since Unix Epoch");
+    setName("Time Sources", "Manage time reference sources");
 
     flux.add(this);
 
@@ -69,6 +69,7 @@ void _flxClock::set_ref_clock(int iclock)
         _refClock = _referenceClocks.at(iclock);
         updateClock();
     }
+    _iRefClock = iclock;
 }
 
 //----------------------------------------------------------------
@@ -78,39 +79,37 @@ int _flxClock::get_ref_clock(void)
 }
 
 //----------------------------------------------------------------
-int _flxClock::addReferenceClock(flxIClock *clock)
+// Add a reference clock to the system
+int _flxClock::addReferenceClock(flxIClock *clock, const char *name)
 {
-
     int i = _referenceClocks.size();
 
     _referenceClocks.push_back(clock);
 
-    // Add this to the current clock limit -- this creates a "list of available ref clocks"
-    _refClockLimitSet.addItem(((flxObject *)clock)->name(), _referenceClocks.size() - 1);
+    // Add this to the current clock limit -- this creates a "list of available ref clocks
+    _refClockLimitSet.addItem( name ? name : "unknown clock", i);
 
     return i; // position in the list of things
 }
 
 //----------------------------------------------------------------
-bool _flxClock::setReferenceClock(flxIClock *theClock)
+bool _flxClock::setReferenceClock(flxIClock *theClock, const char *name)
 {
-
     if (!theClock)
         return false;
 
     // In our current reference clock list?
-
     int iclock = 0;
     for (flxIClock *aRefClock : _referenceClocks)
     {
         if (aRefClock == theClock)
             break;
-
         iclock++;
     }
+
     // clock not in the reference list?
     if (iclock == _referenceClocks.size())
-        iclock = addReferenceClock(theClock);
+        iclock = addReferenceClock(theClock, name);
 
     // set this clock as the ref clock
     set_ref_clock(iclock);

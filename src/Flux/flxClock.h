@@ -90,9 +90,9 @@ class _flxClock : public flxActionType<_flxClock>
 
     void setDefaultClock(flxIClock *clock);
 
-    bool setReferenceClock(flxIClock *clock);
+    bool setReferenceClock(flxIClock *clock, const char *name = nullptr);
 
-    int addReferenceClock(flxIClock *clock);
+    int addReferenceClock(flxIClock *clock, const char *name = nullptr);
 
     int addConnectedClock(flxIClock *clock);
 
