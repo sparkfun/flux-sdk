@@ -97,9 +97,9 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     {
         flxRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
 
-        flxRegister(port, "Port", "The MQTT broker port to connect to.");
-        flxRegister(server, "Server", "The MQTT server to connect to.");
-        flxRegister(topic, "MQTT Topic", "The MQTT topic to publish to.");
+        flxRegister(port, "Port", "The MQTT broker port to connect to");
+        flxRegister(server, "Server", "The MQTT server to connect to");
+        flxRegister(topic, "MQTT Topic", "The MQTT topic to publish to");
         flxRegister(clientName, "Client Name", "Name of this device used for MQTT Communications");
 
         flxRegister(username, "Username", "Username to connect to an MQTT broker, if required");

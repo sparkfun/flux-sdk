@@ -46,7 +46,7 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
         setName("File Rotate",
                 "Writes output to a file on the provided filesystem. Rotates files after a given time period.");
 
-        flxRegister(rotatePeriod, "Rotate Period", "Time between file rotation.");
+        flxRegister(rotatePeriod, "Rotate Period", "Time between file rotation");
         flxRegister(startNumber, "File Start Number", "The Number the filename rotation starts with");
         flxRegister(filePrefix, "Filename Prefix", "The prefix string for the generated filenames");
 

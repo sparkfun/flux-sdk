@@ -52,8 +52,9 @@ public:
         setName("System Update", "Device Reset and Firmware Update Options");
 
         flxRegister(factoryReset, "Factory Reset", "Factory reset the device - enter 1 to perform the reset");
-        flxRegister(updateFirmwareSD, "Update Firmware - SD Card", "Update the firmware from the SD card");
 
+
+        flxRegister(updateFirmwareSD, "Update Firmware - SD Card", "Update the firmware from the SD card");
         flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
 
     }
