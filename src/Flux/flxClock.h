@@ -97,7 +97,7 @@ class _flxClock : public flxActionType<_flxClock>
 
     int addConnectedClock(flxIClock *clock);
 
-    // Update the clock - will update from the refernce clock
+    // Update the clock - will update from the reference clock
     void updateClock(void);
 
     void updateConnectedClocks(void);
