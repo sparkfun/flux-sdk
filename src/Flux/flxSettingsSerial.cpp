@@ -492,6 +492,9 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
     if (!pDesc)
         return;
 
+    if (pDesc->title())
+        Serial.printf("\n\r    %s\n\r", pDesc->title());
+        
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
 }
 //-----------------------------------------------------------------------------
