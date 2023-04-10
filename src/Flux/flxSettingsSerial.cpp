@@ -673,7 +673,7 @@ int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
     if (pCurrent->nOutputParameters() > 0)
     {
         Serial.println();
-        Serial.println("Output Parameters:");
+        Serial.println("Outputs:");
 
         for (auto outParam : pCurrent->getOutputParameters())
         {
@@ -685,7 +685,7 @@ int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
     if (pCurrent->nInputParameters() > 0)
     {
         Serial.println();
-        Serial.println("Input Parameters:");
+        Serial.println("Functions:");
 
         for (auto inParam : pCurrent->getInputParameters())
         {
