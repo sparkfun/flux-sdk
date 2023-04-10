@@ -38,12 +38,12 @@ _flxClock::_flxClock()
 
     flxRegister(referenceClock, "Reference Clock", "The current reference clock source");
 
-    flxRegister(updateClockInterval, "Update Interval (Min)", "Main clock update interval in minutes. 0 = No update");
+    flxRegister(updateClockInterval, "Update Interval", "Main clock update interval in minutes. 0 = No update");
 
     flxRegister(useAlternativeClock, "Enable Clock Fallback",
                 "Us a valid reference clock if the primary is not available");
 
-    flxRegister(connectedClockInterval, "Dependant Interval (Min)",
+    flxRegister(connectedClockInterval, "Dependant Interval",
                 "Connected dependant clock update interval in minutes. 0 = No update");
 
     flxRegister(updateConnectedOnUpdate, "Update Connected", "Update connected clocks on main clock update");
