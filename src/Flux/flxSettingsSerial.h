@@ -33,6 +33,8 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
         setName("Serial System Settings", "Set system settings via the Serial Console");
 
+        setHidden(); // don't cross the streams and don't show this object ... in the menu system it creates :)
+
         // Default root is our system
         setSystemRoot(&flux);
     }
@@ -179,8 +181,11 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
         // Loop over each item in the container and draw a menu entry
         for (auto item : *pCurrent)
         {
-            level++;
-            drawMenuEntry(level, item);
+            if (!item->hidden())
+            {
+                level++;
+                drawMenuEntry(level, item);
+            }
         }
 
         // return the current level
@@ -219,6 +224,13 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             return returnLevel + pCurrent->size();
         }
 
+        while ( item < pCurrent->size())
+        {
+            auto pNext = pCurrent->at(item);
+            if (!pNext->hidden())
+                break;
+            item++;
+        }
         auto pNext = pCurrent->at(item);
 
         // Dispatch the item to the next drawPage() call. This
