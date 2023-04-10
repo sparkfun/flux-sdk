@@ -25,7 +25,7 @@ flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{fal
 {
     setName("Logger", "Data logging action");
 
-    flxRegister(timestampMode, "Timestamp Mode", "Enable the output and set the format of a log entry timestamp.");
+    flxRegister(timestampMode, "Timestamp Mode", "Enable timestamp output and set the format of a log entry timestamp");
 
     // Register the timestamp output parameter, then remove it from the action parameter list - we want this hidden
     // from the menu system. We register to connect the parameter to this instance.
@@ -34,7 +34,7 @@ flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{fal
 
     // Sample number things
 
-    flxRegister(numberMode, "Sample Numbering", "An incremental count of the current log entry.");
+    flxRegister(numberMode, "Sample Numbering", "An incremental count of the current log entry");
     flxRegister(numberIncrement, "Numbering Increment", "Increment amount for Sample Numbering");
 
     // Register and remove the output parameter in a simpler manner as the Timestamp
