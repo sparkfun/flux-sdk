@@ -15,6 +15,7 @@
 
 #include "flxCore.h"
 
+#include <map>
 #include <vector>
 
 // Define a clock interface -- really just want secs from unix epoch
@@ -69,8 +70,8 @@ class _flxClock : public flxActionType<_flxClock>
 
   private:
     // prop things
-    void set_ref_clock(int);
-    int get_ref_clock(void);
+    void set_ref_clock(std::string name);
+    std::string get_ref_clock(void);
 
   public:
     // flxClock is a singleton
@@ -92,7 +93,7 @@ class _flxClock : public flxActionType<_flxClock>
 
     bool setReferenceClock(flxIClock *clock, const char *name = nullptr);
 
-    int addReferenceClock(flxIClock *clock, const char *name = nullptr);
+    void addReferenceClock(flxIClock *clock, const char *name = nullptr);
 
     int addConnectedClock(flxIClock *clock);
 
@@ -105,7 +106,7 @@ class _flxClock : public flxActionType<_flxClock>
 
     bool initialize(void);
 
-    flxPropertyRWInt<_flxClock, &_flxClock::get_ref_clock, &_flxClock::set_ref_clock> referenceClock;
+    flxPropertyRWString<_flxClock, &_flxClock::get_ref_clock, &_flxClock::set_ref_clock> referenceClock;
 
     flxPropertyUint<_flxClock> updateClockInterval = {60};
 
@@ -117,6 +118,7 @@ class _flxClock : public flxActionType<_flxClock>
 
   private:
     _flxClock();
+    flxIClock *findRefClockByName(const char *name);
 
     flxIClock *_defaultClock;
     flxIClock *_refClock;
@@ -128,14 +130,14 @@ class _flxClock : public flxActionType<_flxClock>
     bool _bInitialized;
 
     // Reference clocks
-    std::vector<flxIClock *> _referenceClocks;
+    std::map<std::string, flxIClock *> _refNametoClock; // map name for UX to index in
 
     // data limit for the above property
-    flxDataLimitSetInt _refClockLimitSet;
+    flxDataLimitSetString _refClockLimitSet;
 
     // Connected clocks -- clocks that are synced with this time
     std::vector<flxIClock *> _connectedClocks;
 
-    int _iRefClock;
+    std::string _nameRefClock;
 };
 extern _flxClock &flxClock;

@@ -14,9 +14,6 @@
 
 #include "flxFlux.h"
 
-// No clock value
-#define kNoClock -1
-
 // A little hacky - maybe ...
 #ifdef ESP32
 
@@ -25,12 +22,14 @@ flxClockESP32 defaultClock;
 
 #endif
 
+#define kNoClockName "No Clock"
+
 // Global object - for quick access to Settings system
 _flxClock &flxClock = _flxClock::get();
 
 _flxClock::_flxClock()
     : _defaultClock{nullptr}, _refClock{nullptr}, _lastRefCheck{0}, _lastConnCheck{0}, _bInitialized{false},
-      _iRefClock{kNoClock}
+      _nameRefClock{kNoClockName}
 {
     // Set name and description
     setName("Time Sources", "Manage time reference sources");
@@ -51,7 +50,7 @@ _flxClock::_flxClock()
 
     //
     referenceClock.setDataLimit(_refClockLimitSet);
-    _refClockLimitSet.addItem("No Clock", -1);
+    _refClockLimitSet.addItem("", kNoClockName);
 
 #ifdef DEFAULT_DEFINED
     setDefaultClock(&defaultClock);
@@ -59,60 +58,63 @@ _flxClock::_flxClock()
 }
 
 //----------------------------------------------------------------
-void _flxClock::set_ref_clock(int iclock)
+flxIClock *_flxClock::findRefClockByName(const char *name)
 {
 
-    if (iclock == kNoClock)
-        _refClock = nullptr;
-    else
+    if (!name)
+        return nullptr;
+
+    for (auto it = _refNametoClock.begin(); it != _refNametoClock.end(); it++)
     {
-        _refClock = _referenceClocks.at(iclock);
-        updateClock();
+        if (it->first.compare(name) == 0) // a hit!
+            return it->second;
     }
-    _iRefClock = iclock;
+
+    // if we are here, no match in our list
+    return nullptr;
+}
+//----------------------------------------------------------------
+void _flxClock::set_ref_clock(std::string selClock)
+{
+    _refClock = findRefClockByName(selClock.c_str());
+
+    _nameRefClock = _refClock ? selClock : kNoClockName;
 }
 
 //----------------------------------------------------------------
-int _flxClock::get_ref_clock(void)
+std::string _flxClock::get_ref_clock(void)
 {
-    return _iRefClock;
+    return _nameRefClock;
 }
 
 //----------------------------------------------------------------
 // Add a reference clock to the system
-int _flxClock::addReferenceClock(flxIClock *clock, const char *name)
+void _flxClock::addReferenceClock(flxIClock *clock, const char *name)
 {
-    int i = _referenceClocks.size();
 
-    _referenceClocks.push_back(clock);
+    if (!name)
+        name = "Unknown clock";
+
+    std::string stmp = name;
+    _refNametoClock[stmp] = clock;
 
     // Add this to the current clock limit -- this creates a "list of available ref clocks
-    _refClockLimitSet.addItem( name ? name : "unknown clock", i);
-
-    return i; // position in the list of things
+    _refClockLimitSet.addItem("", name);
 }
 
 //----------------------------------------------------------------
 bool _flxClock::setReferenceClock(flxIClock *theClock, const char *name)
 {
-    if (!theClock)
+    if (!theClock || !name)
         return false;
 
     // In our current reference clock list?
-    int iclock = 0;
-    for (flxIClock *aRefClock : _referenceClocks)
-    {
-        if (aRefClock == theClock)
-            break;
-        iclock++;
-    }
 
-    // clock not in the reference list?
-    if (iclock == _referenceClocks.size())
-        iclock = addReferenceClock(theClock, name);
+    if (!findRefClockByName(name))
+        addReferenceClock(theClock, name);
 
-    // set this clock as the ref clock
-    set_ref_clock(iclock);
+    _refClock = theClock;
+    _nameRefClock = name;
 
     return true;
 }
@@ -176,11 +178,11 @@ void _flxClock::updateClock()
     if ((!theClock || !theClock->valid_epoch()) && useAlternativeClock())
     {
         //  find a clock with a valid epoch
-        for (flxIClock *aClock : _referenceClocks)
+        for (auto it = _refNametoClock.begin(); it != _refNametoClock.end(); it++)
         {
-            if (aClock->valid_epoch())
+            if (it->second && it->second->valid_epoch()) // valid clock
             {
-                theClock = aClock;
+                theClock = it->second;
                 break;
             }
         }
