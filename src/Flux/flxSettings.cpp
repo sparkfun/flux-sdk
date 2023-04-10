@@ -32,6 +32,21 @@ void flxSettingsSave::setFallback(flxStorage *pStorage)
 {
     _fallbackStorage = pStorage;
 
+    // Update descr on fallback props
+    char szBuffer[124];
+
+    snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", fallbackRestore.description(), pStorage->name());
+    fallbackRestore.setDescription(szBuffer);
+
+    snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", fallbackSave.description(), pStorage->name());
+    fallbackSave.setDescription(szBuffer);
+
+    snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", saveFallback.description(), pStorage->name());
+    saveFallback.setDescription(szBuffer);
+
+    snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", restoreFallback.description(), pStorage->name());
+    restoreFallback.setDescription(szBuffer);
+
 }
 
 
