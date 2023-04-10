@@ -35,7 +35,7 @@
 class flxDescriptor
 {
   public:
-    flxDescriptor() : _name{""}, _description{""}
+    flxDescriptor() : _name{""}, _description{""}, _title(nullptr)
     {
     }
 
@@ -69,9 +69,20 @@ class flxDescriptor
         return _description;
     }
 
+    // Title - mostly used for UX/Org structure
+    void setTitle(const char * title)
+    {
+        _title = title;
+    }
+    const char * title(void)
+    {
+        return _title;
+    }
+
   protected:
     std::string _name;
     std::string _description;
+    const char * _title;
 };
 
 typedef enum
