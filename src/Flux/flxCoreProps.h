@@ -1320,6 +1320,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
 
   private:
     flxObject *_parent;
+    bool _hidden;
 
     //---------------------------------------------------------------------------------
     static uint16_t getNextNameNumber(void)
@@ -1331,7 +1332,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
     }
 
   public:
-    flxObject()
+    flxObject() : _hidden{false}
     {
         // setup a default name for this device.
         char szBuffer[64];
@@ -1356,6 +1357,14 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         return _parent;
     }
 
+    void setHidden(bool bHide=true)
+    {
+        _hidden=bHide;
+    }
+    bool hidden()
+    {
+        return _hidden;
+    }
     //---------------------------------------------------------------------------------
     virtual bool save(flxStorage *pStorage)
     {
