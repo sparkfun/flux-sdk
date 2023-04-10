@@ -126,19 +126,19 @@ private:
         // Set name and description
         setName("Save Settings", "Save, Restore and Reset System settings.");
 
-        flxRegister(saveOnEvent, "Save Events", "Save settings on save events.");
-        flxRegister(restoreOnEvent, "Restore Events", "Restore settings on restore events.");
+        flxRegister(saveOnEvent, "Save Events", "Save settings on save system events");
+        flxRegister(restoreOnEvent, "Restore Events", "Restore settings on restore esystem vents");
 
-        flxRegister(fallbackRestore, "Fallback Restore", "If unable to restore settings, use the fallback source.");
-        flxRegister(fallbackSave, "Fallback Save", "Save settings also saves the fallback storage.");        
+        flxRegister(fallbackRestore, "Fallback Restore", "If unable to restore settings, use the fallback source");
+        flxRegister(fallbackSave, "Fallback Save", "Save settings also saves to the fallback storage");        
 
 
-        flxRegister(saveSettings, "Save Settings", "Save current settings to persistent storage.");
-        flxRegister(restoreSettings, "Restore Settings", "Restore saved settings.");
-        flxRegister(clearSettings, "Clear Settings", "Erase saved settings.");
+        flxRegister(saveSettings, "Save Settings", "Save current settings to persistent storage");
+        flxRegister(restoreSettings, "Restore Settings", "Restore saved settings");
+        flxRegister(clearSettings, "Clear Settings", "Erase the on device saved settings");
 
-        flxRegister(saveFallback, "Save to Fallback", "Save system settings the the fallback storage.");                
-        flxRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage.");        
+        flxRegister(saveFallback, "Save to Fallback", "Save system settings to the fallback storage");                
+        flxRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage");        
 
 
         flux.add(this);
