@@ -944,6 +944,14 @@ void flxSettingsSerial::drawEntryBanner(void)
     memset(szBuffer, '\0', sizeof(szBuffer));
     strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
     Serial.printf("Time: %s\n\r", szBuffer);
+
+
+    // uptime
+    uint32_t days, hours, minutes, secs, mills;
+
+    flx_utils::uptime(days, hours, minutes, secs, mills);
+
+    Serial.printf("Uptime: %u days, %02u:%02u:%02u.%u\n\r", days, hours, minutes, secs, mills);
 }
 //--------------------------------------------------------------------------
 // Loop call
