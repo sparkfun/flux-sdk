@@ -351,3 +351,17 @@ bool flx_utils::decode_data_aes( uint8_t * key, unsigned char iv[16], char * sou
 
     return true;
 }
+//---------------------------------------------------------------------------------------------------
+// calculate uptime for the device ... since last boot
+void flx_utils::uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint32_t &secs, uint32_t &mills)
+{
+    mills = millis();
+    secs = mills / 1000;
+    minutes = secs / 60;
+    hours = minutes / 60;
+    days = hours / 24;
+    mills %= 1000;
+    secs %= 60;
+    minutes %= 60;
+    hours %= 24;
+}

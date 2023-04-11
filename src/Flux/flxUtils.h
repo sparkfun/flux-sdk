@@ -54,6 +54,9 @@ void decode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key);
 bool encode_data_aes( uint8_t * key, unsigned char iv[16], char * source, char * output, size_t len );
 bool decode_data_aes( uint8_t * key, unsigned char iv[16], char * source, char * output, size_t len );
 
+
+void uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint32_t &secs, uint32_t &mills);
+
 } // namespace flx_utils
 
 /*
