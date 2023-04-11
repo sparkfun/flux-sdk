@@ -172,26 +172,48 @@ class flxFlux : public flxObjectContainer
         return _i2cDriver;
     }
 
-    void setVersion(const char *strVersion, uint32_t uiVersion)
+    // Version Things
+    void setVersion(uint32_t major, uint32_t minor, uint32_t point, const char * desc, uint32_t build )
     {
-        _strVersion=strVersion;
-        _uiVersion = uiVersion;
+        _v_major = major;
+        _v_minor = minor;
+        _v_point = point;
+        _v_build = build;
+        _v_desc = desc;
     }
     
-    const char * versionString(void)
+    void versionString(char *buffer, size_t nbuffer, bool bFull=false)
     {
-        return _strVersion.c_str();
+        if (bFull)
+            snprintf(buffer, nbuffer,  "%02u.%02u.%02u %s - build %06x", 
+                    _v_major, _v_minor, _v_point, _v_desc.c_str(), _v_build);
+        else
+            snprintf(buffer, nbuffer, "%02u.%02u.%02u", _v_major, _v_minor, _v_point);            
     }
 
     uint32_t version()
     {
-        return _uiVersion;
+        return _v_major * 10000 + _v_minor * 100 + _v_point;;
+    }
+    void version(uint32_t &major, uint32_t &minor, uint32_t &point)
+    {
+        major = _v_major;
+        minor = _v_minor;
+        point = _v_point;
+    }
+
+    uint32_t build(void)
+    {
+        return _v_build;
     }
 
     void writeBanner(void)
     {
+        char szBuffer[128];
+        versionString(szBuffer, sizeof(szBuffer), true);
+
         flxLog_N("");
-        flxLog_N(F("%s  %s"), name(), versionString());
+        flxLog_N(F("%s   %s"), name(), szBuffer);
         flxLog_N(F("%s\n\r"), description());
     }
 
@@ -241,8 +263,11 @@ class flxFlux : public flxObjectContainer
     flxBusI2C     _i2cDriver;
     flxBusSPI     _spiDriver;
 
-    std::string _strVersion;
-    uint32_t    _uiVersion;
+    uint32_t _v_major;
+    uint32_t _v_minor;
+    uint32_t _v_point;
+    uint32_t _v_build;
+    std::string _v_desc;
 
     flxApplication * _theApplication;
 
@@ -250,7 +275,8 @@ class flxFlux : public flxObjectContainer
     bool _hasToken;
 
     // Note private constructor...
-    flxFlux() : _strVersion{"0"}, _uiVersion{0}, _theApplication{nullptr}, _token{0}, _hasToken{false}
+    flxFlux() : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, 
+        _theApplication{nullptr}, _token{0}, _hasToken{false}
     {
 
         // setup some default heirarchy things ...
@@ -349,21 +375,9 @@ public:
         return true;
     }
 
-    void setVersion(const char *strVersion, uint32_t uiVersion)
-    {
-        flux.setVersion(strVersion, uiVersion);
-    }
-
     void setVersion(uint major, uint minor, uint point, const char * desc, uint32_t build )
     {
-
-        char szBuffer[128];
-        snprintf(szBuffer, sizeof(szBuffer), "%u.%u.%u %s - build %06x", major, minor, point,
-                desc ? desc : "", build);
-
-        uint32_t vernum = major * 10000 + minor * 100 + point;
-
-        setVersion(szBuffer, vernum);
+        flux.setVersion(major, minor, point, desc, build);
     }
 private:
     flxDescriptor appDesc;
