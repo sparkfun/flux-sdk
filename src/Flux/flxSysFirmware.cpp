@@ -19,6 +19,11 @@
 #include <nvs_flash.h>
 #include <Update.h>
 
+
+#ifdef WORKING_ON_THIS
+#include "ESP32OTAPull.h"
+#endif
+
 #define kFirmwareFileExtension "bin"
 
 const uint kFirmwareUpdatePageSize = 512 * 4;
@@ -72,6 +77,39 @@ void flxSysFirmware::doFactoryReset(void)
 
 }
 
+//-----------------------------------------------------------------------------------
+// make sure we have OTA partitions
+bool flxSysFirmware::verifyBoardOTASupport(void)
+{
+    // Let's make sure we have sufficent OTA partitions to support an update. We need at least two
+    // OTA partitions
+
+    int nOTA = 0;
+    esp_partition_iterator_t it;
+
+    for (uint i; i < ESP_PARTITION_SUBTYPE_APP_OTA_MAX - ESP_PARTITION_SUBTYPE_APP_OTA_MIN; i++)
+    {
+        it = esp_partition_find(ESP_PARTITION_TYPE_APP, 
+                (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + i), nullptr);
+
+        if ( it != nullptr)
+        {
+            nOTA++;
+            if (nOTA > 1)
+                break;
+        }
+    }
+
+    if (nOTA < 2)
+    {
+        flxLog_E(F("Invalid partition table on device - unable to update firmware."));
+        return false;
+    }
+    return true;
+}
+//-----------------------------------------------------------------------------------
+// Update Firmware from SD card section
+//-----------------------------------------------------------------------------------
 int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
 {
 
@@ -186,7 +224,6 @@ bool flxSysFirmware::updateFirmwareFromSD()
     if (!getFirmwareFilename())
         return false;
 
-
     // double check that the file exists
 
     if (!_fileSystem->exists(updateFirmwareFile.get().c_str()))
@@ -195,30 +232,9 @@ bool flxSysFirmware::updateFirmwareFromSD()
         return false;
     }
 
-    // Let's make sure we have sufficent OTA partitions to support an update. We need at least two
-    // OTA partitions
-
-    int nOTA = 0;
-    esp_partition_iterator_t it;
-
-    for (uint i; i < ESP_PARTITION_SUBTYPE_APP_OTA_MAX - ESP_PARTITION_SUBTYPE_APP_OTA_MIN; i++)
-    {
-        it = esp_partition_find(ESP_PARTITION_TYPE_APP, 
-                (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + i), nullptr);
-
-        if ( it != nullptr)
-        {
-            nOTA++;
-            if (nOTA > 1)
-                break;
-        }
-    }
-
-    if (nOTA < 2)
-    {
-        flxLog_E(F("Invalid partition table on device - unable to update firmware."));
+    // Is the board paritions setup to support OTA?
+    if (!verifyBoardOTASupport())
         return false;
-    }
 
     flxFSFile fFirmware = _fileSystem->open(updateFirmwareFile.get().c_str(), flxIFileSystem::kFileRead);
 
@@ -306,5 +322,47 @@ bool flxSysFirmware::updateFirmwareFromSD()
     flxLog_E(F("Firmware update failed. Please try again."));
 
     // We have a file that exixts, we have OTA partitions, lets update 
+    return true;
+}
+//-----------------------------------------------------------------------------------
+// OTA Things
+//-----------------------------------------------------------------------------------
+
+#ifdef WORKING_ON_THIS
+static void ota_dot_cb(int offset, int total)
+{
+    flxLog_N_(".");
+}
+
+#endif
+bool flxSysFirmware::doWiFiOTA(void)
+{
+
+#ifdef WORKING_ON_THIS
+    // do we have WiFi set?
+
+    if ( !_wifiConnection || !_wifiConnection.isConnected())
+    {
+        flxLog_E(F("Unable to check for firmware updates - no WiFi connection"));
+        return false;
+    }
+
+    // update URL?
+    if (!_otaURL)
+    {
+        flxLog_E(F("Unable to check for firmware updates - update URL not configured"));
+        return false;        
+    }
+
+    // we need a version string for this firmware
+    char szVersion[64];
+    flux.versionString(szVersion, sizeof(szVersion));
+
+    ESP32OTAPull otaPull;
+
+    int rc = otaPull.CheckForOTAUpdate(_otaURL, szVersion, ESP32OTAPull::UPDATE_BUT_NO_BOOT);
+
+
+#endif
     return true;
 }

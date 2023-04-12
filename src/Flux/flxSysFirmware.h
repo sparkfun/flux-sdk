@@ -20,14 +20,20 @@
 #include "flxSettingsSerial.h"
 #include "flxFS.h"
 
+// for OTA
+#include "flxWiFiESP32.h"
+
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
 
 private:
 
     void doFactoryReset(void);
+    bool verifyBoardOTASupport(void);
     bool getFirmwareFilename(void);
     bool updateFirmwareFromSD(void);
+
+    // Experiement with OTA option
 
     //------------------------------------------------------------------------------
     void factory_reset(const bool &doReset)
@@ -45,7 +51,8 @@ private:
     }
 
 public:
-    flxSysFirmware() : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""}
+    flxSysFirmware() : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""},
+        _wifiConnection{nullptr}, _otaURL{nullptr}
     {
 
         // Set name and description
@@ -90,9 +97,23 @@ public:
 
     flxParameterInVoid<flxSysFirmware, &flxSysFirmware::update_firmware_SD> updateFirmwareSD;
 
+
+    // for OTA
+    void setWiFiDevice(flxWiFiESP32 *pWiFi)
+    {
+        _wifiConnection = pWiFi;
+    }
+
+    void setOTAURL(const char *otaURL)
+    {
+        _otaURL = otaURL;
+    }
+
 private:
 
     int getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit);
+
+    bool doWiFiOTA(void);
 
     // A property that contains the name of the update firmware file
     flxPropertyHiddenString<flxSysFirmware> updateFirmwareFile;
@@ -103,5 +124,9 @@ private:
     flxIFileSystem *_fileSystem;
 
     std::string _firmwareFilePrefix;
+
+    flxWiFiESP32 * _wifiConnection;
+
+    const char * _otaURL;
     
 };
