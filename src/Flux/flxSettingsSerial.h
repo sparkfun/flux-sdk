@@ -57,6 +57,9 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     bool drawPage(flxActionContainer *);
     bool drawPage(flxDeviceContainer *);
 
+
+    uint8_t getMenuSelectionYN(uint timeout = 30);
+
     // Our output event
     flxSignalVoid on_finished;
 
@@ -85,7 +88,6 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     // get the selected menu item
     uint8_t getMenuSelection(uint max, uint timeout = 30);
 
-    uint8_t getMenuSelectionYN(uint timeout = 30);
 
   private:
 
