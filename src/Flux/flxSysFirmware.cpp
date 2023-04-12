@@ -19,11 +19,6 @@
 #include <nvs_flash.h>
 #include <Update.h>
 
-
-#ifdef WORKING_ON_THIS
-#include "ESP32OTAPull.h"
-#endif
-
 #define kFirmwareFileExtension "bin"
 
 const uint kFirmwareUpdatePageSize = 512 * 4;
@@ -216,6 +211,8 @@ bool flxSysFirmware::getFirmwareFilename(void)
 #define kCodeDEL 127
 #define kCodeSpace 32
 
+// for display update....
+const char chCR = 13;
 //-----------------------------------------------------------------------------------
 bool flxSysFirmware::updateFirmwareFromSD()
 {
@@ -267,13 +264,9 @@ bool flxSysFirmware::updateFirmwareFromSD()
     // update loop
 
     uint bytesToWrite;
-    float fTotal = updateSize;
     int barWidth = 20;
     int displayPercent=0;
     int percentWritten=0;
-
-    // for display update....
-    char chCR = 13;
 
     flxLog_N_(F("Updating firmware... (00%%)"));
 
@@ -296,7 +289,7 @@ bool flxSysFirmware::updateFirmwareFromSD()
         }
         bytesWritten += bytesToWrite;
 
-        percentWritten = ((float)bytesWritten/fTotal) * 100;
+        percentWritten = (bytesWritten * 100)/updateSize;
         if (percentWritten > displayPercent)
         {
             displayPercent = percentWritten;
@@ -328,20 +321,88 @@ bool flxSysFirmware::updateFirmwareFromSD()
 // OTA Things
 //-----------------------------------------------------------------------------------
 
-#ifdef WORKING_ON_THIS
 static void ota_dot_cb(int offset, int total)
 {
     flxLog_N_(".");
 }
 
-#endif
-bool flxSysFirmware::doWiFiOTA(void)
+static void ota_percent_cb(int offset, int total)
+{
+    static int displayPercent = 0;
+
+    int percentWritten = (offset * 100)/total;
+        
+    if (percentWritten > displayPercent)
+    {
+        displayPercent = percentWritten;
+        Serial.write(&chCR, 1);
+        flxLog_N_("Updating firmware... (%2d%%)", displayPercent);
+    }
+}
+
+
+// Do the actual update
+bool flxSysFirmware::doWiFiOTA(ESP32OTAPull &otaPull, char * currentVersion)
 {
 
-#ifdef WORKING_ON_THIS
+    if ( !_pSerialSettings)
+    {
+        flxLog_E(F("No Settings interface available."));
+        return false;
+    }
+    // Need to prompt for an a-okay ...
+    Serial.printf("\tUpdate firmware to version `%s` [Y/n]? ", otaPull.GetVersion().c_str());
+
+    uint8_t selected = _pSerialSettings->getMenuSelectionYN();
+
+    Serial.printf("\n\r\n\r");
+    if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+    {
+        flxLog_I(F("\tAborting update"));
+        return false;
+    }
+
+    // Update time 
+    flxLog_N_(F("Updating firmware... (00%%)"));
+    otaPull.SetCallback(ota_percent_cb);
+    int ret = otaPull.CheckForOTAUpdate(_otaURL, currentVersion, ESP32OTAPull::UPDATE_BUT_NO_BOOT);
+
+    if (ret == ESP32OTAPull::UPDATE_OK)
+    {
+        flxLog_I("Firmware update completed successfully. Rebooting...");
+        delay(1000);
+        esp_restart();
+    }
+
+    flxLog_E_(F("Error when trying to update. "));
+
+    switch (ret)
+    {
+
+        case ESP32OTAPull::HTTP_FAILED:
+        default: 
+            flxLog_N("HTTP failure (%d)", ret);
+            break;
+
+        case ESP32OTAPull::WRITE_ERROR:
+            flxLog_N("Firmware write error");
+            break;
+
+        case ESP32OTAPull::NO_UPDATE_AVAILABLE:
+        case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
+        case ESP32OTAPull::JSON_PROBLEM:
+            flxLog_N("Update not available or not configured");
+            break;
+    }
+
+    return false;
+}
+
+bool flxSysFirmware::updateFirmwareFromOTA(void)
+{
     // do we have WiFi set?
 
-    if ( !_wifiConnection || !_wifiConnection.isConnected())
+    if ( !_wifiConnection || !_wifiConnection->isConnected())
     {
         flxLog_E(F("Unable to check for firmware updates - no WiFi connection"));
         return false;
@@ -360,9 +421,27 @@ bool flxSysFirmware::doWiFiOTA(void)
 
     ESP32OTAPull otaPull;
 
-    int rc = otaPull.CheckForOTAUpdate(_otaURL, szVersion, ESP32OTAPull::UPDATE_BUT_NO_BOOT);
+    flxLog_I_(F("Checking for firmware updates ..."));
 
+    otaPull.SetCallback(ota_dot_cb);
+    int ret = otaPull.CheckForOTAUpdate(_otaURL, szVersion, ESP32OTAPull::DONT_DO_UPDATE);
 
-#endif
-    return true;
+    switch (ret)
+    {
+        case ESP32OTAPull::UPDATE_AVAILABLE:
+            flxLog_I(F("update available"));
+
+            // do the update
+            return doWiFiOTA(otaPull, szVersion);
+            break;
+        case ESP32OTAPull::NO_UPDATE_AVAILABLE:
+        case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
+            flxLog_I(F("no update available"));
+            break;
+        default:
+            flxLog_I(F("error encountered - code %d"), ret);
+            break;
+    }
+
+    return false; 
 }

@@ -22,6 +22,7 @@
 
 // for OTA
 #include "flxWiFiESP32.h"
+#include "ESP32OTAPull.h"
 
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
@@ -32,6 +33,7 @@ private:
     bool verifyBoardOTASupport(void);
     bool getFirmwareFilename(void);
     bool updateFirmwareFromSD(void);
+    bool updateFirmwareFromOTA(void);
 
     // Experiement with OTA option
 
@@ -50,9 +52,14 @@ private:
         bool status = updateFirmwareFromSD();
     }
 
+    void update_firmware_OTA(void)
+    {
+        bool status = updateFirmwareFromOTA();
+    }
+
 public:
     flxSysFirmware() : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""},
-        _wifiConnection{nullptr}, _otaURL{nullptr}
+        _wifiConnection{nullptr}, _otaURL{nullptr}, _bUpdateOTA{false}
     {
 
         // Set name and description
@@ -97,6 +104,8 @@ public:
 
     flxParameterInVoid<flxSysFirmware, &flxSysFirmware::update_firmware_SD> updateFirmwareSD;
 
+    flxParameterInVoid<flxSysFirmware, &flxSysFirmware::update_firmware_OTA> updateFirmwareOTA;
+
 
     // for OTA
     void setWiFiDevice(flxWiFiESP32 *pWiFi)
@@ -104,16 +113,25 @@ public:
         _wifiConnection = pWiFi;
     }
 
-    void setOTAURL(const char *otaURL)
+    void enableOTAUpdates(const char *otaURL)
     {
+        if (!otaURL)
+            return;
         _otaURL = otaURL;
+
+        if (_bUpdateOTA)
+        {
+            flxRegister(updateFirmwareOTA, "Update Firmware - OTA", "Update the firmware over-the-air");
+            _bUpdateOTA = true; 
+        }
+
     }
 
 private:
 
     int getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit);
 
-    bool doWiFiOTA(void);
+    bool doWiFiOTA(ESP32OTAPull &otaPull, char * currentVersion);
 
     // A property that contains the name of the update firmware file
     flxPropertyHiddenString<flxSysFirmware> updateFirmwareFile;
@@ -128,5 +146,6 @@ private:
     flxWiFiESP32 * _wifiConnection;
 
     const char * _otaURL;
+    bool _bUpdateOTA;
     
 };
