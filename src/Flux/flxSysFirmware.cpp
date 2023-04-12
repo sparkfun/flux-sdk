@@ -6,18 +6,16 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #include "flxSysFirmware.h"
 
-
-#include <esp_partition.h>
-#include <esp_ota_ops.h>
-#include <nvs_flash.h>
 #include <Update.h>
+#include <esp_ota_ops.h>
+#include <esp_partition.h>
+#include <nvs_flash.h>
 
 #define kFirmwareFileExtension "bin"
 
@@ -33,8 +31,8 @@ void flxSysFirmware::doFactoryReset(void)
     flxLog_I_("Performing Factory Reset...");
 
     // do we have a factory partition on the device?
-    esp_partition_iterator_t par_it = esp_partition_find(
-            ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_FACTORY, NULL);
+    esp_partition_iterator_t par_it =
+        esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_FACTORY, NULL);
 
     // Factory partition exist?
     if (par_it == NULL)
@@ -46,10 +44,10 @@ void flxSysFirmware::doFactoryReset(void)
 
     const esp_partition_t *factory = esp_partition_get(par_it);
     esp_partition_iterator_release(par_it);
-    esp_err_t  err = esp_ota_set_boot_partition(factory);
+    esp_err_t err = esp_ota_set_boot_partition(factory);
 
     flxLog_N_(".");
-    
+
     if (err != ESP_OK)
     {
         flxLog_N(F("Failed. Error setting factory firmware bootable."));
@@ -62,21 +60,19 @@ void flxSysFirmware::doFactoryReset(void)
     flxLog_N_(".");
     nvs_flash_init();
 
-
-    // Now 
+    // Now
     flxLog_N(F("complete - rebooting..."));
 
     delay(500);
 
     esp_restart();
-
 }
 
 //-----------------------------------------------------------------------------------
 // make sure we have OTA partitions
 bool flxSysFirmware::verifyBoardOTASupport(void)
 {
-    // Let's make sure we have sufficent OTA partitions to support an update. We need at least two
+    // Let's make sure we have sufficient OTA partitions to support an update. We need at least two
     // OTA partitions
 
     int nOTA = 0;
@@ -84,10 +80,10 @@ bool flxSysFirmware::verifyBoardOTASupport(void)
 
     for (uint i; i < ESP_PARTITION_SUBTYPE_APP_OTA_MAX - ESP_PARTITION_SUBTYPE_APP_OTA_MIN; i++)
     {
-        it = esp_partition_find(ESP_PARTITION_TYPE_APP, 
-                (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + i), nullptr);
+        it = esp_partition_find(ESP_PARTITION_TYPE_APP,
+                                (esp_partition_subtype_t)(ESP_PARTITION_SUBTYPE_APP_OTA_MIN + i), nullptr);
 
-        if ( it != nullptr)
+        if (it != nullptr)
         {
             nOTA++;
             if (nOTA > 1)
@@ -102,13 +98,81 @@ bool flxSysFirmware::verifyBoardOTASupport(void)
     }
     return true;
 }
+
+//-----------------------------------------------------------------------------------
+// Routine to pull data from stream and update OTA
+//
+
+bool flxSysFirmware::writeOTAUpdateFromStream(Stream *fFirmware, size_t updateSize)
+{
+
+    if (!fFirmware || !updateSize)
+        return false;
+
+    // Crank up the Update system
+    if (!Update.begin(updateSize))
+    {
+        flxLog_E(F("Firmware update startup failed to begin."));
+        return false;
+    }
+
+    byte dataArray[kFirmwareUpdatePageSize];
+    uint bytesWritten = 0;
+
+    // update loop
+
+    uint bytesToWrite;
+    int barWidth = 20;
+    int displayPercent = 0;
+    int percentWritten = 0;
+
+    flxLog_N_(F("Updating firmware... (00%%)"));
+    char chCR = 13; // for display erase during progress
+
+    while (true)
+    {
+        bytesToWrite = fFirmware->available();
+
+        if (!bytesToWrite)
+            break;
+
+        if (bytesToWrite > kFirmwareUpdatePageSize)
+            bytesToWrite = kFirmwareUpdatePageSize;
+
+        fFirmware->readBytes(dataArray, bytesToWrite);
+
+        if (Update.write(dataArray, bytesToWrite) != bytesToWrite)
+        {
+            flxLog_E(F("Error writing firmware to device. Binary might be incorrectly aligned."));
+            break;
+        }
+        bytesWritten += bytesToWrite;
+
+        percentWritten = (bytesWritten * 100) / updateSize;
+        if (percentWritten > displayPercent)
+        {
+            displayPercent = percentWritten;
+            Serial.write(&chCR, 1);
+            flxLog_N_("Updating firmware... (%2d%%)", displayPercent);
+        }
+    }
+    flxLog_N("  Firmware upload complete");
+
+    if (Update.end())
+    {
+        if (Update.isFinished())
+            return true;
+    }
+
+    return false;
+}
 //-----------------------------------------------------------------------------------
 // Update Firmware from SD card section
 //-----------------------------------------------------------------------------------
 int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
 {
 
-    if ( !_fileSystem)
+    if (!_fileSystem)
     {
         flxLog_E(F("No filesystem available."));
         return 0;
@@ -127,9 +191,9 @@ int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
 
     std::string blank = "";
 
-    int nFound=0;
+    int nFound = 0;
 
-    while(true)
+    while (true)
     {
 
         filename = dirRoot.getNextFilename();
@@ -142,14 +206,14 @@ int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
         if (dot == std::string::npos)
             continue; // no file extension
 
-        if (filename.compare(dot+1, strlen(kFirmwareFileExtension), kFirmwareFileExtension))
+        if (filename.compare(dot + 1, strlen(kFirmwareFileExtension), kFirmwareFileExtension))
             continue;
 
         // We have a bin file, how about a firmware file - check against our prefix if one set
         // Note adding one to filename  - it always starts with "/"
-        
-        if (_firmwareFilePrefix.length() > 0 &&  
-                strncmp(_firmwareFilePrefix.c_str(), filename.c_str()+1, _firmwareFilePrefix.length()) != 0)
+
+        if (_firmwareFilePrefix.length() > 0 &&
+            strncmp(_firmwareFilePrefix.c_str(), filename.c_str() + 1, _firmwareFilePrefix.length()) != 0)
             continue; // no match
 
         // We have a match
@@ -158,13 +222,11 @@ int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
     }
 
     return nFound;
-
-
 }
 //-----------------------------------------------------------------------------------
 // getFirmwareFilename()
 
-// Internal method - called to build up a menu, and use the serial settings system to 
+// Internal method - called to build up a menu, and use the serial settings system to
 // allow the user to select a firmware file that is on the SD card.
 
 bool flxSysFirmware::getFirmwareFilename(void)
@@ -173,14 +235,14 @@ bool flxSysFirmware::getFirmwareFilename(void)
     flxDataLimitSetString dataLimit;
 
     // TODO: Loop over the files on the SD  card, find the firmware files and add them to
-    // the limit set.    
+    // the limit set.
 
-    int nFound= getFirmwareFilesFromSD(dataLimit);
+    int nFound = getFirmwareFilesFromSD(dataLimit);
 
-    if (nFound == 0 )
+    if (nFound == 0)
     {
-        flxLog_I(F("No firmware files found on SD card. File naming pattern: %s*.%s"),
-                 _firmwareFilePrefix.c_str(), kFirmwareFileExtension);
+        flxLog_I(F("No firmware files found on SD card. File naming pattern: %s*.%s"), _firmwareFilePrefix.c_str(),
+                 kFirmwareFileExtension);
         return false;
     }
     // Set the limit on our Filename property
@@ -189,30 +251,23 @@ bool flxSysFirmware::getFirmwareFilename(void)
 
     // This is a *hack* to enable interactive UX for the selection of a file to use ...
 
-    if ( !_pSerialSettings)
+    if (!_pSerialSettings)
     {
         flxLog_E(F("No Settings interface available."));
         return false;
     }
-    bool status =  _pSerialSettings->drawPage(this, &updateFirmwareFile);
+    bool status = _pSerialSettings->drawPage(this, &updateFirmwareFile);
 
     if (status)
     {
         flxLog_I(F("Update File is: %s"), updateFirmwareFile.get().c_str());
-    }else
+    }
+    else
         flxLog_E(F("Update File not selected"));
 
-
     return status;
-
-
 }
-#define kCodeBS 8
-#define kCodeDEL 127
-#define kCodeSpace 32
 
-// for display update....
-const char chCR = 13;
 //-----------------------------------------------------------------------------------
 bool flxSysFirmware::updateFirmwareFromSD()
 {
@@ -229,7 +284,7 @@ bool flxSysFirmware::updateFirmwareFromSD()
         return false;
     }
 
-    // Is the board paritions setup to support OTA?
+    // Is the board partitions setup to support OTA?
     if (!verifyBoardOTASupport())
         return false;
 
@@ -250,73 +305,21 @@ bool flxSysFirmware::updateFirmwareFromSD()
         return false;
     }
 
-    // Crank up the Update system
-    if (!Update.begin(updateSize))
+    bool bStatus = writeOTAUpdateFromStream(fFirmware.stream(), updateSize);
+
+    fFirmware.close();
+    if (!bStatus)
     {
-        flxLog_E(F("Firmware update startup failed to begin."));
-        fFirmware.close();
+        flxLog_E(F("Firmware update failed. Please try again."));
         return false;
     }
+    flxLog_I("Firmware update completed successfully. Rebooting...");
+    delay(1000);
+    esp_restart();
 
-    byte dataArray[kFirmwareUpdatePageSize];
-    uint bytesWritten = 0;
-
-    // update loop
-
-    uint bytesToWrite;
-    int barWidth = 20;
-    int displayPercent=0;
-    int percentWritten=0;
-
-    flxLog_N_(F("Updating firmware... (00%%)"));
-
-    while( true ) 
-    {
-        bytesToWrite = fFirmware.available();
-
-        if (!bytesToWrite)
-            break;
-
-        if (bytesToWrite > kFirmwareUpdatePageSize)
-            bytesToWrite = kFirmwareUpdatePageSize;
-
-        fFirmware.read(dataArray, bytesToWrite);
-
-        if (Update.write(dataArray, bytesToWrite) != bytesToWrite)
-        {
-            flxLog_E(F("Error writing firmware to device. Binary might be incorrectly aligned."));
-            break;
-        }
-        bytesWritten += bytesToWrite;
-
-        percentWritten = (bytesWritten * 100)/updateSize;
-        if (percentWritten > displayPercent)
-        {
-            displayPercent = percentWritten;
-            Serial.write(&chCR, 1);
-            flxLog_N_("Updating firmware... (%2d%%)", displayPercent);
-        }
-
-    }
-    fFirmware.close();
-
-    flxLog_N("  Firmware upload complete");
-
-    if (Update.end())
-    {
-        if (Update.isFinished())
-        {
-            flxLog_I("Firmware update completed successfully. Rebooting...");
-            delay(1000);
-            esp_restart();
-        }
-    }
-
-    flxLog_E(F("Firmware update failed. Please try again."));
-
-    // We have a file that exixts, we have OTA partitions, lets update 
     return true;
 }
+
 //-----------------------------------------------------------------------------------
 // OTA Things
 //-----------------------------------------------------------------------------------
@@ -330,22 +333,21 @@ static void ota_percent_cb(int offset, int total)
 {
     static int displayPercent = 0;
 
-    int percentWritten = (offset * 100)/total;
-        
+    int percentWritten = (offset * 100) / total;
+
     if (percentWritten > displayPercent)
     {
         displayPercent = percentWritten;
-        Serial.write(&chCR, 1);
+        // Serial.write(&chCR, 1);
         flxLog_N_("Updating firmware... (%2d%%)", displayPercent);
     }
 }
 
-
 // Do the actual update
-bool flxSysFirmware::doWiFiOTA(ESP32OTAPull &otaPull, char * currentVersion)
+bool flxSysFirmware::doWiFiOTA(ESP32OTAPull &otaPull, char *currentVersion)
 {
 
-    if ( !_pSerialSettings)
+    if (!_pSerialSettings)
     {
         flxLog_E(F("No Settings interface available."));
         return false;
@@ -362,7 +364,7 @@ bool flxSysFirmware::doWiFiOTA(ESP32OTAPull &otaPull, char * currentVersion)
         return false;
     }
 
-    // Update time 
+    // Update time
     flxLog_N_(F("Updating firmware... (00%%)"));
     otaPull.SetCallback(ota_percent_cb);
     int ret = otaPull.CheckForOTAUpdate(_otaURL, currentVersion, ESP32OTAPull::UPDATE_BUT_NO_BOOT);
@@ -379,20 +381,20 @@ bool flxSysFirmware::doWiFiOTA(ESP32OTAPull &otaPull, char * currentVersion)
     switch (ret)
     {
 
-        case ESP32OTAPull::HTTP_FAILED:
-        default: 
-            flxLog_N("HTTP failure (%d)", ret);
-            break;
+    case ESP32OTAPull::HTTP_FAILED:
+    default:
+        flxLog_N("HTTP failure (%d)", ret);
+        break;
 
-        case ESP32OTAPull::WRITE_ERROR:
-            flxLog_N("Firmware write error");
-            break;
+    case ESP32OTAPull::WRITE_ERROR:
+        flxLog_N("Firmware write error");
+        break;
 
-        case ESP32OTAPull::NO_UPDATE_AVAILABLE:
-        case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
-        case ESP32OTAPull::JSON_PROBLEM:
-            flxLog_N("Update not available or not configured");
-            break;
+    case ESP32OTAPull::NO_UPDATE_AVAILABLE:
+    case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
+    case ESP32OTAPull::JSON_PROBLEM:
+        flxLog_N("Update not available or not configured");
+        break;
     }
 
     return false;
@@ -402,7 +404,7 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
 {
     // do we have WiFi set?
 
-    if ( !_wifiConnection || !_wifiConnection->isConnected())
+    if (!_wifiConnection || !_wifiConnection->isConnected())
     {
         flxLog_E(F("Unable to check for firmware updates - no WiFi connection"));
         return false;
@@ -412,7 +414,7 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
     if (!_otaURL)
     {
         flxLog_E(F("Unable to check for firmware updates - update URL not configured"));
-        return false;        
+        return false;
     }
 
     // we need a version string for this firmware
@@ -428,20 +430,20 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
 
     switch (ret)
     {
-        case ESP32OTAPull::UPDATE_AVAILABLE:
-            flxLog_I(F("update available"));
+    case ESP32OTAPull::UPDATE_AVAILABLE:
+        flxLog_I(F("update available"));
 
-            // do the update
-            return doWiFiOTA(otaPull, szVersion);
-            break;
-        case ESP32OTAPull::NO_UPDATE_AVAILABLE:
-        case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
-            flxLog_I(F("no update available"));
-            break;
-        default:
-            flxLog_I(F("error encountered - code %d"), ret);
-            break;
+        // do the update
+        return doWiFiOTA(otaPull, szVersion);
+        break;
+    case ESP32OTAPull::NO_UPDATE_AVAILABLE:
+    case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
+        flxLog_I(F("no update available"));
+        break;
+    default:
+        flxLog_I(F("error encountered - code %d"), ret);
+        break;
     }
 
-    return false; 
+    return false;
 }

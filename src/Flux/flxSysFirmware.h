@@ -6,31 +6,30 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 // Action to mange the device/system Firmware - perform a factory reset, apply firmware updates
 
 #pragma once
 
 #include "flxCore.h"
+#include "flxFS.h"
 #include "flxFlux.h"
 #include "flxSettingsSerial.h"
-#include "flxFS.h"
 
 // for OTA
-#include "flxWiFiESP32.h"
 #include "ESP32OTAPull.h"
+#include "flxWiFiESP32.h"
 
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
 
-private:
-
+  private:
     void doFactoryReset(void);
     bool verifyBoardOTASupport(void);
+    bool writeOTAUpdateFromStream(Stream *, size_t);
     bool getFirmwareFilename(void);
     bool updateFirmwareFromSD(void);
     bool updateFirmwareFromOTA(void);
@@ -57,9 +56,10 @@ private:
         bool status = updateFirmwareFromOTA();
     }
 
-public:
-    flxSysFirmware() : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""},
-        _wifiConnection{nullptr}, _otaURL{nullptr}, _bUpdateOTA{false}
+  public:
+    flxSysFirmware()
+        : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""},
+          _wifiConnection{nullptr}, _otaURL{nullptr}, _bUpdateOTA{false}
     {
 
         // Set name and description
@@ -67,15 +67,13 @@ public:
 
         flxRegister(factoryReset, "Factory Reset", "Factory reset the device - enter 1 to perform the reset");
 
-
         flxRegister(updateFirmwareSD, "Update Firmware - SD Card", "Update the firmware from the SD card");
         flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
-
     }
-    
+
     void setSerialSettings(flxSettingsSerial *pSettings)
     {
-        _pSerialSettings=pSettings;
+        _pSerialSettings = pSettings;
     }
     void setSerialSettings(flxSettingsSerial &serSettings)
     {
@@ -83,13 +81,13 @@ public:
     }
 
     //---------------------------------------------------------
-    void setFirmwareFilePrefix(const char * prefix)
+    void setFirmwareFilePrefix(const char *prefix)
     {
         if (prefix && strlen(prefix) > 5)
             _firmwareFilePrefix = prefix;
-    } 
+    }
 
-    const char * firmwareFilePrefix(void)
+    const char *firmwareFilePrefix(void)
     {
         return _firmwareFilePrefix.c_str();
     }
@@ -106,7 +104,6 @@ public:
 
     flxParameterInVoid<flxSysFirmware, &flxSysFirmware::update_firmware_OTA> updateFirmwareOTA;
 
-
     // for OTA
     void setWiFiDevice(flxWiFiESP32 *pWiFi)
     {
@@ -122,16 +119,14 @@ public:
         if (_bUpdateOTA)
         {
             flxRegister(updateFirmwareOTA, "Update Firmware - OTA", "Update the firmware over-the-air");
-            _bUpdateOTA = true; 
+            _bUpdateOTA = true;
         }
-
     }
 
-private:
-
+  private:
     int getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit);
 
-    bool doWiFiOTA(ESP32OTAPull &otaPull, char * currentVersion);
+    bool doWiFiOTA(ESP32OTAPull &otaPull, char *currentVersion);
 
     // A property that contains the name of the update firmware file
     flxPropertyHiddenString<flxSysFirmware> updateFirmwareFile;
@@ -143,9 +138,8 @@ private:
 
     std::string _firmwareFilePrefix;
 
-    flxWiFiESP32 * _wifiConnection;
+    flxWiFiESP32 *_wifiConnection;
 
-    const char * _otaURL;
+    const char *_otaURL;
     bool _bUpdateOTA;
-    
 };
