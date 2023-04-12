@@ -14,6 +14,7 @@
 #pragma once
 
 #include <memory>
+#include <Stream.h>
 #include "flxCoreTypes.h"
 // FS Interfaces
 
@@ -43,7 +44,7 @@ class flxIFile
 
     virtual int available(void) = 0;
 
-
+    virtual Stream* stream(void) = 0;
 };
 
 
@@ -135,6 +136,14 @@ class flxFSFile
             return (bool)_file->available();
 
         return 0;
+    }
+
+    Stream * stream(void)
+    {
+        if (_file && _file->isValid())
+            return _file->stream();
+
+        return nullptr;
     }
   private:
     // note use of smart pointer for the file

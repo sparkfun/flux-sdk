@@ -47,6 +47,7 @@ class flxFSSDMMCFile : public flxIFile
 
     int available(void);
 
+    Stream * stream(void);
   private:
     friend _flxFSSDMMCard;
 

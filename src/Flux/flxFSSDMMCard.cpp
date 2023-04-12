@@ -338,3 +338,11 @@ int flxFSSDMMCFile::available(void)
 
     return 0;
 }
+
+Stream * flxFSSDMMCFile::stream(void)
+{
+    if (_file)
+        return &_file;
+
+    return nullptr;
+}
