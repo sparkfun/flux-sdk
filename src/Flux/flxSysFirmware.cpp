@@ -19,7 +19,10 @@
 
 #define kFirmwareFileExtension "bin"
 
-const uint kFirmwareUpdatePageSize = 512 * 4;
+#define kFirmwareUpdatePageSize  2048
+
+const char chCR = 13; // for display erase during progress
+
 //-----------------------------------------------------------------------------------
 // factoryReset()
 //
@@ -120,16 +123,14 @@ bool flxSysFirmware::writeOTAUpdateFromStream(Stream *fFirmware, size_t updateSi
     uint bytesWritten = 0;
 
     // update loop
-
-    uint bytesToWrite;
+    size_t bytesToWrite;
     int barWidth = 20;
     int displayPercent = 0;
     int percentWritten = 0;
 
     flxLog_N_(F("Updating firmware... (00%%)"));
-    char chCR = 13; // for display erase during progress
 
-    while (true)
+    while (bytesWritten < updateSize)
     {
         bytesToWrite = fFirmware->available();
 
@@ -156,16 +157,20 @@ bool flxSysFirmware::writeOTAUpdateFromStream(Stream *fFirmware, size_t updateSi
             flxLog_N_("Updating firmware... (%2d%%)", displayPercent);
         }
     }
-    flxLog_N("  Firmware upload complete");
+
+    flxLog_N("");
 
     if (Update.end())
     {
         if (Update.isFinished())
             return true;
     }
+    else
+        flxLog_E("Update error: %s", Update.errorString());    
 
     return false;
 }
+
 //-----------------------------------------------------------------------------------
 // Update Firmware from SD card section
 //-----------------------------------------------------------------------------------
@@ -324,81 +329,159 @@ bool flxSysFirmware::updateFirmwareFromSD()
 // OTA Things
 //-----------------------------------------------------------------------------------
 
-static void ota_dot_cb(int offset, int total)
+bool flxSysFirmware::getOTAFirmwareManifest(JsonDocument &jsonDoc)
 {
-    flxLog_N_(".");
-}
+    if (!_otaURL)
+        return false;
 
-static void ota_percent_cb(int offset, int total)
-{
-    static int displayPercent = 0;
+    // get the json document 
+    HTTPClient http;
+        
+    http.begin(_otaURL);
 
-    int percentWritten = (offset * 100) / total;
-
-    if (percentWritten > displayPercent)
+    if (http.GET() != HTTP_CODE_OK)
     {
-        displayPercent = percentWritten;
-        // Serial.write(&chCR, 1);
-        flxLog_N_("Updating firmware... (%2d%%)", displayPercent);
-    }
-}
-
-// Do the actual update
-bool flxSysFirmware::doWiFiOTA(ESP32OTAPull &otaPull, char *currentVersion)
-{
-
-    if (!_pSerialSettings)
-    {
-        flxLog_E(F("No Settings interface available."));
+        flxLog_E(F("Unable to access update manifest from server"));
+        http.end();
         return false;
     }
-    // Need to prompt for an a-okay ...
-    Serial.printf("\tUpdate firmware to version `%s` [Y/n]? ", otaPull.GetVersion().c_str());
+    
+    String payload = http.getString();
 
-    uint8_t selected = _pSerialSettings->getMenuSelectionYN();
+    http.end();
 
-    Serial.printf("\n\r\n\r");
-    if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+    if (deserializeJson(jsonDoc, payload.c_str()) != DeserializationError::Ok)
     {
-        flxLog_I(F("\tAborting update"));
+        flxLog_E(F("Invalid update manifest file."));
+        return false;
+
+    }
+
+    return true;
+}
+
+
+
+//-----------------------------------------------------------------------------------------------------
+//
+bool flxSysFirmware::writeOTAUpdateFromWiFi(WiFiClient *fFirmware, size_t updateSize, const char * md5Firmware)
+{
+
+    if (!fFirmware || !updateSize)
+        return false;
+
+    // Crank up the Update system
+    if (!Update.begin(updateSize))
+    {
+        flxLog_E(F("Firmware update startup failed to begin."));
         return false;
     }
+    // if we have an MD5 string, set it - the Update system will verify the binary - note set after begin is called
+    if (md5Firmware){
 
-    // Update time
-    flxLog_N_(F("Updating firmware... (00%%)"));
-    otaPull.SetCallback(ota_percent_cb);
-    int ret = otaPull.CheckForOTAUpdate(_otaURL, currentVersion, ESP32OTAPull::UPDATE_BUT_NO_BOOT);
-
-    if (ret == ESP32OTAPull::UPDATE_OK)
-    {
-        flxLog_I("Firmware update completed successfully. Rebooting...");
-        delay(1000);
-        esp_restart();
+        if ( !Update.setMD5(md5Firmware) )
+        {
+            flxLog_E(F("Unable to verify firmware contents"));
+            return false;
+        }
     }
 
-    flxLog_E_(F("Error when trying to update. "));
+    byte dataArray[kFirmwareUpdatePageSize];
+    uint bytesWritten = 0;
 
-    switch (ret)
+    // update loop setup
+
+    size_t bytesToWrite;
+    int barWidth = 20;
+    int displayPercent = 0;
+    int percentWritten = 0;
+
+    flxLog_N_(F("\tUpdating firmware... (00%%)"));
+
+    // check connected status -- wifi connections can be slow/spurty...
+    while (fFirmware->connected() && bytesWritten < updateSize)
     {
+        bytesToWrite = fFirmware->available();
 
-    case ESP32OTAPull::HTTP_FAILED:
-    default:
-        flxLog_N("HTTP failure (%d)", ret);
-        break;
+        if (!bytesToWrite)
+        {
+            delay(200);
+            continue;
+        }
 
-    case ESP32OTAPull::WRITE_ERROR:
-        flxLog_N("Firmware write error");
-        break;
+        if (bytesToWrite > kFirmwareUpdatePageSize)
+            bytesToWrite = kFirmwareUpdatePageSize;
 
-    case ESP32OTAPull::NO_UPDATE_AVAILABLE:
-    case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
-    case ESP32OTAPull::JSON_PROBLEM:
-        flxLog_N("Update not available or not configured");
-        break;
+        fFirmware->readBytes(dataArray, bytesToWrite);
+
+        if (Update.write(dataArray, bytesToWrite) != bytesToWrite)
+        {
+            flxLog_E(F("Error writing firmware to device. Binary might be incorrectly aligned."));
+            break;
+        }
+        bytesWritten += bytesToWrite;
+
+        percentWritten = (bytesWritten * 100) / updateSize;
+        if (percentWritten > displayPercent)
+        {
+            displayPercent = percentWritten;
+            Serial.write(&chCR, 1);
+            flxLog_N_("\tUpdating firmware... (%2d%%)", displayPercent);
+        }
+
     }
+
+    flxLog_N(""); // end the updat
+    if (Update.end())
+    {
+        if (Update.isFinished())
+            return true;
+    }
+    else
+        flxLog_E("Update error: %s", Update.errorString());
 
     return false;
 }
+//-----------------------------------------------------------------------------------
+bool flxSysFirmware::doFirmwareUpdateFromOTA(const char *firmwareURL, const char *md5)
+{
+
+    if (!firmwareURL)
+    {
+        flxLog_E(F("Invalid firmware URL"));
+        return false;
+    }
+
+    HTTPClient http;
+    http.begin(firmwareURL);
+
+    int ret = http.GET();
+
+    if (ret != HTTP_CODE_OK)
+    {
+        http.end();
+        flxLog_E(F("Error accessing update firmware file. Error %d"), ret);
+        return false;
+    }
+
+    size_t updateSize = http.getSize();
+
+    bool bStatus = writeOTAUpdateFromWiFi(http.getStreamPtr(), updateSize, md5);
+
+    http.end();
+    if (!bStatus)
+    {
+        flxLog_E(F("Firmware update failed. Please try again."));
+        return false;
+    }
+    flxLog_I("Firmware update completed successfully. Rebooting...");
+    delay(1000);
+    esp_restart();
+
+    return true;
+}
+
+
 
 bool flxSysFirmware::updateFirmwareFromOTA(void)
 {
@@ -417,33 +500,75 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
         return false;
     }
 
-    // we need a version string for this firmware
-    char szVersion[64];
-    flux.versionString(szVersion, sizeof(szVersion));
+    flxLog_N_("\tChecking for available firmware update ...");
 
-    ESP32OTAPull otaPull;
+    StaticJsonDocument<2000> _updateManifest;
 
-    flxLog_I_(F("Checking for firmware updates ..."));
+    if (!getOTAFirmwareManifest(_updateManifest))
+        return false;
 
-    otaPull.SetCallback(ota_dot_cb);
-    int ret = otaPull.CheckForOTAUpdate(_otaURL, szVersion, ESP32OTAPull::DONT_DO_UPDATE);
+    flxLog_N_(".");
 
-    switch (ret)
+    if (!_updateManifest.containsKey("firmware"))
     {
-    case ESP32OTAPull::UPDATE_AVAILABLE:
-        flxLog_I(F("update available"));
-
-        // do the update
-        return doWiFiOTA(otaPull, szVersion);
-        break;
-    case ESP32OTAPull::NO_UPDATE_AVAILABLE:
-    case ESP32OTAPull::NO_UPDATE_PROFILE_FOUND:
-        flxLog_I(F("no update available"));
-        break;
-    default:
-        flxLog_I(F("error encountered - code %d"), ret);
-        break;
+        flxLog_E(F("Invalid update manifest recieved - unable to continue"));
+        return false;
     }
 
-    return false;
+    JsonObject theEntry;
+
+    uint32_t appVersion = flux.version();
+
+    for (auto firmwareEntry : _updateManifest["firmware"].as<JsonArray>())
+    {
+        // ID? 
+        if (!firmwareEntry.containsKey("ID"))
+            continue;
+
+        if ( strcmp(firmwareEntry["ID"].as<const char*>(), "SFE-DATALOGGER-IOT") != 0)
+            continue;
+
+        if (firmwareEntry["VersionNumber"].as<unsigned long>() > appVersion)
+        {
+            theEntry = firmwareEntry;
+            break;
+        }
+        // if we are here, we have an entry.
+
+    }
+
+    if (theEntry.isNull())
+    {
+        Serial.printf("no updates available\n\r");
+        return true;
+    }
+
+    flxLog_N(".");
+    // Is this entry of a higher version? Need better checks ...version, hash, url
+    //TODO
+
+    if (!_pSerialSettings)
+    {
+        flxLog_E(F("No Settings interface available."));
+        return false;
+    }
+
+    char szVersion[64];
+    flux.versionString(szVersion, sizeof(szVersion));
+    // Need to prompt for an a-okay ...
+    Serial.printf("\n\r\tUpdate firmware from `%s` to version `%s` [Y/n]? ", szVersion, theEntry["Version"].as<const char*>());
+
+    uint8_t selected = _pSerialSettings->getMenuSelectionYN();
+
+    Serial.printf("\n\r\n\r");
+    if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+    {
+        Serial.printf("\tAborting update\n\r\r");
+        return false;
+    }
+
+    // go time
+    return doFirmwareUpdateFromOTA(theEntry["URL"].as<const char*>(), theEntry["Hash"].as<const char*>());
+
+
 }

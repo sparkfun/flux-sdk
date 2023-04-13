@@ -20,8 +20,11 @@
 #include "flxSettingsSerial.h"
 
 // for OTA
-#include "ESP32OTAPull.h"
 #include "flxWiFiESP32.h"
+#include "HTTPClient.h"
+#include <Arduino.h>
+#include <ArduinoJson.h>
+
 
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
@@ -30,6 +33,7 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
     void doFactoryReset(void);
     bool verifyBoardOTASupport(void);
     bool writeOTAUpdateFromStream(Stream *, size_t);
+    bool writeOTAUpdateFromWiFi(WiFiClient * client, size_t size, const char* md5=nullptr);
     bool getFirmwareFilename(void);
     bool updateFirmwareFromSD(void);
     bool updateFirmwareFromOTA(void);
@@ -114,9 +118,10 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
     {
         if (!otaURL)
             return;
+
         _otaURL = otaURL;
 
-        if (_bUpdateOTA)
+        if (!_bUpdateOTA)
         {
             flxRegister(updateFirmwareOTA, "Update Firmware - OTA", "Update the firmware over-the-air");
             _bUpdateOTA = true;
@@ -125,8 +130,8 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
 
   private:
     int getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit);
-
-    bool doWiFiOTA(ESP32OTAPull &otaPull, char *currentVersion);
+    bool getOTAFirmwareManifest(JsonDocument &jsonDoc);
+    bool doFirmwareUpdateFromOTA(const char *firmwareURL, const char *md5 = nullptr);
 
     // A property that contains the name of the update firmware file
     flxPropertyHiddenString<flxSysFirmware> updateFirmwareFile;
