@@ -68,9 +68,13 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         setName("System Update", "Device Reset and Firmware Update Options");
 
         flxRegister(factoryReset, "Factory Reset", "Erase all settings and revert to original firmware");
+        factoryReset.prompt=false;
 
         flxRegister(updateFirmwareSD, "Update Firmware - SD Card", "Update the firmware from the SD card");
+        updateFirmwareSD.prompt=false;
+
         flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
+
     }
 
     void setSerialSettings(flxSettingsSerial *pSettings)
@@ -122,6 +126,7 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         if (!_bUpdateOTA)
         {
             flxRegister(updateFirmwareOTA, "Update Firmware - OTA", "Update the firmware over-the-air");
+            updateFirmwareOTA.prompt=false;
             _bUpdateOTA = true;
         }
     }
