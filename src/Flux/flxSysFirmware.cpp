@@ -516,6 +516,13 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
     }
 
     JsonObject theEntry;
+    const char * appClassID = flux.appClassID();
+
+    if (!appClassID)
+    {
+        flxLog_E(F("Application Name class not set - unable to search for firmware"));
+        return false;
+    }
 
     uint32_t appVersion = flux.version();
 
@@ -525,7 +532,7 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
         if (!firmwareEntry.containsKey("ID"))
             continue;
 
-        if ( strcmp(firmwareEntry["ID"].as<const char*>(), "SFE-DATALOGGER-IOT") != 0)
+        if ( strcmp(firmwareEntry["ID"].as<const char*>(), appClassID) != 0)
             continue;
 
         if (firmwareEntry["VersionNumber"].as<unsigned long>() > appVersion)

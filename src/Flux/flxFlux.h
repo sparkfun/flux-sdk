@@ -207,6 +207,15 @@ class flxFlux : public flxObjectContainer
         return _v_build;
     }
 
+    void setAppClassID(const char * ID)
+    {
+        _appClassID = ID;
+    }
+    const char * appClassID(void)
+    {
+        return _appClassID;
+    }
+
     void writeBanner(void)
     {
         char szBuffer[128];
@@ -269,6 +278,8 @@ class flxFlux : public flxObjectContainer
     uint32_t _v_build;
     std::string _v_desc;
 
+    const char *_appClassID;
+
     flxApplication * _theApplication;
 
     uint8_t _token[32];
@@ -276,7 +287,7 @@ class flxFlux : public flxObjectContainer
 
     // Note private constructor...
     flxFlux() : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, 
-        _theApplication{nullptr}, _token{0}, _hasToken{false}
+        _appClassID{nullptr}, _theApplication{nullptr}, _token{0}, _hasToken{false}
     {
 
         // setup some default heirarchy things ...
@@ -378,6 +389,11 @@ public:
     void setVersion(uint major, uint minor, uint point, const char * desc, uint32_t build )
     {
         flux.setVersion(major, minor, point, desc, build);
+    }
+
+    void setAppClassID(const char * ID)
+    {
+        flux.setAppClassID(ID);
     }
 private:
     flxDescriptor appDesc;
