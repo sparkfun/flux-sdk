@@ -243,7 +243,7 @@ uint _flxFSSDMMCard::size(void)
 const char *_flxFSSDMMCard::type(void)
 {
     if (!_isInitalized)
-        return nullptr;
+        return "Unknown";
 
     switch (SD_MMC.cardType())
     {
