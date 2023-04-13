@@ -261,6 +261,13 @@ const char *_flxFSSDMMCard::type(void)
     }
 }
 
+uint _flxFSSDMMCard::used(void)
+{
+    if (!_isInitalized)
+        return 0;
+
+    return SD_MMC.usedBytes() / (1024 * 1024);
+}
 // -------------------------------------------------------
 // File implementation
 

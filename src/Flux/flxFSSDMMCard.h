@@ -115,6 +115,8 @@ class _flxFSSDMMCard : public flxIFileSystem
 
     const char *type(void);
 
+    uint used(void);
+
     bool enabled(void)
     {
         return _isInitalized;
@@ -213,10 +215,17 @@ class flxFSSDMMCard : public flxIFileSystem, public flxSystemType<flxFSSDMMCard>
     {
         return _theSDMMCard.size();
     }
+
+    uint used(void)
+    {
+        return _theSDMMCard.used();
+    }
+    
     const char *type(void)
     {
         return _theSDMMCard.type();
     }
+
 
     bool enabled(void)
     {
