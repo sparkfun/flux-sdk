@@ -1,6 +1,5 @@
 ArduinoJson
 ArduinoMqttClient
-ESP32-OTA-Pull
 "Azure SDK for C"
 "BlueRobotics MS5837 Library"
 BME680                                                   
