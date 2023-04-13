@@ -1079,7 +1079,10 @@ class flxParameterInString : public flxParameterIn, _flxDataInString
 class flxParameterInVoidType : public flxParameterIn
 {
   public:
+    flxParameterInVoidType() : prompt{true}{}
+
     virtual void set(void) = 0;
+    bool prompt;
 };
 
 // VOID input parameter -- function call, no params

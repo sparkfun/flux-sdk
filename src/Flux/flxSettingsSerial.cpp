@@ -381,22 +381,30 @@ bool flxSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameter
 
     // let's get a value for the parameter
 
+
     // Header
     drawPageHeader(pCurrent, pParam->name());
 
-    // if the parameter is a void type (flxTypeNone),
-    // Editing Intro
-    Serial.printf("\tCall `%s`() [Y/n]? ", pParam->name());
+    uint8_t selected = 'y';
+    flxParameterInVoidType * pVoid = reinterpret_cast<flxParameterInVoidType *>(pParam);
 
-    uint8_t selected = getMenuSelectionYN();
+    // prompt before calling (some void calls do their own prompt/ux)
+    if (pVoid->prompt)
+    {
+        // if the parameter is a void type (flxTypeNone),
+        // Editing Intro
+        Serial.printf("\tCall `%s`() [Y/n]? ", pParam->name());
 
-    if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
-        return false;
+        selected = getMenuSelectionYN();
 
-    Serial.printf("\n\r\n\r");
+        if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+            return false;
+
+        Serial.printf("\n\r\n\r");
+    }
     if (selected == 'y')
     {
-        reinterpret_cast<flxParameterInVoidType *>(pParam)->set();
+        pVoid->set();
         Serial.printf("\t[`%s` was called]\n\r", pParam->name());
     }
     else
