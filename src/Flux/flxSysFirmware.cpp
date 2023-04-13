@@ -527,7 +527,7 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
         return false;
     }
 
-    flxLog_N_("\tChecking for available firmware update ...");
+    flxLog_N_("\tChecking for an available firmware update ...");
 
     StaticJsonDocument<2000> _updateManifest;
 
@@ -552,6 +552,13 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
     }
 
     uint32_t appVersion = flux.version();
+    uint32_t canidateVersion = appVersion;
+
+    // loop through all the available firmware entries in the manifest. 
+    // Find:
+    //      - Firmware for this app ID
+    //      - Firmware with the highest version, that is greater than
+    //        the current appVersion.
 
     for (auto firmwareEntry : _updateManifest["firmware"].as<JsonArray>())
     {
@@ -562,16 +569,15 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
         if ( strcmp(firmwareEntry["ID"].as<const char*>(), appClassID) != 0)
             continue;
 
-        if (firmwareEntry["VersionNumber"].as<unsigned long>() > appVersion)
+        if (firmwareEntry["VersionNumber"].as<unsigned long>() > canidateVersion)
         {
             theEntry = firmwareEntry;
-            break;
+            canidateVersion = firmwareEntry["VersionNumber"].as<unsigned long>();
         }
-        // if we are here, we have an entry.
 
     }
 
-    if (theEntry.isNull())
+    if (theEntry.isNull() || canidateVersion == appVersion)
     {
         Serial.printf("no updates available\n\r");
         return true;
@@ -588,7 +594,7 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
     char szVersion[64];
     flux.versionString(szVersion, sizeof(szVersion));
     // Need to prompt for an a-okay ...
-    Serial.printf("\n\r\tUpdate firmware from `%s` to version `%s` [Y/n]? ", szVersion, theEntry["Version"].as<const char*>());
+    Serial.printf("\n\r\tUpdate firmware from version `%s` to version `%s` [Y/n]? ", szVersion, theEntry["Version"].as<const char*>());
 
     uint8_t selected = _pSerialSettings->getMenuSelectionYN();
 
