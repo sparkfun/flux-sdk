@@ -27,7 +27,7 @@ const char chCR = 13; // for display erase during progress
 // factoryReset()
 //
 // Sets the system back to the *factory* firmware and erases nvs
-void flxSysFirmware::doFactoryReset(void)
+bool flxSysFirmware::doFactoryReset(void)
 {
 
     flxLog_N("\n\r");
@@ -41,7 +41,7 @@ void flxSysFirmware::doFactoryReset(void)
     if (par_it == NULL)
     {
         flxLog_N(F("Failed. Factory Installed firmware not installed."));
-        return;
+        return false;
     }
     flxLog_N_(".");
 
@@ -54,7 +54,7 @@ void flxSysFirmware::doFactoryReset(void)
     if (err != ESP_OK)
     {
         flxLog_N(F("Failed. Error setting factory firmware bootable."));
-        return;
+        return false;
     }
     // Firmware boot set to the factory partition, now reset the NVS
 
@@ -69,8 +69,35 @@ void flxSysFirmware::doFactoryReset(void)
     delay(500);
 
     esp_restart();
+
+    return true; // never gonna happen
 }
 
+//-----------------------------------------------------------------------------------
+bool flxSysFirmware::factoryResetDevice(void)
+{
+
+
+    if (!_pSerialSettings)
+    {
+        flxLog_E(F("No Settings interface available."));
+        return false;
+    }
+
+    // Need to prompt for an a-okay ...
+    Serial.printf("\n\r\tPerform Factory Reset? [Y/n]? ");
+
+    uint8_t selected = _pSerialSettings->getMenuSelectionYN();
+
+    Serial.printf("\n\r\n\r");
+    if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+    {
+        Serial.printf("\tAborting reset\n\r\r");
+        return false;
+    }
+
+    return doFactoryReset();
+}
 //-----------------------------------------------------------------------------------
 // make sure we have OTA partitions
 bool flxSysFirmware::verifyBoardOTASupport(void)
@@ -551,8 +578,6 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
     }
 
     flxLog_N(".");
-    // Is this entry of a higher version? Need better checks ...version, hash, url
-    //TODO
 
     if (!_pSerialSettings)
     {
