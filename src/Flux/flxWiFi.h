@@ -64,7 +64,7 @@ public:
         // Actual data?
         if (password.length() > 0 && ssid.length() > 0)
         {
-            flxLog_I(F("Updating WiFi Credentials. Network: %s"), ssid.c_str());
+            flxLog_I(F("New WiFi Credentials detected - updating to network: %s"), ssid.c_str());
             if (_targetDevice->isConnected())
                 _targetDevice->disconnect();
             _targetDevice->setSSID(ssid);
