@@ -181,6 +181,7 @@ extern flxLogging &flxLog;
 #define flxLog_W(format, ...) flxLog.logPrintf(flxLogWarning, true, format, ##__VA_ARGS__)
 #define flxLog_E(format, ...) flxLog.logPrintf(flxLogError, true, format, ##__VA_ARGS__)
 #define flxLog_N(format, ...) flxLog.logPrintf(flxLogNone, true, format, ##__VA_ARGS__)
+#define flxLog__(type, format, ...) flxLog.logPrintf(type, true, format, ##__VA_ARGS__)
 
 // versions what don't end with a newline ...
 #define flxLog_V_(format, ...) flxLog.logPrintf(flxLogVerbose, false, format, ##__VA_ARGS__)
@@ -213,6 +214,10 @@ extern flxLogging &flxLog;
     {                                                                                                                  \
     } while (0)
 #define flxLog_N(format, ...)                                                                                           \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define flxLog__(format, ...)                                                                                           \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
