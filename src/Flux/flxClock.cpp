@@ -76,9 +76,14 @@ flxIClock *_flxClock::findRefClockByName(const char *name)
 //----------------------------------------------------------------
 void _flxClock::set_ref_clock(std::string selClock)
 {
+
+    // This can be called before our clock list is setup,  -- at startup.
+    // So stash name, but not the null clock.
+
+    _nameRefClock = selClock;
+
     _refClock = findRefClockByName(selClock.c_str());
 
-    _nameRefClock = _refClock ? selClock : kNoClockName;
 }
 
 //----------------------------------------------------------------
