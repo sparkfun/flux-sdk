@@ -122,7 +122,7 @@ std::string flxDevST25DV::get_ssid()
 }
 void flxDevST25DV::set_ssid(std::string newSsid)
 {
-    flxLog_I("ST25DV: set_ssid called with SSID \"%s\"", newSsid); // DELETE ME !
+
 }
 std::string flxDevST25DV::get_password()
 {
@@ -143,7 +143,7 @@ std::string flxDevST25DV::get_password()
 }
 void flxDevST25DV::set_password(std::string newPassword)
 {
-    flxLog_I("ST25DV: set_ssid called with password \"%s\"", newPassword); // DELETE ME !
+    
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -157,8 +157,6 @@ bool flxDevST25DV::loop(void)
 
     if (millis() > (lastMillis + 15000)) // Check tag every 15 seconds to avoid possible I2C/RF collisions
     {
-        flxLog_I("ST25DV: checking WiFi record");
-
         if (SFE_ST25DV64KC_NDEF::RFFieldDetected()) // Do a quick RF check first
         {
             lastMillis = millis() - 10000; // Wait another 5 seconds if an RF field was detected
@@ -172,7 +170,6 @@ bool flxDevST25DV::loop(void)
             {
                 strcpy(_previousPassword, _readPassword); // Update the previous SSID and Password
                 strcpy(_previousSsid, _readSsid);
-                flxLog_I("ST25DV: new WiFi record detected! SSID:\"%s\" Password:\"%s\"", _readSsid, _readPassword); // DELETE ME !
                 new_WiFi_record.emit();
                 result = true;
             }
