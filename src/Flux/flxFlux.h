@@ -222,8 +222,8 @@ class flxFlux : public flxObjectContainer
         versionString(szBuffer, sizeof(szBuffer), true);
 
         flxLog_N("");
-        flxLog_N(F("%s   %s"), name(), szBuffer);
-        flxLog_N(F("%s\n\r"), description());
+        flxLog_N(F("%s   %s"), name(), description());
+        flxLog_N(F("Version: %s\n\r"), szBuffer);
     }
 
     const char* deviceId(void)
