@@ -73,6 +73,12 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     {
         setFileSystem(&fs);
     }
+
+    std::string currentFilename(void)
+    {
+        return _currentFilename;
+    }
+    
     // Rotation Period in Days
     flxPropertyRWUint<flxFileRotate, &flxFileRotate::get_RotatePeriod, &flxFileRotate::set_RotatePeriod> rotatePeriod = {
         24, {{"6 Hours", 6}, {"12 Hours", 12}, {"1 Day", 24}, {"2 Days", 48}, {"1 Week", 168}}};
