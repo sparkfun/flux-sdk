@@ -43,6 +43,8 @@ flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{fal
 
     flxRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
 
+    _objsToLog.setName("Logger Objects");
+    
     flux.add(this);
 }
 //----------------------------------------------------------------------------
