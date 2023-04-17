@@ -205,7 +205,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
                      _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr},
                      _wifiClient{nullptr}
     {
-        flxRegister(enabled, "Enabled", "Enable or Disable the MQTT Client");
+        flxRegister(enabled, "Enabled", "Enable or Disable the HTTP Client");
 
         flxRegister(URL, "URL", "The URL to call with log information");
 
