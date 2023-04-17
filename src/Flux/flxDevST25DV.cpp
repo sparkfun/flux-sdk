@@ -75,7 +75,7 @@ bool flxDevST25DV::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 
     if ((icRef == 0x50) || (icRef == 0x51))
     {
-        flxLog_I("ST25DV: isConnected icRef 0x%x", icRef);
+        //flxLog_I("ST25DV: isConnected icRef 0x%x", icRef);
         return true;
     }
     else
