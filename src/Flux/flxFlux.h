@@ -105,6 +105,11 @@ class flxFlux : public flxObjectContainer
 
         flxTypeID type = T::type();
 
+        // name the result container
+        char szBuffer[64];
+        snprintf(szBuffer, sizeof(szBuffer), "Get Type: 0x%X", type);
+        results.setName(szBuffer);
+
         T *theItem;
         for (int i = 0; i < Devices.size(); i++)
         {
@@ -123,6 +128,11 @@ class flxFlux : public flxObjectContainer
     std::shared_ptr<flxOperationContainer> get(flxTypeID type)
     {
         flxOperationContainer results;
+
+        // name the result container
+        char szBuffer[64];
+        snprintf(szBuffer, sizeof(szBuffer), "Get Type: 0x%X", type);
+        results.setName(szBuffer);
 
         flxOperation *theItem;
         for (int i = 0; i < Devices.size(); i++)
