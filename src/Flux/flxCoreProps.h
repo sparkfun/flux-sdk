@@ -1332,7 +1332,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
     }
 
   public:
-    flxObject() : _hidden{false}
+    flxObject() : _hidden{false}, _parent(nullptr)
     {
         // setup a default name for this device.
         char szBuffer[64];
@@ -1443,20 +1443,33 @@ template <class T> class flxContainer : public flxObject
         return _vector.size();
     }
 
-    void push_back(T &value)
-    {
-        _vector.push_back(value);
-        value->setParent(this);
-    }
-    void push_back(T *value)
+    void push_back(T value)
     {
         // make sure the value isn't already in the list...
         if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
+        {
+            flxLog_I(F("Not adding duplicate device item to container: %s"), name());
             return;
-
+        }
         _vector.push_back(value);
-        value->setParent(this);
+
+        // DONT overwrite a parent
+        if (!value->parent())
+            value->setParent(this);
     }
+    // void push_back(T *value)
+    // {
+    //     // make sure the value isn't already in the list...
+    //     if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
+    //     {
+    //         flxLog_I(F("Not adding duplicate device item to container: %s"), name());
+    //         return;
+    //     }
+
+    //     _vector.push_back(value);
+    //     value->setParent(this);
+
+    // }
     void pop_back(void)
     {
         _vector.pop_back();
