@@ -18,7 +18,7 @@
 #include <ctype.h>
 #include <time.h>
 
-#define kOutputBufferSize 128
+#define kOutputBufferSize 256
 
 //-----------------------------------------------------------------------------
 // System settings user experience - via the serial console
@@ -443,9 +443,12 @@ bool flxSettingsSerial::drawPage(flxActionContainer *pCurrent)
 void flxSettingsSerial::drawPageHeader(flxObject *pCurrent, const char *szItem)
 {
 
-    char szBuffer[kOutputBufferSize] = {0};
-    char szOutput[kOutputBufferSize] = {0};
+    char szBuffer[kOutputBufferSize];
+    char szOutput[kOutputBufferSize];
 
+
+    memset(szBuffer, '\0', kOutputBufferSize);
+    memset(szOutput, '\0', kOutputBufferSize);
     Serial.println();
 
     // Do we have a start item to add?
