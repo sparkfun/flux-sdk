@@ -32,8 +32,7 @@ flxRegisterDevice(flxDevRV8803);
 flxDevRV8803::flxDevRV8803()
 {
 
-    spSetupDeviceIdent(getDeviceName());
-    setDescription("RV8803 Real Time Clock");
+    setName(getDeviceName(), "RV8803 Real Time Clock");
 
     // Register output params
     flxRegister(readDateUSA, "Read Date (MM/DD/YYYY)", "Read the date in USA format");
