@@ -103,8 +103,8 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     void listenForRestore(flxSignalVoid &theEvent);
 
     // Properties.
-    flxPropertyBool<flxSettingsSave> saveOnEvent = {true};
-    flxPropertyBool<flxSettingsSave> restoreOnEvent = {true};
+    flxPropertyHiddenBool<flxSettingsSave> saveOnEvent = {true};
+    flxPropertyHiddenBool<flxSettingsSave> restoreOnEvent = {true};
 
     flxPropertyBool<flxSettingsSave> fallbackSave = {false};    
     flxPropertyBool<flxSettingsSave> fallbackRestore = {true};
