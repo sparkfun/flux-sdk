@@ -175,7 +175,10 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
     }
        		 	
     if (result == flxEditSuccess)
+    {
+        _bIsDirty=true;
         Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());
+    }
     else
         Serial.printf("\t[%s is unchanged]\n\r", pProp->name());
 
@@ -277,6 +280,8 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
             returnValue = true;
             break;
         }
+
+        _bIsDirty = pParam->enabled() != (selected == 1);
 
         pParam->setEnabled(selected == 1);
     }
@@ -976,6 +981,7 @@ bool flxSettingsSerial::loop(void)
 
     if (_systemRoot && Serial.available())
     {
+        _bIsDirty=false;
         
         drawEntryBanner();
 
@@ -988,7 +994,8 @@ bool flxSettingsSerial::loop(void)
 
         // send out a done event if the changes were successful.
 
-        if (doSave)
+        // Was the menu returned normally and were changes made?
+        if (doSave && _bIsDirty)
             on_finished.emit();
 
         return true;

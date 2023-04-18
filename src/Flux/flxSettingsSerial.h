@@ -332,9 +332,12 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             bool result = pEntity->setValue(limitTags.at(selected - 1).data);
 
             if (result)
+            {
+                _bIsDirty=true;
                 Serial.printf("\t[The value of %s was updated to %s = %s ]\n\r", pEntity->name(),
                               limitTags.at(selected - 1).name.c_str(),
                               limitTags.at(selected - 1).data.to_string().c_str());
+            }
             else
                 Serial.printf("\t[%s is unchanged]\n\r", pEntity->name());
 
@@ -352,4 +355,6 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     // root for the system
 
     flxObjectContainer *_systemRoot;
+
+    bool _bIsDirty;
 };
