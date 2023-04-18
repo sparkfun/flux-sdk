@@ -20,11 +20,10 @@
 #include "flxSettingsSerial.h"
 
 // for OTA
-#include "flxWiFiESP32.h"
 #include "HTTPClient.h"
+#include "flxWiFiESP32.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
-
 
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
@@ -33,7 +32,7 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
     bool doFactoryReset(void);
     bool verifyBoardOTASupport(void);
     bool writeOTAUpdateFromStream(Stream *, size_t);
-    bool writeOTAUpdateFromWiFi(WiFiClient * client, size_t size, const char* md5=nullptr);
+    bool writeOTAUpdateFromWiFi(WiFiClient *client, size_t size, const char *md5 = nullptr);
     bool getFirmwareFilename(void);
     bool updateFirmwareFromSD(void);
     bool updateFirmwareFromOTA(void);
@@ -42,6 +41,9 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
     // Experiement with OTA option
 
     //------------------------------------------------------------------------------
+
+    void restartDevice(void);
+
     void factory_reset(void)
     {
         bool status = factoryResetDevice();
@@ -67,14 +69,16 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         // Set name and description
         setName("System Update", "Device Reset and Firmware Update Options");
 
+        flxRegister(deviceRestart, "Device Restart", "Restart/reboot the device");
+        deviceRestart.prompt = false;
+
         flxRegister(factoryReset, "Factory Reset", "Erase all settings and revert to original firmware");
-        factoryReset.prompt=false;
+        factoryReset.prompt = false;
 
         flxRegister(updateFirmwareSD, "Update Firmware - SD Card", "Update the firmware from the SD card");
-        updateFirmwareSD.prompt=false;
+        updateFirmwareSD.prompt = false;
 
         flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
-
     }
 
     void setSerialSettings(flxSettingsSerial *pSettings)
@@ -104,6 +108,8 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
     }
 
     // Our input parameters/functions
+    flxParameterInVoid<flxSysFirmware, &flxSysFirmware::restartDevice> deviceRestart;
+
     flxParameterInVoid<flxSysFirmware, &flxSysFirmware::factory_reset> factoryReset;
 
     flxParameterInVoid<flxSysFirmware, &flxSysFirmware::update_firmware_SD> updateFirmwareSD;
@@ -126,7 +132,7 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         if (!_bUpdateOTA)
         {
             flxRegister(updateFirmwareOTA, "Update Firmware - OTA", "Update the firmware over-the-air");
-            updateFirmwareOTA.prompt=false;
+            updateFirmwareOTA.prompt = false;
             _bUpdateOTA = true;
         }
     }

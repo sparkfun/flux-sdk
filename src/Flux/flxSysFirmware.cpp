@@ -23,6 +23,40 @@
 
 const char chCR = 13; // for display erase during progress
 
+
+//-----------------------------------------------------------------------------------
+void flxSysFirmware::restartDevice(void)
+{
+
+
+    if (!_pSerialSettings)
+    {
+        flxLog_E(F("No Settings interface available."));
+        return;
+    }
+
+    // Need to prompt for an a-okay ...
+    Serial.printf("\n\r\tPerform Device Restart? [Y/n]? ");
+
+    uint8_t selected = _pSerialSettings->getMenuSelectionYN();
+
+    Serial.printf("\n\r\n\r");
+    if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
+    {
+        Serial.printf("\tAborting restart\n\r\r");
+        return ;
+    }
+
+    // Now
+    flxLog_N(F("Restarting the device..."));
+
+    delay(500);
+
+    esp_restart();
+
+    return;
+
+}
 //-----------------------------------------------------------------------------------
 // factoryReset()
 //
