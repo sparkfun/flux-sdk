@@ -1477,7 +1477,17 @@ template <class T> class flxContainer : public flxObject
 
     void insert(typename std::vector<T>::iterator it, T value)
     {
-       _vector.insert(it, value);
+        // make sure the value isn't already in the list...
+        if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
+        {
+            flxLog_I(F("Not adding duplicate device item to container: %s"), name());
+            return;
+        }
+        _vector.insert(it, value);
+
+        // DONT overwrite a parent
+        if (!value->parent())
+            value->setParent(this);
     }
 
     auto back(void) -> decltype(_vector.back())
