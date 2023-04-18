@@ -51,7 +51,7 @@ public:
         // Timezone
         flxRegister(timeZone, "The Time Zone", "Time zone setting string for the device");
 
-        setName("NTP Client", "NTP Time Synch Client");
+        setName("NTP Client", "NTP Time Sync Client");
 
         flux.add(this);
     };

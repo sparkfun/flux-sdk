@@ -27,7 +27,7 @@ class flxIoTAWS : public flxMQTTESP32SecureCore<flxIoTAWS>, public flxWriter
 public:
     flxIoTAWS()
     {
-        setName("AWS IoT", "Connection to AWs IoT");
+        setName("AWS IoT", "Connection to AWS IoT");
         flux.add(this);
     }
     
