@@ -1210,6 +1210,44 @@ class flxOperation : public flxObject, public _flxParameterContainer
     {
         return false;
     }
+
+    virtual bool onSave(flxStorageBlock *stBlk)
+    {
+        if (!stBlk)
+            return false;
+
+        // se need to stash our parameter enable flags.
+        flxParameterOutList outParams = getOutputParameters();
+
+        for( auto param : outParams)
+        {
+            if (!stBlk->write(param->name(), param->enabled()))
+                flxLog_E(F("Error saving enabled flag for %s - parameter %s"), name(), param->name());
+        }
+
+        return flxObject::onSave(stBlk);
+    }
+
+    virtual bool onRestore(flxStorageBlock *stBlk)
+    {
+        if (!stBlk)
+            return false;
+
+        // se need to restore our parameter enable flags.
+        flxParameterOutList outParams = getOutputParameters();
+
+        bool isEnabled; 
+        for( auto param : outParams)
+        {
+            if (!stBlk->read(param->name(), isEnabled))
+                flxLog_E(F("Error reading enabled flag for %s - parameter %s"), name(), param->name());
+            else
+                param->setEnabled(isEnabled);
+        }
+
+        return flxObject::onRestore(stBlk);
+    }
+
 };
 
 using flxOperationContainer = flxContainer<flxOperation *>;

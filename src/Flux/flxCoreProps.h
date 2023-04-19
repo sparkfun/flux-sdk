@@ -1366,6 +1366,11 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         return _hidden;
     }
     //---------------------------------------------------------------------------------
+    virtual bool onSave(flxStorageBlock *stBlk)
+    {
+        return saveProperties(stBlk);
+    }
+    //---------------------------------------------------------------------------------
     virtual bool save(flxStorage *pStorage)
     {
 
@@ -1373,15 +1378,21 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         if (!stBlk)
             return false;
 
-        bool status = saveProperties(stBlk);
+        bool status = onSave(stBlk);
+
         if (!status)
-            flxLog_W("Error Saving a property for %s", name());
+            flxLog_W("Error saving state for %s", name());            
 
         pStorage->endBlock(stBlk);
 
         return status;
     };
 
+    //---------------------------------------------------------------------------------
+    virtual bool onRestore(flxStorageBlock *stBlk)
+    {
+        return restoreProperties(stBlk);
+    }
     //---------------------------------------------------------------------------------
     virtual bool restore(flxStorage *pStorage)
     {
@@ -1394,10 +1405,11 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
             return true; // nothing to restore
         }
 
-        // restore props
-        bool status = restoreProperties(stBlk);
+        // restore the object 
+        bool status = onRestore(stBlk);
+
         if (!status)
-            flxLog_D("Error restoring a property for %s", name());
+            flxLog_D("Error restoring state for %s", name());
 
         pStorage->endBlock(stBlk);
 
