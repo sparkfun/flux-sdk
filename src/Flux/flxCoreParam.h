@@ -1239,9 +1239,7 @@ class flxOperation : public flxObject, public _flxParameterContainer
         bool isEnabled; 
         for( auto param : outParams)
         {
-            if (!stBlk->read(param->name(), isEnabled))
-                flxLog_E(F("Error reading enabled flag for %s - parameter %s"), name(), param->name());
-            else
+            if (stBlk->read(param->name(), isEnabled))
                 param->setEnabled(isEnabled);
         }
 
