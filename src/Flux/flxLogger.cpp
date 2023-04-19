@@ -18,6 +18,7 @@
 
 #include "flxLogger.h"
 #include "flxFlux.h"
+#include "flxUtils.h"
 #include <string.h>
 #include <time.h>
 
@@ -309,30 +310,8 @@ std::string flxLogger::get_timestamp(void)
 
     case TimeStampISO8601:
     case TimeStampISO8601TZ:
-        strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
-
-        if (_timestampType == TimeStampISO8601TZ)
-        {
-            time_t t_gmt = mktime(gmtime(&t_now));
-            int deltaT = t_now - t_gmt;
-
-            char chSign;
-            if (deltaT < 0)
-            {
-                chSign = '-';
-                deltaT *= -1;
-            }else 
-                chSign = '+';
-
-            char szTmp[24] = {0};
-
-            int tz_hrs = deltaT / 3600;
-            int tz_min = (deltaT % 3600) / 60;
-
-            snprintf(szTmp, sizeof(szTmp), "%c%02d:%02d", chSign, tz_hrs, tz_min);
-
-            strlcat(szBuffer, szTmp, sizeof(szBuffer));
-        }
+        flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), 
+                _timestampType == TimeStampISO8601TZ);
         break;
 
     case TimeStampNone:

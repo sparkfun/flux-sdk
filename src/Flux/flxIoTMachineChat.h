@@ -54,31 +54,7 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
 
         time_t t_now;
         time(&t_now);
-        struct tm *tmLocal = localtime(&t_now);
-
-        strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
-
-
-        time_t t_gmt = mktime(gmtime(&t_now));
-        int deltaT = t_now - t_gmt;
-
-        char chSign;
-        if (deltaT < 0)
-        {
-            chSign = '-';
-            deltaT *= -1;
-        }else 
-            chSign = '+';
-
-        char szTmp[24] = {0};
-
-        int tz_hrs = deltaT / 3600;
-        int tz_min = (deltaT % 3600) / 60;
-
-        snprintf(szTmp, sizeof(szTmp), "%c%02d:%02d", chSign, tz_hrs, tz_min);
-
-        strlcat(szBuffer, szTmp, sizeof(szBuffer));
-
+        flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), true);
 
         StaticJsonDocument<kOutputBufferSize> jsonOutput;
 
