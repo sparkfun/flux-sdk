@@ -18,6 +18,9 @@
 #include "flxFmtJSON.h"
 #include "flxUtils.h"
 
+#include <time.h>
+#include <string.h>
+
 #define kOutputBufferSize 2500
 
 // simple class to support MachineChat output
@@ -45,6 +48,38 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
             return;
         }
 
+        // We need time for the timestamp, TODO - make this a util function ...
+        char szBuffer[64];
+        memset(szBuffer, '\0', sizeof(szBuffer));
+
+        time_t t_now;
+        time(&t_now);
+        struct tm *tmLocal = localtime(&t_now);
+
+        strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
+
+
+        time_t t_gmt = mktime(gmtime(&t_now));
+        int deltaT = t_now - t_gmt;
+
+        char chSign;
+        if (deltaT < 0)
+        {
+            chSign = '-';
+            deltaT *= -1;
+        }else 
+            chSign = '+';
+
+        char szTmp[24] = {0};
+
+        int tz_hrs = deltaT / 3600;
+        int tz_min = (deltaT % 3600) / 60;
+
+        snprintf(szTmp, sizeof(szTmp), "%c%02d:%02d", chSign, tz_hrs, tz_min);
+
+        strlcat(szBuffer, szTmp, sizeof(szBuffer));
+
+
         StaticJsonDocument<kOutputBufferSize> jsonOutput;
 
         JsonObject jsonContext;
@@ -61,6 +96,7 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
             jsonOutput.clear();
             jsonContext = jsonOutput.createNestedObject("context");
             jsonContext["target_id"] = kv.key();
+            jsonContext["timestamp"] = szBuffer;
 
             jsonOutput["data"] = kv.value();
 
