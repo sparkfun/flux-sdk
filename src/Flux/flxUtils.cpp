@@ -15,6 +15,7 @@
 
 #include <math.h>
 #include <string.h>
+#include <time.h>
 
 #include <Arduino.h>
 
@@ -364,4 +365,36 @@ void flx_utils::uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint3
     secs %= 60;
     minutes %= 60;
     hours %= 24;
+}
+//---------------------------------------------------------------------------------------------------
+// Return a ISO8601 timestamp
+void flx_utils::timestampISO8601( time_t &t_time, char * buffer, size_t length, bool bTZ)
+{
+   
+    struct tm *tmLocal = localtime(&t_time);
+    strftime(buffer, length, "%G-%m-%dT%T", tmLocal);
+
+    if (!bTZ)
+        return;
+
+    time_t t_gmt = mktime(gmtime(&t_time));
+    int deltaT = t_time - t_gmt;
+
+    char chSign;
+    if (deltaT < 0)
+    {
+        chSign = '-';
+        deltaT *= -1;
+    }
+    else
+        chSign = '+';
+
+    char szTmp[24] = {0};
+
+    int tz_hrs = deltaT / 3600;
+    int tz_min = (deltaT % 3600) / 60;
+
+    snprintf(szTmp, sizeof(szTmp), "%c%02d:%02d", chSign, tz_hrs, tz_min);
+
+    strlcat(buffer, szTmp, length);
 }

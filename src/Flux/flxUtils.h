@@ -57,6 +57,8 @@ bool decode_data_aes( uint8_t * key, unsigned char iv[16], char * source, char *
 
 void uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint32_t &secs, uint32_t &mills);
 
+void timestampISO8601(time_t &theTime, char * buffer, size_t length, bool bTZ=false);
+
 } // namespace flx_utils
 
 /*
