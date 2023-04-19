@@ -64,6 +64,9 @@ bool flxFlux::start(bool bAutoLoad)
     if (bAutoLoad)
         flxDeviceFactory::get().buildDevices(i2cDriver());
 
+    if (_theApplication)
+        _theApplication->onDeviceLoad();
+
     // Everything should be loaded -- restore settings from storage
     if (flxSettings.isAvailable())
     {

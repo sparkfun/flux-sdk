@@ -396,6 +396,13 @@ public:
         return true;
     }
 
+    // called after device autoload occurs, but before system state restore is called during
+    // startup
+    virtual void onDeviceLoad(void)
+    {
+        return;
+    }
+
     void setVersion(uint major, uint minor, uint point, const char * desc, uint32_t build )
     {
         flux.setVersion(major, minor, point, desc, build);
