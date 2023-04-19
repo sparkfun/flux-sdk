@@ -43,7 +43,8 @@
 typedef enum
 {
     flxDeviceKindI2C,
-    flxDeviceKindSPI
+    flxDeviceKindSPI,
+    flxDeviceKindNone
 } flxDeviceKind_t;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -108,6 +109,11 @@ class flxDevice : public flxOperation
         return _address;
     }
 
+    virtual flxDeviceKind_t getKind(void)
+    {
+        return flxDeviceKindNone;
+    }
+    
   private:
     bool _autoload;
     uint8_t _address;
