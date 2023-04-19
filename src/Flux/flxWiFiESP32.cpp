@@ -83,7 +83,7 @@ bool flxWiFiESP32::connect(void)
         i++;
         if ( i > kMaxConnectionTries)
         {
-            flxLog_E(F("Error connecting to WiFi access point - %s"), SSID().c_str());
+            flxLog_E(F("Error connecting to WiFi access point - %s. Are the credentials correct?"), SSID().c_str());
             WiFi.disconnect(true);
             return false;
         }
