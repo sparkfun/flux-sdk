@@ -135,7 +135,7 @@ private:
 
         flxRegister(saveSettings, "Save Settings", "Save current settings to persistent storage");
         flxRegister(restoreSettings, "Restore Settings", "Restore saved settings");
-        flxRegister(clearSettings, "Clear Settings", "Erase the on device saved settings");
+        flxRegister(clearSettings, "Clear Settings", "Erase the settings saved on this device");
 
         flxRegister(saveFallback, "Save to Fallback", "Save system settings to the fallback storage");                
         flxRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage");        

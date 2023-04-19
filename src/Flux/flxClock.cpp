@@ -41,12 +41,12 @@ _flxClock::_flxClock()
     flxRegister(updateClockInterval, "Update Interval", "Main clock update interval in minutes. 0 = No update");
 
     flxRegister(useAlternativeClock, "Enable Clock Fallback",
-                "Us a valid reference clock if the primary is not available");
+                "Use a valid reference clock if the primary is not available");
 
     flxRegister(connectedClockInterval, "Dependant Interval",
                 "Connected dependant clock update interval in minutes. 0 = No update");
 
-    flxRegister(updateConnectedOnUpdate, "Update Connected", "Update connected clocks on main clock update");
+    flxRegister(updateConnectedOnUpdate, "Update Connected", "Update connected clocks when the main clock is updated");
 
     //
     referenceClock.setDataLimit(_refClockLimitSet);
