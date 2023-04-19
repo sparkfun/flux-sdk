@@ -314,16 +314,22 @@ std::string flxLogger::get_timestamp(void)
         if (_timestampType == TimeStampISO8601TZ)
         {
             time_t t_gmt = mktime(gmtime(&t_now));
-            uint32_t deltaT = t_now - t_gmt;
+            int deltaT = t_now - t_gmt;
+
+            char chSign;
+            if (deltaT < 0)
+            {
+                chSign = '-';
+                deltaT *= -1;
+            }else 
+                chSign = '+';
 
             char szTmp[24] = {0};
 
             int tz_hrs = deltaT / 3600;
             int tz_min = (deltaT % 3600) / 60;
-            if (tz_min < 0)
-                tz_min *= -1;
 
-            snprintf(szTmp, sizeof(szTmp), "%c%02d:%02d", tz_hrs < 0 ? '-' : '+', tz_hrs, tz_min);
+            snprintf(szTmp, sizeof(szTmp), "%c%02d:%02d", chSign, tz_hrs, tz_min);
 
             strlcat(szBuffer, szTmp, sizeof(szBuffer));
         }
