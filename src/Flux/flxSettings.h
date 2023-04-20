@@ -42,10 +42,8 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     {
         // Enabled?
         if (saveOnEvent())
-        {
-            flxLog_I(F("Saving System Settings."));
             save_settings();
-        }
+
     }
     void restoreEvent_CB(void)
     {
