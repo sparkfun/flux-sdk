@@ -996,7 +996,10 @@ bool flxSettingsSerial::loop(void)
 
         // Was the menu returned normally and were changes made?
         if (doSave && _bIsDirty)
+        {
+            flxLog_I(F("Saving System Settings."));
             on_finished.emit();
+        }
 
         return true;
     }
