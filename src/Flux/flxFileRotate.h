@@ -6,17 +6,16 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
-#include "flxFlux.h"
 #include "flxCore.h"
 #include "flxCoreInterface.h"
 #include "flxFS.h"
+#include "flxFlux.h"
 
 // TODO - refactor this out
 #include "flxFSSDMMCard.h"
@@ -52,12 +51,12 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
 
         // hidden prop
         flxRegister(_secsFileOpen);
+        flxRegister(_currentFileNumber);
 
         // at startup, current file count == startNumber-1
         _currentFileNumber = startNumber.get() - 1;
 
         flux.add(this);
-
     };
 
     void write(int);
@@ -78,10 +77,10 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     {
         return _currentFilename;
     }
-    
+
     // Rotation Period in Days
-    flxPropertyRWUint<flxFileRotate, &flxFileRotate::get_RotatePeriod, &flxFileRotate::set_RotatePeriod> rotatePeriod = {
-        24, {{"6 Hours", 6}, {"12 Hours", 12}, {"1 Day", 24}, {"2 Days", 48}, {"1 Week", 168}}};
+    flxPropertyRWUint<flxFileRotate, &flxFileRotate::get_RotatePeriod, &flxFileRotate::set_RotatePeriod> rotatePeriod =
+        {24, {{"6 Hours", 6}, {"12 Hours", 12}, {"1 Day", 24}, {"2 Days", 48}, {"1 Week", 168}}};
 
     flxPropertyUint<flxFileRotate> startNumber = {1};
 
@@ -91,20 +90,21 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     flxSignalVoid on_newFile;
 
   private:
-
     // Hidden property - epoch when file was opened...
-    flxPropertyHiddenUint<flxFileRotate> _secsFileOpen= {0};
+    flxPropertyHiddenUint<flxFileRotate> _secsFileOpen = {0};
+    flxPropertyHiddenUint<flxFileRotate> _currentFileNumber = {0};
 
     static constexpr uint kSecsPerHour = 3600;
 
     bool getNextFilename(std::string &strFile);
-    bool openNextLogFile(bool bSendEvent = true);
+    bool openNextLogFile();
+    bool openCurrentFile(void);
+    bool openLogFile(bool bAppend = false);
 
     std::string _currentFilename;
     flxIFileSystem *_theFS;
     uint8_t _flushCount;
     uint32_t _secsRotPeriod;
-    uint _currentFileNumber;
 
     flxFSFile _currentFile;
 };
