@@ -23,6 +23,7 @@
 #define kReadBufferReturn 252
 #define kReadBufferNoMatch 251
 
+#define kPromptTimeoutValueSec  120
 
 class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
@@ -58,7 +59,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     bool drawPage(flxDeviceContainer *);
 
 
-    uint8_t getMenuSelectionYN(uint timeout = 30);
+    uint8_t getMenuSelectionYN(uint timeout = kPromptTimeoutValueSec);
 
     // Our output event
     flxSignalVoid on_finished;
@@ -86,7 +87,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     int selectMenu(flxDeviceContainer *, uint);
 
     // get the selected menu item
-    uint8_t getMenuSelection(uint max, uint timeout = 30);
+    uint8_t getMenuSelection(uint max, uint timeout = kPromptTimeoutValueSec);
 
 
   private:
@@ -94,7 +95,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     // after set message timeout in ms
     static constexpr uint16_t  kMessageDelayTimeout = 700;
 
-    uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = 30);
+    uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = kPromptTimeoutValueSec);
 
     void drawEntryBanner(void);
     
