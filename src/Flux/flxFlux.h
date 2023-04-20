@@ -238,15 +238,17 @@ class flxFlux : public flxObjectContainer
 
     const char* deviceId(void)
     {
-        // ID is 16 in length, we use last byte as a flag. 
+        // ID is 16 in length, use a  C string 
         static char szDeviceID[17]={0};
+        static bool bInitialized=false;
 #ifdef ESP32
 
-        if ( szDeviceID[sizeof(szDeviceID)-1] == 0)
+        if (!bInitialized)
         {
-            snprintf(szDeviceID, sizeof(szDeviceID)-1, "%016llX", ESP.getEfuseMac());
+            memset(szDeviceID, '\0', sizeof(szDeviceID));
+            snprintf(szDeviceID, sizeof(szDeviceID), "%016llX", ESP.getEfuseMac());
 
-            szDeviceID[sizeof(szDeviceID)-1] = 1;
+            bInitialized=true;
         }
 
 #endif
@@ -301,7 +303,7 @@ class flxFlux : public flxObjectContainer
     {
 
         // setup some default heirarchy things ...
-        this->setName("spark", "The SparkFun Spark Framework");
+        this->setName("Flux", "The SparkFun Flux Framework");
         Actions.setName("Settings", "System settings and operations");
         Devices.setName("Devices Settings", "Settings for connected devices");
 
