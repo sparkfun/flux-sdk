@@ -58,13 +58,13 @@ flxDevISM330Base::flxDevISM330Base()
     flxRegister(gyroX, "Gyro X (milli-dps)", "Gyro X (milli-dps)");
     flxRegister(gyroY, "Gyro Y (milli-dps)", "Gyro Y (milli-dps)");
     flxRegister(gyroZ, "Gyro Z (milli-dps)", "Gyro Z (milli-dps)");
-    flxRegister(temperature, "Temperature (C)", "The gyro temperature in degrees C");
+    flxRegister(temperature, "Temperature (C)", "The ambient temperature in degrees C");
 
     // Register properties
     flxRegister(accelDataRate, "Accel Data Rate (Hz)", "Accelerometer Data Rate (Hz)");
     flxRegister(accelFullScale, "Accel Full Scale (g)", "Accelerometer Full Scale (g)");
     flxRegister(gyroDataRate, "Gyro Data Rate (Hz)", "Gyro Data Rate (Hz)");
-    flxRegister(gyroFullScale, "Gyro Full Scale (dps)", "Gyro Full SCale (dps)");
+    flxRegister(gyroFullScale, "Gyro Full Scale (dps)", "Gyro Full Scale (dps)");
     flxRegister(accelFilterLP2, "Accel Filter LP2", "Accelerometer Filter LP2");
     flxRegister(gyroFilterLP1, "Gyro Filter LP1", "Gyro Filter LP1");
     flxRegister(accelSlopeFilter, "Accel Slope Filter", "Accelerometer Slope Filter");
