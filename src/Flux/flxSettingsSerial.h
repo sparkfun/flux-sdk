@@ -63,6 +63,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
     // Our output event
     flxSignalVoid on_finished;
+    flxSignalBool on_editing;
 
     bool loop();
 

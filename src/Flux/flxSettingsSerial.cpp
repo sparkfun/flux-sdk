@@ -983,6 +983,7 @@ bool flxSettingsSerial::loop(void)
     {
         _bIsDirty=false;
         
+        on_editing.emit(1);
         drawEntryBanner();
 
         bool doSave = drawPage(_systemRoot);
@@ -1000,7 +1001,8 @@ bool flxSettingsSerial::loop(void)
             flxLog_I(F("Saving System Settings."));
             on_finished.emit();
         }
-
+        on_editing.emit(0);
+        
         return true;
     }
 
