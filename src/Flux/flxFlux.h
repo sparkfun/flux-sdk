@@ -6,19 +6,15 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
 #include "flxCore.h"
 #include "flxCoreDevice.h"
 #include <memory>
-
-
-
 
 class flxApplication;
 
@@ -67,7 +63,6 @@ class flxFlux : public flxObjectContainer
     // leaving containers public - not sure if this is helpful
     flxDeviceContainer Devices;
     flxActionContainer Actions;
-
 
     //---------------------------------------------------------------------------------
     bool save(flxStorage *pStorage);
@@ -165,7 +160,7 @@ class flxFlux : public flxObjectContainer
         return Devices;
     }
 
-    flxBusSPI & spiDriver()
+    flxBusSPI &spiDriver()
     {
         // has the driver been initialized?
         if (!_spiDriver.initialized())
@@ -173,7 +168,7 @@ class flxFlux : public flxObjectContainer
 
         return _spiDriver;
     }
-    flxBusI2C & i2cDriver()
+    flxBusI2C &i2cDriver()
     {
         // has the driver been initialized?
         if (!_i2cDriver.initialized())
@@ -183,7 +178,7 @@ class flxFlux : public flxObjectContainer
     }
 
     // Version Things
-    void setVersion(uint32_t major, uint32_t minor, uint32_t point, const char * desc, uint32_t build )
+    void setVersion(uint32_t major, uint32_t minor, uint32_t point, const char *desc, uint32_t build)
     {
         _v_major = major;
         _v_minor = minor;
@@ -191,19 +186,20 @@ class flxFlux : public flxObjectContainer
         _v_build = build;
         _v_desc = desc;
     }
-    
-    void versionString(char *buffer, size_t nbuffer, bool bFull=false)
+
+    void versionString(char *buffer, size_t nbuffer, bool bFull = false)
     {
         if (bFull)
-            snprintf(buffer, nbuffer,  "%02u.%02u.%02u %s - build %06x", 
-                    _v_major, _v_minor, _v_point, _v_desc.c_str(), _v_build);
+            snprintf(buffer, nbuffer, "%02u.%02u.%02u %s - build %06x", _v_major, _v_minor, _v_point, _v_desc.c_str(),
+                     _v_build);
         else
-            snprintf(buffer, nbuffer, "%02u.%02u.%02u", _v_major, _v_minor, _v_point);            
+            snprintf(buffer, nbuffer, "%02u.%02u.%02u", _v_major, _v_minor, _v_point);
     }
 
     uint32_t version()
     {
-        return _v_major * 10000 + _v_minor * 100 + _v_point;;
+        return _v_major * 10000 + _v_minor * 100 + _v_point;
+        ;
     }
     void version(uint32_t &major, uint32_t &minor, uint32_t &point)
     {
@@ -217,11 +213,12 @@ class flxFlux : public flxObjectContainer
         return _v_build;
     }
 
-    void setAppClassID(const char * ID)
+    void setAppClassID(const char *ID, char prefix[5])
     {
         _appClassID = ID;
+        memcpy(_v_idprefix, prefix, 5);
     }
-    const char * appClassID(void)
+    const char *appClassID(void)
     {
         return _appClassID;
     }
@@ -236,24 +233,7 @@ class flxFlux : public flxObjectContainer
         flxLog_N(F("Version: %s\n\r"), szBuffer);
     }
 
-    const char* deviceId(void)
-    {
-        // ID is 16 in length, use a  C string 
-        static char szDeviceID[17]={0};
-        static bool bInitialized=false;
-#ifdef ESP32
-
-        if (!bInitialized)
-        {
-            memset(szDeviceID, '\0', sizeof(szDeviceID));
-            snprintf(szDeviceID, sizeof(szDeviceID), "%016llX", ESP.getEfuseMac());
-
-            bInitialized=true;
-        }
-
-#endif
-        return (const char*)szDeviceID;
-    }
+    const char *deviceId(void);
 
     void setApplication(flxApplication &theApp)
     {
@@ -266,11 +246,11 @@ class flxFlux : public flxObjectContainer
         {
             _theApplication = theApp;
             // set the app as the first entry of our actions list
-            Actions.insert(Actions.begin(), (flxAction*)theApp);
+            Actions.insert(Actions.begin(), (flxAction *)theApp);
         }
     }
 
-    flxApplication * application(void)
+    flxApplication *application(void)
     {
         return _theApplication;
     }
@@ -280,26 +260,27 @@ class flxFlux : public flxObjectContainer
     bool getAppToken(uint8_t token[32]);
 
   private:
-
-    flxBusI2C     _i2cDriver;
-    flxBusSPI     _spiDriver;
+    flxBusI2C _i2cDriver;
+    flxBusSPI _spiDriver;
 
     uint32_t _v_major;
     uint32_t _v_minor;
     uint32_t _v_point;
     uint32_t _v_build;
     std::string _v_desc;
+    char _v_idprefix[5];
 
     const char *_appClassID;
 
-    flxApplication * _theApplication;
+    flxApplication *_theApplication;
 
     uint8_t _token[32];
     bool _hasToken;
 
     // Note private constructor...
-    flxFlux() : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, 
-        _appClassID{nullptr}, _theApplication{nullptr}, _token{0}, _hasToken{false}
+    flxFlux()
+        : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"}, _appClassID{nullptr},
+          _theApplication{nullptr}, _token{0}, _hasToken{false}
     {
 
         // setup some default heirarchy things ...
@@ -307,15 +288,13 @@ class flxFlux : public flxObjectContainer
         Actions.setName("Settings", "System settings and operations");
         Devices.setName("Devices Settings", "Settings for connected devices");
 
-
         // Our container has two children, the device and the actions container
         // Cast the devices and actions to objects to add. And had to use
         // a temp var to get the references to take.
-        flxObject * pTmp = &Actions;
+        flxObject *pTmp = &Actions;
         this->push_back(pTmp);
         pTmp = &Devices;
         this->push_back(pTmp);
-        
     }
 
     flxOperation *_getByType(flxTypeID type)
@@ -344,15 +323,15 @@ extern flxFlux &flux;
 class flxApplication : public flxActionType<flxApplication>
 {
 
-public:
+  public:
     flxApplication()
     {
         flux.setApplication(this);
 
         // Set a name/descriptor that shows up in the menu system.
-        ((flxObject*)this)->setName("Application Settings", "Main Application Settings");
+        ((flxObject *)this)->setName("Application Settings", "Main Application Settings");
     }
-    
+
     // Name things - the overall base object of the system has a descriptor - we want this
     // method signature to name the app, but also allow this app object (which is an action)
     // to be used in the menuing system ... so
@@ -360,8 +339,8 @@ public:
     //              -- use a descriptor instance variable to store the data
     //          - Methods called on the application will get these name/desc values
     //          - Methods called on sub-class objects get the base object name/desc
-    // So we can use the same methods is both cases, but leverage the fact that 
-    // the base descriptor class methods are not virtual. 
+    // So we can use the same methods is both cases, but leverage the fact that
+    // the base descriptor class methods are not virtual.
 
     void setName(const char *name)
     {
@@ -375,7 +354,7 @@ public:
     {
         this->setName(name);
         this->setDescription(desc);
-    }    
+    }
     const char *name(void)
     {
         return appDesc.name();
@@ -405,16 +384,22 @@ public:
         return;
     }
 
-    void setVersion(uint major, uint minor, uint point, const char * desc, uint32_t build )
+    // called just prior to system restore on startup
+    virtual void onRestore(void)
+    {
+        return;
+    }
+
+    void setVersion(uint major, uint minor, uint point, const char *desc, uint32_t build)
     {
         flux.setVersion(major, minor, point, desc, build);
     }
 
-    void setAppClassID(const char * ID)
+    void setAppClassID(const char *ID, char prefix[5])
     {
-        flux.setAppClassID(ID);
+        flux.setAppClassID(ID, prefix);
     }
-private:
-    flxDescriptor appDesc;
 
+  private:
+    flxDescriptor appDesc;
 };

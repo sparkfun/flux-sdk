@@ -6,18 +6,16 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #include <Arduino.h>
 
+#include "flxFlux.h"
 #include "flxSerial.h"
 #include "flxSettings.h"
-#include "flxFlux.h"
 #include "flxStorage.h"
-
 
 #include "mbedtls/base64.h"
 
@@ -40,8 +38,6 @@ bool flxFlux::start(bool bAutoLoad)
     flxLog.setLogDriver(_logDriver);
     flxLog.setLogLevel(flxLogInfo); // TODO - adjust?
 
-
-
     // Loop in the application
     if (_theApplication)
     {
@@ -55,12 +51,12 @@ bool flxFlux::start(bool bAutoLoad)
             this->setName(_theApplication->name());
 
         if (strlen(_theApplication->description()) > 0)
-            this->setDescription(_theApplication->description());            
+            this->setDescription(_theApplication->description());
     }
 
     writeBanner();
 
-        // Build drivers for the registered devices connected to the system
+    // Build drivers for the registered devices connected to the system
     if (bAutoLoad)
         flxDeviceFactory::get().buildDevices(i2cDriver());
 
@@ -70,6 +66,10 @@ bool flxFlux::start(bool bAutoLoad)
     // Everything should be loaded -- restore settings from storage
     if (flxSettings.isAvailable())
     {
+        // Let the device know we're starting up
+        if (_theApplication)
+            _theApplication->onRestore();
+
         flxLog_I_(F("Restoring System Settings ..."));
         if (!flxSettings.restoreSystem())
             flxLog_W(F("Error encountered restoring system settings..."));
@@ -175,8 +175,9 @@ bool flxFlux::save(flxStorage *pStorage)
             status = stBlk->write(kApplicationHashIDTag, szHash);
 
         pStorage->endBlock(stBlk);
-    }else 
-        status = true;   // external storage - so continue with save ...
+    }
+    else
+        status = true; // external storage - so continue with save ...
 
     // everything go okay?
     if (!status)
@@ -200,9 +201,9 @@ bool flxFlux::restore(flxStorage *pStorage)
         return false;
 
     // If the storage kind is *internal*, check for our app hash key. This provides
-    // a quick check to validate the storage source. 
+    // a quick check to validate the storage source.
     //
-    // Note for external sources (files...etc), we load in and validate based on 
+    // Note for external sources (files...etc), we load in and validate based on
     // source name. This makes it easier to manually write out a settings file
     bool status;
     if (pStorage->kind() == flxStorage::flxStorageKindInternal)
@@ -229,8 +230,9 @@ bool flxFlux::restore(flxStorage *pStorage)
         }
 
         pStorage->endBlock(stBlk);
-    }else
-       status = true;  // restoring form an external source
+    }
+    else
+        status = true; // restoring form an external source
 
     // everything go okay?
     if (!status)
@@ -240,6 +242,26 @@ bool flxFlux::restore(flxStorage *pStorage)
     }
     // call superclass
     return flxObjectContainer::restore(pStorage);
+}
+//---------------------------------------------------------------------------------
+// get the device ID
+//
+const char *flxFlux::deviceId(void)
+{
+    // ID is 16 in length, use a  C string
+    static char szDeviceID[17] = {0};
+    static bool bInitialized = false;
+#ifdef ESP32
+
+    if (!bInitialized)
+    {
+        memset(szDeviceID, '\0', sizeof(szDeviceID));
+        snprintf(szDeviceID, sizeof(szDeviceID), "%4s%012llX", _v_idprefix, ESP.getEfuseMac());
+        bInitialized = true;
+    }
+
+#endif
+    return (const char *)szDeviceID;
 }
 
 //---------------------------------------------------------------------------------
