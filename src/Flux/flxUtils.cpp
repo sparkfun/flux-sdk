@@ -398,3 +398,31 @@ void flx_utils::timestampISO8601( time_t &t_time, char * buffer, size_t length, 
 
     strlcat(buffer, szTmp, length);
 }
+
+//---------------------------------------------------------------------------------------------------
+// formatBytes()
+//   
+// Return a formatted byte string. This returns values of B (1000), not iB (1024)
+
+void flx_utils::formatByteString(uint64_t nBytes, uint prec, char *szBuffer, size_t len)
+{
+
+    char *sizeNames[] = {"Bytes", "KB", "MB", "GB", "TB"};
+
+    if (nBytes < 0)
+        nBytes = 0;
+
+    if (prec < 0)
+        prec = 0;
+
+    double tmp1 = floor( (nBytes ? log(nBytes) : 0) / log(1000.));
+
+    // overflow our name array?
+    if ( tmp1 > (sizeof(sizeNames)/sizeof(char*))-1)
+        tmp1 = (sizeof(sizeNames)/sizeof(char*))-1;
+
+    char szFormat[32];
+    snprintf(szFormat, sizeof(szFormat), "%%.%df%%s", prec);
+    snprintf(szBuffer, len, szFormat, nBytes/pow(1000., tmp1), sizeNames[(int)tmp1]);
+
+}
