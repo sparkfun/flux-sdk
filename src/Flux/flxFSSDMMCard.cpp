@@ -231,12 +231,21 @@ bool _flxFSSDMMCard::rmdir(const char *path)
 }
 
 //-----------------------------------------------------------------------
-uint _flxFSSDMMCard::size(void)
+uint64_t _flxFSSDMMCard::size(void)
 {
     if (!_isInitalized)
         return 0;
 
-    return SD_MMC.cardSize() / (1024 * 1024);
+    return SD_MMC.cardSize();
+}
+
+//-----------------------------------------------------------------------
+uint64_t _flxFSSDMMCard::total(void)
+{
+    if (!_isInitalized)
+        return 0;
+
+    return SD_MMC.totalBytes();
 }
 //-----------------------------------------------------------------------
 
@@ -261,12 +270,12 @@ const char *_flxFSSDMMCard::type(void)
     }
 }
 
-uint _flxFSSDMMCard::used(void)
+uint64_t _flxFSSDMMCard::used(void)
 {
     if (!_isInitalized)
         return 0;
 
-    return SD_MMC.usedBytes() / (1024 * 1024);
+    return SD_MMC.usedBytes();
 }
 // -------------------------------------------------------
 // File implementation

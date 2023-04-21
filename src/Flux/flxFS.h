@@ -177,7 +177,7 @@ class flxIFileSystem : public flxDescriptor
 
     virtual bool rmdir(const char *path) = 0;
 
-    virtual uint size(void) = 0;
+    virtual uint64_t size(void) = 0;
 
     virtual const char *type(void) = 0;
 

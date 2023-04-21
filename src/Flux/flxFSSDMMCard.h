@@ -111,11 +111,13 @@ class _flxFSSDMMCard : public flxIFileSystem
 
     bool rmdir(const char *path);
 
-    uint size(void);
+    uint64_t size(void);
+
+    uint64_t total(void);
 
     const char *type(void);
 
-    uint used(void);
+    uint64_t used(void);
 
     bool enabled(void)
     {
@@ -211,12 +213,17 @@ class flxFSSDMMCard : public flxIFileSystem, public flxSystemType<flxFSSDMMCard>
         return _theSDMMCard.rmdir(path);
     }
 
-    uint size(void)
+    uint64_t size(void)
     {
         return _theSDMMCard.size();
     }
 
-    uint used(void)
+    uint64_t total(void)
+    {
+        return _theSDMMCard.total();
+    }
+
+    uint64_t used(void)
     {
         return _theSDMMCard.used();
     }
