@@ -137,6 +137,8 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         }
     }
 
+    flxSignalBool on_firmwareload;
+
   private:
     int getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit);
     bool getOTAFirmwareManifest(JsonDocument &jsonDoc);
