@@ -4,6 +4,7 @@
 
 The System Reset and Firmware Update Action provides the following functionality to the end user:
 
+* Restart the device
 * Performing a Factory Reset on the device
 * Updated the device firmware from a file on an SD Card.
 
@@ -16,6 +17,15 @@ When added you a project, the menu entry for this functionality appears as follo
 Once this menu entry is selected, the following menu options are presented:
 
 ![Menu Options](images/act_sysfirm_menu.png)
+
+## Device Restart
+
+When this option is selected, the device is restarted, using the current firmware and system preferences.
+
+When this option is selected, the user is presented a prompt to continue. To launch a factory reset, the user should enter 'Y'. To abort the update, enter 'n' or press the 'escape' key.
+
+![Restart Prompt](images/act_sysfirm_restart.png)
+
 
 ## Factory Reset
 
@@ -50,7 +60,7 @@ When 'Y' is entered, the system will search the root directory of the on-board S
 * The file is contained in the root "/" folder of the SD card
 * The filename has a ".bin" extension
 * The filename starts with a specified name ***prefix***. The prefix is optional and is set by the developer using this action.
-  * For example, the DataLogger IoT boards use a prefix value of "SparkFunDataLoggerIoT"
+  * For example, the DataLogger IoT boards use a prefix value of "SparkFun_DataLoggerIoT_"
 
 The following is an example of a firmware file list:
 
