@@ -68,7 +68,7 @@ The following is an example of a firmware file list:
 
 Once a file is selected, the system new firmware is read off the SD card and written to the device.
 
-![Updating](images/act_sysfirm_upating.png)
+![Updating](images/act_sysfirm_updating.png)
 
 And once updated, the system is rebooted, using the new firmware image.
 
