@@ -1,8 +1,9 @@
 # Creating and Connecting to an AWS IoT Device (Thing)
 
-One of the key features of the Flux Framework is it's simplified access to IoT service providers. This document outlines how an AWS IoT device is used by the Flux framework. 
+One of the key features of the Flux Framework is it's simplified access to IoT service providers. This document outlines how an AWS IoT device is used by the Flux framework.
 
 The following is covered by this document:
+
 * Device (Thing) creation in AWS
 * Adding a device to a Flux Framework Device
 * Securely connecting the device
@@ -12,16 +13,17 @@ Currently, the AWS IoT device connection is a single direction - used to post da
 
 ## General Operation
 
-AWS IoT enables connectivity between an IoT / Edge device and the AWS Cloud Platform, implementing secure endpoints and device models within the AWs infrastructure. This infrastructure allows edge devices to post updates, status and state to the AWS infrastructure for analytics, monitoring and reporting. 
+AWS IoT enables connectivity between an IoT / Edge device and the AWS Cloud Platform, implementing secure endpoints and device models within the AWs infrastructure. This infrastructure allows edge devices to post updates, status and state to the AWS infrastructure for analytics, monitoring and reporting.
 
-In AWS IoT, an virtual representation of an actual device is created and referred to as a *Thing*. The virtual device/Thing is allocated a connection endpoint, security certificates and a device **shadow** - a JSON document used to persist, communicate and manage device state within AWS. 
+In AWS IoT, an virtual representation of an actual device is created and referred to as a *Thing*. The virtual device/Thing is allocated a connection endpoint, security certificates and a device **shadow** - a JSON document used to persist, communicate and manage device state within AWS.
 
-The actual IoT device communicates with it's AWS representation via a secure MQTT connection, posting JSON document payloads to a set of pre-defined topics. Updates are posted to the AWS IoT device **shadow**, which is then accessed within AWS for further process as defined by the users particular cloud implementation. 
+The actual IoT device communicates with it's AWS representation via a secure MQTT connection, posting JSON document payloads to a set of pre-defined topics. Updates are posted to the AWS IoT device **shadow**, which is then accessed within AWS for further process as defined by the users particular cloud implementation.
 
 ![AWS Overview](images/iot_aws_overview.png)
 
 ## Creating a Device in AWS IoT
-The following discussion outlines the basic steps taken to create a Thing in AWS IoT that the Flux Framework can connect to. 
+
+The following discussion outlines the basic steps taken to create a Thing in AWS IoT that the Flux Framework can connect to.
 
 First step is to log into your AWS account and Select **IoT Core** from the menu of services.
 
@@ -34,15 +36,17 @@ On the resultant Things Page, select the **Create Things** button.
 ![AWS IoT Thing Create](images/iot_aws_thing_create.png)
 
 AWS IoT will then take you through the steps to create a device. Selections made for a demo Thing are:
+
 * Create single thing
-* Thing Properties 
-    - Enter a name for your thing - for this example ***TestThing23***
-    - Device Shadow - select ***Unnamed shadow (classic)***
+* Thing Properties
+  * Enter a name for your thing - for this example ***TestThing23***
+  * Device Shadow - select ***Unnamed shadow (classic)***
 * Auto-generate a new certificate
-* Attach policies to certificate - This is discussed later in this document 
+* Attach policies to certificate - This is discussed later in this document
 * Select **Create thing**
 
 Upon creation, AWS IoT presents you with a list of downloadable certificates and keys. Some of these are only available at this step. The best option is to download everything presented - three of these are used by the Flux AWS IoT connector.  The following should be downloaded:
+
 * Device Certificate
 * Public Key File
 * Private Key File
@@ -52,6 +56,7 @@ At this point, the new AWS IoT thing is created and listed on the AWS IoT Things
 ![New Thing Listed](images/iot_aws_thing_list.png)
 
 ### Security Policy
+
 To write to the IoT device, a security policy that enables this is needed, and the policy needs to be assigned to the devices certificate.
 
 To create a Policy, select the ***Manage > Security > Policies*** menu item from the left side menu of the AWS IoT panel. Once on this page, select the **Create policy** button to create a new policy.
@@ -106,20 +111,21 @@ Once the policy is created, go back to the IoT Device/Thing created above and as
 * Select the device - ***TestThing23** for this example
 * Select the ***Certificates*** tab
 * Select the listed Certificate (it's a very long hex number)
-* At the bottom right of the page, select the ***Attach policies*** button and select the Policy created above. 
+* At the bottom right of the page, select the ***Attach policies*** button and select the Policy created above.
 
 ![Attach Policy](images/iot_aws_iot_attach_policy.png)
 
-At this point, AWS IoT is ready for a device to connect and receive data. 
+At this point, AWS IoT is ready for a device to connect and receive data.
 
 ## Adding an AWS IoT Connection in the Flux Framework
 
 To add an AWS IoT device as a destination for the output of a Flux Framework based system, the application being created needs the following:
+
 * Network Connectivity
 * A source for JSON output from the device
-* A source to store the security keys/certificates needed to connect to the AWS IoT device. 
+* A source to store the security keys/certificates needed to connect to the AWS IoT device.
 
-For this example, we show out to connect the output of a data logger in the framework to the AWS IoT device. 
+For this example, we show out to connect the output of a data logger in the framework to the AWS IoT device.
 
 First - add an AWS IoT framework to your object
 
@@ -133,6 +139,7 @@ First - add an AWS IoT framework to your object
 // AWS
     flxIoTAWS _iotAWS;
 ```
+
 During the setup of the framework - at initialization, the following steps finish the basic setup of the AWS object.
 
 ```c++
@@ -161,7 +168,8 @@ During the setup of the framework - at initialization, the following steps finis
 ```
 
 Once the Flux AWS IoT object is integrated into the application, the specifics for the AWS IoT Thing must be configured. This includes the following:
-* Server name/host 
+
+* Server name/host
 * MQTT topic to update
 * Client Name - The AWS IoT Thing Name
 * CA Certificate chain
@@ -169,6 +177,7 @@ Once the Flux AWS IoT object is integrated into the application, the specifics f
 * Client Key
 
 ### Server Name/Hostname
+
 This value is obtained from the AWS IoT Device page for the created device. When on this page, select the ***Device Shadows*** tab, and then select the ***Classic Shadow** shadow, which is listed.
 ![Shadow Details](images/iot_aws_iot_dev_attr.png)
 
@@ -179,22 +188,28 @@ Selecting the ***Classic Shadow** entry provides the Server Name/Hostname for th
 Note: The server name is obtained from the Device Shadow URL entry
 
 ### MQTT Topic
-The MQTT topic value is based uses the ***MQTT topic prefix*** from above, and has the value ***update** added to it. So for this example, the MQTT topic is: 
-``` $aws/things/TestThing23/shadow/update```
+
+The MQTT topic value is based uses the ***MQTT topic prefix*** from above, and has the value ***update** added to it. So for this example, the MQTT topic is:
+```$aws/things/TestThing23/shadow/update```
 
 ### Client Name
+
 This is the AWS IoT name of the thing. For the provided example, the value is ***TestThing23***
 
 ### CA Certificate chain
+
 This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
 
 ### Client Certificate
+
 This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
 
 ### Client Key
+
 This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
 
 ## Setting Properties
+
 The above property values must be set on the Flux AWS IoT object before use. They can be set in code, like any framework object property, or via a JSON file that is loaded by the system at startup. For the Flux AWS IoT example outlined in this document, the entries in the settings JSON file are as follows:
 
 ```json
@@ -217,6 +232,7 @@ The above property values must be set on the Flux AWS IoT object before use. The
 ```
 
 ## Operation
+
 Once the Flux-based device is configured and running, updates in AWS IoT are listed in the ***Activity*** tab of the devices page. For the test device in this document, this page looks like:
 
 ![Shadow Activity](images/iot_aws_iot_shadow_updates.png)
