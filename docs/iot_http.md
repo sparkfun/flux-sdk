@@ -204,7 +204,7 @@ First - add an HTTP IoT framework to your object
     flxIoTHTTP _iotHTTP;
 ```
 
-During the setup of the framework - at initialization, the following steps finish the basic setup of the AWS object.
+During the setup of the framework - at initialization, the following steps finish the basic setup of the HTTP object.
 
 ```c++
     
