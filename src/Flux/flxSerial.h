@@ -49,12 +49,23 @@ class flxSerial_ : public flxWriter
     {
         Serial.println(value);
     }
-    void write(const char *value, bool newline)
+    void write(const char *value, bool newline, flxLineType_t type)
     {
-        if (newline)
+
+        // If this is a header, we add a stream indicator to the output
+        // tart the stream with a Mime Type marker, followed by CR
+        if (type == flxLineTypeMime){
+            Serial.println();
             Serial.println(value);
-        else
-            Serial.print(value);
+            Serial.println();
+        }
+        else 
+        {
+           if (newline)
+                Serial.println(value);
+            else
+                Serial.print(value);
+        }
     }
 
     // Overload listen, so we can type the events, and use the templated
