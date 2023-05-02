@@ -38,7 +38,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
   public:
     //-----------------------------------------------------------------
-    flxFormatJSON() : buffer_size{BUFFER_SIZE} {};
+    flxFormatJSON() : buffer_size{BUFFER_SIZE}, _isFirstRun{true} {};
 
     //-----------------------------------------------------------------
     // value methods
@@ -191,6 +191,12 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
             szBuffer[buffer_size] = '\0';
         }
 
+        // dump out mime type
+        if (_isFirstRun)
+        {
+            outputObservation("Content-Type: application/json", flxLineTypeMime);
+            _isFirstRun = false;
+        }
         // Send the JSON string to output writers/destinations
         outputObservation(szBuffer);
 
@@ -282,4 +288,6 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
 private:
     std::vector<flxIWriterJSON *>  _jsonWriters;
+
+    bool _isFirstRun;
 };
