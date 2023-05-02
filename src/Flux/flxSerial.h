@@ -53,11 +53,23 @@ class flxSerial_ : public flxWriter
     {
 
         // If this is a header, we add a stream indicator to the output
-        // tart the stream with a Mime Type marker, followed by CR
+        // start the stream with a Mime Type marker, followed by CR
         if (type == flxLineTypeMime){
             Serial.println();
             Serial.println(value);
             Serial.println();
+
+            // next we'll want to do a header
+            _headerWritten = false;
+        }
+        else if (type == flxLineTypeHeader)
+        {
+            // only want to write this out once 
+            if (_headerWritten == false)
+            {
+                Serial.println(value);
+                _headerWritten = true;
+            }
         }
         else 
         {
@@ -93,7 +105,8 @@ class flxSerial_ : public flxWriter
     void operator=(flxSerial_ const &) = delete;
 
   private:
-    flxSerial_(){};
+    flxSerial_() : _headerWritten{false}{};
+    bool _headerWritten;
 };
 
 typedef flxSerial_ *flxSerial;
