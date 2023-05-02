@@ -91,11 +91,11 @@ class flxOutputFormat
             _Writers.erase(iter);
     }
 
-    void outputObservation(const char *szBuffer)
+    void outputObservation(const char *szBuffer, flxLineType_t type = flxLineTypeData)
     {
 
         for (auto writer : _Writers)
-            writer->write(szBuffer);
+            writer->write(szBuffer, true, type);
     }
 
   private:

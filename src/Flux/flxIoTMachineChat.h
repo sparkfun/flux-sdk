@@ -80,7 +80,7 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
             serializeJson(jsonOutput, strOutput);
 
             // post to machine chat.
-            flxIoTHTTPBase<flxIoTMachineChat>::write(strOutput.c_str(), false);
+            flxIoTHTTPBase<flxIoTMachineChat>::write(strOutput.c_str(), false, flxLineTypeData);
         }
     }
 };

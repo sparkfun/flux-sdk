@@ -130,7 +130,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
             // Topic is based on the channel...
 
             // send this payload to thingspeak
-            flxMQTTESP32SecureCore::write(buffer.c_str(), false);
+            flxMQTTESP32SecureCore::write(buffer.c_str(), false, flxLineTypeData);
         }
     }
 

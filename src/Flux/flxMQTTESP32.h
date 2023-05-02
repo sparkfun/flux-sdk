@@ -195,12 +195,12 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
 
     //----------------------------------------------------------------------------
     // flxWriter interface method
-    virtual void write(const char *value, bool newline)
+    virtual void write(const char *value, bool newline, flxLineType_t type)
     {
 
         // Should we continue?
-        // enabled? Have a value to send?
-        if (!_isEnabled || !value)
+        // enabled? Have a value to send? We only deal with JSON - just the data 
+        if (!_isEnabled || !value || type != flxLineTypeData)
             return;
 
         // If we lost the connection to the broker, try to reconnect...
@@ -287,9 +287,9 @@ class flxMQTTESP32 : public flxMQTTESP32Base<flxMQTTESP32, WiFiClient>, public f
     {
         // noop
     }
-    void write(const char *value, bool newline)
+    void write(const char *value, bool newline, flxLineType_t type)
     {
-        flxMQTTESP32Base::write(value, newline);
+        flxMQTTESP32Base::write(value, newline, type);
     }
 };
 
@@ -591,9 +591,9 @@ class flxMQTTESP32Secure : public flxMQTTESP32SecureCore<flxMQTTESP32Secure>, pu
     {
         // noop
     }
-    void write(const char *value, bool newline)
+    void write(const char *value, bool newline, flxLineType_t type)
     {
-        flxMQTTESP32Base::write(value, newline);
+        flxMQTTESP32Base::write(value, newline, type);
     }
 };
 #endif

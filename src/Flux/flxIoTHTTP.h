@@ -244,10 +244,10 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
     
     //----------------------------------------------------------------------------
     // flxWriter interface method
-    virtual void write(const char *value, bool newline)
+    virtual void write(const char *value, bool newline, flxLineType_t type)
     {
-        // if we are not connected, ignore
-        if (!_isEnabled || !_canConnect || !value || _url.length() < 10)
+        // if we are not connected, ignore, bad url skip, we want json, so no headers
+        if (!_isEnabled || !_canConnect || !value || _url.length() < 10 || type != flxLineTypeData)
             return;
 
         if (!_wifiClient)
@@ -341,10 +341,10 @@ public:
         // noop
     }
     //---------------------------------------------------------------------    
-    virtual void write(const char *value, bool newline)
+    virtual void write(const char *value, bool newline, flxLineType_t type)
     {
 
-        flxIoTHTTPBase<flxIoTHTTP>::write(value, false);
+        flxIoTHTTPBase<flxIoTHTTP>::write(value, false, type);
     }
 };
 #endif

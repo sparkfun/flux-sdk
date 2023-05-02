@@ -40,15 +40,16 @@ public:
     {
         // noop
     }
-    virtual void write(const char * value, bool newline)
+    virtual void write(const char * value, bool newline, flxLineType_t type)
     {
-    	if (!value)
+        // no data? Or is this a header line (not sure why it would be - we just want JSON)
+    	if (!value || type != flxLineTypeData)
     		return;
 
     	// Wrap the value with the structure required to update the device shadow
         char szBuffer[strlen(value) + sizeof(kAWSUpdateShadowTemplate)];
         snprintf(szBuffer, sizeof(szBuffer),  kAWSUpdateShadowTemplate, value);
-        flxMQTTESP32SecureCore::write(szBuffer, false);
+        flxMQTTESP32SecureCore::write(szBuffer, false, type);
     }
 
     bool initialize(void)

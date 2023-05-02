@@ -44,6 +44,13 @@ class flxDataEditor
 };
 
 // Define an interface for output of log information.
+typedef enum
+{
+    flxLineTypeNone       = 0,
+    flxLineTypeData       = 1,
+    flxLineTypeHeader     = 2,
+    flxLineTypeMime       = 4
+} flxLineType_t;
 
 class flxWriter
 {
@@ -55,14 +62,18 @@ class flxWriter
     };
     virtual void write(int) = 0;
     virtual void write(float) = 0;
-    virtual void write(const char* value, bool newline)=0;
+    virtual void write(const char* value, bool newline, flxLineType_t type) = 0;
+    virtual void write(const char* value, bool newline)
+    {
+        write(value, newline, flxLineTypeData);
+    };
     virtual void write(std::string &value, bool newline)
     {
-      write(value.c_str(), newline);
+        write(value.c_str(), newline);
     }
     virtual void write(const char * value)
     {
-      write(value, true);
+        write(value, true);
     }
     virtual void write(std::string &value)
     {

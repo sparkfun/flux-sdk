@@ -83,12 +83,13 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         // noop
     }
     //---------------------------------------------------------------------    
-    virtual void write(const char *value, bool newline)
+    virtual void write(const char *value, bool newline, flxLineType_t type)
     {
-        if (!value || !_connected)
+        // value? Connected? Data line?
+        if (!value || !_connected || type != flxLineTypeData)
             return;
 
-        flxMQTTESP32SecureCore::write(value, false);
+        flxMQTTESP32SecureCore::write(value, false, type);
     }
 
     //---------------------------------------------------------------------
