@@ -39,7 +39,7 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     }
 
   public:
-    flxFileRotate() : _currentFilename{""}, _theFS{nullptr}, _flushCount{0}, _secsRotPeriod{0}
+    flxFileRotate() : _currentFilename{""}, _theFS{nullptr}, _flushCount{0}, _secsRotPeriod{0}, _headerWritten{false}
     {
 
         setName("File Rotate",
@@ -61,7 +61,7 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
 
     void write(int);
     void write(float);
-    void write(const char *, bool newline);
+    void write(const char *, bool newline, flxLineType_t type);
 
     void setFileSystem(flxIFileSystem *fs)
     {
@@ -107,4 +107,6 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     uint32_t _secsRotPeriod;
 
     flxFSFile _currentFile;
+
+    bool _headerWritten;
 };

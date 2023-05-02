@@ -72,7 +72,12 @@ bool flxFileRotate::openCurrentFile(void)
 
     _currentFilename = szBuffer;
 
-    return openLogFile(true); // send in true for append mode if file exists.
+    // If the file exists, no need to add a header.
+    bool bExists = _theFS->exists(szBuffer);
+    if (bExists)
+        _headerWritten = true;
+
+    return openLogFile(bExists); // send in true for append mode if file exists.
 }
 //------------------------------------------------------------------------------------------------
 // Open the next log file.
@@ -98,6 +103,9 @@ bool flxFileRotate::openNextLogFile()
 
     _secsFileOpen = flxClock.epoch();
 
+    // no header written to file yet...
+    _headerWritten = false;
+
     // send the new file event. Will persist prop values
     on_newFile.emit();
 
@@ -107,17 +115,17 @@ bool flxFileRotate::openNextLogFile()
 //------------------------------------------------------------------------------------------------
 void flxFileRotate::write(int value)
 {
-    write(flx_utils::to_string(value).c_str(), true);
+    write(flx_utils::to_string(value).c_str(), true, flxLineTypeData);
 }
 
 //------------------------------------------------------------------------------------------------
 void flxFileRotate::write(float value)
 {
-    write(flx_utils::to_string(value).c_str(), true);
+    write(flx_utils::to_string(value).c_str(), true, flxLineTypeData);
 }
 
 //------------------------------------------------------------------------------------------------
-void flxFileRotate::write(const char *value, bool newline)
+void flxFileRotate::write(const char *value, bool newline, flxLineType_t type)
 {
 
     if (!_theFS)
@@ -143,11 +151,27 @@ void flxFileRotate::write(const char *value, bool newline)
         if (!status)
             return;
     }
-    // Write the current line out
-    _currentFile.write((uint8_t *)value, strlen(value) + 1);
-    // add a cr if newline set
-    if (newline)
-        _currentFile.write((uint8_t *)"\n", 1);
+
+    // Data line? write it
+    if (type == flxLineTypeData)
+    {
+        // Write the current line out
+         _currentFile.write((uint8_t *)value, strlen(value) + 1);
+        // add a cr if newline set
+        if (newline)
+            _currentFile.write((uint8_t *)"\n", 1);
+    }
+    // if this is a header line, and we've not written a header, write it
+    else if (type == flxLineTypeHeader && !_headerWritten)
+    {
+        // Write the current line out
+         _currentFile.write((uint8_t *)value, strlen(value) + 1);
+        // add a cr if newline set
+        if (newline)
+            _currentFile.write((uint8_t *)"\n", 1);
+
+        _headerWritten = true; 
+    }
 
     // Will we need to rotate?
     if (flxClock.epoch() - _secsFileOpen() > _secsRotPeriod)
