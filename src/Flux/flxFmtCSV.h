@@ -252,9 +252,15 @@ class flxFormatCSV : public flxOutputFormat
     virtual void writeObservation()
     {
 
+        // First run? output mime type
+        if (_isFirstRun)
+        {
+            outputObservation("Content-Type: text/csv", flxLineTypeMime);
+            _isFirstRun = false;
+        }
         // Write out the header?
         if ((_writeHeader & kHeaderWrite) == kHeaderWrite && _header_buffer.length() > 0)
-            outputObservation(_header_buffer.c_str());
+            outputObservation(_header_buffer.c_str(), flxLineTypeHeader);
 
         outputObservation(_data_buffer.c_str());
     }
@@ -277,6 +283,7 @@ class flxFormatCSV : public flxOutputFormat
         _writeHeader = kHeaderWrite;
         _section_name = nullptr;
         _inObservation = false;
+        _isFirstRun = true; 
     }
 
     //-----------------------------------------------------------------
@@ -292,7 +299,13 @@ class flxFormatCSV : public flxOutputFormat
         // the end of the observation. So, if in an observation, set the pending bit
 
         if (_inObservation)
-            _writeHeader = (flxFmtCSVHeader_t)(_writeHeader | kHeaderPending);
+        {
+            // Are we writing a header with this observation? If so we are
+            // starting a new file on a new system and writing data and a header
+            // so skip adding a pending header
+            if ((_writeHeader & kHeaderWrite) != kHeaderWrite)
+                _writeHeader = (flxFmtCSVHeader_t)(_writeHeader | kHeaderPending);
+        }
         else
             _writeHeader = kHeaderWrite;
     }
@@ -440,4 +453,5 @@ class flxFormatCSV : public flxOutputFormat
     flxFmtCSVHeader_t _writeHeader;
 
     bool _inObservation;
+    bool _isFirstRun; 
 };
