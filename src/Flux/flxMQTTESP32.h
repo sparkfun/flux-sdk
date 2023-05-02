@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
@@ -17,8 +16,8 @@
 
 #include "flxCoreInterface.h"
 #include "flxFS.h"
-#include "flxNetwork.h"
 #include "flxFlux.h"
+#include "flxNetwork.h"
 
 #include <ArduinoMqttClient.h>
 #include <WiFiClientSecure.h>
@@ -145,7 +144,7 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     {
 
         // if we don't have a network, or if the network is not connected, return an error
-        if ( !_theNetwork || !_theNetwork->isConnected())
+        if (!_theNetwork || !_theNetwork->isConnected())
             return false;
 
         // Already connected?
@@ -198,9 +197,21 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     // flxWriter interface method
     virtual void write(const char *value, bool newline)
     {
-        // if we are not connected, ignore
-        if (!connected() || !value)
+
+        // Should we continue?
+        // enabled? Have a value to send?
+        if (!_isEnabled || !value)
             return;
+
+        // If we lost the connection to the broker, try to reconnect...
+        if (!_mqttClient.connected() || !_wifiClient.connected())
+        {
+            flxLog_W_(F("%s disconnected - reconnecting..."), this->name());
+            if (!connect())
+                return;
+
+            flxLog_N(F("reconnected"));
+        }
 
         // do we have a topic?
         if (topic().length() == 0)
@@ -237,8 +248,8 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     flxPropertyString<flxMQTTESP32Base> clientName;
 
     // Buffer size property
-    flxPropertyRWUint16<flxMQTTESP32Base, &flxMQTTESP32Base::get_bufferSize, &flxMQTTESP32Base::set_bufferSize> bufferSize =
-        {0};
+    flxPropertyRWUint16<flxMQTTESP32Base, &flxMQTTESP32Base::get_bufferSize, &flxMQTTESP32Base::set_bufferSize>
+        bufferSize = {0};
 
     // username and password properties - some brokers requires this
     flxPropertyString<flxMQTTESP32Base> username;
@@ -260,7 +271,7 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
 
 class flxMQTTESP32 : public flxMQTTESP32Base<flxMQTTESP32, WiFiClient>, public flxWriter
 {
-public:
+  public:
     flxMQTTESP32()
     {
         this->setName("MQTT Client", "A generic MQTT Client");
@@ -299,7 +310,7 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
         std::string tmp = _pCACert ? _pCACert : "";
         return tmp;
     }
-    
+
     //---------------------------------------------------------
     void set_caCert(std::string theCert)
     {
@@ -397,7 +408,6 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
         _clientFilename = theFile;
     }
 
-
     //---------------------------------------------------------
     std::string get_clientKeyFilename(void)
     {
@@ -476,7 +486,7 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
     flxMQTTESP32SecureCore() : _pCACert{nullptr}, _pClientCert{nullptr}, _pClientKey{nullptr}, _fileSystem{nullptr}
     {
         flxRegister(caCertificate, "CA Certificate",
-                   "The Certificate Authority certificate. If set, the connection is secure");
+                    "The Certificate Authority certificate. If set, the connection is secure");
         flxRegister(clientCertificate, "Client Certificate", "The certificate for the client connection");
         flxRegister(clientKey, "Client Key", "The secure key used for client verification");
 
@@ -525,28 +535,28 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
 
     // Security certs/keys
     flxPropertyRWSecretString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_caCert,
-                             &flxMQTTESP32SecureCore::set_caCert>
+                              &flxMQTTESP32SecureCore::set_caCert>
         caCertificate;
 
     flxPropertyRWSecretString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientCert,
-                             &flxMQTTESP32SecureCore::set_clientCert>
+                              &flxMQTTESP32SecureCore::set_clientCert>
         clientCertificate;
 
     flxPropertyRWSecretString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientKey,
-                             &flxMQTTESP32SecureCore::set_clientKey>
+                              &flxMQTTESP32SecureCore::set_clientKey>
         clientKey;
 
     // Define filename properties to access the secure keys. A filesystem must be provided to this object for it to read
     // the data.
     // Security certs/keys
     flxPropertyRWString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_caCertFilename,
-                       &flxMQTTESP32SecureCore::set_caCertFilename>
+                        &flxMQTTESP32SecureCore::set_caCertFilename>
         caCertFilename;
     flxPropertyRWString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientCertFilename,
-                       &flxMQTTESP32SecureCore::set_clientCertFilename>
+                        &flxMQTTESP32SecureCore::set_clientCertFilename>
         clientCertFilename;
     flxPropertyRWString<flxMQTTESP32SecureCore, &flxMQTTESP32SecureCore::get_clientKeyFilename,
-                       &flxMQTTESP32SecureCore::set_clientKeyFilename>
+                        &flxMQTTESP32SecureCore::set_clientKeyFilename>
         clientKeyFilename;
 
     // We need perm version of the keys for the secure connection, so the values are stashed in allocated
@@ -563,10 +573,9 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
     std::string _keyFilename;
 };
 
-
 class flxMQTTESP32Secure : public flxMQTTESP32SecureCore<flxMQTTESP32Secure>, public flxWriter
 {
-public:
+  public:
     flxMQTTESP32Secure()
     {
         this->setName("MQTT Secure Client", "A secure MQTT client");
