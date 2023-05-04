@@ -33,6 +33,13 @@ flxFlux &flux = flxFlux::get();
 bool flxFlux::start(bool bAutoLoad)
 {
 
+    // if we have an application, call the init method. 
+    // The intent is to give the app time to setup anything before
+    // the system sets up
+
+    if (_theApplication)
+        _theApplication->init();
+    
     // setup our logging system.
     _logDriver.setOutput(flxSerial());
     flxLog.setLogDriver(_logDriver);

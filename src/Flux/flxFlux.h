@@ -365,6 +365,11 @@ class flxApplication : public flxActionType<flxApplication>
         return appDesc.description();
     }
 
+    // Method is called before anything - allows pre system setup - for example I/O init.
+    virtual void init(void)
+    {
+        return;
+    }
     // Method is called before device auto-load, settings restoration and action initialization
     virtual bool setup(void)
     {
