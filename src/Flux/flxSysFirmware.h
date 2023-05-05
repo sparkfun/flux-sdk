@@ -42,8 +42,6 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
 
     //------------------------------------------------------------------------------
 
-    void restartDevice(void);
-
     void factory_reset(void)
     {
         bool status = factoryResetDevice();
@@ -80,6 +78,9 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
 
         flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
     }
+
+    // called to restart the device -- will prompt user
+    void restartDevice(void);
 
     void setSerialSettings(flxSettingsSerial *pSettings)
     {
