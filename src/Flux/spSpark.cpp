@@ -38,7 +38,7 @@ bool flxFlux::start(bool bAutoLoad)
     // the system sets up
 
     if (_theApplication)
-        _theApplication->init();
+        _theApplication->onInit();
     
     // setup our logging system.
     _logDriver.setOutput(flxSerial());
@@ -48,7 +48,7 @@ bool flxFlux::start(bool bAutoLoad)
     // Loop in the application
     if (_theApplication)
     {
-        if (!_theApplication->setup())
+        if (!_theApplication->onSetup())
         {
             flxLog_E(F("Error during application setup"));
             return false;
@@ -95,7 +95,7 @@ bool flxFlux::start(bool bAutoLoad)
     // Loop in the application
     if (_theApplication)
     {
-        if (!_theApplication->start())
+        if (!_theApplication->onStart())
         {
             flxLog_E(F("Error during application start"));
             return false;
