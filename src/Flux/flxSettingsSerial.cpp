@@ -85,7 +85,7 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent)
 
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems);
+        selected = getMenuSelection((uint)nMenuItems, menuTimeout());
 
         // done?
         if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
@@ -216,7 +216,7 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent)
         }
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)nMenuItems);
+        selected = getMenuSelection((uint)nMenuItems, menuTimeout());
 
         // done?
         if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
@@ -266,7 +266,7 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
 
         drawPageFooter(pCurrent);
 
-        selected = getMenuSelection((uint)2);
+        selected = getMenuSelection((uint)2, menuTimeout());
 
         // done?
         if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
@@ -400,7 +400,7 @@ bool flxSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameter
         // Editing Intro
         Serial.printf("\tCall `%s`() [Y/n]? ", pParam->name());
 
-        selected = getMenuSelectionYN();
+        selected = getMenuSelectionYN(menuTimeout());
 
         if (selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
             return false;

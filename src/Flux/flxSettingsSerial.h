@@ -23,7 +23,7 @@
 #define kReadBufferReturn 252
 #define kReadBufferNoMatch 251
 
-#define kPromptTimeoutValueSec  120
+#define kPromptTimeoutValueSec  60
 
 class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
@@ -38,6 +38,11 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
         // Default root is our system
         setSystemRoot(&flux);
+
+        // Our menu timeout value
+
+        flxRegister(menuTimeout, "Menu Timeout", "Inactivity timeout period for the menu system");
+        
     }
 
     void setSystemRoot(flxObjectContainer *theRoot)
@@ -60,6 +65,11 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
 
     uint8_t getMenuSelectionYN(uint timeout = kPromptTimeoutValueSec);
+
+    // Property for the timeout value in the menu system.
+
+    flxPropertyUint<flxSettingsSerial> menuTimeout = { kPromptTimeoutValueSec,
+        {{"30 Seconds", 30}, {"60 Seconds", 60}, {"2 Minutes", 120}, {"5 Minutes", 300}, {"10 Minutes", 600} } };
 
     // Our output event
     flxSignalVoid on_finished;
