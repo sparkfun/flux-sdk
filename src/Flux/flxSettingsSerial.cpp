@@ -1003,7 +1003,6 @@ bool flxSettingsSerial::loop(void)
         }
         on_editing.emit(0);
         
-        return true;
     }
 
     return false;
