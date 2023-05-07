@@ -23,11 +23,9 @@
 
 const char chCR = 13; // for display erase during progress
 
-
 //-----------------------------------------------------------------------------------
-void flxSysFirmware::restartDevice(void)
+void flxSysFirmware::restartDevicePrompt()
 {
-
 
     if (!_pSerialSettings)
     {
@@ -44,9 +42,15 @@ void flxSysFirmware::restartDevice(void)
     if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
     {
         Serial.printf("\tAborting restart\n\r\r");
-        return ;
+        return;
     }
 
+    restartDevice();
+}
+
+//-----------------------------------------------------------------------------------
+void flxSysFirmware::restartDevice()
+{
     // Now
     flxLog_N(F("Restarting the device..."));
 
@@ -55,7 +59,6 @@ void flxSysFirmware::restartDevice(void)
     esp_restart();
 
     return;
-
 }
 //-----------------------------------------------------------------------------------
 // factoryReset()

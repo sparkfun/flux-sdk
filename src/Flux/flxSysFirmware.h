@@ -58,6 +58,7 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         bool status = updateFirmwareFromOTA();
     }
 
+
   public:
     flxSysFirmware()
         : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""},
@@ -79,8 +80,9 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
     }
 
-    // called to restart the device -- will prompt user
-    void restartDevice(void);
+    // called to restart the device 
+    void restartDevicePrompt();    
+    void restartDevice();
 
     void setSerialSettings(flxSettingsSerial *pSettings)
     {
@@ -109,7 +111,7 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
     }
 
     // Our input parameters/functions
-    flxParameterInVoid<flxSysFirmware, &flxSysFirmware::restartDevice> deviceRestart;
+    flxParameterInVoid<flxSysFirmware, &flxSysFirmware::restartDevicePrompt> deviceRestart;
 
     flxParameterInVoid<flxSysFirmware, &flxSysFirmware::factory_reset> factoryReset;
 
