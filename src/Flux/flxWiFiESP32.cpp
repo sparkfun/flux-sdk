@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #ifdef ESP32
 
@@ -17,12 +16,15 @@
 
 // ESP32 library...
 #include "WiFi.h"
+#include <WiFiMulti.h>
 
+#include <esp_log.h>
+#include <esp_wifi.h>
 // WiFi client for ESP32 boards
 
 // Define a connection iteration value - exceed this, skip the connection
 
-#define kMaxConnectionTries  10
+#define kMaxConnectionTries 10
 
 //----------------------------------------------------------------
 // Enabled Property setter/getters
@@ -30,16 +32,16 @@ void flxWiFiESP32::set_isEnabled(bool bEnabled)
 {
     // Any changes?
     if (_isEnabled == bEnabled)
-        return;  
+        return;
 
     // changing state ...
     // TODO - Should this control connection state?
 
     _isEnabled = bEnabled;
 
-    if ( _isEnabled)
+    if (_isEnabled)
         (void)connect();
-    else 
+    else
         disconnect();
 }
 
@@ -55,40 +57,104 @@ bool flxWiFiESP32::get_isEnabled(void)
 bool flxWiFiESP32::connect(void)
 {
 
-    if ( !_isEnabled )
+    if (!_isEnabled)
         return false;
 
     // If we are already connected, return
-    if ( WiFi.isConnected() )
+    if (WiFi.isConnected())
         return true;
 
-    // Do we have credentials?
-    if (SSID().length() == 0 || password().length() == 0 )
+    // // Do we have credentials?
+    // if (SSID().length() == 0 || password().length() == 0 )
+    // {
+    //     flxLog_E(F("WiFi: No credentials provided. Unable to connect"));
+    //     return false;
+    // }
+
+    WiFi.mode(WIFI_STA);
+
+    // Make sure we have the correct protocols set for WiFi (modes/ wifi types)
+    uint8_t protocols = 0;
+    esp_err_t response = esp_wifi_get_protocol(WIFI_IF_STA, &protocols);
+    if (response != ESP_OK)
+        flxLog_W("%s: Failed to get wifi protocols: %s\r\n", name(), esp_err_to_name(response));
+
+    else if (protocols != (WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N))
+    {
+        response = esp_wifi_set_protocol(WIFI_IF_STA,
+                                         WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N); // Enable WiFi.
+        if (response != ESP_OK)
+            flxLog_W("%s: Error setting WiFi protocols: %s\r\n", esp_err_to_name(response));
+    }
+
+    WiFiMulti wifiMulti;
+
+    // make sure
+
+    int nNet = 0;
+
+    // WiFi.begin(SSID().c_str(), password().c_str());
+    //  Do we have credentials?
+
+    // Add the credentials we have -- this seems hacky, but it's all I got :)
+    if (SSID().length() != 0 || password().length() != 0)
+    {
+        nNet++;
+        wifiMulti.addAP(SSID().c_str(), password().c_str());
+    }
+    if (alt1_SSID().length() != 0 || alt1_password().length() != 0)
+    {
+        nNet++;
+        wifiMulti.addAP(alt1_SSID().c_str(), alt1_password().c_str());
+    }
+
+    if (alt2_SSID().length() != 0 || alt2_password().length() != 0)
+    {
+        nNet++;
+        wifiMulti.addAP(alt2_SSID().c_str(), alt2_password().c_str());
+    }
+
+    if (alt3_SSID().length() != 0 || alt3_password().length() != 0)
+    {
+        nNet++;
+        wifiMulti.addAP(alt3_SSID().c_str(), alt3_password().c_str());
+    }
+    if (nNet == 0)
     {
         flxLog_E(F("WiFi: No credentials provided. Unable to connect"));
+        WiFi.mode(WIFI_OFF);
         return false;
     }
 
-
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(SSID().c_str(), password().c_str());
-    
     flxLog_I_(F("Connecting to WiFi..."));
 
-    int i=0;
-    while(WiFi.status() != WL_CONNECTED)
+    // May 2023
+    // the ESP32 WiFi system throws out errors with some APs - all harmless, confusing
+    // So, disable output messages from the ESP32 error system when we connect
+    //
+    // This is fixed in the IDF https://github.com/espressif/esp-idf/issues/9283
+    //
+    // TODO - revisit this
+    esp_log_level_t level = esp_log_level_get("wifi");
+    esp_log_level_set("wifi", ESP_LOG_NONE);
+    int i = 0;
+    // while(WiFi.status() != WL_CONNECTED)
+    while (wifiMulti.run() != WL_CONNECTED)
     {
         delay(500);
         flxLog_N_(F("."));
         i++;
-        if ( i > kMaxConnectionTries)
+        if (i > kMaxConnectionTries)
         {
             flxLog_E(F("Error connecting to WiFi access point - %s. Are the credentials correct?"), SSID().c_str());
             WiFi.disconnect(true);
             return false;
         }
     }
-    flxLog_N(F("Connected to %s"), SSID().c_str());
+    // back to normal esp logging
+    esp_log_level_set("wifi", level);
+
+    flxLog_N(F("Connected to %s"), WiFi.SSID().c_str());
     // okay, we're connected.
     _wasConnected = true;
     on_connectionChange.emit(true);
@@ -100,24 +166,23 @@ bool flxWiFiESP32::connect(void)
 void flxWiFiESP32::disconnect(void)
 {
 
-    if ( WiFi.isConnected() )
+    if (WiFi.isConnected())
     {
-        if ( !WiFi.disconnect(true) )
+        if (!WiFi.disconnect(true))
         {
             flxLog_E(F("WiFi disconnect() - error disconnecting"));
         }
     }
-    if ( _wasConnected )
+    if (_wasConnected)
         on_connectionChange.emit(false);
 
     _wasConnected = false;
-
 }
 
 //----------------------------------------------------------------
 bool flxWiFiESP32::isConnected()
 {
-    return ( _isEnabled && WiFi.isConnected());
+    return (_isEnabled && WiFi.isConnected());
 }
 
 //----------------------------------------------------------------
@@ -126,13 +191,19 @@ bool flxWiFiESP32::initialize(void)
     return connect();
 }
 
+const char *flxWiFiESP32::connectedSSID(void)
+{
+    return WiFi.SSID().c_str();
+}
+
+//----------------------------------------------------------------
 bool flxWiFiESP32::loop(void)
 {
     // Connection change???
-    if ( _isEnabled )
+    if (_isEnabled)
     {
         bool wifiConn = WiFi.isConnected();
-        if (wifiConn != _wasConnected )
+        if (wifiConn != _wasConnected)
         {
             _wasConnected = wifiConn;
             on_connectionChange.emit(_wasConnected);
