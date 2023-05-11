@@ -83,7 +83,7 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
         password = thePassword;
     }
 
-    const char *connectedSSID(void);
+    String connectedSSID(void);
 
   private:
     // flag used to help with connection changes.

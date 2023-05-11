@@ -185,9 +185,9 @@ bool flxWiFiESP32::initialize(void)
     return connect();
 }
 
-const char *flxWiFiESP32::connectedSSID(void)
+String flxWiFiESP32::connectedSSID(void)
 {
-    return WiFi.SSID().c_str();
+    return WiFi.SSID();
 }
 
 //----------------------------------------------------------------
