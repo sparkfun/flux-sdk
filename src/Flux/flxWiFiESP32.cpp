@@ -64,27 +64,20 @@ bool flxWiFiESP32::connect(void)
     if (WiFi.isConnected())
         return true;
 
-    // // Do we have credentials?
-    // if (SSID().length() == 0 || password().length() == 0 )
-    // {
-    //     flxLog_E(F("WiFi: No credentials provided. Unable to connect"));
-    //     return false;
-    // }
-
     WiFi.mode(WIFI_STA);
 
     // Make sure we have the correct protocols set for WiFi (modes/ wifi types)
     uint8_t protocols = 0;
     esp_err_t response = esp_wifi_get_protocol(WIFI_IF_STA, &protocols);
     if (response != ESP_OK)
-        flxLog_W("%s: Failed to get wifi protocols: %s\r\n", name(), esp_err_to_name(response));
+        flxLog_W(F("%s: Failed to get wifi protocols: %s\r\n"), name(), esp_err_to_name(response));
 
     else if (protocols != (WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N))
     {
         response = esp_wifi_set_protocol(WIFI_IF_STA,
                                          WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N); // Enable WiFi.
         if (response != ESP_OK)
-            flxLog_W("%s: Error setting WiFi protocols: %s\r\n", esp_err_to_name(response));
+            flxLog_W(F("%s: Error setting WiFi protocols: %s\r\n"), esp_err_to_name(response));
     }
 
     WiFiMulti wifiMulti;
@@ -93,28 +86,27 @@ bool flxWiFiESP32::connect(void)
 
     int nNet = 0;
 
-    // WiFi.begin(SSID().c_str(), password().c_str());
     //  Do we have credentials?
 
-    // Add the credentials we have -- this seems hacky, but it's all I got :)
-    if (SSID().length() != 0 || password().length() != 0)
+    // Add the access points the user has provided
+    if (SSID().length() != 0)
     {
         nNet++;
         wifiMulti.addAP(SSID().c_str(), password().c_str());
     }
-    if (alt1_SSID().length() != 0 || alt1_password().length() != 0)
+    if (alt1_SSID().length() != 0)
     {
         nNet++;
         wifiMulti.addAP(alt1_SSID().c_str(), alt1_password().c_str());
     }
 
-    if (alt2_SSID().length() != 0 || alt2_password().length() != 0)
+    if (alt2_SSID().length() != 0)
     {
         nNet++;
         wifiMulti.addAP(alt2_SSID().c_str(), alt2_password().c_str());
     }
 
-    if (alt3_SSID().length() != 0 || alt3_password().length() != 0)
+    if (alt3_SSID().length() != 0)
     {
         nNet++;
         wifiMulti.addAP(alt3_SSID().c_str(), alt3_password().c_str());
@@ -137,8 +129,8 @@ bool flxWiFiESP32::connect(void)
     // TODO - revisit this
     esp_log_level_t level = esp_log_level_get("wifi");
     esp_log_level_set("wifi", ESP_LOG_NONE);
+
     int i = 0;
-    // while(WiFi.status() != WL_CONNECTED)
     while (wifiMulti.run() != WL_CONNECTED)
     {
         delay(500);
@@ -146,7 +138,8 @@ bool flxWiFiESP32::connect(void)
         i++;
         if (i > kMaxConnectionTries)
         {
-            flxLog_E(F("Error connecting to WiFi access point - %s. Are the credentials correct?"), SSID().c_str());
+            flxLog_E_(F("Unable to connect to a provided WiFi access point. Verify AP availability and credentials."));
+
             WiFi.disconnect(true);
             return false;
         }
@@ -155,6 +148,7 @@ bool flxWiFiESP32::connect(void)
     esp_log_level_set("wifi", level);
 
     flxLog_N(F("Connected to %s"), WiFi.SSID().c_str());
+
     // okay, we're connected.
     _wasConnected = true;
     on_connectionChange.emit(true);
