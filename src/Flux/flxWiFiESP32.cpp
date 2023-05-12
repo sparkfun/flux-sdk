@@ -15,7 +15,6 @@
 #include "flxWiFiESP32.h"
 
 // ESP32 library...
-#include "WiFi.h"
 #include <WiFiMulti.h>
 
 #include <esp_log.h>

@@ -18,6 +18,9 @@
 #include "flxNetwork.h"
 #include "flxWiFi.h"
 
+// ESP wifi header
+#include "WiFi.h"
+
 // WiFi client for EsP32 boards
 
 class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, public flxIWiFiDevice
@@ -84,6 +87,16 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
     }
 
     String connectedSSID(void);
+
+    IPAddress localIP(void)
+    {
+        return WiFi.localIP();
+    }
+
+    int8_t RSSI(void)
+    {
+        return WiFi.RSSI();
+    }
 
   private:
     // flag used to help with connection changes.
