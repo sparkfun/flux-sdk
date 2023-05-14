@@ -51,3 +51,4 @@ SdFat
 "SparkFun VL53L1X 4m Laser Distance Sensor"
 "SparkFun VL53L5CX Arduino Library"
 "SparkFun_FS3000_Arduino_Library"
+"SparkFun Qwiic OLED Graphics Library"
