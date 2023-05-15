@@ -21,6 +21,11 @@
 // ESP wifi header
 #include "WiFi.h"
 
+#define kWiFiLevelPoor      0
+#define kWiFiLevelFair      1
+#define kWiFiLevelGood      2
+#define kWiFiLevelExcellent 3
+
 // WiFi client for EsP32 boards
 
 class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, public flxIWiFiDevice
@@ -97,6 +102,8 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
     {
         return WiFi.RSSI();
     }
+
+    uint rating(void);
 
   private:
     // flag used to help with connection changes.

@@ -205,5 +205,16 @@ bool flxWiFiESP32::loop(void)
     }
     return false;
 }
+//----------------------------------------------------------------
+// return an abstract rating of the Wifi
+uint flxWiFiESP32::rating(void)
+{
+    if (!_isEnabled || !WiFi.isConnected())
+        return kWiFiLevelPoor;
+
+    int8_t rssi = WiFi.RSSI();
+
+    return rssi > -40 ? kWiFiLevelExcellent : rssi > -60 ? kWiFiLevelGood: rssi > -80 ? kWiFiLevelFair : kWiFiLevelPoor;
+}
 
 #endif
