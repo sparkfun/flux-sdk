@@ -25,6 +25,8 @@
 #include "SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h"
 #include "flxDevice.h"
 
+// SOC level to determine if we are on mains/usb and no battery connected
+#define kBatteryNoBatterySOC 110.
 #define kMAX17048DeviceName "MAX17048"
 
 // Define our class
