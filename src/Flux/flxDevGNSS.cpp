@@ -122,9 +122,9 @@ bool flxDevGNSS::isConnected(flxBusI2C &i2cDriver, uint8_t address)
         flxLog_W("GNSS::isConnected no traffic seen (first attempt)");
 
     // If the GNSS is silent (e.g. NMEA disabled and NAV-PVT not periodic - Flux Issue #104),
-    // manually set the NAV-PVT to periodic (rate 1, I2C only) and check again for traffic
-    uint8_t periodicNAVPVT[16] = { 0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0x01, 0x07, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0xE2 };
-    i2cOK = i2cDriver.write(address, periodicNAVPVT, 16); // Will write to address 0xFF
+    // manually set the NAV-PVT to periodic (rate 1) and check again for traffic
+    uint8_t periodicNAVPVT[11] = { 0xB5, 0x62, 0x06, 0x01, 0x03, 0x00, 0x01, 0x07, 0x01, 0x13, 0x51 };
+    i2cOK = i2cDriver.write(address, periodicNAVPVT, 11); // Will write to address 0xFF
 
     // Wait for up to 2 seconds for more bytes to be added (ACK plus first NAV-PVT)
     startTime = millis();
