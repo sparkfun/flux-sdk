@@ -121,20 +121,43 @@ bool flxDevGNSS::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!trafficSeen)
         flxLog_W("GNSS::isConnected no traffic seen (first attempt)");
 
-    // If the GNSS has been powered on for some time, the buffer could be full
-    // Try to read some data from the buffer and see if the count changes
-    if (bufferWaiting < 8)
-        return false; // Bail if there are less than 8 bytes in the buffer
+    // If the GNSS is silent (e.g. NMEA disabled and NAV-PVT not periodic - Flux Issue #104),
+    // manually set the NAV-PVT to periodic (rate 1) and check again for traffic
+    uint8_t periodicNAVPVT[11] = { 0xB5, 0x62, 0x06, 0x01, 0x03, 0x00, 0x01, 0x07, 0x01, 0x13, 0x51 };
+    i2cOK = i2cDriver.write(address, periodicNAVPVT, 11); // Will write to address 0xFF
 
-    uint8_t buffer[8];
-    i2cOK = i2cDriver.receiveResponse(address, buffer, 8) == 8; // Will read from address 0xFF
-    i2cOK &= i2cDriver.readRegister16(address, 0xFD, &bufferWaiting, false); // Big Endian
-    trafficSeen = (bufferWaiting != firstBufferWaiting);
+    // Wait for up to 2 seconds for more bytes to be added (ACK plus first NAV-PVT)
+    startTime = millis();
+    while(i2cOK && (!trafficSeen) && (millis() < (startTime + 2000)))
+    {
+        delay(100); // Don't pound the bus
+        i2cOK = i2cDriver.readRegister16(address, 0xFD, &bufferWaiting, false); // Big Endian
+        if (i2cOK)
+            trafficSeen = (bufferWaiting != firstBufferWaiting); // Has traffic been seen?
+    }
+
+    if (i2cOK && trafficSeen)
+        return true; // Return now if traffic has been seen
 
     if (!i2cOK)
         flxLog_E("GNSS::isConnected i2c read error (second attempt)");
     if (!trafficSeen)
         flxLog_W("GNSS::isConnected no traffic seen (second attempt)");
+
+    // If the GNSS has been powered on for some time, the buffer could be full
+    // Try to read some data from the buffer and see if the count changes
+    if (bufferWaiting >= 8)
+    {
+        uint8_t buffer[8];
+        i2cOK = i2cDriver.receiveResponse(address, buffer, 8) == 8; // Will read from address 0xFF
+        i2cOK &= i2cDriver.readRegister16(address, 0xFD, &bufferWaiting, false); // Big Endian
+        trafficSeen = (bufferWaiting != firstBufferWaiting);
+    }
+
+    if (!i2cOK)
+        flxLog_E("GNSS::isConnected i2c read error (third attempt)");
+    if (!trafficSeen)
+        flxLog_W("GNSS::isConnected no traffic seen (third attempt)");
 
     return (i2cOK && trafficSeen);
 }
@@ -152,9 +175,9 @@ bool flxDevGNSS::onInitialize(TwoWire &wirePort)
     bool result = SFE_UBLOX_GNSS::begin(wirePort);
     if (result)
     {
-        SFE_UBLOX_GNSS::setI2COutput(COM_TYPE_UBX);                 // Set the I2C port to output UBX only (turn off NMEA noise)
-        SFE_UBLOX_GNSS::saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); // Save (only) the communications port settings to flash and BBR
-        SFE_UBLOX_GNSS::setAutoPVT(true);                           // Enable PVT at the navigation rate
+        SFE_UBLOX_GNSS::setI2COutput(COM_TYPE_UBX); // Set the I2C port to output UBX only (turn off NMEA noise)
+        SFE_UBLOX_GNSS::setAutoPVT(true);           // Enable PVT at the navigation rate
+        SFE_UBLOX_GNSS::saveConfigSelective(VAL_CFG_SUBSEC_IOPORT | VAL_CFG_SUBSEC_MSGCONF); // Save the port and message settings to flash and BBR
         delay(1100);
         SFE_UBLOX_GNSS::getPVT(); // Ensure we get fresh data
     }
@@ -328,8 +351,8 @@ void flxDevGNSS::factory_default()
     SFE_UBLOX_GNSS::factoryDefault();
     delay(5000);
     SFE_UBLOX_GNSS::setI2COutput(COM_TYPE_UBX);
-    SFE_UBLOX_GNSS::saveConfigSelective(VAL_CFG_SUBSEC_IOPORT);
     SFE_UBLOX_GNSS::setAutoPVT(true);
+    SFE_UBLOX_GNSS::saveConfigSelective(VAL_CFG_SUBSEC_IOPORT | VAL_CFG_SUBSEC_MSGCONF);
 }
 
 //----------------------------------------------------------------------------------------------------------
