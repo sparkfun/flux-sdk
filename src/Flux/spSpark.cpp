@@ -100,6 +100,11 @@ bool flxFlux::start(bool bAutoLoad)
             flxLog_E(F("Error during application start"));
             return false;
         }
+        // There is a chance, that after startup and device load, the 
+        // board name will change (devices are used to determine board name)
+        // Soooo reset the name.
+         if (strlen(_theApplication->name()) > 0)
+            this->setName(_theApplication->name());
     }
     return true;
 }
