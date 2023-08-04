@@ -493,6 +493,9 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
         flxRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
         flxRegister(clientCertFilename, "Client Cert Filename", "The File to load the client certificate from");
         flxRegister(clientKeyFilename, "Client Key Filename", "The File to load the client key from");
+
+        // The default port for secure/TLS MQTT is 8883, so lest set that for this secure client
+        flxMQTTESP32Base<Object, WiFiClientSecure>::port = 8883;
     }
 
     //---------------------------------------------------------
