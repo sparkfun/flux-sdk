@@ -11,9 +11,9 @@
  */
 /*
  *
- * flxCoreDevice.h
+ * flxCoreBLEDevice.h
  *
- * Class that defines the interface between the system and the underlying device driver
+ * Class that defines the interface between the system and a BLE device driver
  *
  * Provides the following capabilities
  *
@@ -29,101 +29,15 @@
 #pragma once
 
 #include <Arduino.h>
+#include <BLEClient.h>
+#include <BLEDevice.h>
+
 #include <vector>
 
-#include "flxBusI2C.h"
-#include "flxBusSPI.h"
-#include "flxCore.h"
-#include "flxUtils.h"
 
-// define a value that marks the end of a device address/id list
+#include "flxCoreDevice.h"
 
-#define kSparkDeviceAddressNull 0
 
-typedef enum
-{
-    flxDeviceKindI2C,
-    flxDeviceKindSPI,
-    flxDeviceKindBLE,
-    flxDeviceKindNone
-} flxDeviceKind_t;
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// flxDevice()
-//
-// Define our device base class used for each device in the system.
-//
-// New devices create an object that subclasses from this object.
-//
-// The device object defines the interface and underlying logic that
-// integrates the device into the overall system, and simplifies the r
-// implementation requirements for each new device.
-//
-// Key capabilities provided:
-//
-//      - object state persistance/serialization
-//      - Managed properties -
-//      - System data collection from the device
-//      - Works with the device Factory/Builder pattern.
-//
-//
-
-class flxDeviceFactory_;
-
-class flxDevice : public flxOperation
-{
-
-  public:
-    flxDevice() : _autoload{false}, _address{kSparkDeviceAddressNull} {};
-
-    virtual ~flxDevice()
-    {
-    }
-
-    // Methods called on initialize
-    bool initialize();
-    virtual bool initialize(flxBusI2C &)
-    {
-        return initialize();
-    };
-    virtual bool initialize(flxBusSPI &)
-    {
-        return initialize();
-    };
-
-    bool autoload(void)
-    {
-        return false;
-    }
-    void setAutoload()
-    {
-        _autoload = true;
-    }
-    void setAddress(uint8_t address)
-    {
-        _address = address;
-    }
-
-    uint8_t address(void)
-    {
-        return _address;
-    }
-
-    virtual flxDeviceKind_t getKind(void)
-    {
-        return flxDeviceKindNone;
-    }
-    
-  private:
-    bool _autoload;
-    uint8_t _address;
-};
-
-using flxDeviceContainer = flxContainer<flxDevice *>;
-
-// Macro used to simplify device setup
-#define spSetupDeviceIdent(_name_) this->setName(_name_);
 
 
 //----------------------------------------------------------------------------------
@@ -162,22 +76,22 @@ using flxDeviceContainer = flxContainer<flxDevice *>;
 //
 
 // it's c++ - you have to do this
-class flxDeviceBuilderI2C;
+class flxDeviceBuilderBLE;
 
 // Our factory class
-class flxDeviceFactory
+class flxDeviceBLEFactory :  public BLEAdvertisedDeviceCallbacks 
 {
 
   public:
     // This is a singleton
-    static flxDeviceFactory &get(void)
+    static flxDeviceBLEFactory &get(void)
     {
 
-        static flxDeviceFactory instance;
+        static flxDeviceBLEFactory instance;
         return instance;
     }
     // The callback Builders use to register themselves.
-    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder)
+    bool registerDevice(flxDeviceBuilderBLE *deviceBuilder)
     {
         _Builders.push_back(deviceBuilder);
         return true;
@@ -189,33 +103,37 @@ class flxDeviceFactory
     };
 
     // Called to build a list of device objects for the devices connected to the system.
-    int buildDevices(flxBusI2C &);
+    int buildDevices();
 
-    void pruneAutoload(flxDevice *, flxDeviceContainer &);
+    // BLE scan callbacks
+    void onResult(BLEAdvertisedDevice advertisedDevice);
 
     // Delete copy and assignment constructors - b/c this is singleton.
-    flxDeviceFactory(flxDeviceFactory const &) = delete;
-    void operator=(flxDeviceFactory const &) = delete;
+    flxDeviceBLEFactory(flxDeviceBLEFactory const &) = delete;
+    void operator=(flxDeviceBLEFactory const &) = delete;
 
   private:
-    bool addressInUse(uint8_t);
-    flxDeviceFactory(){}; // hide constructor - this is a singleton
+    flxDeviceBLEFactory(): _bleScanInit{false}{}; // hide constructor - this is a singleton
+    bool _bleScanInit;
 
-    std::vector<flxDeviceBuilderI2C *> _Builders;
+    std::vector<flxDeviceBuilderBLE *> _Builders;
+
+    int _nDevs;
 };
+
+class flxDeviceBLE;
 
 //----------------------------------------------------------------------------------
 // Define our builder class.
 
 // Base class - defines the builder interface.
 //
-class flxDeviceBuilderI2C
+class flxDeviceBuilderBLE
 {
   public:
-    virtual flxDevice *create(void) = 0;                                 // create the underlying device obj.
-    virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
+    virtual flxDeviceBLE *create(void) = 0;                                 // create the underlying device obj.
     virtual const char *getDeviceName(void);                            // To report connected devices.
-    virtual const uint8_t *getDefaultAddresses(void) = 0;
+    virtual const char *getServiceUUID(void) = 0;
     virtual flxDeviceKind_t getDeviceKind(void) = 0;
 };
 
@@ -227,12 +145,12 @@ class flxDeviceBuilderI2C
 // and the constructor of the class registers the builder in the factory class.
 //
 
-template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
+template <class DeviceType> class DeviceBLEBuilder : public flxDeviceBuilderBLE
 {
   public:
-    DeviceBuilder()
+    DeviceBLEBuilder()
     {
-        flxDeviceFactory::get().registerDevice(this);
+        flxDeviceBLEFactory::get().registerDevice(this);
     }
 
     DeviceType *create()
@@ -240,19 +158,14 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
         return new DeviceType();
     }
 
-    bool isConnected(flxBusI2C &i2cDriver, uint8_t address)
-    {
-        return DeviceType::isConnected(i2cDriver, address); // calls device object static isConnected method()
-    }
-
     const char *getDeviceName(void)
     { // Calls device objects static method.
         return DeviceType::getDeviceName();
     }
 
-    const uint8_t *getDefaultAddresses(void)
+    const char *getServiceUUID(void)
     {
-        return DeviceType::getDefaultAddresses();
+        return DeviceType::getServiceUUID();
     }
 
     flxDeviceKind_t getDeviceKind(void)
@@ -262,4 +175,4 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
 };
 
 // Macro to define the global builder object.
-#define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
+#define flxRegisterDeviceBLE(kDevice) static DeviceBLEBuilder<kDevice> global_##kDevice##BLEBuilder;
