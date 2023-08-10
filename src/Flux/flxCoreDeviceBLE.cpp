@@ -30,16 +30,23 @@ void flxDeviceBLEFactory::onResult(BLEAdvertisedDevice advertisedDevice)
 
     // Does this BLE device have a service?
     if (!advertisedDevice.haveServiceUUID())
+    {
         return;
+    }
 
     // Loop over our registered devices, and see if we have  service match
 
     for (auto deviceBuilder : _Builders)
     {
+        if (advertisedDevice.haveName())
+        {
+            flxLog_I("Found BLE DEVICE: %s", advertisedDevice.getName().c_str());
+        }
 
         if ( advertisedDevice.isAdvertisingService(BLEUUID(deviceBuilder->getServiceUUID()))) 
         {
             // We have a match for one of our devices - 
+            flxLog_E(">>>>>>>>>>>Found a device we know about");
 
             // Create 
             flxDeviceBLE *pDevice = deviceBuilder->create();
@@ -82,21 +89,36 @@ int flxDeviceBLEFactory::buildDevices()
         return 0;
 
     _nDevs = 0;
+
+    // Hack Time:
+
+    BLEDevice::init(flux.name());
+
+    // END HACK TIME
     
     BLEScan* pBLEScan = BLEDevice::getScan();
 
     if(!_bleScanInit){
 
         // register our scan callback class
-        pBLEScan->setAdvertisedDeviceCallbacks(this);
-        pBLEScan->setInterval(1349);
-        pBLEScan->setWindow(449);
+        // NOTE: Setting "duplicates" to true helps with memory consumption.  Otherwise, 
+        // the BLE system will keep a vector of everything found and CHEW up memory. If set to 
+        // true, values are not cached - but deleted. 
+        pBLEScan->setAdvertisedDeviceCallbacks(this, true);
+        pBLEScan->setInterval(100);
+        pBLEScan->setWindow(99);
         pBLEScan->setActiveScan(true);
 
         _bleScanInit = true;
     }
 
-    BLEDevice::getScan()->start(5);
+    flxLog_I("Start Scan");
+
+    pBLEScan->start(5);
+
+    flxLog_I("Back from Scan");
+    
+    pBLEScan->clearResults();
 
     return _nDevs;
 }

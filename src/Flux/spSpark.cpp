@@ -17,6 +17,8 @@
 #include "flxSettings.h"
 #include "flxStorage.h"
 
+#include "flxCoreDeviceBLE.h"
+
 #include "mbedtls/base64.h"
 
 // for logging - define output driver on the stack
@@ -66,6 +68,11 @@ bool flxFlux::start(bool bAutoLoad)
     // Build drivers for the registered devices connected to the system
     if (bAutoLoad)
         flxDeviceFactory::get().buildDevices(i2cDriver());
+
+    // BLE hack
+    bool bBLELoad = true;
+    if (bBLELoad)
+        flxDeviceBLEFactory::get().buildDevices();
 
     if (_theApplication)
         _theApplication->onDeviceLoad();
