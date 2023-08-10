@@ -62,7 +62,6 @@ private:
 
     // methods used to get values for our output parameters
     uint read_CO2();
-    bool read_alarm_status();
     
     
     // methods used to get values for our RW properties
