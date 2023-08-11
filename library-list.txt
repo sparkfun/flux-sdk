@@ -14,6 +14,7 @@ SdFat
 "SparkFun ADS122C04 ADC Arduino Library"
 "SparkFun Bio Sensor Hub Library"
 "SparkFun BME280"
+"SparkFun BMI270 Arduino Library"
 "SparkFun BMP384 Arduino Library"
 "SparkFun BMP581 Arduino Library"
 "SparkFun CCS811 Arduino Library"
