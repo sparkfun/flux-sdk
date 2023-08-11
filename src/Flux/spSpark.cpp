@@ -94,10 +94,11 @@ bool flxFlux::start(bool bAutoLoad)
     // initialize actions
     for (auto pAction : Actions)
     {
+        flxLog_I("Startup %s", pAction->name());
         if (!pAction->initialize())
             flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
     }
-
+    flxLog_E("Startup 1");
     // Call start on the application
     // Loop in the application
     if (_theApplication)

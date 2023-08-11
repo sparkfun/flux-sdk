@@ -119,6 +119,9 @@ int flxDeviceBLEFactory::buildDevices()
     flxLog_I("Back from Scan");
     
     pBLEScan->clearResults();
+    pBLEScan->stop();
+
+    BLEDevice::deinit(false);
 
     return _nDevs;
 }
