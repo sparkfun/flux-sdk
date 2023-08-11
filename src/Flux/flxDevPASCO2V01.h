@@ -58,7 +58,7 @@ public:
 private:
 
     // Pointer to instance of PASCO2Ino
-    PASCO2Ino *theSensor;
+    PASCO2Ino *_theSensor;
 
     // methods used to get values for our output parameters
     uint read_CO2();
@@ -81,6 +81,12 @@ private:
 
     uint16_t _pressureReference = 1015; // Default value on reset
     uint16_t _calibrationReference = 400; // Default value on reset
+
+    uint32_t _millisSinceLastMeasure = 0;
+    int16_t _co2InPPM = 0;
+
+    bool _sensorIsInitialized = false;
+    bool _sensorIsMeasuring = false;
 
 public:
     // Define whether automatic calibration is enabled. Forced calibration mode is not an enumerated option in flux.
