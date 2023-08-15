@@ -95,6 +95,8 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
         bool _gyroY = false;
         bool _gyroZ = false;
 
+        float _tempC = 0.0;
+
         uint8_t _accelDataRate = BMI2_ACC_ODR_100HZ;
         uint8_t _accelPowerMode = BMI2_PERF_OPT_MODE;
         uint8_t _accelFilterBW = BMI2_ACC_NORMAL_AVG4;
@@ -103,8 +105,11 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
         uint8_t _gyroNoisePowerMode = BMI2_PERF_OPT_MODE;
         uint8_t _gyroFilterBW = BMI2_GYR_NORMAL_MODE;
 
-        void enable_step_counter(bool);
+        bool enable_step_counter(bool);
         bool _stepCounterEnabled = false;
+        uint32_t _countedSteps = 0;
+
+        bool _sensorInitialized = false;
 
     public:
         // Define the sensor's Accelerometer Output Data Rate (ODR) in Hz.

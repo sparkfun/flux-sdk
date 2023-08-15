@@ -27,7 +27,7 @@
 #define kBMI270AddressDefault BMI2_I2C_PRIM_ADDR // 0x68
 #define kBMI270AddressSecondary BMI2_I2C_SEC_ADDR // 0x69
 
-#define kBMI270ChipID 0x24
+#define kDefaultProdID 0x24
 
 // Define our class static variables - allocs storage for them
 uint8_t flxDevBMI270::defaultDeviceAddress[] = {kBMI270AddressDefault, kBMI270AddressSecondary, kSparkDeviceAddressNull};
@@ -81,11 +81,15 @@ bool flxDevBMI270::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
         return false;
-    
-    // TODO: Add in a way to verify that you're talking to the right device, such as verifying serial number, product ID, etc.
-    uint8_t readValue = 0;
 
-    return (readValue == kBMI270ChipID);
+    uint8_t readValue;
+
+    if(!i2cDriver.readRegister(address, BMI2_CHIP_ID_ADDR, &readValue)) {
+        flxLog_E("BMI270::isConnected: Failed to read prodID.");
+        return false;
+    }
+
+    return (readValue == kDefaultProdID);
 }
 
 //-----------------------------------------------------------------------------
@@ -97,57 +101,171 @@ bool flxDevBMI270::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 // Place to initialize the underlying device library/driver.
 bool flxDevBMI270::onInitialize(TwoWire &wirePort)
 {
-    // TODO: Any kind of initialization and verification that it's up and running, etc. 
-    return TEMPLATECLASS::begin(wirePort); /* REPLACE ME */
+    uint8_t retries = 3;
+
+    while (BMI2_OK != beginI2C(address(), wirePort)) {
+        delay(200);
+        retries--;
+        flxLog_D("BMI270::onInitialize: Begin #%d failed, retrying...", (3-retries));
+        if (retries <= 0) {
+            flxLog_E("BMI270::onInitialize: Sensor failed to respond!");
+            return false;
+        }
+    }
+
+    _sensorInitialized = true;
+
+    // TODO: Finish Initialization
+
+    return true;
 }
 
 /* Read methods for parameters */
 
 float flxDevBMI270::read_accel_x()
 {
-    // TODO: Get that good stuff from the sensor
+    if (!_accelX) {
+        if (BMI2_OK == getSensorData()) {
+            _accelY = true;
+            _accelZ = true;
+            _gyroX = true;
+            _gyroY = true;
+            _gyroZ = true;
+        }
+        else {
+            flxLog_E("BMI270::read_accel_x: Failed to get sensor data.");
+        }
+    }
+    _accelX = false;
+    return data.accelX;
 }
 
 float flxDevBMI270::read_accel_y()
 {
-    // TODO: Get that good stuff from the sensor
+    if (!_accelY) {
+        if (BMI2_OK == getSensorData()) {
+            _accelX = true;
+            _accelZ = true;
+            _gyroX = true;
+            _gyroY = true;
+            _gyroZ = true;
+        }
+        else {
+            flxLog_E("BMI270::read_accel_y: Failed to get sensor data.");
+        }
+    }
+    _accelY = false;
+    return data.accelY;
 }
 
 float flxDevBMI270::read_accel_z()
 {
-    // TODO: Get that good stuff from the sensor
+    if (!_accelZ) {
+        if (BMI2_OK == getSensorData()) {
+            _accelY = true;
+            _accelX = true;
+            _gyroX = true;
+            _gyroY = true;
+            _gyroZ = true;
+        }
+        else {
+            flxLog_E("BMI270::read_accel_z: Failed to get sensor data.");
+        }
+    }
+    _accelZ = false;
+    return data.accelZ;
 }
 
 float flxDevBMI270::read_gyro_x()
 {
-    // TODO: Get that good stuff from the sensor
+    if (!_gyroX) {
+        if (BMI2_OK == getSensorData()) {
+            _accelX = true;
+            _accelY = true;
+            _accelZ = true;
+            _gyroY = true;
+            _gyroZ = true;
+        }
+        else {
+            flxLog_E("BMI270::read_gyro_x: Failed to get sensor data.");
+        }
+    }
+    _gyroX = false;
+    return data.gyroX;
 }
 
 float flxDevBMI270::read_gyro_y()
 {
-    // TODO: Get that good stuff from the sensor
+    if (!_gyroY) {
+        if (BMI2_OK == getSensorData()) {
+            _accelX = true;
+            _accelY = true;
+            _accelZ = true;
+            _gyroX = true;
+            _gyroZ = true;
+        }
+        else {
+            flxLog_E("BMI270::read_gyro_y: Failed to get sensor data.");
+        }
+    }
+    _gyroY = false;
+    return data.gyroY;
 }
 
 float flxDevBMI270::read_gyro_z()
 {
-    // TODO: Get that good stuff from the sensor
+    if (!_gyroZ) {
+        if (BMI2_OK == getSensorData()) {
+            _accelX = true;
+            _accelY = true;
+            _accelZ = true;
+            _gyroY = true;
+            _gyroX = true;
+        }
+        else {
+            flxLog_E("BMI270::read_gyro_z: Failed to get sensor data.");
+        }
+    }
+    _gyroZ = false;
+    return data.gyroZ;
 }
 
 float flxDevBMI270::read_temperature()
 {
-    // TODO: Get that good stuff from the sensor
+    if (BMI2_OK != getTemperature(_tempC)) {
+        flxLog_E("BMI270::read_temperature: Failed to get temperature data.");
+    }
+    return _tempC;
 }
 
-float flxDevBMI270::read_step_count()
+uint flxDevBMI270::read_step_count()
 {
-    // TODO: Get that good stuff from the sensor
+    if (!_stepCounterEnabled) {
+        flxLog_W("BMI270::read_step_count: Step counting feature not enabled. Enabling...");
+        if (!enable_step_counter(true)) {
+            flxLog_E("BMI270::read_step_count: Failed to enable step counting feature. Logging last good value.");
+        }
+    }
+
+    if (_stepCounterEnabled) {
+        if (BMI2_OK != getStepCount(_countedSteps)) {
+            flxLog_E("BMI270::read_step_count: Failed to get step count. Logging last good value.");
+        }
+    }
+
+    return ((uint) _countedSteps);
 }
 
 /* Write methods for parameters */
 
 void flxDevBMI270::write_reset_step_count(bool resetSteps)
 {
-    // TODO: Write some value to the sensor
+    if (resetSteps) {
+        if (BMI2_OK != resetStepCount()) {
+            flxLog_E("BMI270::write_reset_step_count: Failed to reset step count");
+        }
+        resetStepCount.set(false);
+    }
 }
 
 /* Getter methods for properties */
