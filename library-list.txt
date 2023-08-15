@@ -52,3 +52,4 @@ SdFat
 "SparkFun VL53L5CX Arduino Library"
 "SparkFun_FS3000_Arduino_Library"
 "SparkFun Qwiic OLED Graphics Library"
+"XENSIV PAS CO2"
