@@ -95,6 +95,14 @@ class flxStorage : public flxDescriptor
     virtual void endBlock(flxStorageBlock *) = 0;
 
     virtual void resetStorage() = 0;
+
+    // some devices use an internal buffer - enable this to be set.
+
+    virtual void setBufferSize(size_t sz){};
+    virtual size_t bufferSize(void)
+    {
+        return 0;
+    }
 };
 
 //------------------------------------------------------------------------------

@@ -52,6 +52,17 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
             restore_settings();
     }
 
+    void set_fallbackSize(uint sz)
+    {
+        if (_fallbackStorage)
+            _fallbackStorage->setBufferSize(sz);
+    }
+
+    uint get_fallBackSize(void)
+    {
+        return _fallbackStorage ? _fallbackStorage->bufferSize() : 0;
+    }
+
   public:
     // flxSettingsSave is a singleton
     static flxSettingsSave &get(void)
@@ -107,6 +118,8 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     flxPropertyBool<flxSettingsSave> fallbackSave = {false};    
     flxPropertyBool<flxSettingsSave> fallbackRestore = {true};
 
+    flxPropertyRWUint<flxSettingsSave, &flxSettingsSave::get_fallBackSize, &flxSettingsSave::set_fallbackSize> fallbackBuffer;
+
     // Our input parameters
     flxParameterInVoid<flxSettingsSave, &flxSettingsSave::save_settings> saveSettings;
     flxParameterInVoid<flxSettingsSave, &flxSettingsSave::restore_settings> restoreSettings;
@@ -125,10 +138,12 @@ private:
         setName("Save Settings", "Save, Restore and Reset System settings.");
 
         flxRegister(saveOnEvent, "Save Events", "Save settings on save system events");
-        flxRegister(restoreOnEvent, "Restore Events", "Restore settings on restore esystem vents");
+        flxRegister(restoreOnEvent, "Restore Events", "Restore settings on restore system events");
 
         flxRegister(fallbackRestore, "Fallback Restore", "If unable to restore settings, use the fallback source");
-        flxRegister(fallbackSave, "Fallback Save", "Save settings also saves to the fallback storage");        
+        flxRegister(fallbackSave, "Fallback Save", "Save settings also saves to the fallback storage");
+
+        flxRegister(fallbackBuffer, "Fallback Buffer Size", "The size in bytes used for the internal I/O buffer");              
 
 
         flxRegister(saveSettings, "Save Settings", "Save current settings to persistent storage");

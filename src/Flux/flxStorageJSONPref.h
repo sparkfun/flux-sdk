@@ -131,14 +131,14 @@ class flxStorageJSONPref : public flxStorage
         setFilename(strName);
     }
 
-    void setDocumentSize(size_t new_size)
+    void setBufferSize(size_t new_size)
     {
         // need a sane value
         if (new_size > 100)
             _jsonDocSize = new_size;
     }
 
-    size_t documentSize(void)
+    size_t bufferSize(void)
     {
         return _jsonDocSize;
     }
