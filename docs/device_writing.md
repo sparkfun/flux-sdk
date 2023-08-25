@@ -11,7 +11,7 @@ The key capabilities provided by the implemented framework device class are:
 
 ## Defining the Device Class
 
-The device class should following the naming patter `spDev[Name]`, where Name is a unique name of the class. 
+The device class should following the naming pattern `flxDev[Name]`, where Name is a unique name of the class. 
 
 The implementation requires separate header and implementation files, since a several class variables and a global object are defined that required the use of an implementation file.  
 
