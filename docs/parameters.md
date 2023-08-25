@@ -49,7 +49,7 @@ Getting a value of an Output Parameter - named ```output``` in this example:
 
 For the framework, two types of Parameter classes exist.
 
-* Input Parameter - Defines a Parameter to set input value to an operation
+* Input Parameter - Defines a Parameter to set input value to an operation. These are referred to as functions at times - especially in the user experience of an application.
 * Output Parameter - Defines a Parameter to get an output value from an operation
 
 Note
