@@ -255,7 +255,7 @@ class flxFlux : public flxObjectContainer
         return _theApplication;
     }
 
-    void setAppToken(uint8_t *data, size_t len);
+    void setAppToken(const uint8_t *data, size_t len);
 
     bool getAppToken(uint8_t token[32]);
 

@@ -285,7 +285,7 @@ const char *flxFlux::deviceId(void)
 //      Convert into ascii ints in python %    data = [ord(c) for c in ss]
 //      Map those numbers into a uint8_t array (i.e. uint8_t mykey[] = {...];)
 //
-void flxFlux::setAppToken(uint8_t *data, size_t len)
+void flxFlux::setAppToken(const uint8_t *data, size_t len)
 {
     if (!data || len == 0)
         return;
