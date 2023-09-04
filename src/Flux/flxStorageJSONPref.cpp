@@ -490,7 +490,7 @@ void flxStorageJSONPref::checkName()
     // make a better name that includes the destination
     char szBuffer[128];
     snprintf(szBuffer, sizeof(szBuffer), "%s on the %s", _filename.c_str(), _fileSystem->name());
-    setName(szBuffer);
+    setNameAlloc(szBuffer);
 }
 void flxStorageJSONPref::setFileSystem(flxIFileSystem *theFilesystem)
 {

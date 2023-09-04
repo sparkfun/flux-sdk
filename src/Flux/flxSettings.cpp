@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #include "flxSettings.h"
 
@@ -24,9 +23,7 @@ flxSettingsSave &flxSettings = flxSettingsSave::get();
 void flxSettingsSave::setStorage(flxStorage *pStorage)
 {
     _primaryStorage = pStorage;
-
 }
-
 
 void flxSettingsSave::setFallback(flxStorage *pStorage)
 {
@@ -36,30 +33,28 @@ void flxSettingsSave::setFallback(flxStorage *pStorage)
     char szBuffer[124];
 
     snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", fallbackRestore.description(), pStorage->name());
-    fallbackRestore.setDescription(szBuffer);
+    fallbackRestore.setDescriptionAlloc(szBuffer);
 
     snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", fallbackSave.description(), pStorage->name());
-    fallbackSave.setDescription(szBuffer);
+    fallbackSave.setDescriptionAlloc(szBuffer);
 
     snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", saveFallback.description(), pStorage->name());
-    saveFallback.setDescription(szBuffer);
+    saveFallback.setDescriptionAlloc(szBuffer);
 
     snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", restoreFallback.description(), pStorage->name());
-    restoreFallback.setDescription(szBuffer);
-
+    restoreFallback.setDescriptionAlloc(szBuffer);
 }
-
 
 //----------------------------------------------------------------------------------
 // Save section
 //----------------------------------------------------------------------------------
 
 // General save routine
-bool flxSettingsSave::saveObjectToStorage(flxObject* pObject, flxStorage *pStorage)
+bool flxSettingsSave::saveObjectToStorage(flxObject *pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;
-    
+
     // Start storage transaction
     if (!pStorage->begin())
         return false;
@@ -94,28 +89,27 @@ bool flxSettingsSave::save(flxObject *pObject)
 
     bool status = saveObjectToStorage(pObject, _primaryStorage);
 
-    if(!status)
+    if (!status)
         flxLog_E(F("Unable to save %s to %s"), pObject->name(), _primaryStorage->name());
 
-    // Save to secondary ? 
-    if (fallbackSave() && _fallbackStorage !=nullptr)
+    // Save to secondary ?
+    if (fallbackSave() && _fallbackStorage != nullptr)
     {
         if (!saveObjectToStorage(pObject, _fallbackStorage))
             flxLog_W(F("Unable to save %s to the fallback system, %s"), pObject->name(), _fallbackStorage->name());
     }
 
     return status;
-
 }
 
 //----------------------------------------------------------------------------------
 // Restore section
 //----------------------------------------------------------------------------------
-bool flxSettingsSave::restoreObjectFromStorage(flxObject* pObject, flxStorage *pStorage)
+bool flxSettingsSave::restoreObjectFromStorage(flxObject *pObject, flxStorage *pStorage)
 {
     if (!pStorage)
         return false;
-    
+
     // Start storage transaction = read-only
     if (!pStorage->begin(true))
         return false;
@@ -150,32 +144,33 @@ bool flxSettingsSave::restore(flxObject *pObject)
 
     bool status = restoreObjectFromStorage(pObject, _primaryStorage);
 
-    char * strSource = nullptr;
-    if(!status)
+    char *strSource = nullptr;
+    if (!status)
     {
         flxLog_D(F("Unable to restore %s from %s"), pObject->name(), _primaryStorage->name());
 
-
-        // Save to secondary ? 
-        if (fallbackRestore() && _fallbackStorage !=nullptr)
+        // Save to secondary ?
+        if (fallbackRestore() && _fallbackStorage != nullptr)
         {
             status = restoreObjectFromStorage(pObject, _fallbackStorage);
             if (!status)
-                flxLog_D(F("Unable to restore %s from the fallback system, %s"), pObject->name(), _fallbackStorage->name());
-            else 
+                flxLog_D(F("Unable to restore %s from the fallback system, %s"), pObject->name(),
+                         _fallbackStorage->name());
+            else
             {
-                //flxLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
-                // We restored from fallback, now save to main storage -- TODO - should this be a setting
+                // flxLog_I(F("Restored settings for %s from %s"), pObject->name(), _fallbackStorage->name());
+                //  We restored from fallback, now save to main storage -- TODO - should this be a setting
                 flxLog_D(F("Saving settings to %s"), _primaryStorage->name());
-                strSource = (char*)_fallbackStorage->name();
+                strSource = (char *)_fallbackStorage->name();
                 bool tmp = fallbackSave();
-                fallbackSave=false;
+                fallbackSave = false;
                 save(pObject);
                 fallbackSave = tmp;
             }
         }
-    }else
-        strSource = (char*) _primaryStorage->name();
+    }
+    else
+        strSource = (char *)_primaryStorage->name();
 
     if (status)
         flxLog_N(F("restored from %s"), strSource);
@@ -183,7 +178,6 @@ bool flxSettingsSave::restore(flxObject *pObject)
         flxLog_N(F("unable to restore settings, using defaults"));
 
     return status;
-
 }
 
 //----------------------------------------------------------------------------------
@@ -195,7 +189,6 @@ void flxSettingsSave::reset(void)
 
     if (_fallbackStorage)
         _fallbackStorage->resetStorage();
-
 }
 
 //----------------------------------------------------------------------------------
