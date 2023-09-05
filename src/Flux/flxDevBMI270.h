@@ -68,25 +68,29 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
         uint read_step_count();
 
         // Methods used to set values for our input parameters
-        void write_reset_step_count(bool);
+        void write_reset_step_count();
 
         // Methods used to get values for our RW properties
         uint8_t get_accel_odr();
         uint8_t get_accel_power_mode();
         uint8_t get_accel_filter_bandwidth();
+        uint8_t get_accel_range();
         uint8_t get_gyro_odr();
         uint8_t get_gyro_power_mode_filter();
         uint8_t get_gyro_power_mode_noise();
         uint8_t get_gyro_filter_bandwidth();
+        uint8_t get_gyro_range();
 
         // Methods used to set values for our RW properties
         void set_accel_odr(uint8_t);
         void set_accel_power_mode(uint8_t);
         void set_accel_filter_bandwidth(uint8_t);
+        void set_accel_range(uint8_t);
         void set_gyro_odr(uint8_t);
         void set_gyro_power_mode_filter(uint8_t);
         void set_gyro_power_mode_noise(uint8_t);
         void set_gyro_filter_bandwidth(uint8_t);
+        void set_gyro_range(uint8_t);
         
         bool _accelX = false;
         bool _accelY = false;
@@ -97,13 +101,20 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
 
         float _tempC = 0.0;
 
-        uint8_t _accelDataRate = BMI2_ACC_ODR_100HZ;
-        uint8_t _accelPowerMode = BMI2_PERF_OPT_MODE;
-        uint8_t _accelFilterBW = BMI2_ACC_NORMAL_AVG4;
-        uint8_t _gyroDataRate = BMI2_GYR_ODR_200HZ;
-        uint8_t _gyroFilterPowerMode = BMI2_PERF_OPT_MODE;
-        uint8_t _gyroNoisePowerMode = BMI2_PERF_OPT_MODE;
-        uint8_t _gyroFilterBW = BMI2_GYR_NORMAL_MODE;
+        bmi2_sens_config accelConfig =  {.type                  = BMI2_ACCEL;
+                                         .cfg.acc.odr           = BMI2_ACC_ODR_100HZ;
+                                         .cfg.acc.bwp           = BMI2_ACC_NORMAL_AVG4;
+                                         .cfg.acc.filter_perf   = BMI2_PERF_OPT_MODE;
+                                         .cfg.acc.range         = BMI2_ACC_RANGE_8G;
+                                        };
+
+        bmi2_sens_config gyroConfig =   {.type                  = BMI2_GYRO;
+                                         .cfg.gyr.odr           = BMI2_GYR_ODR_200HZ;
+                                         .cfg.gyr.bwp           = BMI2_GYR_NORMAL_MODE;
+                                         .cfg.gyr.filter_perf   = BMI2_GYR_PERF_OPT_MODE;
+                                         .cfg.gyr.noise_perf    = BMI2_GYR_PERF_OPT_MODE;
+                                         .cfg.gyr.range         = BMI2_GYR_RANGE_2000;
+                                        };
 
         bool enable_step_counter(bool);
         bool _stepCounterEnabled = false;
@@ -149,6 +160,15 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
                               {"Reserved or Average 64 Samples", BMI2_ACC_RES_AVG64},
                               {"Reserved or Average 128 Samples", BMI2_ACC_RES_AVG128}}};
 
+        // Define the sensor's Accelerometer g-range in g's.
+        // Default value is BMI2_ACC_RANGE_8G
+        flxPropertyRWUint8<flxDevBMI270, &flxDevBMI270::get_accel_range, &flxDevBMI270::set_accel_range>
+            accelRange = {BMI2_ACC_RANGE_8G,
+                          {{"+/- 2 g", BMI2_ACC_RANGE_2G},
+                           {"+/- 4 g", BMI2_ACC_RANGE_4G},
+                           {"+/- 8 g", BMI2_ACC_RANGE_8G},
+                           {"+/- 16 g", BMI2_ACC_RANGE_16G}}};
+
         // Define the sensor's Gyroscope Output Data Rate (ODR) in Hz.
         // Default Value is BMI2_GYR_ODR_200HZ
         flxPropertyRWUint8<flxDevBMI270, &flxDevBMI270::get_gyro_odr, &flxDevBMI270::set_gyro_odr>
@@ -185,6 +205,16 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
                              {"Normal", BMI2_GYR_NORMAL_MODE},
                              {"CIC", BMI2_GYR_CIC_MODE}}};
 
+        // Define the sensor's Gyroscope limit range in deg/s.
+        // Default Value is BMI2_GYR_RANGE_2000
+        flxPropertyRWUint8<flxDevBMI270, &flxDevBMI270::get_gyro_range, &flxDevBMI270::set_gyro_range>
+            gyroRange = {BMI2_GYR_RANGE_2000,
+                         {{"+/- 2000 deg/s", BMI2_GYR_RANGE_2000},
+                          {"+/- 1000 deg/s", BMI2_GYR_RANGE_1000},
+                          {"+/- 500 deg/s", BMI2_GYR_RANGE_500},
+                          {"+/- 250 deg/s", BMI2_GYR_RANGE_250},
+                          {"+/- 125 deg/s", BMI2_GYR_RANGE_125}}};
+
         // Define our output parameters
         flxParameterOutFloat<flxDevBMI270, &flxDevBMI270::read_accel_x> accelX;
         flxParameterOutFloat<flxDevBMI270, &flxDevBMI270::read_accel_y> accelY;
@@ -197,5 +227,5 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
         flxParameterOutUint<flxDevBMI270, &flxDevBMI270::read_step_count> stepCount;
 
         // Define our input parameters
-        flxParameterInBool<flxDevBMI270, &flxDevBMI270::write_reset_step_count> resetStepCount;
+        flxParameterInVoid<flxDevBMI270, &flxDevBMI270::write_reset_step_count> resetStepCount;
 };
