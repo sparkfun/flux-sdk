@@ -13,14 +13,14 @@
 #include "flxIoTArduino.h"
 #include "flxUtils.h"
 
-#include <ArduinoIoTCloud.h>
+
 
 // Arduino IOT Constants
 
-#define kArduinoIoTAPIServer "api2.arduino.cc"
+const char * kArduinoIoTAPIServer = "api2.arduino.cc";
 #define kArduinoIoTAPIPort 443
 
-#define kArduinoIoTThingsPath "/iot/v2/things"
+const char * kArduinoIoTThingsPath = "/iot/v2/things";
 
 //---------------------------------------------------------------------------------------
 //
@@ -32,12 +32,13 @@ bool flxIoTArduino::getArduinoToken(void)
     if (cloudAPISecret().length() == 0 || cloudAPIClientID().length() == 0)
     {
         flxLog_E(F("Arduino Cloud API credintials not provided. ArduinoIoT not available"));
-        return false
+        return false;
     }
 
     if (!_wifiClient && !createWiFiClient())
     {
-        flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi")) return false;
+        flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi"));
+        return false;
     }
 
     HTTPClient http;
@@ -48,7 +49,7 @@ bool flxIoTArduino::getArduinoToken(void)
     if (!http.begin(*_wifiClient, szURL))
     {
         flxLog_E(F("%s: Error reaching URL: %s"), this->name(), szURL);
-        return;
+        return false;
     }
 
     // Prepare the HTTP request
@@ -58,7 +59,7 @@ bool flxIoTArduino::getArduinoToken(void)
     postData += "&client_secret=" + cloudAPISecret();
     postData += "&audience=https://api2.arduino.cc/iot";
 
-    int rc = http.POST(postData.c_str(), postData.length());
+    int rc = http.POST((uint8_t*)postData.c_str(), postData.length());
 
     if (rc != 201 || rc != 200)
     {
@@ -74,7 +75,7 @@ bool flxIoTArduino::getArduinoToken(void)
     }
 
     if (jDoc.containsKey("access_token"))
-        _arduinoToken = jDoc["access_token"].as<char *>();
+        _arduinoToken = jDoc["access_token"].as<const char *>();
     else
     {
         flxLog_E(F(" Arduino IoT token not returned."));
@@ -86,12 +87,13 @@ bool flxIoTArduino::getArduinoToken(void)
 //---------------------------------------------------------------------------------------
 // General PUT call for json payloads
 //
-bool flxIoTArduino::postJSONPayload(const char url, JsonDocument &jIn, JsonDocument &jOut)
+bool flxIoTArduino::postJSONPayload(const char* url, JsonDocument &jIn, JsonDocument &jOut)
 {
 
     if (!_wifiClient && !createWiFiClient())
     {
-        flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi")) return false;
+        flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi")); 
+        return false;
     }
 
     HTTPClient http;
@@ -102,7 +104,7 @@ bool flxIoTArduino::postJSONPayload(const char url, JsonDocument &jIn, JsonDocum
     if (!http.begin(*_wifiClient, szURL))
     {
         flxLog_E(F("%s: Error reaching URL: %s"), this->name(), szURL);
-        return;
+        return false;
     }
 
     // Prepare the HTTP request
@@ -155,7 +157,7 @@ bool flxIoTArduino::createArduinoThing(void)
     if (thingName().length() == 0 || deviceID().length() == 0)
     {
         flxLog_E(F("Device/Thing Name not provided. Unable to continue with ArduinoIoT"));
-        return false
+        return false;
     }
 
     // Create our payload
@@ -170,11 +172,11 @@ bool flxIoTArduino::createArduinoThing(void)
     if (!postJSONPayload(kArduinoIoTThingsPath, jDoc, jOut))
     {
         flxLog_E(F("ArduinoIoT Cloud not available. Unable to create thing"));
-        return false
+        return false;
     }
 
     if (jOut.containsKey("id"))
-        _arduinoThingID = jDoc["id"].as<char *>();
+        _arduinoThingID = jDoc["id"].as<const char *>();
     else
     {
         flxLog_E(F(" Arduino IoT Thing Token not returned."));
@@ -235,12 +237,12 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
 
     // get the correct path
     char szPath[128];
-    snprintf(szPath, sizeof(szPath), F("%s/%s/properties"), kArduinoIoTThingsPath, _arduinoThingID.c_str());
+    snprintf(szPath, sizeof(szPath), "%s/%s/properties", kArduinoIoTThingsPath, _arduinoThingID.c_str());
 
     if (!postJSONPayload(szPath, jDoc, jOut))
     {
         flxLog_E(F("ArduinoIoT Cloud not available. Unable to create variable %s"), szNameBuffer);
-        return false
+        return false;
     }
 
     if (!jOut.containsKey("id"))
@@ -305,7 +307,7 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
 
 //---------------------------------------------------------------------------------------
 // Get the basic type of the value in the json pair - return type code
-flxDataType_t flxIoTArduino::getValueType(JsonPair &kvValue)
+flxDataType_t flxIoTArduino::getValueType(JsonPair &kv)
 {
 
     if (kv.value().is<float>())
@@ -314,8 +316,6 @@ flxDataType_t flxIoTArduino::getValueType(JsonPair &kvValue)
         return flxTypeFloat;
 
     else if (kv.value().is<const char *>())
-        return flxTypeString;
-    else if (kv.value().is<char *>())
         return flxTypeString;
 
     else if (kv.value().is<signed int>())
@@ -339,34 +339,34 @@ flxDataType_t flxIoTArduino::getValueType(JsonPair &kvValue)
 }
 
 //---------------------------------------------------------------------------------------
-void flxIoTArduino::updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair &kvParam)
+void flxIoTArduino::updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair &kv)
 {
 
     switch (value->type)
     {
     case flxTypeBool:
-        *((CloudBool *)value->variable) = kv.value() as<bool>();
+        *((CloudBool *)value->variable) = kv.value().as<bool>();
         break;
 
     case flxTypeInt:
-        *((CloudInt *)value->variable) = kv.value() as<signed int>();
+        *((CloudInt *)value->variable) = kv.value().as<signed int>();
         break;
 
     case flxTypeUInt:
-        *((CloudUnsignedInt *)value->variable) = kv.value() as<unsigned int>();
+        *((CloudUnsignedInt *)value->variable) = kv.value().as<unsigned int>();
         break;
 
     case flxTypeFloat:
-        *((CloudFloat *)value->variable) = kv.value() as<float>();
+        *((CloudFloat *)value->variable) = kv.value().as<float>();
         break;
 
     case flxTypeString:
-        *((CloudString *)value->variable) = kv.value() as<const char *>();
+        *((CloudString *)value->variable) = kv.value().as<const char *>();
         break;
     }
 }
 
-void flxIoTArduino::write(JsonDocument &jsonDoc)
+void flxIoTArduino::write(JsonDocument &jDoc)
 {
 
     // The Plan:
@@ -386,7 +386,8 @@ void flxIoTArduino::write(JsonDocument &jsonDoc)
     uint32_t hash_id;
     flxDataType_t dataType;
 
-    for (JsonPair kvObj : jsonDoc)
+    JsonObject jRoot = jDoc.as<JsonObject>();
+    for (JsonPair kvObj : jRoot)
     {
 
         // Go through the parameters in the object

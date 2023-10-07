@@ -17,6 +17,10 @@
 
 #include "flxFmtJSON.h"
 #include "flxUtils.h"
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
+
+#include <ArduinoIoTCloud.h>
 
 #include <map>
 
@@ -56,7 +60,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         if (_wifiClient)
             delete _wifiClient;
 
-        _wifiClient = _new WiFiClientSecure;
+        _wifiClient = new WiFiClientSecure;
         if (!_wifiClient)
         {
             flxLog_E("Arduion IoT - Unable to allocate WiFi Client");
@@ -94,13 +98,13 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         if (_wifiClient != nullptr)
             delete _wifiClient;
 
-        for ([uint32_t key, flxIoTArduinoVar_t* value] : _parameterToVar)
+        for (auto x : _parameterToVar)
         {
-            if (value)
+            if (x.second)
             {
-                if (value->variable)
-                    delete value->variable;
-                delete value;
+                if (x.second->variable)
+                    delete x.second->variable;
+                delete x.second;
             }
         }
     }
@@ -151,16 +155,21 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
   private:
 
-    bool createArduinoIoTVariable(char *variableName, flxDataType_t type );
+    bool getArduinoToken(void);
+    bool postJSONPayload(const char *url, JsonDocument &jIn, JsonDocument &jOut);
+    bool createArduinoThing(void);
+    bool createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
+    flxDataType_t getValueType(JsonPair &kvValue);
+    void updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair &kvParam);
 
     // template to register variables with the cloud
-    tmplate <typename T> bool registerArduinoVariable(char * szName, flxIoTArduinoVar_t * pValue)
+    template <typename T> bool registerArduinoVariable(char * szName, flxIoTArduinoVar_t * pValue)
     {
 
         pValue->variable = (void*)new T();
         if (!pValue->variable)
             return false;
-        ArduinoCloud.addPropertyReal( *((T*)pValue->variable), szNameBuffer, READ, ON_CHANGE);
+        ArduinoCloud.addPropertyReal( *((T*)pValue->variable), szName, READ, ON_CHANGE);
         return true;
     }
 
@@ -173,7 +182,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     flxNetwork *_theNetwork;
 
-    WiFiClient *_wifiClient;
+    WiFiClientSecure *_wifiClient;
 
 
     // For our arduino interactions
