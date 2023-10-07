@@ -271,7 +271,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
 
         http.addHeader("Content-Type", "application/json");
 
-        int rc = http.POST(value, strlen(value));
+        int rc = http.POST((uint8_t*)value, strlen(value));
 
         if (rc != 200)
             flxLog_W(F("%s: Error [%s] posting to: %s"), this->name(),
