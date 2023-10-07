@@ -29,12 +29,14 @@ const char * kArduinoIoTThingsPath = "/iot/v2/things";
 bool flxIoTArduino::getArduinoToken(void)
 {
 
+	// No values, no dice
     if (cloudAPISecret().length() == 0 || cloudAPIClientID().length() == 0)
     {
         flxLog_E(F("Arduino Cloud API credintials not provided. ArduinoIoT not available"));
         return false;
     }
 
+    // Network connection?
     if (!_wifiClient && !createWiFiClient())
     {
         flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi"));
@@ -42,8 +44,9 @@ bool flxIoTArduino::getArduinoToken(void)
     }
 
     HTTPClient http;
-
     char szURL[256];
+
+    // Our full URL
     snprintf(szURL, sizeof(szURL), "%s:%d/%s", kArduinoIoTAPIServer, kArduinoIoTAPIPort, "/iot/v1/clients/token");
 
     if (!http.begin(*_wifiClient, szURL))
@@ -55,6 +58,7 @@ bool flxIoTArduino::getArduinoToken(void)
     // Prepare the HTTP request
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
+    // payload
     std::string postData = "grant_type=client_credentials&client_id" + cloudAPIClientID();
     postData += "&client_secret=" + cloudAPISecret();
     postData += "&audience=https://api2.arduino.cc/iot";
@@ -67,6 +71,7 @@ bool flxIoTArduino::getArduinoToken(void)
         return false;
     }
 
+    // results
     StaticJsonDocument<200> jDoc;
     if (deserializeJson(jDoc, http.getString()) != DeserializationError::Ok)
     {
@@ -81,6 +86,7 @@ bool flxIoTArduino::getArduinoToken(void)
         flxLog_E(F(" Arduino IoT token not returned."));
         return false;
     }
+
     return true;
 }
 
@@ -141,6 +147,8 @@ bool flxIoTArduino::postJSONPayload(const char* url, JsonDocument &jIn, JsonDocu
 }
 
 //---------------------------------------------------------------------------------------
+// Create a thing of the given name;
+
 bool flxIoTArduino::createArduinoThing(void)
 {
 
@@ -185,6 +193,59 @@ bool flxIoTArduino::createArduinoThing(void)
     return true;
 }
 
+//---------------------------------------------------------------------------------------
+// Connect local var to cloud var
+
+bool flxIoTArduino::linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType)
+{
+
+	flxIoTArduinoVar_t *pValue = new flxIoTArduinoVar_t;
+
+    if (!pValue)
+    {
+        flxLog_E(F("ArduinoIoT - failure to create local variable. %s"), szNameBuffer);
+        return false;
+    }
+
+    pValue->type = dataType;
+
+    bool status;
+    // note - low level types seem limited in the IoT cloud space
+    switch (dataType)
+    {
+    case flxTypeUInt:
+        status = registerArduinoVariable<CloudUnsignedInt>(szNameBuffer, pValue);
+        break;
+
+    case flxTypeInt:
+        status = registerArduinoVariable<CloudInt>(szNameBuffer, pValue);
+        break;
+
+    case flxTypeBool:
+        status = registerArduinoVariable<CloudBool>(szNameBuffer, pValue);
+        break;
+
+    case flxTypeFloat:
+        status = registerArduinoVariable<CloudFloat>(szNameBuffer, pValue);
+        break;
+
+    case flxTypeString:
+        status = registerArduinoVariable<CloudString>(szNameBuffer, pValue);
+        break;
+    }
+    if (!status)
+    {
+        delete pValue;
+        flxLog_E(F("ArduinoIoT - failure to create local Ardiuno variable. %s"), szNameBuffer);
+        return false;
+    }
+
+    // Now add this to the map
+
+    _parameterToVar[hash_id] = pValue;
+
+    return true;
+}
 //---------------------------------------------------------------------------------------
 // Create a variable in the IOT Cloud - in our "Thing" and then associate it with a local variable
 // 
@@ -251,58 +312,10 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
         return false;
     }
 
-    /////////////////////////////
-    // TODO -- refactor out
-
     // Okay, at this point we have a variable in the server for our thing, now we need to
-    // map this to a local value
+    // map this to a local value    
 
-    flxIoTArduinoVar_t *pValue = new flxIoTArduinoVar_t;
-
-    if (!pValue)
-    {
-        flxLog_E(F("ArduinoIoT - failure to create local variable. %s"), szNameBuffer);
-        return false;
-    }
-
-    pValue->type = dataType;
-
-    bool status;
-    // note - low level types seem limited in the IoT cloud space
-    switch (dataType)
-    {
-    case flxTypeUInt:
-        status = registerArduinoVariable<CloudUnsignedInt>(szNameBuffer, pValue);
-        break;
-
-    case flxTypeInt:
-        status = registerArduinoVariable<CloudInt>(szNameBuffer, pValue);
-        break;
-
-    case flxTypeBool:
-        status = registerArduinoVariable<CloudBool>(szNameBuffer, pValue);
-        break;
-
-    case flxTypeFloat:
-        status = registerArduinoVariable<CloudFloat>(szNameBuffer, pValue);
-        break;
-
-    case flxTypeString:
-        status = registerArduinoVariable<CloudString>(szNameBuffer, pValue);
-        break;
-    }
-    if (!status)
-    {
-        delete pValue;
-        flxLog_E(F("ArduinoIoT - failure to create local Ardiuno variable. %s"), szNameBuffer);
-        return false;
-    }
-
-    // Now add this to the map
-
-    _parameterToVar[hash_id] = pValue;
-
-    return true;
+    return linkToCloudVariable(szNameBuffer, hash_id, dataType);
 }
 
 //---------------------------------------------------------------------------------------
