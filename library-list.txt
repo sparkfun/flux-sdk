@@ -53,3 +53,4 @@ SdFat
 "SparkFun_FS3000_Arduino_Library"
 "SparkFun Qwiic OLED Graphics Library"
 "XENSIV PAS CO2"
+"ArduinoIoTCloud"
