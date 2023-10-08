@@ -45,7 +45,7 @@
 ///
 typedef struct
 {
-    flxDataType_t type; /// @
+    flxDataType_t type;
     void *variable;
 } flxIoTArduinoVar_t;
 
