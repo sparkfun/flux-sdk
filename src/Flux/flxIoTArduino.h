@@ -17,8 +17,8 @@
 
 #include "flxFmtJSON.h"
 #include "flxUtils.h"
-#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 
 #include <ArduinoIoTCloud.h>
 
@@ -29,36 +29,44 @@
 //  - Arduino IoT Cloud variables are dynamically created based on what parameters are being logged
 //  - The user must create a Device and provide API credentials for this to work
 
-
 // The variable / output parameter name is mapped to a local ArduinoIot Cloud variable
 // These variables have a limited type set, and are actually objects to dynamically detect
 // when values are changed. This enables value updates to the cloud from the device/thing.
 //
 // To map this the following is done:
-//      - Flux Output parameter names are <device name>-<parameter name>
+//      - Flux Output parameter names are <device name>_<parameter name>
 //      - The names are truncated to 64, left justified if needed when creating cloud vars
 //      - The name used in our map object is the hash of the full name
 //      - When a variable is created in the cloud, the local var is allocated and added to the map
 //      - The map value is a struct that contains a type code (flxDataType_t) and a void * pointer
 
-
-// Struct to hold a dynamically created Arduino Cloud variable
+/// @typedef flxIoTArduinoVar_t
+/// @brief Struct to hold a dynamically created Arduino Cloud variable
+///
 typedef struct
 {
-    flxDataType_t type;
+    flxDataType_t type; /// @
     void *variable;
 } flxIoTArduinoVar_t;
 
+///
+/// @class flxIoTArduino
+///
+/// @brief  A framework action that encapsulates the connection to the Arduino IoT Cloud
+///
+/// @note   Also implements the `flxIWriterJSON` interface, so it receives update data as a JSON doc.
+///
 class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 {
   private:
-
-
-    // Event callback for network changes
-    //----------------------------------------------------------------------------
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Called when the network status changes.
+    ///
+    /// @param bConnected   Connection status - true connected, false not connected.
+    ///
     void onConnectionChange(bool bConnected)
     {
-
 
         _canConnect = bConnected;
 
@@ -71,11 +79,17 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
                 flxLog_W(F("ArduinoIoT - Device parameters not set"));
 
             if (thingName().length() == 0)
-                flxLog_W(F("ArduinoIoT - Thing Name not proviced"));
+                flxLog_W(F("ArduinoIoT - Thing Name not provided"));
         }
-
     }
 
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Called to create a WiFi client object.
+    /// @note   Will delete any current object and create a new one
+    ///
+    /// @return true on success, false on failure
+    ///
     bool createWiFiClient(void)
     {
         if (_wifiClient)
@@ -84,7 +98,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         _wifiClient = new WiFiClientSecure;
         if (!_wifiClient)
         {
-            flxLog_E("Arduion IoT - Unable to allocate WiFi Client");
+            flxLog_E("Arduino IoT - Unable to allocate WiFi Client");
             return false;
         }
 
@@ -138,23 +152,35 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     {
     }
 
-
-    //----------------------------------------------------------------------    
-    // Used to register the event we want to listen to, which will trigger this
-    // activity.
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Used to register for network events .
+    ///
+    /// @param theEvent     The Event object to register with
+    ///
     void listenToConnection(flxSignalBool &theEvent)
     {
         // Register to get notified on connection changes
         theEvent.call(this, &flxIoTArduino::onConnectionChange);
     }
 
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  API method used to set the system network connection.
+    /// @note   Will register for network connectivity change events
+    /// @param theNetwork   The network object.
+    ///
     void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
 
         listenToConnection(theNetwork->on_connectionChange);
     }
-
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Are we connected to the cloud?
+    /// @return true if connected yes, false if not connected
+    ///
     bool connected()
     {
         return (_isEnabled && _canConnect);
@@ -176,7 +202,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     flxPropertySecureString<flxIoTArduino> deviceID;
 
   private:
-
     bool getArduinoToken(void);
     bool postJSONPayload(const char *url, JsonDocument &jIn, JsonDocument &jOut);
     bool createArduinoThing(void);
@@ -185,17 +210,27 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     void updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair &kvParam);
     bool linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
 
-    // template to register variables with the cloud
-    template <typename T> bool registerArduinoVariable(char * szName, flxIoTArduinoVar_t * pValue)
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Template to create and register a local cloud variable with a cloud variable on Arduino IoT
+    ///
+    /// @param szName   Name of the IoT Cloud variable
+    /// @param pValue   The struct that contains the local Cloud Variable
+    /// @tparam T The type of the cloud variable
+    /// @return true on success, false on failure
+    ///
+    template <typename T> bool registerArduinoVariable(char *szName, flxIoTArduinoVar_t *pValue)
     {
-
-        pValue->variable = (void*)new T();
+        // Create the local Cloud Variable - of type T
+        pValue->variable = (void *)new T();
         if (!pValue->variable)
             return false;
-        ArduinoCloud.addPropertyReal( *((T*)pValue->variable), szName, READ, ON_CHANGE);
+
+        // Register with the IoT Cloud
+        ArduinoCloud.addPropertyReal(*((T *)pValue->variable), szName, READ, ON_CHANGE);
+
         return true;
     }
-
 
     // This object is enabled?
     bool _isEnabled;
@@ -207,9 +242,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     WiFiClientSecure *_wifiClient;
 
-
     // For our arduino interactions
-
     std::string _arduinoToken;
     std::string _arduinoThingID;
 
