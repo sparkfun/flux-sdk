@@ -21,6 +21,9 @@
 #include <WiFiClientSecure.h>
 
 #include <ArduinoIoTCloud.h>
+// ArduinoIoTCloud header defines an addProperty() macro, which of course conflicts with the
+// framework - so undef it here ...
+#undef addProperty(v, ...)
 
 #include <map>
 
