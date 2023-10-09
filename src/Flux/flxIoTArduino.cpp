@@ -16,7 +16,7 @@
 // Arduino IOT Constants
 
 /// @brief Arduino IoT Server
-#define kArduinoIoTAPIServer "api2.arduino.cc"
+#define kArduinoIoTAPIServer "https://api2.arduino.cc"
 
 /// @brief Arduino IoT Server Port
 #define kArduinoIoTAPIPort 443
@@ -27,6 +27,32 @@
 /// @brief URL path for IoT Things token end point
 #define kArduinoIoTTokenPath "/iot/v1/clients/token"
 
+
+///---------------------------------------------------------------------------------------
+///
+/// @brief     Creates a valid arduino variable name
+//  @param[In,Out] szVariable the name to convert 
+///
+/// @return true on success, false on failure
+///
+bool flxIoTArduino::validateVariableName(char *szVariable)
+{
+    if (!szVariable)
+        return false;
+
+    size_t nChar = strlen(szVariable);
+
+    int idst = 0;
+    int isrc = 0;
+    for (; isrc < nChar; isrc++)
+    {
+        if (std::isalnum(szVariable[isrc]) || szVariable[isrc] == '_' )
+            szVariable[idst++] = szVariable[isrc];
+    }
+    szVariable[idst] = '\0';
+
+    return (strlen(szVariable) > 1);
+}
 ///---------------------------------------------------------------------------------------
 ///
 /// @brief      Call to Arduino IoT Cloud to get out session token.
@@ -57,7 +83,7 @@ bool flxIoTArduino::getArduinoToken(void)
     char szURL[256];
 
     // Our full URL
-    snprintf(szURL, sizeof(szURL), "%s:%d/%s", kArduinoIoTAPIServer, kArduinoIoTAPIPort, kArduinoIoTTokenPath);
+    snprintf(szURL, sizeof(szURL), "%s:%d%s", kArduinoIoTAPIServer, kArduinoIoTAPIPort, kArduinoIoTTokenPath);
 
     if (!http.begin(*_wifiClient, szURL))
     {
@@ -112,6 +138,11 @@ bool flxIoTArduino::getArduinoToken(void)
 bool flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jIn, JsonDocument &jOut)
 {
 
+    if (!url || strlen(url) < 1)
+    {
+        flxLog_E(F("Arduino IoT - Invalid URL provided"));
+        return false;
+    }
     if (!_wifiClient && !createWiFiClient())
     {
         flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi"));
@@ -121,7 +152,11 @@ bool flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jIn, JsonDocu
     HTTPClient http;
 
     char szURL[256];
-    snprintf(szURL, sizeof(szURL), "%s:%d/%s", kArduinoIoTAPIServer, kArduinoIoTAPIPort, url);
+    char slash = '\0';
+    if (url[0] != '/')
+        slash = '/';
+
+    snprintf(szURL, sizeof(szURL), "%s:%d%c%s", kArduinoIoTAPIServer, kArduinoIoTAPIPort, slash, url);
 
     if (!http.begin(*_wifiClient, szURL))
     {
@@ -449,18 +484,27 @@ void flxIoTArduino::write(JsonDocument &jDoc)
 
             // make a name
             snprintf(szNameBuffer, sizeof(szNameBuffer), "%s_%s", kvObj.key().c_str(), kvParam.key().c_str());
+            if (!validateVariableName(szNameBuffer))
+            {
+                flxLog_E(F("ArduinoIoT - unable to create valid variable name: %s"), kvParam.key().c_str());
+                continue;
+            }
+            
             hash_id = flx_utils::id_hash_string(szNameBuffer); // hash name
 
+            flxLog_I("Arduino Variable - name: %s, type: %d, hash: %u", szNameBuffer, (int)dataType, hash_id);
             // Is this value in our parameter map?
             auto itSearch = _parameterToVar.find(hash_id);
 
             // No match?
             if (itSearch == _parameterToVar.end())
             {
+                flxLog_I("Creating Variable: %s", szNameBuffer);
+
                 // Need to create a ArduinoIoT variable for this parameter
                 if (!createArduinoIoTVariable(szNameBuffer, hash_id, dataType))
                 {
-                    flxLog_E(F("Error creating ArduinoIoT Cloud variable for parameter %s"), szNameBuffer);
+                    flxLog_E(F("Error creating ArduinoIoT Cloud variable for parameter: %s"), szNameBuffer);
                     continue;
                 }
                 // redo our search
