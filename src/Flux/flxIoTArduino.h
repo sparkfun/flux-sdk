@@ -110,6 +110,30 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         return true;
     }
 
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Property callback for setting the enabled value for this action
+    /// @param bEnabled - bool - true if the action should be set to enabled
+    ///
+    void set_isEnabled(bool bEnabled)
+    {
+        // Any changes?
+        if (_isEnabled == bEnabled)
+            return;
+
+        _isEnabled = bEnabled;
+    }
+
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Property callback for getting the enabled value for this action
+    /// @return bool - true if enabled, false if not
+    ///
+    bool get_isEnabled(void)
+    {
+        return _isEnabled;
+    }
+
   public:
     flxIoTArduino() : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}
     {
@@ -203,6 +227,9 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     // ArduinoIOT Device ID
     flxPropertySecureString<flxIoTArduino> deviceID;
+
+    // Enabled/Disabled
+    flxPropertyRWBool<flxIoTArduino, &flxIoTArduino::get_isEnabled, &flxIoTArduino::set_isEnabled> enabled;
 
   private:
     bool getArduinoToken(void);
