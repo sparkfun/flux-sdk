@@ -140,6 +140,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
         // Register our properties
+        flxRegister(enabled, "Enabled", "Enable or Disable the Arduino IoT Client");
 
         flxRegister(thingName, "Thing Name", "The Thing Name to use for the IoT Device connection");
 
@@ -150,8 +151,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         flxRegister(deviceSecret, "Device Secret", "The ArduinoIoT Device Secret");
 
         flxRegister(deviceID, "Device ID", "The ArduinoIoT Device ID");
-
-        flxRegister(enabled, "Enabled", "Enable or Disable the Arduino IoT Client");
 
         flux.add(this);
     }
