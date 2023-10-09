@@ -151,6 +151,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
         flxRegister(deviceID, "Device ID", "The ArduinoIoT Device ID");
 
+        flxRegister(enabled, "Enabled", "Enable or Disable the Arduino IoT Client");
+
         flux.add(this);
     }
 
