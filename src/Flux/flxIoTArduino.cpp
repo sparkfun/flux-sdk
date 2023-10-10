@@ -27,11 +27,10 @@
 /// @brief URL path for IoT Things token end point
 #define kArduinoIoTTokenPath "/iot/v1/clients/token"
 
-
 ///---------------------------------------------------------------------------------------
 ///
 /// @brief     Creates a valid arduino variable name
-//  @param[In,Out] szVariable the name to convert 
+//  @param[In,Out] szVariable the name to convert
 ///
 /// @return true on success, false on failure
 ///
@@ -46,7 +45,7 @@ bool flxIoTArduino::validateVariableName(char *szVariable)
     int isrc = 0;
     for (; isrc < nChar; isrc++)
     {
-        if (std::isalnum(szVariable[isrc]) || szVariable[isrc] == '_' )
+        if (std::isalnum(szVariable[isrc]) || szVariable[isrc] == '_')
             szVariable[idst++] = szVariable[isrc];
     }
     szVariable[idst] = '\0';
@@ -72,10 +71,10 @@ bool flxIoTArduino::getArduinoToken(void)
         return false;
     }
 
-    // Network connection?
-    if (!_wifiClient && !createWiFiClient())
+    // Network connection? Need a new one each interaction ...
+    if (!createWiFiClient())
     {
-        flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi"));
+        flxLog_E(F("Arduino IoT Unable to connect to WiFi"));
         return false;
     }
 
@@ -94,26 +93,35 @@ bool flxIoTArduino::getArduinoToken(void)
     // Prepare the HTTP request
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    // payload
-    std::string postData = "grant_type=client_credentials&client_id" + cloudAPIClientID();
-    postData += "&client_secret=" + cloudAPISecret();
-    postData += "&audience=https://api2.arduino.cc/iot";
+    // // payload
+    char szPayload[256];
+    snprintf(szPayload, sizeof(szPayload),
+             "grant_type=client_credentials&client_id=%s&client_secret=%s&audience=https://api2.arduino.cc/iot",
+             cloudAPIClientID().c_str(), cloudAPISecret().c_str());
 
-    int rc = http.POST((uint8_t *)postData.c_str(), postData.length());
+    int rc = http.POST((uint8_t *)szPayload, strlen(szPayload));
 
-    if (rc != 201 || rc != 200)
+    if (rc < 200 || rc > 220)
     {
         flxLog_E(F("ArduinoIoT HTTP communication error [%d] - token request"), rc);
+        http.end();
         return false;
     }
 
+    // The return value of the token can be large, so use a dynamic json doc - stack based ...
+    int retSize = http.getSize();
     // results
-    StaticJsonDocument<200> jDoc;
+    DynamicJsonDocument jDoc(retSize + 100);
+
+    // StaticJsonDocument<800> jDoc;
     if (deserializeJson(jDoc, http.getString()) != DeserializationError::Ok)
     {
         flxLog_E(F("Unable to parse Arduino IoT token return value."));
+        http.end();
         return false;
     }
+
+    http.end();
 
     if (jDoc.containsKey("access_token"))
         _arduinoToken = jDoc["access_token"].as<const char *>();
@@ -143,9 +151,9 @@ bool flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jIn, JsonDocu
         flxLog_E(F("Arduino IoT - Invalid URL provided"));
         return false;
     }
-    if (!_wifiClient && !createWiFiClient())
+    if (!createWiFiClient())
     {
-        flxLog_E(F("Arduino IoT Unable to connect to Wi-Fi"));
+        flxLog_E(F("Arduino IoT Unable to connect to WiFi"));
         return false;
     }
 
@@ -467,6 +475,16 @@ void flxIoTArduino::write(JsonDocument &jDoc)
     if (!_isEnabled || !_canConnect)
         return;
 
+    // do we have a thing ID? If we don't have this, we can't do anything ...
+    if (_arduinoThingID.length() == 0)
+    {
+        if (!createArduinoThing())
+        {
+            flxLog_E(F("Arduino IoT Cloud not available"));
+            return;
+        }
+    }
+
     JsonObject jObj;
     char szNameBuffer[65];
     uint32_t hash_id;
@@ -489,7 +507,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
                 flxLog_E(F("ArduinoIoT - unable to create valid variable name: %s"), kvParam.key().c_str());
                 continue;
             }
-            
+
             hash_id = flx_utils::id_hash_string(szNameBuffer); // hash name
 
             flxLog_I("Arduino Variable - name: %s, type: %d, hash: %u", szNameBuffer, (int)dataType, hash_id);
