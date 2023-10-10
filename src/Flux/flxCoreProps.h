@@ -437,8 +437,8 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
         // Secure string? 
         if ( stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
         {
-            // get buffer length 
-            len = stBlk->getBytesLength(name());
+            // get buffer length. Note, add one to make sure we have room for line termination
+            len = stBlk->getBytesLength(name()) + 1;
             if (!len)
                 return false;
 
