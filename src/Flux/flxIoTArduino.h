@@ -83,8 +83,12 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
             if (thingName().length() == 0)
                 flxLog_W(F("ArduinoIoT - Thing Name not provided"));
+
+            connect();
         }
     }
+
+    void connect(void);
 
     ///---------------------------------------------------------------------------------------
     ///
@@ -135,7 +139,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     }
 
   public:
-    flxIoTArduino() : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}
+    flxIoTArduino()
+        : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _bInitialized{false}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
@@ -280,4 +285,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     // Our variable map - [hash of full parameter name, pointer to a flxIoTArduinoVar_t struct]
     std::map<uint32_t, flxIoTArduinoVar_t *> _parameterToVar;
+
+    bool _bInitialized;
 };

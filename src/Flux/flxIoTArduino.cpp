@@ -52,6 +52,27 @@ bool flxIoTArduino::validateVariableName(char *szVariable)
 
     return (strlen(szVariable) > 1);
 }
+
+
+void flxIoTArduino::connect(void)
+{
+
+    if (deviceID().length() == 0 || deviceSecret().length() == 0)
+    {
+        flxLog_E(F("%d: Device credentials (ID, Secret) not set - unable to continue"), this->name());
+        return;
+    }
+
+    if (!_bInitialized)
+    {
+        ArduinoCloud.setBoardId(deviceID().c_str());
+        ArduinoCloud.setSecretDeviceKey(deviceSecret().c_str());
+
+       ArduinoCloud.begin();
+    }
+}
+
+
 ///---------------------------------------------------------------------------------------
 ///
 /// @brief      Call to Arduino IoT Cloud to get out session token.
@@ -113,7 +134,6 @@ bool flxIoTArduino::getArduinoToken(void)
     // results
     DynamicJsonDocument jDoc(retSize + 100);
 
-    // StaticJsonDocument<800> jDoc;
     if (deserializeJson(jDoc, http.getString()) != DeserializationError::Ok)
     {
         flxLog_E(F("Unable to parse Arduino IoT token return value."));
@@ -160,11 +180,8 @@ bool flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jIn, JsonDocu
     HTTPClient http;
 
     char szURL[256];
-    char slash = '\0';
-    if (url[0] != '/')
-        slash = '/';
-
-    snprintf(szURL, sizeof(szURL), "%s:%d%c%s", kArduinoIoTAPIServer, kArduinoIoTAPIPort, slash, url);
+    snprintf(szURL, sizeof(szURL), "%s:%d/%s", kArduinoIoTAPIServer, kArduinoIoTAPIPort,  
+                url + (url[0] == '/' ? 1 : 0));
 
     if (!http.begin(*_wifiClient, szURL))
     {
@@ -173,9 +190,9 @@ bool flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jIn, JsonDocu
     }
 
     // Prepare the HTTP request
-    std::string bearer = "Bearer " + _arduinoToken;
     http.addHeader("Content-Type", "application/json");
-    http.addHeader("Authorization", bearer.c_str());
+    http.setAuthorization(_arduinoToken.c_str());
+    http.setAuthorizationType("Bearer");
 
     char szBuffer[256];
 
@@ -196,6 +213,7 @@ bool flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jIn, JsonDocu
         return false;
     }
 
+    flxLog_I("SIZE OF OUTPUT: %d", http.getSize());
     if (deserializeJson(jOut, http.getString()) != DeserializationError::Ok)
     {
         flxLog_E(F("ArduinoIoT communication - invalid response."));
@@ -234,12 +252,12 @@ bool flxIoTArduino::createArduinoThing(void)
     }
 
     // Create our payload
-    StaticJsonDocument<200> jDoc;
+    StaticJsonDocument<128> jDoc;
     jDoc["device_id"] = deviceID();
     jDoc["name"] = thingName();
 
     // Create our output
-    StaticJsonDocument<200> jOut;
+    StaticJsonDocument<512> jOut;
 
     if (!postJSONPayload(kArduinoIoTThingsPath, jDoc, jOut))
     {
@@ -248,12 +266,13 @@ bool flxIoTArduino::createArduinoThing(void)
     }
 
     if (jOut.containsKey("id"))
-        _arduinoThingID = jDoc["id"].as<const char *>();
+        _arduinoThingID = jOut["id"].as<const char *>();
     else
     {
         flxLog_E(F(" Arduino IoT Thing Token not returned."));
         return false;
     }
+
     return true;
 }
 
@@ -359,7 +378,7 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
     }
 
     // output /result document
-    StaticJsonDocument<200> jOut;
+    StaticJsonDocument<700> jOut;
 
     // get the correct path
     char szPath[128];
@@ -484,7 +503,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
             return;
         }
     }
-
+    flxLog_I("ENTER arduino iot write loop");
     JsonObject jObj;
     char szNameBuffer[65];
     uint32_t hash_id;
@@ -540,4 +559,10 @@ void flxIoTArduino::write(JsonDocument &jDoc)
             updateArduinoIoTVariable(itSearch->second, kvParam);
         }
     }
+
+    // If we have variables -- let's update them
+    if (_parameterToVar.size() > 0)
+        ArduinoCloud.update();
+
+    flxLog_I("Finished arduino iot write loop");
 }
