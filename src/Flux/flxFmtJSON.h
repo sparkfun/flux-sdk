@@ -201,8 +201,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
         outputObservation(szBuffer);
 
         // if we have any output writers that want the actual json document,
-        // send the mthe document.
-
+        // send the document.
         for ( auto aWriter : _jsonWriters)
             aWriter->write(_jDoc);
     }
