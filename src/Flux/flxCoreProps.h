@@ -1337,7 +1337,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         // setup a default name for this device.
         char szBuffer[64];
         snprintf(szBuffer, sizeof(szBuffer), "flxObject%04u", getNextNameNumber());
-        setName(szBuffer);
+        setNameAlloc(szBuffer); // make sure we create a copy - this name is stack based
     }
     virtual ~flxObject()
     {
