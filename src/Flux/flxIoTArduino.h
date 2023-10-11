@@ -27,6 +27,83 @@
 
 #include <map>
 
+//----------------------------------------------------------------------------
+// 10/2023 -KDB
+//
+// A *hack* for the ArduinoIOT system....
+//
+// The ArduinoIoT Cloud system uses something called a Connection Handler. This
+// encapsulates the network management.
+//
+// For WiFi, this assumes it's controlling the connection. But this isn't the case,
+// Flux is. So, create our own Connection handler and pass that into the system.
+//
+// This works, but would need updating if another type of connection was created for this
+// system.
+
+#include <WiFi.h>
+#include <WiFiUdp.h>
+
+/// our version of the connection handler for arduino IoT. The default
+/// assumes it's controlling the WiFi. Sorry, the DataLogger is..
+
+class DataLoggerAIOTConnectionHandler : public ConnectionHandler
+{
+  public:
+    DataLoggerAIOTConnectionHandler(void) : ConnectionHandler{true, NetworkAdapter::WIFI}, _isConnected{false} {};
+
+    virtual unsigned long getTime()
+    {
+        return 0;
+    }
+
+    virtual Client &getClient() override
+    {
+        return _wifi_client;
+    }
+    virtual UDP &getUDP() override
+    {
+        return _wifi_udp;
+    }
+
+  protected:
+    NetworkConnectionState update_handleInit()
+    {
+        return (_isConnected ? NetworkConnectionState::CONNECTED : NetworkConnectionState::CONNECTING);
+    }
+
+    NetworkConnectionState update_handleConnecting()
+    {
+        return (_isConnected ? NetworkConnectionState::CONNECTED : NetworkConnectionState::CONNECTING);
+    }
+
+    NetworkConnectionState update_handleConnected()
+    {
+        return (_isConnected ? NetworkConnectionState::CONNECTED : NetworkConnectionState::DISCONNECTED);
+    }
+    NetworkConnectionState update_handleDisconnecting()
+    {
+        return NetworkConnectionState::DISCONNECTED;
+    }
+    NetworkConnectionState update_handleDisconnected()
+    {
+        return NetworkConnectionState::CLOSED;
+    }
+
+  public:
+    // use this method to communicate if WiFi is up or not to this class/interface from the below class
+    void setConnected(bool isConnected)
+    {
+        _isConnected = isConnected;
+    }
+
+  private:
+    bool _isConnected;
+
+    WiFiUDP _wifi_udp;
+    WiFiClient _wifi_client;
+};
+
 // Implements a connection to the Arduino IoT Cloud
 //
 //  - Arduino IoT Cloud variables are dynamically created based on what parameters are being logged
@@ -86,9 +163,12 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
             connect();
         }
+        else
+            disconnect();
     }
 
     void connect(void);
+    void disconnect(void);
 
     ///---------------------------------------------------------------------------------------
     ///
@@ -140,7 +220,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
   public:
     flxIoTArduino()
-        : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _bInitialized{false}
+        : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _bInitialized{false},
+          _lastArduinoUpdate{0}, _startupCounter{0}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
@@ -219,6 +300,11 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         return (_isEnabled && _canConnect);
     }
 
+    ///
+    /// @brief  Loop for processing events
+    ///
+    bool loop(void);
+
     // Name of this thing in Arduino IOT
     flxPropertyString<flxIoTArduino> thingName;
 
@@ -287,4 +373,16 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     std::map<uint32_t, flxIoTArduinoVar_t *> _parameterToVar;
 
     bool _bInitialized;
+
+    // Keep track update() calls to arduinoIoT - use this at startup to pump the init process
+    // of the system...
+    //
+    // Delta between updates - last update ticks
+    uint32_t _lastArduinoUpdate;
+
+    // Count of our start up updates calls to Arduino IoT
+    int _startupCounter;
+
+    // Create an instance of our version of the connection handler
+    DataLoggerAIOTConnectionHandler _myConnectionHandler;
 };

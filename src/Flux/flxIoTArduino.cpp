@@ -27,6 +27,14 @@
 /// @brief URL path for IoT Things token end point
 #define kArduinoIoTTokenPath "/iot/v1/clients/token"
 
+// The First ~10 calls to Arduino Cloud update sets up the system. So we
+// make these calls quickly at start up in the loop method.
+//
+// The following helps manage this.
+// Define the delta between arduino IoT cloud update calls during setup.
+#define kArduinoIoTUpdateDelta 500
+#define kArduinoIoTStartupLimit 15
+
 ///---------------------------------------------------------------------------------------
 ///
 /// @brief     Creates a valid arduino variable name
@@ -67,8 +75,24 @@ void flxIoTArduino::connect(void)
         ArduinoCloud.setBoardId(deviceID().c_str());
         ArduinoCloud.setSecretDeviceKey(deviceSecret().c_str());
 
-        ArduinoCloud.begin();
+        // begin our session with the ArduinoCloud - pass in our special Connection Handler
+        if (!ArduinoCloud.begin(_myConnectionHandler))
+        {
+            flxLog_E(F("%s: Error initializing the Arduino IoT Cloud subsystem"), this->name());
+            return;
+        }
+        // Set the ArduinoCloud debug level - it's a function - global - annoying
+        setDebugMessageLevel(DBG_WARNING);
+        _bInitialized = true;
+        _lastArduinoUpdate = millis();
+        _startupCounter = 0;
+        _myConnectionHandler.setConnected(true);
     }
+}
+
+void flxIoTArduino::disconnect(void)
+{
+    _myConnectionHandler.setConnected(false);
 }
 
 ///---------------------------------------------------------------------------------------
@@ -493,7 +517,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
     //		- Yes, update value
     //		- No - create and register variable in Arduino cloud, then update value
 
-    if (!_isEnabled || !_canConnect)
+    if (!_isEnabled || !_canConnect || !_bInitialized)
         return;
 
     // do we have a thing ID? If we don't have this, we can't do anything ...
@@ -563,9 +587,28 @@ void flxIoTArduino::write(JsonDocument &jDoc)
         }
     }
 
-    // If we have variables -- let's update them
-    // if (_parameterToVar.size() > 0)
-    //     ArduinoCloud.update();
+    // Call Arduino cloud update to push new values to the cloud
+    if (_bInitialized)
+        ArduinoCloud.update();
+}
 
-    flxLog_I("Finished arduino iot write loop");
+//---------------------------------------------------------------------------------------
+///
+/// @brief          Framework loop call
+
+bool flxIoTArduino::loop(void)
+{
+    // Call Arduino update if:
+    //  - The system is initalized
+    //  - The startup update call counter is below our limit
+    //  - Delta is greater than the time limit
+
+    if (_bInitialized && _startupCounter < kArduinoIoTStartupLimit &&
+        millis() - _lastArduinoUpdate > kArduinoIoTUpdateDelta)
+    {
+        ArduinoCloud.update();
+        _lastArduinoUpdate = millis();
+        _startupCounter++;
+    }
+    return false;
 }
