@@ -220,7 +220,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
   public:
     flxIoTArduino()
-        : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _bInitialized{false},
+        : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _tokenTicks{0}, _bInitialized{false},
           _lastArduinoUpdate{0}, _startupCounter{0}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
@@ -229,6 +229,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         flxRegister(enabled, "Enabled", "Enable or Disable the Arduino IoT Client");
 
         flxRegister(thingName, "Thing Name", "The Thing Name to use for the IoT Device connection");
+        
+        flxRegister(thingID, "Thing ID", "The Thing ID to use for the IoT Device connection");
 
         flxRegister(cloudAPIClientID, "API Client ID", "The Arduino Cloud API Client ID");
 
@@ -260,11 +262,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     //----------------------------------------------------------------------
     void write(JsonDocument &jsonDoc);
-
-    // TODO VISIT
-    bool initialize(void)
-    {
-    }
 
     ///---------------------------------------------------------------------------------------
     ///
@@ -305,8 +302,11 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     ///
     bool loop(void);
 
-    // Name of this thing in Arduino IOT
+    // Name of this thing in Arduino IOT - use this if we need to create a thing ...
     flxPropertyString<flxIoTArduino> thingName;
+
+    // ArduinoIoT Thing ID.
+    flxPropertySecureString<flxIoTArduino> thingID;
 
     // Arduino Cloud API client id -
     flxPropertySecureString<flxIoTArduino> cloudAPIClientID;
@@ -326,7 +326,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
   private:
     bool validateVariableName(char *szVariable);
     bool getArduinoToken(void);
-    bool postJSONPayload(const char *url, JsonDocument &jIn, JsonDocument &jOut);
+    bool checkToken(void);
+    int  postJSONPayload(const char *url, JsonDocument &jIn, JsonDocument &jOut);
     bool createArduinoThing(void);
     bool createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
     flxDataType_t getValueType(JsonPair &kvValue);
@@ -367,7 +368,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     // For our arduino interactions
     std::string _arduinoToken;
-    std::string _arduinoThingID;
+
+    uint32_t _tokenTicks;
 
     // Our variable map - [hash of full parameter name, pointer to a flxIoTArduinoVar_t struct]
     std::map<uint32_t, flxIoTArduinoVar_t *> _parameterToVar;
