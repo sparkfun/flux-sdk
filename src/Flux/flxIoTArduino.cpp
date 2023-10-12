@@ -548,6 +548,7 @@ void flxIoTArduino::updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair
         *((CloudString *)value->variable) = kv.value().as<const char *>();
         break;
     }
+    ArduinoCloud.update();
 }
 //---------------------------------------------------------------------------------------
 ///
