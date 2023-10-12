@@ -34,7 +34,7 @@
 // The following helps manage this.
 // Define the delta between arduino IoT cloud update calls during setup.
 #define kArduinoIoTUpdateDelta 500
-#define kArduinoIoTStartupLimit 26
+#define kArduinoIoTStartupLimit 40
 
 ///---------------------------------------------------------------------------------------
 ///
@@ -606,7 +606,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
                 // Need to create a ArduinoIoT variable for this parameter
                 if (!createArduinoIoTVariable(szNameBuffer, hash_id, dataType))
                     continue;
-                delay(200); // found this helps when making a lot of variables at startup ...???
+
                 // redo our search
                 itSearch = _parameterToVar.find(hash_id);
                 if (itSearch == _parameterToVar.end())
