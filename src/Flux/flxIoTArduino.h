@@ -129,6 +129,10 @@ typedef struct
     void *variable;
 } flxIoTArduinoVar_t;
 
+// The following helps manage our loop updates.
+// Define the delta between arduino IoT cloud update calls during setup.
+#define kArduinoIoTUpdateDelta 500
+
 ///
 /// @class flxIoTArduino
 ///
@@ -220,8 +224,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
   public:
     flxIoTArduino()
-        : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _tokenTicks{0}, _bInitialized{false},
-          _lastArduinoUpdate{0}, _startupCounter{0}
+        : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _tokenTicks{0},
+          _bInitialized{false}, _lastArduinoUpdate{0}, _startupCounter{0}, _loopTimeLimit{kArduinoIoTUpdateDelta}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
@@ -229,7 +233,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         flxRegister(enabled, "Enabled", "Enable or Disable the Arduino IoT Client");
 
         flxRegister(thingName, "Thing Name", "The Thing Name to use for the IoT Device connection");
-        
+
         flxRegister(thingID, "Thing ID", "The Thing ID to use for the IoT Device connection");
 
         flxRegister(cloudAPIClientID, "API Client ID", "The Arduino Cloud API Client ID");
@@ -327,7 +331,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     bool validateVariableName(char *szVariable);
     bool getArduinoToken(void);
     bool checkToken(void);
-    int  postJSONPayload(const char *url, JsonDocument &jIn, JsonDocument &jOut);
+    int postJSONPayload(const char *url, JsonDocument &jIn);
+    bool checkThing(void);
     bool createArduinoThing(void);
     bool createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
     flxDataType_t getValueType(JsonPair &kvValue);
@@ -387,4 +392,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     // Create an instance of our version of the connection handler
     DataLoggerAIOTConnectionHandler _myConnectionHandler;
+
+    // loop time limit
+    uint32_t _loopTimeLimit;
 };
