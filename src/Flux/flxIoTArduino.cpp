@@ -245,6 +245,7 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
     char szBuffer[256];
 
     size_t nWritten = serializeJson(jDoc, szBuffer, sizeof(szBuffer));
+    jDoc.clear();
 
     int rc = -1;
 
@@ -258,8 +259,6 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
         // valid response - we are looking for a 201
         if (rc == 201)
         {
-            jDoc.clear();
-
             // flxLog_I("SIZE OF OUTPUT: %d", http.getSize());
             if (deserializeJson(jDoc, http.getString()) != DeserializationError::Ok)
             {
@@ -272,6 +271,8 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
             flxLog_E(F("%s: HTTP error: %s"), name(), http.errorToString(rc).c_str());
             rc = -1;
         }
+        else if (http.getSize() > 0)
+            deserializeJson(jDoc, http.getString());
     }
     http.end();
     return rc;
@@ -279,78 +280,103 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
 
 //---------------------------------------------------------------------------------------
 ///
-/// @brief  Create a *thing* in the Arduino IoT cloud of a given thing
+/// @brief  with thingID - make sure it's valid - otherwise difficult to tell
 ///
-/// @note   Requires a Arduino IoT token from the cloud. Uses the 'Thing Name' and
-///         'Device ID' properties of this action
 ///
 /// @return true on success, false on failure
 ///
-bool flxIoTArduino::createArduinoThing(void)
+bool flxIoTArduino::setupArduinoThing(void)
 {
+    // already setup?
+    if (_thingValid)
+        return true;
 
-    if (thingName().length() == 0 || deviceID().length() == 0)
+    if (deviceID().length() == 0)
     {
-        flxLog_E(F("Device/Thing Name not provided. Unable to continue with ArduinoIoT"));
+        flxLog_E(F("%s: No Device ID provided - unable to  continue"), name());
         return false;
     }
 
-    // Create our payload
-    DynamicJsonDocument jDoc(512);
-    jDoc["device_id"] = deviceID();
-    jDoc["name"] = thingName();
+    // Create our payload - it's a query document.
+    // This will add a name, and/or a Thing ID if we have one. The server
+    // will use these to either validate a thing exists, or create a new thing.
 
-    // send the Thing create request
+    DynamicJsonDocument jDoc(512);
+
+    jDoc["across_user_ids"] = false;
+    jDoc["show_deleted"] = false;
+    jDoc["show_properties"] = false;
+    jDoc["device_id"] = deviceID();
+
+    // Name?
+    if (thingName().length() > 0)
+        jDoc["name"] = thingName();
+
+    // we need a string for the ID that lasts the entire transaction ...
+    char szBuffer[132];
+
+    // ID?
+    if (thingID().length() > 0)
+    {
+        JsonArray ids = jDoc.createNestedArray("ids");
+        strncpy(szBuffer, thingID().c_str(), sizeof(szBuffer));
+        ids.add(szBuffer);
+    }
+
+    // DBUG
+    // flxLog_I_("Is my ID valid? ");
+    // serializeJson(jDoc, Serial);
+
+    // send the Thing verify/create request
     int rc = postJSONPayload(kArduinoIoTThingsPath, jDoc);
 
+    // flxLog_I("Verify Thing - RC [%d]", rc);
+    // serializeJson(jDoc, Serial);
+
+    // Check results from the query
     switch (rc)
     {
-    case 201: // success
-        if (jDoc.containsKey("id"))
+    case 201: // a new thing was created
+
+        if (!jDoc.containsKey("id"))
         {
-            thingID = jDoc["id"].as<const char *>();
-
-            // Okay, we now have a thing ID - let's persist it.
-            if (!flxSettings.save(this))
-                flxLog_W(F("%s: Error saving Arduino Thing ID"), this->name());
-
-            return true;
+            flxLog_E(F("%s: Unable to setup Thing"), name());
+            return false;
         }
-        else
-            flxLog_E(F("%s: Thing Token not returned."), name());
+        thingID = jDoc["id"].as<const char *>();
+        thingName = jDoc["name"].as<const char *>();
+
+        flxLog_N_(F("created Thing `%s` "), thingName().c_str());
+
+        _thingValid = true;
+
+        // Okay, we now have a thing ID - let's persist it.
+        if (!flxSettings.save(this))
+            flxLog_W(F("%s: Error saving Arduino Thing ID"), this->name());
+
         break;
 
-    case 412: // exists
-        flxLog_E(F("%s: Thing %s already exists. Set the Thing ID property, or delete the existing Cloud Thing"),
-                 name(), thingName().c_str());
+    case 412: // The Thing already exists - we're good!
+
+        _thingValid = true;
         break;
 
     default: // fail
-        flxLog_E(F("%s: Thing creation failed - return code [%d]"), name(), rc);
+
+        // does the result contain any details
+        if (jDoc.containsKey("detail"))
+        {
+            flxLog_E(F("%s: return code=%d, %s"), name(), rc, jDoc["detail"].as<const char *>());
+            break;
+        }
+    case -1: // some other error...
+        flxLog_E(F("%s: Thing setup failed"), name());
         break;
     }
 
-    return false;
+    return _thingValid;
 }
 
-///---------------------------------------------------------------------------------------
-bool flxIoTArduino::checkThing(void)
-{
-    // do we have a thing ID? We need a "Thing" to attach variables do
-    if (thingID().length() == 0)
-    {
-        if (!createArduinoThing())
-        {
-            flxLog_E(F("Arduino IoT Cloud not available"));
-            return false;
-        }
-        else
-            flxLog_I("%s: Create a new thing named `%s`", name(), thingName().c_str());
-    }
-
-    // TODO: Check think validity if we do have an ID?
-    return true;
-}
 ///---------------------------------------------------------------------------------------
 ///
 /// @brief  Connect a local Arduino IoT variable to the IoT Cloud
@@ -410,7 +436,7 @@ bool flxIoTArduino::linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, fl
 ///
 bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType)
 {
-    if (!checkToken() || !checkThing())
+    if (!checkToken() || !setupArduinoThing())
         return false;
 
     // Build our payload

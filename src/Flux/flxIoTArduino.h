@@ -225,7 +225,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
   public:
     flxIoTArduino()
         : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _tokenTicks{0},
-          _bInitialized{false}, _lastArduinoUpdate{0}, _startupCounter{0}, _loopTimeLimit{kArduinoIoTUpdateDelta}
+          _bInitialized{false}, _lastArduinoUpdate{0}, _startupCounter{0}, _loopTimeLimit{kArduinoIoTUpdateDelta}, _thingValid{false}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
@@ -332,8 +332,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     bool getArduinoToken(void);
     bool checkToken(void);
     int postJSONPayload(const char *url, JsonDocument &jIn);
-    bool checkThing(void);
-    bool createArduinoThing(void);
+    bool setupArduinoThing(void);
     bool createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
     flxDataType_t getValueType(JsonPair &kvValue);
     void updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair &kvParam);
@@ -395,4 +394,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     // loop time limit
     uint32_t _loopTimeLimit;
+
+    bool _thingValid;
 };
