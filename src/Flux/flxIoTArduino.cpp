@@ -95,6 +95,7 @@ void flxIoTArduino::disconnect(void)
 {
     _bInitialized = false;
     _myConnectionHandler.setConnected(false);
+    freeVariableMap();
 }
 
 ///---------------------------------------------------------------------------------------
@@ -375,6 +376,45 @@ bool flxIoTArduino::setupArduinoThing(void)
     }
 
     return _thingValid;
+}
+
+///---------------------------------------------------------------------------------------
+///
+/// @brief  Clear out/free memory with the variable map
+///
+void flxIoTArduino::freeVariableMap(void)
+{
+
+    for (auto it : _parameterToVar)
+    {
+
+        if (!it.second)
+            continue;
+
+        if (it.second->variable)
+        {
+            switch (it.second->type)
+            {
+            case flxTypeUInt:
+                delete (CloudUnsignedInt*)it.second->variable;
+                break;
+            case flxTypeInt:
+                delete (CloudInt*)it.second->variable;
+                break;
+            case flxTypeBool:
+                delete (CloudBool*)it.second->variable;
+                break;
+            case flxTypeFloat:
+                delete (CloudFloat*)it.second->variable;
+                break;
+            case flxTypeString:
+                delete (CloudString*)it.second->variable;
+                break;
+            }
+        }
+        delete it.second;
+    }
+    _parameterToVar.clear();
 }
 
 ///---------------------------------------------------------------------------------------

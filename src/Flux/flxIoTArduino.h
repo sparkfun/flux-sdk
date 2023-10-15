@@ -337,6 +337,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     flxDataType_t getValueType(JsonPair &kvValue);
     void updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair &kvParam);
     bool linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
+    void freeVariableMap(void);
 
     ///---------------------------------------------------------------------------------------
     ///
