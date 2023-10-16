@@ -65,7 +65,7 @@ bool flxIoTArduino::validateVariableName(char *szVariable)
 void flxIoTArduino::connect(void)
 {
 
-    if (deviceID().length() == 0 || deviceSecret().length() == 0)
+    if (deviceID().empty()|| deviceSecret().empty())
     {
         flxLog_E(F("%d: Device credentials (ID, Secret) not set - unable to continue"), this->name());
         return;
@@ -93,9 +93,8 @@ void flxIoTArduino::connect(void)
 
 void flxIoTArduino::disconnect(void)
 {
-    _bInitialized = false;
+    // _bInitialized = false;
     _myConnectionHandler.setConnected(false);
-    freeVariableMap();
 }
 
 ///---------------------------------------------------------------------------------------
@@ -111,7 +110,7 @@ bool flxIoTArduino::getArduinoToken(void)
 {
 
     // No values, no dice
-    if (cloudAPISecret().length() == 0 || cloudAPIClientID().length() == 0)
+    if (cloudAPISecret().empty() || cloudAPIClientID().empty())
     {
         flxLog_E(F("Arduino Cloud API credentials not provided. ArduinoIoT not available"));
         return false;
@@ -187,7 +186,7 @@ bool flxIoTArduino::getArduinoToken(void)
 bool flxIoTArduino::checkToken(void)
 {
     // do we have a token?
-    if (_arduinoToken.length() == 0 || millis() > _tokenTicks)
+    if (_arduinoToken.empty() || millis() > _tokenTicks)
     {
         if (!getArduinoToken())
         {
@@ -221,7 +220,7 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
         return -1;
     }
 
-    if (_arduinoToken.length() == 0)
+    if (_arduinoToken.empty())
     {
         flxLog_E(F("No Arduino Cloud authentication set"));
         return -1;
@@ -255,7 +254,6 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
     else
     {
         rc = http.PUT((uint8_t *)szBuffer, nWritten);
-        // flxLog_E("RC IS: %d", rc);
 
         // valid response - we are looking for a 201
         if (rc == 201)
@@ -292,7 +290,7 @@ bool flxIoTArduino::setupArduinoThing(void)
     if (_thingValid)
         return true;
 
-    if (deviceID().length() == 0)
+    if (deviceID().empty())
     {
         flxLog_E(F("%s: No Device ID provided - unable to  continue"), name());
         return false;
@@ -357,9 +355,17 @@ bool flxIoTArduino::setupArduinoThing(void)
 
         break;
 
-    case 412: // The Thing already exists - we're good!
-
-        _thingValid = true;
+    case 412: // The thing exists...
+        
+        // If we have a name and an ID, we can continue. If we just have a name, it
+        // appears we cannot get the Thing ID. 
+        if (thingID().empty())
+        {
+            _isEnabled = false;
+            flxLog_E(F("%s: No Arduino Thing ID provided. Enter ID, delete Thing (%s) on Cloud, or enter new Thing Name."), name(), thingName().c_str());
+        }
+        else 
+            _thingValid = true;
         break;
 
     default: // fail
@@ -693,7 +699,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
                     // from observation, once a variable create fails, the remaining vars will
                     // also fail. Best to break, and try to finish up next write iteration through.
                     setupState = false;
-                    break;
+                    return;
                 }
 
                 // redo our search
