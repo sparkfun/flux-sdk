@@ -156,13 +156,13 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
         if (_canConnect)
         {
-            if (cloudAPISecret().length() == 0 || cloudAPISecret().length() == 0)
+            if (cloudAPISecret().empty() || cloudAPISecret().empty())
                 flxLog_W(F("ArduinoIoT - Cloud API credentials are not provided"));
 
-            if (deviceID().length() == 0 || deviceSecret().length() == 0)
+            if (deviceID().empty() || deviceSecret().empty())
                 flxLog_W(F("ArduinoIoT - Device parameters not set"));
 
-            if (thingName().length() == 0)
+            if (thingName().empty())
                 flxLog_W(F("ArduinoIoT - Thing Name not provided"));
 
             connect();
