@@ -222,10 +222,55 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         return _isEnabled;
     }
 
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Property callback for getting the thing name
+    /// @return string - name of the thing
+    ///
+    std::string get_thingName(void)
+    {
+        return _thingName;
+    }
+
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Property callback for setting the thing name. Will also reset error flag
+    ///
+    void set_thingName(std::string name)
+    {
+        _thingName = name;
+
+        // reset error state - can try again
+        _hadError = false;
+    }
+
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Property callback for getting the thing name
+    /// @return string - ID of the thing
+    ///
+    std::string get_thingID(void)
+    {
+        return _thingID;
+    }
+
+    ///---------------------------------------------------------------------------------------
+    ///
+    /// @brief  Property callback for setting the thing ID. Will also reset error flag
+    ///
+    void set_thingID(std::string theID)
+    {
+        _thingID = theID;
+
+        // reset error state - can try again
+        _hadError = false;
+    }
+
   public:
     flxIoTArduino()
         : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _tokenTicks{0},
-          _bInitialized{false}, _lastArduinoUpdate{0}, _startupCounter{0}, _loopTimeLimit{kArduinoIoTUpdateDelta}, _thingValid{false}
+          _bInitialized{false}, _lastArduinoUpdate{0}, _startupCounter{0}, _loopTimeLimit{kArduinoIoTUpdateDelta},
+          _thingValid{false}, _hadError{false}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
@@ -307,10 +352,10 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     bool loop(void);
 
     // Name of this thing in Arduino IOT - use this if we need to create a thing ...
-    flxPropertyString<flxIoTArduino> thingName;
+    flxPropertyRWString<flxIoTArduino, &flxIoTArduino::get_thingName, &flxIoTArduino::set_thingName> thingName;
 
     // ArduinoIoT Thing ID.
-    flxPropertySecureString<flxIoTArduino> thingID;
+    flxPropertyRWSecureString<flxIoTArduino, &flxIoTArduino::get_thingID, &flxIoTArduino::set_thingID> thingID;
 
     // Arduino Cloud API client id -
     flxPropertySecureString<flxIoTArduino> cloudAPIClientID;
@@ -397,4 +442,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     uint32_t _loopTimeLimit;
 
     bool _thingValid;
+    bool _hadError; // error in config/setup -- needs updating
+
+    std::string _thingID;
+    std::string _thingName;
 };

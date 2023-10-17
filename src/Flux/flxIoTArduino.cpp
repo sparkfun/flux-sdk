@@ -65,7 +65,7 @@ bool flxIoTArduino::validateVariableName(char *szVariable)
 void flxIoTArduino::connect(void)
 {
 
-    if (deviceID().empty()|| deviceSecret().empty())
+    if (deviceID().empty() || deviceSecret().empty())
     {
         flxLog_E(F("%d: Device credentials (ID, Secret) not set - unable to continue"), this->name());
         return;
@@ -308,17 +308,17 @@ bool flxIoTArduino::setupArduinoThing(void)
     jDoc["device_id"] = deviceID();
 
     // Name?
-    if (thingName().length() > 0)
-        jDoc["name"] = thingName();
+    if (!_thingName.empty())
+        jDoc["name"] = thingName;
 
     // we need a string for the ID that lasts the entire transaction ...
     char szBuffer[132];
 
     // ID?
-    if (thingID().length() > 0)
+    if (!_thingID.empty())
     {
         JsonArray ids = jDoc.createNestedArray("ids");
-        strncpy(szBuffer, thingID().c_str(), sizeof(szBuffer));
+        strncpy(szBuffer, _thingID.c_str(), sizeof(szBuffer));
         ids.add(szBuffer);
     }
 
@@ -342,10 +342,10 @@ bool flxIoTArduino::setupArduinoThing(void)
             flxLog_E(F("%s: Unable to setup Thing"), name());
             return false;
         }
-        thingID = jDoc["id"].as<const char *>();
-        thingName = jDoc["name"].as<const char *>();
+        _thingID = jDoc["id"].as<const char *>();
+        _thingName = jDoc["name"].as<const char *>();
 
-        flxLog_N_(F("created Thing `%s` "), thingName().c_str());
+        flxLog_N_(F("created Thing `%s` "), _thingName.c_str());
 
         _thingValid = true;
 
@@ -356,15 +356,17 @@ bool flxIoTArduino::setupArduinoThing(void)
         break;
 
     case 412: // The thing exists...
-        
+
         // If we have a name and an ID, we can continue. If we just have a name, it
-        // appears we cannot get the Thing ID. 
-        if (thingID().empty())
+        // appears we cannot get the Thing ID.
+        if (_thingID.empty())
         {
-            _isEnabled = false;
-            flxLog_E(F("%s: No Arduino Thing ID provided. Enter ID, delete Thing (%s) on Cloud, or enter new Thing Name."), name(), thingName().c_str());
+            _hadError = true;
+            flxLog_E(
+                F("%s: No Arduino Thing ID provided. Enter ID, delete Thing (%s) on Cloud, or enter new Thing Name."),
+                name(), _thingName.c_str());
         }
-        else 
+        else
             _thingValid = true;
         break;
 
@@ -377,6 +379,7 @@ bool flxIoTArduino::setupArduinoThing(void)
             break;
         }
     case -1: // some other error...
+        _hadError = true;
         flxLog_E(F("%s: Thing setup failed"), name());
         break;
     }
@@ -402,19 +405,19 @@ void flxIoTArduino::freeVariableMap(void)
             switch (it.second->type)
             {
             case flxTypeUInt:
-                delete (CloudUnsignedInt*)it.second->variable;
+                delete (CloudUnsignedInt *)it.second->variable;
                 break;
             case flxTypeInt:
-                delete (CloudInt*)it.second->variable;
+                delete (CloudInt *)it.second->variable;
                 break;
             case flxTypeBool:
-                delete (CloudBool*)it.second->variable;
+                delete (CloudBool *)it.second->variable;
                 break;
             case flxTypeFloat:
-                delete (CloudFloat*)it.second->variable;
+                delete (CloudFloat *)it.second->variable;
                 break;
             case flxTypeString:
-                delete (CloudString*)it.second->variable;
+                delete (CloudString *)it.second->variable;
                 break;
             }
         }
@@ -518,7 +521,7 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
 
     // get the correct path
     char szPath[96];
-    snprintf(szPath, sizeof(szPath), "%s/%s/properties", kArduinoIoTThingsPath, thingID().c_str());
+    snprintf(szPath, sizeof(szPath), "%s/%s/properties", kArduinoIoTThingsPath, _thingID.c_str());
 
     int rc = postJSONPayload(szPath, jDoc);
 
@@ -643,7 +646,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
     //		- Yes, update value
     //		- No - create and register variable in Arduino cloud, then update value
 
-    if (!_isEnabled || !_canConnect || !_bInitialized)
+    if (!_isEnabled || !_canConnect || !_bInitialized || _hadError)
         return;
 
     JsonObject jObj;
