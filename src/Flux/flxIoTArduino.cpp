@@ -309,7 +309,7 @@ bool flxIoTArduino::setupArduinoThing(void)
 
     // Name?
     if (!_thingName.empty())
-        jDoc["name"] = thingName;
+        jDoc["name"] = _thingName;
 
     // we need a string for the ID that lasts the entire transaction ...
     char szBuffer[132];
