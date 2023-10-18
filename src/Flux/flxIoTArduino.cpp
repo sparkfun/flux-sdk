@@ -53,9 +53,10 @@ bool flxIoTArduino::createVariableName(char *szInVariable, char *szOutVariable)
     int isrc = 0;
     for (; isrc < nChar; isrc++)
     {
+        // pass through alphanumeric and underscores
         if (std::isalnum(szInVariable[isrc]) || szInVariable[isrc] == '_')
             szOutVariable[idst++] = szInVariable[isrc];
-        else if(szInVariable[isrc] == ' ')
+        else if(szInVariable[isrc] == ' ')  // spaces to underlines
             szOutVariable[idst++] = '_';
     }
     szOutVariable[idst] = '\0';
