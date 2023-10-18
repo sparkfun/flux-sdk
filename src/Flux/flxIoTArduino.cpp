@@ -733,10 +733,19 @@ bool flxIoTArduino::loop(void)
 {
     // Call Arduino update if:
     //  - The system is initalized
+    //  - our variable map contains variables
     //  - Delta is greater than the time limit - time limit greater after startup phase
 
-    if (_bInitialized && millis() - _lastArduinoUpdate > _loopTimeLimit)
+    if (_bInitialized && !_parameterToVar.empty() && millis() - _lastArduinoUpdate > _loopTimeLimit)
     {
+
+        // NOTE:
+        //  Found that if update() is called before the variables for the Device/Thing
+        //  are created and/or connected to, the variable create/connect process triggers
+        //  network disconnects (wifi drops). But, if update isn't called until we have
+        //  variables in our parameter map, the system works as expected. So update() isn't
+        //  called if the _parameterToVar map is empty.
+        //
         // update the Arduino Cloud
         ArduinoCloud.update();
         _lastArduinoUpdate = millis();
