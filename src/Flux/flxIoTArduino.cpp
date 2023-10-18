@@ -37,27 +37,30 @@
 ///---------------------------------------------------------------------------------------
 ///
 /// @brief     Creates a valid arduino variable name
-//  @param[In,Out] szVariable the name to convert
+/// @param[In] szInVariable the name to convert
+/// @param[Out] szOutVariable the converted name - assumed to same len as in variable. 
 ///
 /// @return true on success, false on failure
 ///
-bool flxIoTArduino::validateVariableName(char *szVariable)
+bool flxIoTArduino::createVariableName(char *szInVariable, char *szOutVariable)
 {
-    if (!szVariable)
+    if (!szInVariable || !szOutVariable)
         return false;
 
-    size_t nChar = strlen(szVariable);
+    size_t nChar = strlen(szInVariable);
 
     int idst = 0;
     int isrc = 0;
     for (; isrc < nChar; isrc++)
     {
-        if (std::isalnum(szVariable[isrc]) || szVariable[isrc] == '_')
-            szVariable[idst++] = szVariable[isrc];
+        if (std::isalnum(szInVariable[isrc]) || szInVariable[isrc] == '_')
+            szOutVariable[idst++] = szInVariable[isrc];
+        else if(szInVariable[isrc] == ' ')
+            szOutVariable[idst++] = '_';
     }
-    szVariable[idst] = '\0';
+    szOutVariable[idst] = '\0';
 
-    return (strlen(szVariable) > 1);
+    return (strlen(szOutVariable) > 1);
 }
 
 ///---------------------------------------------------------------------------------------
@@ -557,11 +560,19 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
 
     if (!_fallbackID)
     {
+
+        char szVarName[strlen(szNameBuffer)+1];
+
+        if (!createVariableName(szNameBuffer, szVarName))
+            {
+                flxLog_E(F("%s: unable to create valid variable name: %s"), name(), szNameBuffer);
+                return false;
+            }
         // Build our payload
         DynamicJsonDocument jDoc(704);
 
         jDoc["name"] = szNameBuffer;          // The friendly name of the property
-        jDoc["variable_name"] = szNameBuffer; // The sketch variable name of the property
+        jDoc["variable_name"] = szVarName; // The sketch variable name of the property
         jDoc["permission"] = "READ_WRITE";
         jDoc["update_strategy"] = "ON_CHANGE"; // "TIMED"
 
@@ -741,13 +752,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
             dataType = getValueType(kvParam);
 
             // make a name
-            snprintf(szNameBuffer, sizeof(szNameBuffer), "%s_%s", kvObj.key().c_str(), kvParam.key().c_str());
-
-            if (!validateVariableName(szNameBuffer))
-            {
-                flxLog_E(F("%s: unable to create valid variable name: %s"), name(), kvParam.key().c_str());
-                continue;
-            }
+            snprintf(szNameBuffer, sizeof(szNameBuffer), "%s %s", kvObj.key().c_str(), kvParam.key().c_str());
 
             hash_id = flx_utils::id_hash_string(szNameBuffer); // hash name
 
