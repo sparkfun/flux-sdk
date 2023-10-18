@@ -270,7 +270,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     flxIoTArduino()
         : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _tokenTicks{0},
           _bInitialized{false}, _lastArduinoUpdate{0}, _startupCounter{0}, _loopTimeLimit{kArduinoIoTUpdateDelta},
-          _thingValid{false}, _hadError{false}
+          _thingValid{false}, _hadError{false}, _fallbackID{false}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
@@ -383,7 +383,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     void updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair &kvParam);
     bool linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
     void freeVariableMap(void);
-
+    bool getThingIDFallback(void);
     ///---------------------------------------------------------------------------------------
     ///
     /// @brief  Template to create and register a local cloud variable with a cloud variable on Arduino IoT
@@ -443,6 +443,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     bool _thingValid;
     bool _hadError; // error in config/setup -- needs updating
+    bool _fallbackID;
 
     std::string _thingID;
     std::string _thingName;

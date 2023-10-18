@@ -87,13 +87,13 @@ void flxIoTArduino::connect(void)
         _bInitialized = true;
         _lastArduinoUpdate = millis();
         _startupCounter = 0;
-        _myConnectionHandler.setConnected(true);
     }
+    _myConnectionHandler.setConnected(true);
 }
 
+///---------------------------------------------------------------------------------------
 void flxIoTArduino::disconnect(void)
 {
-    // _bInitialized = false;
     _myConnectionHandler.setConnected(false);
 }
 
@@ -279,6 +279,53 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
 
 //---------------------------------------------------------------------------------------
 ///
+/// @brief Try to get Thing ID via the ArduinoCloud class - uses mqtt
+///
+/// @note If this succeeds, new variables cannot be added to the thing.
+///
+/// @return true on success, false on failure
+//
+bool flxIoTArduino::getThingIDFallback(void)
+{
+
+    // do we have a thing ID?
+    if (!_thingID.empty())
+        return true;
+
+    // cloud initialized
+    if (!_bInitialized)
+        return false;
+
+    // Why to use this
+    //   - we have a thing name
+    //   - we don't have a thing ID
+    //   - A thing of the given name exists
+    //
+    // If this situation, our HTTP call to connect/build a thing will fail
+    // because the thing exists. And that method doesn't return a thing ID
+    // which is needed.
+    //
+    // However, the ArduinoCloud mqtt based system will get the thing ID
+    // once it's up and running. Loop over the update call to get ArduinoCloud
+    // up and rnning.
+
+    for (int i = 0; i < 50; i++)
+    {
+        ArduinoCloud.update();
+        delay(100);
+    }
+    String result = ArduinoCloud.getThingId();
+    if (result.length() > 0)
+    {
+        _thingID = result.c_str();
+        _fallbackID = true;
+        return true;
+    }
+    return false;
+}
+
+//---------------------------------------------------------------------------------------
+///
 /// @brief  with thingID - make sure it's valid - otherwise difficult to tell
 ///
 ///
@@ -344,30 +391,36 @@ bool flxIoTArduino::setupArduinoThing(void)
         }
         _thingID = jDoc["id"].as<const char *>();
         _thingName = jDoc["name"].as<const char *>();
-
-        flxLog_N_(F("created Thing `%s` "), _thingName.c_str());
-
         _thingValid = true;
-
-        // Okay, we now have a thing ID - let's persist it.
-        if (!flxSettings.save(this))
-            flxLog_W(F("%s: Error saving Arduino Thing ID"), this->name());
 
         break;
 
     case 412: // The thing exists...
 
-        // If we have a name and an ID, we can continue. If we just have a name, it
-        // appears we cannot get the Thing ID.
+        // If we have a name and an ID, we can continue. If we just have a name,
+        // we can get the ID using a fallback method - via ArduinoCloud.
+
         if (_thingID.empty())
         {
-            _hadError = true;
-            flxLog_E(
-                F("%s: No Arduino Thing ID provided. Enter ID, delete Thing (%s) on Cloud, or enter new Thing Name."),
-                name(), _thingName.c_str());
+            // get ID using fallback method?
+            if (getThingIDFallback())
+            {
+                // let the user now in fallback mode
+                flxLog_N_(F("unable to connect to Thing, using fallback mode ..."));
+                _thingValid = true;
+            }
+            else
+            {
+                // no ID was obtained - damn - so error mode...
+                _hadError = true;
+                flxLog_E(F("%s: No Arduino Thing ID provided. Enter ID, delete Thing (%s) on Cloud, or enter new Thing "
+                           "Name."),
+                         name(), _thingName.c_str());
+            }
         }
         else
             _thingValid = true;
+
         break;
 
     default: // fail
@@ -378,12 +431,21 @@ bool flxIoTArduino::setupArduinoThing(void)
             flxLog_E(F("%s: return code=%d, %s"), name(), rc, jDoc["detail"].as<const char *>());
             break;
         }
+
     case -1: // some other error...
         _hadError = true;
         flxLog_E(F("%s: Thing setup failed"), name());
         break;
     }
 
+    // if the thing is valid, save our state - to persist the latest thing info
+    if (_thingValid)
+    {
+        flxLog_N_(F("using Thing `%s` "), _thingName.c_str());
+        // Okay, we now have a thing ID - let's persist it.
+        if (!flxSettings.save(this))
+            flxLog_W(F("%s: Error saving Arduino Thing ID"), this->name());
+    }
     return _thingValid;
 }
 
@@ -488,64 +550,71 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
     if (!checkToken() || !setupArduinoThing())
         return false;
 
-    // Build our payload
-    DynamicJsonDocument jDoc(704);
+    // If in Thing  ID fallback mode, where the ID was obtained via mqtt, we  can't create
+    // variables - it just fails to connect correctly. But we can link to existing variables.
+    //
+    // Check if in fallback mode.
 
-    jDoc["name"] = szNameBuffer;          // The friendly name of the property
-    jDoc["variable_name"] = szNameBuffer; // The sketch variable name of the property
-    jDoc["permission"] = "READ_WRITE";
-    jDoc["update_strategy"] = "ON_CHANGE"; // "TIMED"
-
-    // note - low level types seem limited in the IoT cloud space
-    switch (dataType)
+    if (!_fallbackID)
     {
-    case flxTypeUInt:
-    case flxTypeInt:
-    case flxTypeBool:
-        jDoc["type"] = "INT";
-        break;
+        // Build our payload
+        DynamicJsonDocument jDoc(704);
 
-    case flxTypeFloat:
-        jDoc["type"] = "FLOAT";
-        break;
+        jDoc["name"] = szNameBuffer;          // The friendly name of the property
+        jDoc["variable_name"] = szNameBuffer; // The sketch variable name of the property
+        jDoc["permission"] = "READ_WRITE";
+        jDoc["update_strategy"] = "ON_CHANGE"; // "TIMED"
 
-    case flxTypeString:
-        jDoc["type"] = "CHARSTRING";
-        break;
-
-    default:
-        // should never get here really
-        flxLog_E(F("%s: Unknown data type: %d"), name(), (int)dataType);
-        return false;
-    }
-
-    // get the correct path
-    char szPath[96];
-    snprintf(szPath, sizeof(szPath), "%s/%s/properties", kArduinoIoTThingsPath, _thingID.c_str());
-
-    int rc = postJSONPayload(szPath, jDoc);
-
-    switch (rc)
-    {
-
-    case 201: // success
-
-        // get an id?
-        if (!jDoc.containsKey("id"))
+        // note - low level types seem limited in the IoT cloud space
+        switch (dataType)
         {
-            flxLog_E(F("%s: create cloud variable failed"), name());
+        case flxTypeUInt:
+        case flxTypeInt:
+        case flxTypeBool:
+            jDoc["type"] = "INT";
+            break;
+
+        case flxTypeFloat:
+            jDoc["type"] = "FLOAT";
+            break;
+
+        case flxTypeString:
+            jDoc["type"] = "CHARSTRING";
+            break;
+
+        default:
+            // should never get here really
+            flxLog_E(F("%s: Unknown data type: %d"), name(), (int)dataType);
             return false;
         }
-        break;
 
-    case 400:
-    case 412: // variable already exists - lets use it!
-        break;
+        // get the correct path
+        char szPath[96];
+        snprintf(szPath, sizeof(szPath), "%s/%s/properties", kArduinoIoTThingsPath, _thingID.c_str());
 
-    default:
-        return false; // error message was sent out by HTTP routine
+        int rc = postJSONPayload(szPath, jDoc);
+
+        switch (rc)
+        {
+
+        case 201: // success
+
+            // get an id?
+            if (!jDoc.containsKey("id"))
+            {
+                flxLog_E(F("%s: create cloud variable failed"), name());
+                return false;
+            }
+            break;
+
+        case 400:
+        case 412: // variable already exists - lets use it!
+            break;
+
+        default:
+            return false; // error message was sent out by HTTP routine
+        }
     }
-
     // Okay, at this point we have a variable in the server for our thing, now we need to
     // map this to a local value
 
@@ -715,7 +784,6 @@ void flxIoTArduino::write(JsonDocument &jDoc)
                     return;
                 }
             }
-
             // Okay - we have a value, now we need to update the parameter
             updateArduinoIoTVariable(itSearch->second, kvParam);
         }
