@@ -21,8 +21,9 @@
 #include <WiFiClientSecure.h>
 
 #include <ArduinoIoTCloud.h>
+
 // ArduinoIoTCloud header defines an addProperty() macro, which of course conflicts with the
-// framework - so undef it here ...
+// framework - so undef it here ... VERY annoying
 #undef addProperty(v, ...)
 
 #include <map>
@@ -104,21 +105,103 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
     WiFiClient _wifi_client;
 };
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 // Implements a connection to the Arduino IoT Cloud
 //
-//  - Arduino IoT Cloud variables are dynamically created based on what parameters are being logged
-//  - The user must create a Device and provide API credentials for this to work
-
-// The variable / output parameter name is mapped to a local ArduinoIot Cloud variable
-// These variables have a limited type set, and are actually objects to dynamically detect
-// when values are changed. This enables value updates to the cloud from the device/thing.
+// Arduino IoT Cloud
 //
-// To map this the following is done:
-//      - Flux Output parameter names are <device name>_<parameter name>
-//      - The names are truncated to 64, left justified if needed when creating cloud vars
-//      - The name used in our map object is the hash of the full name
-//      - When a variable is created in the cloud, the local var is allocated and added to the map
-//      - The map value is a struct that contains a type code (flxDataType_t) and a void * pointer
+//   The Arduino IoT Cloud is based around the concept of a "Device", which has a "Thing" associated
+//   with it. The Thing is a logical container that contains "Variables" (in the GUI) aka "Properties"
+//   in the Web Services API or the ArduinoCloud library.
+//
+//   The intent of this structure is to enable changing behavior of a device by just changing its Thing.
+//
+// The Flux Driver for Arduino IoT Cloud
+//
+//   Overall this driver does the following:
+//
+//      - Connects to a Thing - potentially creating the thing if needed
+//      - Maps Data Parameters from the DataLogger observation to Variables in the Arduino Thing
+//      - For each write() interation - the variable values are updated.
+//
+// Technical Details
+//
+//   There are two methods used to communicate with the Arduino IoT Cloud: Web Service API and a
+//   mqtt based system that is obscured via the Arduino library - ArduinoIoTCloud.
+//
+//   Examples were provided by Arduino on how to use both these systems to implement this driver.
+//
+//   Web Service API
+//      - Used to get a bearer (oauth) token, which is needed for the API. The user provides API credentials
+//        to support this
+//      - Connect to, or create a Thing for a user provided device (device ID)
+//      - Create Variables/Parameters in the Thing - that will represent values from the datalogger.
+//
+//   ArduinoIoTCloud Library (mqtt)
+//      This library is used to send value updates to the Cloud Device/Thing parameters. To do this,
+//      the following is done:
+//          - A local "Cloud Variable" object is created and connected to the variable in the
+//            actual cloud. This driver maps this variable object to a hash id for the DataLogger
+//            parameter.
+//          - When values are updated, the value of the local Cloud Variable object is updated.
+//          - Updates are sent to the cloud via a mqtt session - via the ArduinoCloud library.
+//
+//   Notes:
+//      - To make this work, it's found that the Web API calls should occur before the mqtt
+//        system in the ArduinoIoTCloud library is up and running. The web api calls often
+//        fail once the mqtt system is running.
+//
+//        It appears that is is caused by the way the ArduinoIotCloud library was implemented.
+//        The library is setup to manage all network connectivity ...etc, but the DataLogger is doing
+//        this. It was worked around, but it's possible some aspect of this was missed.
+//
+//      - On startup/first use of this driver, the web API is used to get a oauth token, create/validate
+//        a Thing and then create or validate Parameters in the Thing that map to datalogger data values
+//
+//      - Parameters from the datalogger have a hash created from their name, and this has is used to
+//        map the datalogger data value to a cloud variable.
+//
+//      - Once up and running, the system just uses the ArduinoIoTCloud library (mqtt) to update the values
+//        in the cloud.
+//
+//      - Once the mqtt / ArduinoIoTCloud system is up and running, and a new variable needs to be created,
+//        this driver will try to create it - but will more often fail for unknow reasons. ** It appears
+//        that the network connection cycles.
+//
+//  User requirements
+//
+//      At a minimum, the user needs to provide the drive the following:
+//          - API Client ID
+//          - API Secret
+//          - Device ID
+//          - Device Secret
+//
+//      Optional
+//          - Thing Name
+//          - Thing ID
+//
+//      Note
+//          If a thing exists, but only it's name is provided, the driver needs to get the ThingID
+//          using the ArduinoIoTCloud library. In this case, the creation of any additional variables
+//          in the cloud (via the Web SDK) fails. It's annoying and sloppy. Best solution is to have
+//          the use provide everything for the Thing (ID and Name), or just reboot the device (which
+//          saves the ID) which will then have the ID at startup.
+//
+//  Variable/Output Parameter Map
+//
+//      The variable / output parameter name is mapped to a local ArduinoIot Cloud variable
+//      These variables have a limited type set, and are actually objects to dynamically detect
+//      when values are changed. This enables value updates to the cloud from the device/thing.
+//
+//      To map this the following is done:
+//          - Flux Output parameter names are <device name>_<parameter name>
+//          - The names are truncated to 64, left justified if needed when creating cloud vars
+//          - The name used in our map object is the hash of the full name
+//          - When a variable is created in the cloud, the local var is allocated and added to the map
+//          - The map value is a struct that contains a type code (flxDataType_t) and a void * pointer
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// @typedef flxIoTArduinoVar_t
 /// @brief Struct to hold a dynamically created Arduino Cloud variable
@@ -310,6 +393,9 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     }
 
     //----------------------------------------------------------------------
+    ///
+    /// @brief  Inteface method - called with data to write to the cloud
+    ///
     void write(JsonDocument &jsonDoc);
 
     ///---------------------------------------------------------------------------------------

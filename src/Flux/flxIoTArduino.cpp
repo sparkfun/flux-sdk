@@ -30,7 +30,6 @@
 
 // The First kArduinoIoTStartupLimit calls to Arduino Cloud update sets up the system. So we
 // make these calls quickly at start up in the loop method.
-//
 
 #define kArduinoIoTStartupLimit 40
 
@@ -38,7 +37,7 @@
 ///
 /// @brief     Creates a valid arduino variable name
 /// @param[In] szInVariable the name to convert
-/// @param[Out] szOutVariable the converted name - assumed to same len as in variable. 
+/// @param[Out] szOutVariable the converted name - assumed to same len as in variable.
 ///
 /// @return true on success, false on failure
 ///
@@ -56,7 +55,7 @@ bool flxIoTArduino::createVariableName(char *szInVariable, char *szOutVariable)
         // pass through alphanumeric and underscores
         if (std::isalnum(szInVariable[isrc]) || szInVariable[isrc] == '_')
             szOutVariable[idst++] = szInVariable[isrc];
-        else if(szInVariable[isrc] == ' ')  // spaces to underlines
+        else if (szInVariable[isrc] == ' ') // spaces to underlines
             szOutVariable[idst++] = '_';
     }
     szOutVariable[idst] = '\0';
@@ -65,7 +64,9 @@ bool flxIoTArduino::createVariableName(char *szInVariable, char *szOutVariable)
 }
 
 ///---------------------------------------------------------------------------------------
-
+///
+/// @brief  Called when the network connects
+///
 void flxIoTArduino::connect(void)
 {
 
@@ -96,6 +97,9 @@ void flxIoTArduino::connect(void)
 }
 
 ///---------------------------------------------------------------------------------------
+///
+/// @brief Called when the network disconnects
+///
 void flxIoTArduino::disconnect(void)
 {
     _myConnectionHandler.setConnected(false);
@@ -187,6 +191,10 @@ bool flxIoTArduino::getArduinoToken(void)
     return true;
 }
 
+//---------------------------------------------------------------------------------------
+///
+/// @breif - the Web API uses oauth tokens as a credential. It has an time limit, and needs checking.
+///
 bool flxIoTArduino::checkToken(void)
 {
     // do we have a token?
@@ -311,7 +319,7 @@ bool flxIoTArduino::getThingIDFallback(void)
     //
     // However, the ArduinoCloud mqtt based system will get the thing ID
     // once it's up and running. Loop over the update call to get ArduinoCloud
-    // up and rnning.
+    // up and running.
 
     for (int i = 0; i < 50; i++)
     {
@@ -372,10 +380,6 @@ bool flxIoTArduino::setupArduinoThing(void)
         strncpy(szBuffer, _thingID.c_str(), sizeof(szBuffer));
         ids.add(szBuffer);
     }
-
-    // DBUG
-    // flxLog_I_("Is my ID valid? ");
-    // serializeJson(jDoc, Serial);
 
     // send the Thing verify/create request
     int rc = postJSONPayload(kArduinoIoTThingsPath, jDoc);
@@ -562,17 +566,17 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
     if (!_fallbackID)
     {
 
-        char szVarName[strlen(szNameBuffer)+1];
+        char szVarName[strlen(szNameBuffer) + 1];
 
         if (!createVariableName(szNameBuffer, szVarName))
-            {
-                flxLog_E(F("%s: unable to create valid variable name: %s"), name(), szNameBuffer);
-                return false;
-            }
+        {
+            flxLog_E(F("%s: unable to create valid variable name: %s"), name(), szNameBuffer);
+            return false;
+        }
         // Build our payload
         DynamicJsonDocument jDoc(704);
 
-        jDoc["name"] = szNameBuffer;          // The friendly name of the property
+        jDoc["name"] = szNameBuffer;       // The friendly name of the property
         jDoc["variable_name"] = szVarName; // The sketch variable name of the property
         jDoc["permission"] = "READ_WRITE";
         jDoc["update_strategy"] = "ON_CHANGE"; // "TIMED"
