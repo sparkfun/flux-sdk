@@ -252,6 +252,8 @@ class flxLogger : public flxActionType<flxLogger>
     flxParameterInUint<flxLogger, &flxLogger::reset_sample_number> resetSampleNumber = {0, 10000};
 
   private:
+
+    void updateTimeParameterName(void);
     // Output devices
     std::vector<flxOutputFormat *> _Formatters;
 

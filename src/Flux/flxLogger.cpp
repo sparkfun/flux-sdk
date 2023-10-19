@@ -238,6 +238,27 @@ void flxLogger::logMessage(char * header, char * message)
     }
 
 }
+
+//----------------------------------------------------------------------------
+// 
+// When the timestamp type changes, change the name of the timestamp output parameter
+void flxLogger::updateTimeParameterName(void)
+{
+
+    char * timeTitle = "Time";
+    switch (_timestampType)
+    {
+    case TimeStampMillis:
+        timeTitle =  "Time (millis)";
+        break;
+
+    case TimeStampEpoch:
+        timeTitle = "Time (Epoch)";
+        break;
+
+    }
+    timestamp.setName(timeTitle);
+}
 //----------------------------------------------------------------------------
 // Timestamp type property get/set
 //----------------------------------------------------------------------------
@@ -273,6 +294,8 @@ void flxLogger::set_ts_type(uint newType)
     }
 
     _timestampType = (Timestamp_t)newType;
+
+    updateTimeParameterName();
 }
 //----------------------------------------------------------------------------
 // Return the current timestamp, as outlined in the timestamp mode.
@@ -283,8 +306,6 @@ std::string flxLogger::get_timestamp(void)
 
     memset(szBuffer, '\0', sizeof(szBuffer));
 
-    std::string sTitle = "Time";
-
     time_t t_now;
     time(&t_now);
     struct tm *tmLocal = localtime(&t_now);
@@ -292,12 +313,10 @@ std::string flxLogger::get_timestamp(void)
     {
     case TimeStampMillis:
         snprintf(szBuffer, sizeof(szBuffer), "%lu", millis());
-        sTitle += "(millis)";
         break;
 
     case TimeStampEpoch:
         snprintf(szBuffer, sizeof(szBuffer), "%ld", t_now);
-        sTitle += "(Epoch)";
         break;
 
     case TimeStampDateTimeUSA:
@@ -318,9 +337,9 @@ std::string flxLogger::get_timestamp(void)
     default:
         break;
     }
-    timestamp.setName(sTitle.c_str());
-    sTitle = szBuffer;
-    return sTitle;
+
+    std::string sBuffer = szBuffer;
+    return sBuffer;
 }
 
 //----------------------------------------------------------------------------
