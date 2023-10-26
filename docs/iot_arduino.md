@@ -23,222 +23,136 @@ For a SparkFun Flux (DataLogger Iot for example) device connected to an Arduino 
 
 ## Creating a Device in Arduino IoT
 
-STOP
+The first step connecting to the Arduino IoT cloud is setting up a device within the cloud. A device is a logical element represents a physical device.
 
-The following discussion outlines the basic steps taken to create a Thing in AWS IoT that the Flux Framework can connect to.
+The first step is to login to your Arduino IoT cloud account and navigate to the Devices page on the IoT Cloud. This page lists your currently defined devices.
 
-First step is to log into your AWS account and Select **IoT Core** from the menu of services.
+![IOT Cloud](images/aiot_cloud_sel.png)
 
-![AWS IoT Core](images/iot_aws_iot_core.png)
+First select the *Add* button on the top of the page.
 
-From the IoT Core console page, under the **Manage** section, select **All Devices > Things**  
+![Add a Device](images/aiot_dev_add.png)
 
-On the resultant Things Page, select the **Create Things** button.
+A device type selection dialog is then shown. Since we are connecting a DataLogger IoT board to the system, and not connected a known device, select **DIY** - *Any Device*.
 
-![AWS IoT Thing Create](images/iot_aws_thing_create.png)
+![Select DIY Device](images/aiot_dev_setup_sel.png)
 
-AWS IoT will then take you through the steps to create a device. Selections made for a demo Thing are:
+Once selected, another dialog is presented. Just select *Continue*.
 
-* Create single thing
-* Thing Properties
-  * Enter a name for your thing - for this example ***TestThing23***
-  * Device Shadow - select ***Unnamed shadow (classic)***
-* Auto-generate a new certificate
-* Attach policies to certificate - This is discussed later in this document
-* Select **Create thing**
+At this point you can provide a name for your device.
 
-Upon creation, AWS IoT presents you with a list of downloadable certificates and keys. Some of these are only available at this step. The best option is to download everything presented - three of these are used by the Flux AWS IoT connector.  The following should be downloaded:
+![Name Device](images/aiot_dev_name.png)
 
-* Device Certificate
-* Public Key File
-* Private Key File
-* Root CA certificates - (for example:  Amazon Root CA 1 )
+The next screen is the critical step of the device creation process. This step is the one time the Device Secret Key is available. The provided ```Device ID``` and Device ```Secret Key``` values are needed to connect to the Arduino IoT Cloud. Once this step is completed, the Secret Key is no longer available.
 
-At this point, the new AWS IoT thing is created and listed on the AWS IoT Things Console
-![New Thing Listed](images/iot_aws_thing_list.png)
+![Device Secret](images/aiot_dev_secrets.png)
 
-### Security Policy
+The easiest way to capture these values is by downloading as a PDF file, which is offered on the setup page.  
 
-To write to the IoT device, a security policy that enables this is needed, and the policy needs to be assigned to the devices certificate.
+## Arduino Cloud API Keys
 
-To create a Policy, select the ***Manage > Security > Policies*** menu item from the left side menu of the AWS IoT panel. Once on this page, select the **Create policy** button to create a new policy.
+In addition to creating a device, to access the Arduino IoT Cloud, the driver requires a API Key. This allows the Flux Arduino IoT Cloud driver to access the web API of the Arduino Cloud. This API is used to setup the connection to the Arduino Cloud.
 
-![New Policy](images/iot_aws_thing_policy.png)
+To create an API key, start at the **Arduino Cloud** [home page](https://cloud.arduino.cc/home/). From this page, select the *API keys* menu entry on the left side of the page.
 
-When entering the policy, provide a name that fits your need. For this example the name **NewThing23Policy** is used. For the Policy document, you can manually enter the security entires, or enter them as a JSON document. The JSON document used for this example is:
+![API Keys](images/aiot_cloud_api-k.png)
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "iot:Connect",
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:Subscribe",
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:Receive",
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:Publish",
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:GetThingShadow",
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": "iot:UpdateThingShadow",
-      "Resource": "*"
-    }
-  ]
-}
-```
+This menu takes you to a list of existing API Keys. From this page, select the *CREATE API KEY* button, which is on the upper right of the page.
 
-![Create Policy](images/iot_aws_thing_create_policy.png)
+![Create Key](images/aiot_cloud_create_key.png)
 
-Once the policy is created, go back to the IoT Device/Thing created above and associate this policy to the device Certificate.
+In the presented dialog, enter a name for the API key.
 
-* Go to your device ***Manage > All devices > Things***
-* Select the device - ***TestThing23** for this example
-* Select the ***Certificates*** tab
-* Select the listed Certificate (it's a very long hex number)
-* At the bottom right of the page, select the ***Attach policies*** button and select the Policy created above.
+![API Key Name](images/aiot_cloud_key_name.png)
 
-![Attach Policy](images/iot_aws_iot_attach_policy.png)
+Once the name is entered and *CONTINUE* selected, a page with the new API key is presented. Like in Device Creation, this page contains a secret that is only available on this page during this process.
 
-At this point, AWS IoT is ready for a device to connect and receive data.
+![API KEY NOW](images/aiot_cloud_key_secret.png)
 
-## Adding an AWS IoT Connection in the Flux Framework
+Make note of the *Client ID* and *Client Secret* values on this page. The best method to capture these values is to download the PDF file offered on this page.  
 
-To add an AWS IoT device as a destination for the output of a Flux Framework based system, the application being created needs the following:
+At this point, the Arduino IoT cloud is setup for connection by the driver.
+
+## Adding an Arduino IoT Connection in the Flux Framework
+
+To add an Arduino IoT device as a destination for the output of a Flux Framework based system, the application being created needs the following:
 
 * Network Connectivity
 * A source for JSON output from the device
-* A source to store the security keys/certificates needed to connect to the AWS IoT device.
+*
 
-For this example, we show out to connect the output of a data logger in the framework to the AWS IoT device.
+For this example, we show out to connect the output of a data logger in the framework to the Arduino IoT device.
 
-First - add an AWS IoT framework to your object
+First - add an Arduino IoT framework to your object
 
 ```c++
 // include our header
-#include <Flux/flxIoTAWS.h>
+#include <Flux/flxIoTArduino.h>
 
-// later in your code/header - declare an AWS IoT object. 
+// later in your code/header - declare an Arduino IoT object. 
 // In this example, this is a class variable ...
 
-// AWS
-    flxIoTAWS _iotAWS;
-```
+// Arduino IoT
+    flxIoTArduino _iotArduinoIoT;
 
-During the setup of the framework - at initialization, the following steps finish the basic setup of the AWS object.
+During the setup of the framework - at initialization, the following steps finish the basic setup of the Arduino IoT object.
 
 ```c++
-    // AWS - give the object a name and description
-    _iotAWS.setName("AWS IoT", "Connect to an AWS Iot Thing");
-
-    // Connect the AWS connection to the Wi-Fi connection being used.
+      // Connect the Arduino connection to the Wi-Fi connection being used.
     // Note: The framework will manage connect/disconnect events.
-    _iotAWS.setNetwork(&_wifiConnection);
+    _iotArduinoIoT.setNetwork(&_wifiConnection);
 
-    // certs/keys could be added manually (if they were static arrays in
-    // the application code) In this example, we load them in via an
-    // attached SD card, so we connect the fileSystem to the AWS object.
-    // The AWS object is provided filenames, an automatically loads 
-    // the keys/value
-
-    // Add the filesystem to load certs/keys from the SD card
-    _iotAWS.setFileSystem(&_theSDCard);
-
-    // Finally, we add the iotAWS device to the JSON format output
+    // Finally, we add the iotArduinoIoT device to the JSON format output
     // from our data logger being used in this example. With this
     // connection made, when output is logged, the JSON version of
-    // the output is passed to the AWS connection, and then posted
-    // to the AWS IoT device.
-    _fmtJSON.add(_iotAWS);
+    // the output is passed to the Arduino connection.
+    _fmtJSON.add(_iotArduinoIoT);
 ```
 
-Once the Flux AWS IoT object is integrated into the application, the specifics for the AWS IoT Thing must be configured. This includes the following:
+Once the Flux Arduino IoT object is integrated into the application, the specifics for the Arduino IoT Thing must be configured. This includes the following:
 
-* Server name/host
-* MQTT topic to update
-* Client Name - The AWS IoT Thing Name
-* CA Certificate chain
-* Client Certificate
-* Client Key
+* Device ID and Secret
+* API ID and Secret
+* Thing Name
+* Thing ID (optional)
 
-### Server Name/Hostname
+### Device ID and Secret
 
-This value is obtained from the AWS IoT Device page for the created device. When on this page, select the ***Device Shadows*** tab, and then select the ***Classic Shadow** shadow, which is listed.
-![Shadow Details](images/iot_aws_iot_dev_attr.png)
+These values are used to identify the Arduino IoT device that is connected to. These are obtained via the steps outlined earlier in this document.
 
-Selecting the ***Classic Shadow** entry provides the Server Name/Hostname for the device, as well as the MQTT topic for this device.
+### API ID and Secret
 
-![Shadow Details](images/iot_aws_iot_shadow_details.png)
+These values are used to provide API access by the driver. This access allows for the creation/use of a Thing and Variables within the Arduino IoT Cloud. These are obtained via the steps outlined earlier in this document.
 
-Note: The server name is obtained from the Device Shadow URL entry
+### Thing Name
 
-### MQTT Topic
+The name of the Arduino Iot Cloud ```Thing``` to use. If the Thing doesn't exist on startup, the driver will create the a Thing of this name.
 
-The MQTT topic value is based uses the ***MQTT topic prefix*** from above, and has the value ***update** added to it. So for this example, the MQTT topic is:
-```$aws/things/TestThing23/shadow/update```
+### Thing ID
 
-### Client Name
+This is the ID of the Thing being used. This value is obtained by the following methods:
 
-This is the AWS IoT name of the thing. For the provided example, the value is ***TestThing23***
-
-### CA Certificate chain
-
-This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
-
-### Client Certificate
-
-This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
-
-### Client Key
-
-This value was downloaded as a file during the creation process. The contents of this file can be defined as a static array in a source file and passed in to the Flux AWS IoT object directly, or by copying the file containing the data onto a devices SD Card and setting the filename property on the Flux AWS IoT object.
+* If the driver creates a new Thing, the ID is obtained and used.
+* If an existing Thing is connected to, the driver retrieves it's name. NOTE: In this case, the driver cannot create any new variables until the system is restarted.
+* The user creates a new Thing using the web interface of Arduino IoT Cloud, and provides the *Thing ID* and *Thing Name*.
 
 ## Setting Properties
 
-The above property values must be set on the Flux AWS IoT object before use. They can be set in code, like any framework object property, or via a JSON file that is loaded by the system at startup. For the Flux AWS IoT example outlined in this document, the entries in the settings JSON file are as follows:
+The above property values must be set on the Flux Arduino IoT object before use. They can be set in code, like any framework object property, or via a JSON file that is loaded by the system at startup. For the Flux Arduino IoT example outlined in this document, the entries in the settings JSON file are as follows:
 
 ```json
-"AWS IoT": {
-    "Enabled": false,
-    "Port": 8883,
-    "Server": "avgpd2wdr5s6u-ats.iot.us-east-1.amazonaws.com",
-    "MQTT Topic": "$aws/things/TestThing23/shadow/update",
-    "Client Name": "TestThing23",
-    "Buffer Size": 0,
-    "Username": "",
-    "Password": "",
-    "CA Certificate": "",
-    "Client Certificate": "",
-    "Client Key": "",
-    "CA Cert Filename": "AmazonRootCA1.pem",
-    "Client Cert Filename": "TestThing23_DevCert.crt",
-    "Client Key Filename": "TestThing23_Private.key"
+"Arduino IoT": {
+    "Enabled": true,
+    "Thing Name": "SparkFunThing1",
+    "API Client ID": "API ID",
+    "API Secret": "My API Secrete",
+    "Device Secret": "My Device Secret",
+    "Device ID": "My Device ID"            
   },
 ```
 
 ## Operation
 
-Once the Flux-based device is configured and running, updates in AWS IoT are listed in the ***Activity*** tab of the devices page. For the test device in this document, this page looks like:
+Once the Flux-based device is configured and running, updates in Arduino IoT are listed in the ***Things*** tab of the Arduino IoT page. Clicking the target Thing provides access to the current variable values
 
-![Shadow Activity](images/iot_aws_iot_shadow_updates.png)
-
-Opening up an update, you can see the data being set to AWS IoT in a JSON format.
-
-![Shadow Data](images/iot_aws_iot_shadow_data.png)
+One the first call to the ```write()``` method of the Arduino IoT driver, the driver initializes the connect to the cloud. This involves connecting to/creating a *Thing* and connecting to/creating *Variables* that map to the data values of the devices connected to the framework. This initialization step takes seconds to complete, but once performed, each data update step progresses quickly.
