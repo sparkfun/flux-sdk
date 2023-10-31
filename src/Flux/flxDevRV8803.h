@@ -80,13 +80,7 @@ private:
     void set_month(const uint8_t &);
     void set_year(const uint16_t &);
 
-    bool get_offset_epoch();
-    void set_offset_epoch(bool);
-    int8_t get_time_zone_quarter_hours();
-    void set_time_zone_quarter_hours(int8_t);
-
     bool _begun = false;
-    bool _offsetEpoch = false;
 
     // Flags to prevent updateTime from being called multiple times
     bool _dateUSA = false;
@@ -127,8 +121,4 @@ public:
         { {"Sunday",0}, {"Monday",1}, {"Tuesday",2}, {"Wednesday",3}, {"Thursday",4}, {"Friday",5}, {"Saturday",6}};
     flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_month> setMonth = { 1, 12 };
     flxParameterInUint16<flxDevRV8803, &flxDevRV8803::set_year> setYear = { 1970, 2200 };
-
-    // Define our read-write properties
-    flxPropertyRWBool<flxDevRV8803, &flxDevRV8803::get_offset_epoch, &flxDevRV8803::set_offset_epoch> offsetEpoch;
-    flxPropertyRWInt8<flxDevRV8803, &flxDevRV8803::get_time_zone_quarter_hours, &flxDevRV8803::set_time_zone_quarter_hours> timeZoneQuarterHours = { -48, 56 };
 };
