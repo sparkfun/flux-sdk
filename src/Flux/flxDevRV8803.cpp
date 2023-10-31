@@ -57,10 +57,6 @@ flxDevRV8803::flxDevRV8803()
     flxRegister(setWeekday, "Set the weekday", "Set the weekday: 0=Sunday, 6=Saturday");
     flxRegister(setMonth, "Set the month", "Set the month");
     flxRegister(setYear, "Set the year", "Set the year");
-
-    // Register read-write properties
-    flxRegister(offsetEpoch, "Offset Epoch", "Default false. Set to true if time.h requires an offset to 1970");
-    flxRegister(timeZoneQuarterHours, "The Time Zone offset", "The Time Zone offset in quarter hours (15 minute increments)");
 }
 
 // Static method used to determine if this device is connected
@@ -103,6 +99,7 @@ bool flxDevRV8803::onInitialize(TwoWire &wirePort)
     bool result = RV8803::begin(wirePort);
 
     RV8803::set24Hour();
+    RV8803::setTimeZoneQuarterHours(0); // Make sure the time zone is zero
 
     if (result)
         _begun = true;
@@ -434,7 +431,7 @@ uint flxDevRV8803::get_epoch()
     }
     _epoch = false;
 
-    return RV8803::getEpoch(_offsetEpoch);
+    return RV8803::getEpoch();
 }
 
 bool flxDevRV8803::valid_epoch(void)
@@ -446,7 +443,7 @@ bool flxDevRV8803::valid_epoch(void)
 // Note, this also fulfills the clock inteface needs.
 void flxDevRV8803::set_epoch(const uint &epoch)
 {
-    if (!RV8803::setEpoch(epoch, _offsetEpoch))
+    if (!RV8803::setEpoch(epoch))
         flxLog_E("RV8803 - set_epoch failed");
 }
 
@@ -484,26 +481,4 @@ void flxDevRV8803::set_weekday(const uint8_t &dow)
 {
     if (!RV8803::setWeekday(dow))
         flxLog_E("RV8803 - set_weekday failed");
-}
-
-// Read-write properties
-bool flxDevRV8803::get_offset_epoch()
-{
-    return _offsetEpoch;
-}
-void flxDevRV8803::set_offset_epoch(bool offset)
-{
-    _offsetEpoch = offset;
-}
-int8_t flxDevRV8803::get_time_zone_quarter_hours()
-{ 
-    if (_begun)
-        return RV8803::getTimeZoneQuarterHours();
-    else
-        return 0; // What else can we do?
-}
-void flxDevRV8803::set_time_zone_quarter_hours(int8_t offset)
-{
-    if (_begun)
-        RV8803::setTimeZoneQuarterHours(offset);
 }
