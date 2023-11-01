@@ -219,12 +219,6 @@ bool flxDevADS1015::onInitialize(TwoWire &wirePort)
     {
         _begun = true;
         ADS1015::useConversionReady(true);
-
-        // we are now connected - let's set sampleRate and Gain
-        // Note: Saved values are restored before onInitialize() is called,
-        //       so these could be something different than the defaults.
-        set_sample_rate(_sampleRate);
-        set_pga_gain(_gain);
     }
 
     return result;
