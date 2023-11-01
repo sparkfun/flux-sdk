@@ -24,8 +24,6 @@
 #define kNTPServerAddress1 "pool.ntp.org"
 #define kNTPServerAddress2 "time.nist.gov"
 
-#define kNTPTimeZoneSparkFun "MST7MDT,M3.2.0,M11.1.0"
-
 // Use the NTP client on the ESP32 to sync the onboard clock
 
 class flxNTPESP32 : public flxActionType<flxNTPESP32>, public flxIClock
@@ -47,9 +45,6 @@ public:
         // NTP servers
         flxRegister(ntpServerOne, "NTP Server One", "The primary NTP server to use");
         flxRegister(ntpServerTwo, "NTP Server Two", "The secondary NTP server to use");
-
-        // Timezone
-        flxRegister(timeZone, "The Time Zone", "Time zone setting string for the device");
 
         setName("NTP Client", "NTP Time Sync Client");
 
@@ -98,9 +93,6 @@ public:
     // NTP servers
     flxPropertyString<flxNTPESP32>     ntpServerOne = {kNTPServerAddress1};
     flxPropertyString<flxNTPESP32>     ntpServerTwo = {kNTPServerAddress2};
-
-    // TimeZone string
-    flxPropertyString<flxNTPESP32>     timeZone = {kNTPTimeZoneSparkFun};
 
 private:
 	bool  _isEnabled;
