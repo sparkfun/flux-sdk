@@ -187,6 +187,10 @@ void _flxClock::setSystemClock(flxISystemClock *clock)
 
 void _flxClock::updateConnectedClocks(void)
 {
+
+    if (!_systemClock)
+        return;
+
     uint32_t epoch = _systemClock->get_epoch();
 
     if (!epoch)
@@ -201,7 +205,7 @@ void _flxClock::updateConnectedClocks(void)
 void _flxClock::updateClock()
 {
 
-    if (!_bInitialized || _systemClock)
+    if (!_bInitialized || !_systemClock)
         return;
 
     flxIClock *theClock = _refClock;
