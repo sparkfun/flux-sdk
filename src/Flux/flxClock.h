@@ -80,8 +80,8 @@ class flxClockESP32 : public flxISystemClock
         if (!szTimeZone)
             return;
 
-        setenv("TZ", szTimeZone, 1);
-        tzset();
+        // setenv("TZ", szTimeZone, 1);
+        // tzset();
     }
 
     int get_timezone(char *szTimeZone, size_t len)
