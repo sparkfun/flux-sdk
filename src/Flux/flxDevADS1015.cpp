@@ -176,5 +176,5 @@ void flxDevADS1015::set_pga_gain(uint16_t gain)
 {
     _gain = gain;
     if (_begun)
-        ADS1015::setSampleRate(gain);
+        ADS1015::setGain(gain);
 }
