@@ -119,8 +119,31 @@ uint8_t flxDevOPT4048::get_range()
 
 bool flxDevOPT4048::set_range(uint8_t range)
 {
-    uint8_t _range; 
-    _range = static_cast<opt4048_range_t>(range);
+    uint8_t _range = static_cast<opt4048_range_t>(range);
     QwOpt4048::setRange(_range);
+}
+
+uint8_t flxDevOPT4048::get_conversion_time()
+{
+    opt4048_conversion_time_t _time = QwOpt4048::get_conversion_time();
+    return static_cast<uint8_t>(_time);
+}
+
+bool flxDevOPT4048::set_conversion_time(uint8_t time)
+{
+    uint8_t _time = static_cast<opt4048_conversion_time_t>(time);
+    QwOpt4048::setConversionTime(_time);
+}
+
+uint8_t flxDevOPT4048::get_operation_mode()
+{
+    opt4048_operation_mode_t _mode = QwOpt4048::get_operation_mode();
+    return static_cast<uint8_t>(_mode);
+}
+
+bool flxDevOPT4048::set_operation_mode(uint8_t mode)
+{
+    uint8_t _mode = static_cast<opt4048_time_t>(time);
+    QwOpt4048::setConversionTime(_time);
 }
 

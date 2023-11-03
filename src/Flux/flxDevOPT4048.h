@@ -24,7 +24,7 @@
 
 #include "Arduino.h"
 
-#include "SparkFunOPT4048.h"
+#include "SparkFun_OPT4048.h"
 #include "flxCoreParam.h"
 #include "flxCoreProps.h"
 #include "flxDevice.h"
