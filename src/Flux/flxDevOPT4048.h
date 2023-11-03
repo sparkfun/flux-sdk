@@ -25,13 +25,16 @@
 #include "Arduino.h"
 
 #include "SparkFunOPT4048.h"
+#include "flxCoreParam.h"
+#include "flxCoreProps.h"
 #include "flxDevice.h"
+#include <cstdint>
 
 // What is the name used to ID this device?
-#define kOPT4048DeviceName "OPT4048"
+#define kOPT4048DeviceName "QwOpt4048"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class flxDevOPT4048 : public flxDeviceI2CType<flxDevOPT4048>, public OPT4048
+class flxDevOPT4048 : public flxDeviceI2CType<flxDevOPT4048>, public QwOpt4048
 {
 
   public:
@@ -57,19 +60,25 @@ class flxDevOPT4048 : public flxDeviceI2CType<flxDevOPT4048>, public OPT4048
 
   private:
     // methods used to get values for our output parameters
-    float read_Humidity();
-    float read_TemperatureF();
-    float read_TemperatureC();
-    float read_Pressure();
-    float read_AltitudeM();
-    float read_AltitudeF();
+    double get_CIEx();
+    double get_CIEy();
+    double get_CCT();
+    uint32_t get_lux();
+
+    bool set_range(uint8_t); 
+    uint8_t get_range();
+    bool set_conversion_time(uint8_t); 
+    uint8_t get_conversion_time();
+    bool set_operation_mode(uint8_t);
+    uint8_t get_operation_mode();
 
   public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutFloat<flxDevOPT4048, &flxDevOPT4048::read_Humidity> humidity;
-    flxParameterOutFloat<flxDevOPT4048, &flxDevOPT4048::read_TemperatureF> temperatureF;
-    flxParameterOutFloat<flxDevOPT4048, &flxDevOPT4048::read_TemperatureC> temperatureC;
-    flxParameterOutFloat<flxDevOPT4048, &flxDevOPT4048::read_Pressure> pressure;
-    flxParameterOutFloat<flxDevOPT4048, &flxDevOPT4048::read_AltitudeM> altitudeM;
-    flxParameterOutFloat<flxDevOPT4048, &flxDevOPT4048::read_AltitudeF> altitudeF;
+    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_range, &flxDevOPT4048::set_range> range;
+    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_conversion_time, &flxDevOPT4048::set_conversion_time> time;
+    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_operation_mode, &flxDevOPT4048::set_operation_mode> mode;
+    flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CIEx> CIEx;
+    flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CIEy> CIEy;
+    flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CCT> CCT;
+    flxParameterOutUint<flxDevOPT4048, &flxDevOPT4048::get_lux> Lux;
 };

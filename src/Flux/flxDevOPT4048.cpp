@@ -19,6 +19,7 @@
 #include "Arduino.h"
 
 #include "flxDevOPT4048.h"
+#include <cstdint>
 
 #define OPT4048_CHIP_ID_REG 0x11 // Register containing the chip ID
 #define OPT4048_UNIQUE_ID 0x2048 // Chip ID
@@ -51,9 +52,13 @@ flxDevOPT4048::flxDevOPT4048()
     setDescription("The Texas Instrument OPT4048 Tristimulus Color Sensor");
 
     // Register parameters
-    flxRegister(CIEx, "Humidity", "The sensed humidity value");
-    flxRegister(CIEy, "TemperatureF", "The sensed Temperature in degrees Fahrenheit");
-    flxRegister(Lux, "TemperatureC", "The sensed Temperature in degrees Celsius");
+    flxRegister(CIEx, "CIEx", "The X coordinate on the CIE 1931 Color Space Graph.");
+    flxRegister(CIEy, "CIEy", "The Y coordinate on the CIE 1931 Color Space Graph.");
+    flxRegister(Lux, "Lux", "The Lux value, or 'brightness'.");
+
+    flxRegister(mode, "mode", "The Operation Mode: Power Down, Auto One Shot, One Shot, Continuous");
+    flxRegister(time, "time", "Time spent converting analog values from internal sensors.");
+    flxRegister(range, "range", "Range of light being sensed.");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -81,35 +86,41 @@ bool flxDevOPT4048::onInitialize(TwoWire &wirePort)
 {
 
     // set the device address
-    OPT4048::setI2CAddress(address());
-    return OPT4048::beginI2C(wirePort);
+    QwOpt4048::setI2CAddress(address());
+    return QwOpt4048::beginI2C(wirePort);
 }
 
 // GETTER methods for output params
-float flxDevOPT4048::read_Humidity()
+double flxDevOPT4048::get_CIEx()
 {
-    return OPT4048::readFloatHumidity();
+    return QwOpt4048::getCIEx();
 }
 
-float flxDevOPT4048::read_TemperatureF()
+double flxDevOPT4048::get_CIEy()
 {
-    return OPT4048::readTempF();
-}
-float flxDevOPT4048::read_TemperatureC()
-{
-    return OPT4048::readTempC();
+    return QwOpt4048::getCIEy();
 }
 
-float flxDevOPT4048::read_Pressure()
+double flxDevOPT4048::get_CCT()
 {
-    return OPT4048::readFloatPressure();
+    return QwOpt4048::getCCT();
 }
 
-float flxDevOPT4048::read_AltitudeM()
+uint32_t flxDevOPT4048::get_lux()
 {
-    return OPT4048::readFloatAltitudeMeters();
+    return QwOpt4048::getLux();
 }
-loat flxDevOPT4048::read_AltitudeF()
+
+uint8_t flxDevOPT4048::get_range()
 {
-    return OPT4048::readFloatAltitudeFeet();
+    opt4048_range_t _range = QwOpt4048::getRange();
+    return static_cast<uint8_t>(range);
 }
+
+bool flxDevOPT4048::set_range(uint8_t range)
+{
+    uint8_t _range; 
+    _range = static_cast<opt4048_range_t>(range);
+    QwOpt4048::setRange(_range);
+}
+
