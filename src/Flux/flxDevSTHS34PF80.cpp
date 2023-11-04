@@ -25,12 +25,9 @@
 
 #include "flxDevSTHS34PF80.h"
 
-// KDB TODO - once a proper value is defined.
-
-#define kSTHS34PF80AddressDefault (STHS34PF80_I2C_ADD >> 1)
 
 // Define our class static variables - allocs storage for them
-uint8_t flxDevSTHS34PF80::defaultDeviceAddress[] = {kSTHS34PF80AddressDefault, kSparkDeviceAddressNull};
+uint8_t flxDevSTHS34PF80::defaultDeviceAddress[] = {STHS34PF80_I2C_ADDRESS, kSparkDeviceAddressNull};
 
 //-----------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -83,11 +80,7 @@ flxDevSTHS34PF80::flxDevSTHS34PF80() : _hasBegun{false}
 // Place to initialize the underlying device library/driver.
 bool flxDevSTHS34PF80::onInitialize(TwoWire &wirePort)
 {
-
-    // KDB TODO  - the Arduino library is broken here - it always returns false
     _hasBegun = STHS34PF80_I2C::begin(address(), wirePort);
-
-    _hasBegun = true; // KDB for now...
 
     return _hasBegun;
 }
