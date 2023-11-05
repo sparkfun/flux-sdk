@@ -55,3 +55,4 @@ SdFat
 "XENSIV PAS CO2"
 "ArduinoIoTCloud"
 "SparkFun STHS34PF80 Arduino Library"
+"SparkFun Indoor Air Quality Sensor - ENS160"
