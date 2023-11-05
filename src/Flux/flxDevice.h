@@ -65,30 +65,58 @@ template <typename T, typename B = flxDevice> class flxDeviceI2CType : public B
 
         return addresses[0];
     }
+
+    //---------------------------------------------------------------
+    // Arduino Wire version ...
+    //
+    // This method will call the onInitialize() method of the device object
     bool initialize(TwoWire &wirePort)
     {
         if (B::address() == kSparkDeviceAddressNull)
             B::setAddress(getDefaultAddress());
 
-        return onInitialize(wirePort);
+        bool status = onInitialize(wirePort);
+
+        // save our status flag ...
+        B::setIsInitialized(status);
+        
+        return status;
     }
+
+    //---------------------------------------------------------------
+    // i2c driver version 
+    //
+    // Will call the super class and the wireport version of this method
     bool initialize(flxBusI2C &i2cDriver)
     {
-
         // call the superclasses begin method.
         TwoWire *wirePort = i2cDriver.getWirePort();
         if (!wirePort)
             return false;
 
-        // Add this device to the system
+        // call the Wire version of the init methods -- this will
+        // dispatch to the actual device onInitialize() method
+
+        if (!this->initialize(*wirePort))
+            return false;
+
+        // Call the super class version of this method. 
+        // It ensures that the device is added to the system
         B::initialize(i2cDriver);
 
-        return this->initialize(*wirePort); // call  init routine.
+        return true;
     }
+
+    //---------------------------------------------------------------
+    // void version
+    //
+    // Grabs i2c driver and calls that version of method.    
     bool initialize(void)
     {
         return initialize(flux.i2cDriver());
     }
+
+    //---------------------------------------------------------------    
     // version where a address is passed in
     bool initialize(uint8_t address)
     {
@@ -98,7 +126,10 @@ template <typename T, typename B = flxDevice> class flxDeviceI2CType : public B
         B::setAddress(address);
         return initialize();
     }
-    // For our sub-classes to overload
+
+    //---------------------------------------------------------------
+    // place holder - or our sub-classes to overload
+    //
     virtual bool onInitialize(TwoWire &)
     {
         return true;
@@ -158,13 +189,21 @@ template <typename T, typename B = flxDevice> class flxDeviceSPIType : public B
 
         // Everything is ready to have the driver start talking to the SPI BUS.
         // Last step, setup 
-        // Magnetometer
         uint8_t cs = chipSelect();
         pinMode(cs, OUTPUT);
         digitalWrite(cs, HIGH);
 
-        return onInitialize(spiPort);
+
+        // Call the devices onInitialize() method -- 
+        bool status =  onInitialize(spiPort);
+
+        // set our is init success flag.
+        B::setIsInitialized(status);
+
+        return status;
     }
+
+
     bool initialize(flxBusSPI &spiDriver)
     {
 
@@ -173,15 +212,22 @@ template <typename T, typename B = flxDevice> class flxDeviceSPIType : public B
         if (!spiPort)
             return false;
 
+        // call the spi driver version of this method - will ensure device is init'd
+        if (!this->initialize(*spiPort) )
+            return false;
+
+        // Startup success - call the super class version of this method
+        // This will add the driver to the system
         B::initialize(spiDriver);
 
-        return this->initialize(*spiPort); // call subclass virtual init routine.
+        return true;
     }
 
     bool initialize(void)
     {
         return initialize(flux.spiDriver());
     }
+
     // version where a CS pin is passed in
     bool initialize(uint8_t cs)
     {
