@@ -53,14 +53,12 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     uint16_t read_TVOC();
     uint16_t read_ETOH();
     uint16_t read_ECO2();
-    float read_TempK();
     float read_TempC();
     float read_RH();
 
     uint8_t get_operating_mode(void);
     void set_operating_mode(uint8_t);
 
-    bool _hasBegun;
     uint8_t _opMode;
   public:
     // properties
@@ -74,7 +72,6 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     flxParameterOutUint16<flxDevENS160, &flxDevENS160::read_TVOC> val_TVOC;
     flxParameterOutUint16<flxDevENS160, &flxDevENS160::read_ETOH> val_ETOH;
     flxParameterOutUint16<flxDevENS160, &flxDevENS160::read_ECO2> val_ECO2;
-    flxParameterOutFloat<flxDevENS160, &flxDevENS160::read_TempK> val_TempK;
     flxParameterOutFloat<flxDevENS160, &flxDevENS160::read_TempC> val_TempC;
     flxParameterOutFloat<flxDevENS160, &flxDevENS160::read_RH> val_RH;
 };

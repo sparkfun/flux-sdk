@@ -26,7 +26,7 @@ uint8_t flxDevENS160::defaultDeviceAddress[] = {ENS160_ADDRESS_HIGH, ENS160_ADDR
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevENS160);
 
-flxDevENS160::flxDevENS160() : _hasBegun{false}, _opMode{SFE_ENS160_STANDARD}
+flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}
 {
 
     setName(getDeviceName(), "ScioSense ENS160 Indoor Air Quality Sensor");
@@ -38,7 +38,6 @@ flxDevENS160::flxDevENS160() : _hasBegun{false}, _opMode{SFE_ENS160_STANDARD}
     flxRegister(val_TVOC, "TVOC", "Total Volatile Organic Compound");
     flxRegister(val_ETOH, "ETOH", "Ethanol Concentration");
     flxRegister(val_ECO2, "eCO2", "Equivalent CO2");
-    flxRegister(val_TempK, "Temperature K", "Temperature in Kelvin");
     flxRegister(val_TempC, "Temperature C", "Temperature in Celsius");
     flxRegister(val_RH, "Humidity", "Relative Humidity");
     ;
@@ -83,7 +82,6 @@ bool flxDevENS160::onInitialize(TwoWire &wirePort)
 
     SparkFun_ENS160::setOperatingMode(operatingMode());
 
-    _hasBegun = true;
     return true;
 }
 
@@ -93,7 +91,7 @@ bool flxDevENS160::onInitialize(TwoWire &wirePort)
 // Operating mode
 uint8_t flxDevENS160::get_operating_mode(void)
 {
-    if (!_hasBegun)
+    if (!isInitialized())
         return _opMode;
 
     int8_t mode = SparkFun_ENS160::getOperatingMode();
@@ -104,7 +102,7 @@ uint8_t flxDevENS160::get_operating_mode(void)
 //---------------------------------------------------------------------------
 void flxDevENS160::set_operating_mode(uint8_t newMode)
 {
-    if (_hasBegun)
+    if (isInitialized())
         SparkFun_ENS160::setOperatingMode(newMode);
     else
         _opMode = newMode;
@@ -143,14 +141,6 @@ uint16_t flxDevENS160::read_ETOH(void)
 uint16_t flxDevENS160::read_ECO2(void)
 {
     return SparkFun_ENS160::getECO2();
-}
-
-//---------------------------------------------------------------------------
-// read_TempK()
-
-float flxDevENS160::read_TempK(void)
-{
-    return SparkFun_ENS160::getTempKelvin();
 }
 
 //---------------------------------------------------------------------------
