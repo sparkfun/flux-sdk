@@ -84,18 +84,24 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
             // See if the device is connected
             if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
             {
-                flxDevice *pDevice = deviceBuilder->create();
+                flxDevice *pDevice = deviceBuilder->create();                
                 if (!pDevice)
                 {
                     flxLog_E("Device create failed - %s", deviceBuilder->getDeviceName());
                 }
                 else
                 {
-                    nDevs++;
                     pDevice->setName(deviceBuilder->getDeviceName());
                     pDevice->setAddress(deviceAddresses[i]);
                     pDevice->setAutoload();
-                    pDevice->initialize(i2cDriver);
+                    if (!pDevice->initialize(i2cDriver))
+                    {
+                        // device failed to init - delete it ...
+                        flxLog_E(F("Deviced %s failed to initialize."), deviceBuilder->getDeviceName());
+                        deviceBuilder->destroy(pDevice);
+                        continue;
+                    }
+                    nDevs++;                    
                 }
             }
         }
