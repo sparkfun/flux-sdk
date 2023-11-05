@@ -26,20 +26,22 @@ uint8_t flxDevENS160::defaultDeviceAddress[] = {ENS160_ADDRESS_HIGH, ENS160_ADDR
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevENS160);
 
-flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}
+flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}, _rhComp{nullptr}, _lastCompCheck{0}
 {
 
     setName(getDeviceName(), "ScioSense ENS160 Indoor Air Quality Sensor");
 
     flxRegister(operatingMode, "Operating Mode", "The Sensor Operating Mode");
+    flxRegister(enableCompensation, "Enable Compensation", "Enable Temp and Humidity compensation if available");
+    flxRegister(updatePeriodSecs, "Update Period", "The compensation update period in seconds");
 
     // Register output params
     flxRegister(val_AQI, "AQI", "Air Quality Index");
     flxRegister(val_TVOC, "TVOC", "Total Volatile Organic Compound");
     flxRegister(val_ETOH, "ETOH", "Ethanol Concentration");
     flxRegister(val_ECO2, "eCO2", "Equivalent CO2");
-    flxRegister(val_TempC, "Temperature C", "Temperature in Celsius");
-    flxRegister(val_RH, "Humidity", "Relative Humidity");
+    flxRegister(val_TempC, "Temperature Compensation", "The current temperature compensation value (C)");
+    flxRegister(val_RH, "Humidity Compensation", "The current relative humidity value");
     ;
 }
 
@@ -108,6 +110,48 @@ void flxDevENS160::set_operating_mode(uint8_t newMode)
         _opMode = newMode;
 }
 
+// methodd to set a parameter to use for temp compensation
+void flxDevENS160::setTemperatureCompParameter(flxParameterOutScalar& compParam)
+{
+    _tempCComp = compParam.accessor();
+}
+
+// Relitive humidity comp
+void flxDevENS160::setHumidityCompParameter(flxParameterOutScalar& compParam)
+{
+    _rhComp = compParam.accessor();
+}
+
+
+bool flxDevENS160::loop(void)
+{
+    // Time to update our comp values?
+
+    if (!isInitialized() || !enableCompensation() || (_rhComp == nullptr && _tempCComp == nullptr))
+        return false;
+
+    // we need a time element here ..
+
+    if (millis() - _lastCompCheck > updatePeriodSecs() * 1000 )
+    {
+        float value;
+        if (_rhComp != nullptr)
+        {
+            value = _rhComp->getFloat();
+            SparkFun_ENS160::setRHCompensationFloat(value);
+        }
+
+        if (_tempCComp != nullptr)
+        {
+            value = _tempCComp->getFloat();
+            SparkFun_ENS160::setTempCompensationCelsius(value);
+        }
+
+        _lastCompCheck = millis();
+    }
+
+    return false;
+}
 
 //---------------------------------------------------------------------------
 // Outputs

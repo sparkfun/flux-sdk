@@ -25,6 +25,8 @@
 
 #define kENS160DeviceName "ENS160"
 
+#define kENS160DefaultCompUpdateTimeSecs 60
+
 // Define our class
 class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS160
 {
@@ -48,6 +50,16 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
 
     bool onInitialize(TwoWire &);
 
+
+    // methods to set a parameter to use for temp compensation
+    void setTemperatureCompParameter(flxParameterOutScalar&);
+
+    // Relitive humidity comp
+    void setHumidityCompParameter(flxParameterOutScalar&);    
+
+    bool loop(void);
+
+
   private:
     uint8_t read_AQI();
     uint16_t read_TVOC();
@@ -60,11 +72,21 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     void set_operating_mode(uint8_t);
 
     uint8_t _opMode;
+
+    flxParameterOutScalar *  _tempCComp; 
+    flxParameterOutScalar *  _rhComp;
+
+    uint32_t  _lastCompCheck;
+
   public:
     // properties
     flxPropertyRWUint8<flxDevENS160, &flxDevENS160::get_operating_mode, &flxDevENS160::set_operating_mode> operatingMode = {
         SFE_ENS160_STANDARD,
         {{"Standard", SFE_ENS160_STANDARD}, {"Idle", SFE_ENS160_IDLE}, {"Deep Sleep", SFE_ENS160_DEEP_SLEEP}}};
+
+    // Compensation settings
+    flxPropertyBool<flxDevENS160> enableCompensation = false;
+    flxPropertyUint<flxDevENS160> updatePeriodSecs = {kENS160DefaultCompUpdateTimeSecs, 5, 600};
 
     // Define our output parameters - specify the get functions to call.
 
