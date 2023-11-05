@@ -136,7 +136,6 @@ class flxDevSTHS34PF80 : public flxDeviceI2CType<flxDevSTHS34PF80>, public STHS3
     uint8_t get_PresenceAbsoluteValue();
     void set_PresenceAbsoluteValue(uint8_t);
 
-    bool _hasBegun;
 
   public:
     // Define our output parameters - specify the get functions to call.

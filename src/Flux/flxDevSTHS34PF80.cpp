@@ -39,7 +39,7 @@ flxRegisterDevice(flxDevSTHS34PF80);
 //
 // Object constructor. Performs initialization of device values, including
 // device identifiers (name, I2C address) and managed properties.
-flxDevSTHS34PF80::flxDevSTHS34PF80() : _hasBegun{false}
+flxDevSTHS34PF80::flxDevSTHS34PF80() 
 {
     // Setup unique identifiers for this device and basic device object systems
     setName(kSTHS34PF80DeviceName, "Human Presence Sensor");
@@ -80,9 +80,7 @@ flxDevSTHS34PF80::flxDevSTHS34PF80() : _hasBegun{false}
 // Place to initialize the underlying device library/driver.
 bool flxDevSTHS34PF80::onInitialize(TwoWire &wirePort)
 {
-    _hasBegun = STHS34PF80_I2C::begin(address(), wirePort);
-
-    return _hasBegun;
+    return STHS34PF80_I2C::begin(address(), wirePort);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -162,7 +160,7 @@ int flxDevSTHS34PF80::get_AverageTObjectNumber()
 }
 void flxDevSTHS34PF80::set_AverageTObjectNumber(int avg)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setAverageTObjectNumber((sths34pf80_avg_tobject_num_t)avg);
 }
 
@@ -176,7 +174,7 @@ int flxDevSTHS34PF80::get_AverageTAmbientNumber()
 
 void flxDevSTHS34PF80::set_AverageTAmbientNumber(int avg)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setAverageTAmbientNumber((sths34pf80_avg_tambient_num_t)avg);
 }
 
@@ -191,7 +189,7 @@ int flxDevSTHS34PF80::get_GainMode()
 
 void flxDevSTHS34PF80::set_GainMode(int gain)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setGainMode((sths34pf80_gain_mode_t)gain);
 }
 
@@ -206,7 +204,7 @@ float flxDevSTHS34PF80::get_TmosSensitivity()
 
 void flxDevSTHS34PF80::set_TmosSensitivity(float sense)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setTmosSensitivity(sense);
 }
 
@@ -221,7 +219,7 @@ int flxDevSTHS34PF80::get_TmosODR()
 
 void flxDevSTHS34PF80::set_TmosODR(int odr)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setTmosODR((sths34pf80_tmos_odr_t)odr);
 }
 
@@ -236,7 +234,7 @@ bool flxDevSTHS34PF80::get_BlockDataUpdate()
 
 void flxDevSTHS34PF80::set_BlockDataUpdate(bool update)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setBlockDataUpdate(update);
 }
 
@@ -251,7 +249,7 @@ int flxDevSTHS34PF80::get_TmosOneShot()
 
 void flxDevSTHS34PF80::set_TmosOneShot(int shot)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setTmosOneShot((sths34pf80_tmos_one_shot_t)shot);
 }
 
@@ -265,7 +263,7 @@ int flxDevSTHS34PF80::get_MemoryBank()
 
 void flxDevSTHS34PF80::set_MemoryBank(int bank)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setMemoryBank((sths34pf80_mem_bank_t)bank);
 }
 
@@ -279,7 +277,7 @@ uint8_t flxDevSTHS34PF80::get_BootOTP()
 }
 void flxDevSTHS34PF80::set_BootOTP(uint8_t boot)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setBootOTP(boot);
 }
 
@@ -300,7 +298,7 @@ int flxDevSTHS34PF80::get_LpfMotionBandwidth()
 
 void flxDevSTHS34PF80::set_LpfMotionBandwidth(int band)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setLpfMotionBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
@@ -313,7 +311,7 @@ int flxDevSTHS34PF80::get_LpfPresenceMotionBandwidth()
 }
 void flxDevSTHS34PF80::set_LpfPresenceMotionBandwidth(int band)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setLpfPresenceMotionBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
@@ -328,7 +326,7 @@ int flxDevSTHS34PF80::get_LpfAmbientTempBandwidth()
 
 void flxDevSTHS34PF80::set_LpfAmbientTempBandwidth(int band)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setLpfAmbientTempBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
@@ -341,7 +339,7 @@ int flxDevSTHS34PF80::get_LpfPresenceBandwidth()
 }
 void flxDevSTHS34PF80::set_LpfPresenceBandwidth(int band)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setLpfPresenceBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
@@ -355,7 +353,7 @@ int flxDevSTHS34PF80::get_TmosRouteInterrupt()
 
 void flxDevSTHS34PF80::set_TmosRouteInterrupt(int intr)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setTmosRouteInterrupt((sths34pf80_tmos_route_int_t)intr);
 }
 
@@ -369,7 +367,7 @@ int flxDevSTHS34PF80::get_DataReadyMode()
 
 void flxDevSTHS34PF80::set_DataReadyMode(int mode)
 {
-    if (_hasBegun)
+    if (isInitialized())
         setDataReadyMode((sths34pf80_drdy_mode_t)mode);
 }
 
@@ -382,7 +380,7 @@ uint16_t flxDevSTHS34PF80::get_PresenceThreshold()
 }
 void flxDevSTHS34PF80::set_PresenceThreshold(uint16_t threshold)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
@@ -398,7 +396,7 @@ uint16_t flxDevSTHS34PF80::get_MotionThreshold()
 }
 void flxDevSTHS34PF80::set_MotionThreshold(uint16_t threshold)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
@@ -414,7 +412,7 @@ uint16_t flxDevSTHS34PF80::get_TAmbientShockThreshold()
 }
 void flxDevSTHS34PF80::set_TAmbientShockThreshold(uint16_t threshold)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
@@ -430,7 +428,7 @@ uint8_t flxDevSTHS34PF80::get_MotionHysteresis()
 }
 void flxDevSTHS34PF80::set_MotionHysteresis(uint8_t hysteresis)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
@@ -446,7 +444,7 @@ uint8_t flxDevSTHS34PF80::get_PresenceHysteresis()
 }
 void flxDevSTHS34PF80::set_PresenceHysteresis(uint8_t hysteresis)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
@@ -462,7 +460,7 @@ uint8_t flxDevSTHS34PF80::get_TAmbientShockHysteresis()
 }
 void flxDevSTHS34PF80::set_TAmbientShockHysteresis(uint8_t hysteresis)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
@@ -478,7 +476,7 @@ uint8_t flxDevSTHS34PF80::get_TObjectAlgoCompensation()
 }
 void flxDevSTHS34PF80::set_TObjectAlgoCompensation(uint8_t compensation)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
@@ -494,7 +492,7 @@ uint8_t flxDevSTHS34PF80::get_PresenceAbsoluteValue()
 }
 void flxDevSTHS34PF80::set_PresenceAbsoluteValue(uint8_t value)
 {
-    if (_hasBegun)
+    if (isInitialized())
         // Steps for setting embedded functions - see Section 2.1 of Application Note AN5867
         setTmosODR(STHS34PF80_TMOS_ODR_OFF);
     setMemoryBank(STHS34PF80_EMBED_FUNC_MEM_BANK);
