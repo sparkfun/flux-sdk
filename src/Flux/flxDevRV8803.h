@@ -80,8 +80,6 @@ private:
     void set_month(const uint8_t &);
     void set_year(const uint16_t &);
 
-    bool _begun = false;
-
     // Flags to prevent updateTime from being called multiple times
     bool _dateUSA = false;
     bool _date = false;

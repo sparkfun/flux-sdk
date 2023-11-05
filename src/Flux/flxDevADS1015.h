@@ -70,8 +70,6 @@ private:
     uint16_t _sampleRate = ADS1015_CONFIG_RATE_1600HZ;
     uint16_t _gain = ADS1015_CONFIG_PGA_2;
 
-    bool _begun = false;
-
 public:
     flxPropertyRWUint16<flxDevADS1015, &flxDevADS1015::get_sample_rate, &flxDevADS1015::set_sample_rate> sampleRate
      = { ADS1015_CONFIG_RATE_1600HZ, { { "128 Hz", ADS1015_CONFIG_RATE_128HZ }, { "250 Hz", ADS1015_CONFIG_RATE_250HZ },

@@ -144,10 +144,7 @@ bool flxDevADS1015::onInitialize(TwoWire &wirePort)
         flxLog_E("ADS1015 - begin failed");
 
     if (result)
-    {
-        _begun = true;
         ADS1015::useConversionReady(true);
-    }
 
     return result;
 }
@@ -156,25 +153,25 @@ bool flxDevADS1015::onInitialize(TwoWire &wirePort)
 
 uint16_t flxDevADS1015::get_sample_rate()
 {
-    if (_begun)
+    if (isInitialized())
         _sampleRate = ADS1015::getSampleRate();
     return _sampleRate;
 }
 void flxDevADS1015::set_sample_rate(uint16_t rate)
 {
     _sampleRate = rate;
-    if (_begun)
+    if (isInitialized())
         ADS1015::setSampleRate(rate);
 }
 uint16_t flxDevADS1015::get_pga_gain()
 {
-    if (_begun)
+    if (isInitialized())
         _gain = ADS1015::getGain();
     return _gain;
 }
 void flxDevADS1015::set_pga_gain(uint16_t gain)
 {
     _gain = gain;
-    if (_begun)
+    if (isInitialized())
         ADS1015::setGain(gain);
 }

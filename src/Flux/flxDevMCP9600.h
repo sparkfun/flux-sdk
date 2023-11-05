@@ -101,8 +101,6 @@ class flxDevMCP9600 : public flxDeviceI2CType<flxDevMCP9600>, public MCP9600
     float read_AmbientTemp(void);
     float read_TempDelta(void);
 
-    bool _begun = false;
-
     uint8_t _ambientResolution = RES_ZERO_POINT_0625;
     uint8_t _thermoResolution = RES_18_BIT;
     uint8_t _thermoType = TYPE_K;

@@ -130,10 +130,7 @@ bool flxDevADS122C04::onInitialize(TwoWire &wirePort)
         flxLog_E("ADS122C04 - begin failed");
 
     if (result)
-    {
-        _begun = true;
         result &= SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
-    }
 
     return result;
 }
@@ -142,14 +139,14 @@ bool flxDevADS122C04::onInitialize(TwoWire &wirePort)
 
 uint8_t flxDevADS122C04::get_wire_mode()
 {
-    if (_begun)
+    if (isInitialized())
         _wireMode = SFE_ADS122C04::getWireMode();
     return _wireMode;
 }
 void flxDevADS122C04::set_wire_mode(uint8_t mode)
 {
     _wireMode = mode;
-    if (_begun)
+    if (isInitialized())
         SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
 }
 uint8_t flxDevADS122C04::get_sample_rate()
@@ -159,6 +156,6 @@ uint8_t flxDevADS122C04::get_sample_rate()
 void flxDevADS122C04::set_sample_rate(uint8_t rate)
 {
     _sampleRate = rate;
-    if (_begun)
+    if (isInitialized())
         SFE_ADS122C04::configureADCmode(_wireMode, _sampleRate);
 }

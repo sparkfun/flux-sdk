@@ -85,7 +85,6 @@ private:
 
     tmf882x_msg_meas_results _results;
 
-    bool _begun = false;
     uint16_t _reportPeriod = 460;
 
 public:
