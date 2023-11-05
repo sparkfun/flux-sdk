@@ -32,16 +32,18 @@ flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}
     setName(getDeviceName(), "ScioSense ENS160 Indoor Air Quality Sensor");
 
     flxRegister(operatingMode, "Operating Mode", "The Sensor Operating Mode");
-    flxRegister(enableCompensation, "Enable Compensation", "Enable Temp and Humidity compensation if available");
-    flxRegister(updatePeriodSecs, "Update Period", "The compensation update period in seconds");
+    flxRegister(enableCompensation, "Enable Compensation", "Compensation from external device if connected");
+    flxRegister(tempComp, "Temperature Compensation", "Manually set the compensation value");
+    flxRegister(humidityComp, "Humidity Compensation", "Manually set the compensation value");
+    flxRegister(updatePeriodSecs, "Update Period", "Compensation from input device update period (secs)");
 
     // Register output params
     flxRegister(val_AQI, "AQI", "Air Quality Index");
     flxRegister(val_TVOC, "TVOC", "Total Volatile Organic Compound");
     flxRegister(val_ETOH, "ETOH", "Ethanol Concentration");
     flxRegister(val_ECO2, "eCO2", "Equivalent CO2");
-    flxRegister(val_TempC, "Temperature Compensation", "The current temperature compensation value (C)");
-    flxRegister(val_RH, "Humidity Compensation", "The current relative humidity value");
+    flxRegister(val_TempC, "Temp Comp", "The current temperature compensation value (C)");
+    flxRegister(val_RH, "Humidity Comp", "The current relative humidity compensation value");
     ;
 }
 
@@ -153,6 +155,18 @@ bool flxDevENS160::loop(void)
     return false;
 }
 
+
+void flxDevENS160::set_temp_comp(float value)
+{
+    if (isInitialized())
+        SparkFun_ENS160::setTempCompensationCelsius(value);
+}
+
+void flxDevENS160::set_humid_comp(float value)
+{
+    if (isInitialized() )
+        SparkFun_ENS160::setRHCompensationFloat(value);
+}
 //---------------------------------------------------------------------------
 // Outputs
 //---------------------------------------------------------------------------

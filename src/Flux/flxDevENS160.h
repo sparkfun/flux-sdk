@@ -71,6 +71,10 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     uint8_t get_operating_mode(void);
     void set_operating_mode(uint8_t);
 
+    void set_temp_comp(float);
+
+    void set_humid_comp(float);
+
     uint8_t _opMode;
 
     flxParameterOutScalar *  _tempCComp; 
@@ -86,7 +90,14 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
 
     // Compensation settings
     flxPropertyBool<flxDevENS160> enableCompensation = false;
+
+    // If a device is connected for comp values, update period
     flxPropertyUint<flxDevENS160> updatePeriodSecs = {kENS160DefaultCompUpdateTimeSecs, 5, 600};
+
+
+    flxPropertyRWFloat<flxDevENS160, &flxDevENS160::read_TempC, &flxDevENS160::set_temp_comp> tempComp;
+    flxPropertyRWFloat<flxDevENS160, &flxDevENS160::read_RH, &flxDevENS160::set_humid_comp> humidityComp;    
+
 
     // Define our output parameters - specify the get functions to call.
 
