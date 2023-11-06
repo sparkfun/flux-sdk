@@ -77,8 +77,6 @@ private:
     uint16_t _crosstalk = 0;
     uint16_t _offset = 0;
 
-    bool _begun = false;
-
 public:
     // Define our read-write properties
     flxPropertyRWUint8<flxDevVL53L1X, &flxDevVL53L1X::get_distance_mode, &flxDevVL53L1X::set_distance_mode> distanceMode

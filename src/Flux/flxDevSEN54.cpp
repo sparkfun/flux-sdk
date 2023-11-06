@@ -113,15 +113,15 @@ bool flxDevSEN54::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevSEN54::onInitialize(TwoWire &wirePort)
 {
     SensirionI2CSen5x::begin(wirePort);
-    _begun = SensirionI2CSen5x::deviceReset() == 0;
-    _begun &= SensirionI2CSen5x::startMeasurement() == 0;
-    return _begun;
+    bool status = SensirionI2CSen5x::deviceReset() == 0;
+    status &= SensirionI2CSen5x::startMeasurement() == 0;
+    return status;
 }
 
 // GETTER methods for output params
 float flxDevSEN54::read_temperature_C()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_temperature)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -140,7 +140,7 @@ float flxDevSEN54::read_temperature_C()
 }
 float flxDevSEN54::read_humidity()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_humidity)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -159,7 +159,7 @@ float flxDevSEN54::read_humidity()
 }
 float flxDevSEN54::read_voc_index()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_vocIndex)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -178,7 +178,7 @@ float flxDevSEN54::read_voc_index()
 }
 float flxDevSEN54::read_nox_index()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_noxIndex)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -197,7 +197,7 @@ float flxDevSEN54::read_nox_index()
 }
 float flxDevSEN54::read_mass_concentration_1p0()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_massConcentrationPm1p0)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -216,7 +216,7 @@ float flxDevSEN54::read_mass_concentration_1p0()
 }
 float flxDevSEN54::read_mass_concentration_2p5()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_massConcentrationPm2p5)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -235,7 +235,7 @@ float flxDevSEN54::read_mass_concentration_2p5()
 }
 float flxDevSEN54::read_mass_concentration_4p0()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_massConcentrationPm4p0)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -254,7 +254,7 @@ float flxDevSEN54::read_mass_concentration_4p0()
 }
 float flxDevSEN54::read_mass_concentration_10p0()
 {
-    if (_begun)
+    if (isInitialized())
         if (!_massConcentrationPm10p0)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
                                                         _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
@@ -277,7 +277,7 @@ float flxDevSEN54::read_mass_concentration_10p0()
 
 float flxDevSEN54::get_temperature_offset()
 {
-    if (_begun)
+    if (isInitialized())
         SensirionI2CSen5x::getTemperatureOffsetSimple(_theTemperatureOffset);
     return _theTemperatureOffset;
 }
@@ -285,7 +285,7 @@ float flxDevSEN54::get_temperature_offset()
 void flxDevSEN54::set_temperature_offset(float offset)
 {
     _theTemperatureOffset = offset;
-    if (_begun)
+    if (isInitialized())
         SensirionI2CSen5x::setTemperatureOffsetSimple(offset);
 }
 

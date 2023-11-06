@@ -53,8 +53,6 @@ class flxDevMMC5983Base : public flxDevice, public SFE_MMC5983MA
     uint16_t _filter_bandwidth = 100;
     bool _auto_reset = true;
 
-    bool _begun = false;
-
     // Flags to prevent getMeasurementXYZ being called mulitple times
     bool _magX = false;
     bool _magY = false;

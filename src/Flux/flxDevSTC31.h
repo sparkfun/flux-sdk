@@ -76,8 +76,6 @@ private:
     void set_binary_gas(uint8_t gas);
     uint8_t _binaryGas = (uint8_t)STC3X_BINARY_GAS_CO2_AIR_25;
 
-    bool _begun = false;
-
 public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevSTC31, &flxDevSTC31::read_co2> co2;    

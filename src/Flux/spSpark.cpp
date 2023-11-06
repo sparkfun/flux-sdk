@@ -154,6 +154,22 @@ void flxFlux::add(flxDevice *theDevice)
     if (!theDevice->autoload())
         flxDeviceFactory::get().pruneAutoload(theDevice, Devices);
 
+    // Check for any name collisions before we add the device to the list ...
+    for (auto device : Devices)
+    {
+        // if they are the same, let's make a new name - 'NAME [ID]'.
+        //  ID = HEX for I2c device, DEC for SPI
+        if (!strcmp(device->name(), theDevice->name()))
+        {
+            char szBuffer[64];
+            snprintf(szBuffer, sizeof(szBuffer), theDevice->getKind() == flxDeviceKindSPI ? "%s [%d]" : "%s [0x%x]",
+                     theDevice->name(), theDevice->address());
+
+            theDevice->setNameAlloc(szBuffer); // set new name
+            break;
+        }
+    }
+
     Devices.push_back(theDevice);
 }
 

@@ -112,11 +112,11 @@ bool flxDevSTC31::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevSTC31::onInitialize(TwoWire &wirePort)
 {
 
-    _begun = STC3x::begin(address(), wirePort);
-    _begun &= STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);
-    _begun &= STC3x::setRelativeHumidity(50.0);
-    _begun &= STC3x::setPressure(1000);
-    return _begun;
+    bool status = STC3x::begin(address(), wirePort);
+    status &= STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);
+    status &= STC3x::setRelativeHumidity(50.0);
+    status &= STC3x::setPressure(1000);
+    return status;
 }
 
 // GETTER methods for output params
@@ -164,6 +164,6 @@ uint8_t flxDevSTC31::get_binary_gas()
 void flxDevSTC31::set_binary_gas(uint8_t gas)
 {
     _binaryGas = gas;
-    if (_begun)
+    if (isInitialized())
         STC3x::setBinaryGas((STC3X_binary_gas_type_e)_binaryGas);
 }

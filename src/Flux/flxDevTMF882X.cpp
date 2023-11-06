@@ -89,16 +89,14 @@ bool flxDevTMF882X::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevTMF882X::onInitialize(TwoWire &wirePort)
 {
 
-    _begun = SparkFun_TMF882X::begin(wirePort, address());
-    if (!_begun)
-        flxLog_E("TMF882X - begin failed");
-    return _begun;
+    return SparkFun_TMF882X::begin(wirePort, address());
+
 }
 
 //methods for our read-write properties
 uint16_t flxDevTMF882X::get_report_period()
 {
-    if (_begun)
+    if (isInitialized())
     {
         // First set some config parameters to support the calibration
         struct tmf882x_mode_app_config tofConfig;
@@ -114,7 +112,7 @@ uint16_t flxDevTMF882X::get_report_period()
 }
 void flxDevTMF882X::set_report_period(uint16_t period)
 {
-    if (_begun)
+    if (isInitialized())
     {
         // First set some config parameters to support the calibration
         struct tmf882x_mode_app_config tofConfig;
@@ -140,7 +138,7 @@ void flxDevTMF882X::set_report_period(uint16_t period)
 //methods for write properties
 void flxDevTMF882X::factory_calibration()
 {
-    if (_begun)
+    if (isInitialized())
     {
         // First set some config parameters to support the calibration
         struct tmf882x_mode_app_config tofConfig;

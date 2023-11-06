@@ -94,7 +94,6 @@ bool flxDevFS3000::onInitialize(TwoWire &wirePort)
 
     if (result)
     {
-        _begun = true;
         if (_fs3000_1005)
             FS3000::setRange(AIRFLOW_RANGE_7_MPS); // FS3000-1005
         else
@@ -109,7 +108,7 @@ uint8_t flxDevFS3000::get_fs3000_version() { return (uint8_t)_fs3000_1005; }
 void flxDevFS3000::set_fs3000_version(uint8_t is1005)
 {
     _fs3000_1005 = (bool)is1005;
-    if (_begun)
+    if (isInitialized())
     {
         if (_fs3000_1005)
             FS3000::setRange(AIRFLOW_RANGE_7_MPS); // FS3000-1005

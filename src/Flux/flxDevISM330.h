@@ -90,8 +90,6 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
     uint8_t _accel_slope_filter = ISM_LP_ODR_DIV_100;
     uint8_t _gyro_lp1_bandwidth = ISM_MEDIUM;
 
-    bool _begun = false;
-
   public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevISM330Base, &flxDevISM330Base::read_accel_x> accelX;

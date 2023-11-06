@@ -61,8 +61,6 @@ private:
     uint8_t get_fs3000_version();
     void set_fs3000_version(uint8_t);
 
-    bool _begun = false;
-
 public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevFS3000, &flxDevFS3000::read_mps> flow_mps;
