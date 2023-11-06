@@ -85,8 +85,8 @@ bool flxDevVCNL4040::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevVCNL4040::onInitialize(TwoWire &wirePort)
 {
 
-    _begun = VCNL4040::begin(wirePort);
-    if (_begun)
+    bool status = VCNL4040::begin(wirePort);
+    if (status)
     {
         VCNL4040::powerOnAmbient(); //Turn on ambient sensing
         VCNL4040::setLEDCurrent(_ledCurrent);
@@ -95,7 +95,7 @@ bool flxDevVCNL4040::onInitialize(TwoWire &wirePort)
         VCNL4040::setProxResolution(_proxRes);
         VCNL4040::setAmbientIntegrationTime(_ambIntTime);
     }
-    return _begun;
+    return status;
 }
 
 // GETTER methods for output params
@@ -118,7 +118,7 @@ uint8_t flxDevVCNL4040::get_LED_current()
 void flxDevVCNL4040::set_LED_current(uint8_t current)
 {
     _ledCurrent = current;
-    if (_begun)
+    if (isInitialized())
         VCNL4040::setLEDCurrent(current);
 }
 
@@ -130,7 +130,7 @@ uint16_t flxDevVCNL4040::get_IR_duty_cycle()
 void flxDevVCNL4040::set_IR_duty_cycle(uint16_t duty)
 {
     _irDutyCycle = duty;
-    if (_begun)
+    if (isInitialized())
         VCNL4040::setIRDutyCycle(duty);
 }
 
@@ -142,7 +142,7 @@ uint8_t flxDevVCNL4040::get_proximity_integration_time()
 void flxDevVCNL4040::set_proximity_integration_time(uint8_t intTime)
 {
     _proxIntTime = intTime;
-    if (_begun)
+    if (isInitialized())
         VCNL4040::setProxIntegrationTime(intTime);
 }
 
@@ -154,7 +154,7 @@ uint8_t flxDevVCNL4040::get_proximity_resolution()
 void flxDevVCNL4040::set_proximity_resolution(uint8_t res)
 {
     _proxRes = res;
-    if (_begun)
+    if (isInitialized())
         VCNL4040::setProxResolution(res);
 }
 
@@ -166,7 +166,7 @@ uint16_t flxDevVCNL4040::get_ambient_integration_time()
 void flxDevVCNL4040::set_ambient_integration_time(uint16_t intTime)
 {
     _ambIntTime = intTime;
-    if (_begun)
+    if (isInitialized())
         VCNL4040::setAmbientIntegrationTime(intTime);
 }
 

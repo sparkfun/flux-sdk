@@ -43,7 +43,7 @@ flxRegisterDevice(flxDevMMC5983);
 // Object constructor. Performs initialization of device values, including device identifiers (name, I2C address),
 // and managed properties.
 
-flxDevMMC5983Base::flxDevMMC5983Base() : _begun{false}
+flxDevMMC5983Base::flxDevMMC5983Base() 
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -75,8 +75,6 @@ bool flxDevMMC5983Base::onInitialize(void)
         result &= SFE_MMC5983MA::enableAutomaticSetReset();
     else
         result &= SFE_MMC5983MA::disableAutomaticSetReset();
-
-    _begun = result;
 
     return result;
 }
@@ -122,7 +120,7 @@ int flxDevMMC5983Base::read_temperature()
 
 uint16_t flxDevMMC5983Base::get_filter_bandwidth()
 {
-    if (_begun)
+    if (isInitialized())
         return SFE_MMC5983MA::getFilterBandwith();
     else
         return _filter_bandwidth;
@@ -130,12 +128,12 @@ uint16_t flxDevMMC5983Base::get_filter_bandwidth()
 void flxDevMMC5983Base::set_filter_bandwidth(uint16_t bw)
 {
     _filter_bandwidth = bw;
-    if (_begun)
+    if (isInitialized())
         SFE_MMC5983MA::setFilterBandwidth(bw);
 }
 uint8_t flxDevMMC5983Base::get_auto_reset()
 {
-    if (_begun)
+    if (isInitialized())
         return (SFE_MMC5983MA::isAutomaticSetResetEnabled() ? 1 : 0);
     else
         return (uint8_t)_auto_reset;
@@ -143,7 +141,7 @@ uint8_t flxDevMMC5983Base::get_auto_reset()
 void flxDevMMC5983Base::set_auto_reset(uint8_t enable)
 {
     _auto_reset = (bool)enable;
-    if (_begun)
+    if (isInitialized())
     {
         if (enable)
             SFE_MMC5983MA::enableAutomaticSetReset();

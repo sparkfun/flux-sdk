@@ -84,8 +84,8 @@ bool flxDevVEML6075::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevVEML6075::onInitialize(TwoWire &wirePort)
 {
 
-    _begun =  VEML6075::begin(wirePort);
-    return _begun;
+    return VEML6075::begin(wirePort);
+
 }
 
 // GETTER methods for output params
@@ -107,7 +107,7 @@ float flxDevVEML6075::read_uv_index()
 // methods for read-write properties
 uint8_t flxDevVEML6075::get_integration_time()
 {
-    if (_begun)
+    if (isInitialized())
         _integrationTime = VEML6075::getIntegrationTime();
     return _integrationTime;
 }
@@ -115,13 +115,13 @@ uint8_t flxDevVEML6075::get_integration_time()
 void flxDevVEML6075::set_integration_time(uint8_t intTime)
 {
     _integrationTime = intTime;
-    if (_begun)
+    if (isInitialized())
         VEML6075::setIntegrationTime((VEML6075::veml6075_uv_it_t)intTime);
 }
 
 uint8_t flxDevVEML6075::get_high_dynamic()
 {
-    if (_begun)
+    if (isInitialized())
         _highDynamic = VEML6075::getHighDynamic();
     return _highDynamic;
 }
@@ -129,6 +129,6 @@ uint8_t flxDevVEML6075::get_high_dynamic()
 void flxDevVEML6075::set_high_dynamic(uint8_t high)
 {
     _highDynamic = high;
-    if (_begun)
+    if (isInitialized())
         VEML6075::setHighDynamic((VEML6075::veml6075_hd_t)high);
 }

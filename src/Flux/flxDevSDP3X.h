@@ -73,8 +73,6 @@ private:
     uint8_t _tempComp = 1; // Default to mass flow temperature compensation with no averaging
     bool _measAvg = false;
 
-    bool _begun = false;
-
 public:
     flxPropertyRWUint8<flxDevSDP3X, &flxDevSDP3X::get_temperature_compensation, &flxDevSDP3X::set_temperature_compensation> temperatureCompensation
         = { 1, { { "Differential Pressure", 0 }, { "Mass Flow", 1 } } };

@@ -74,7 +74,7 @@ class flxDevice : public flxOperation
 {
 
   public:
-    flxDevice() : _autoload{false}, _address{kSparkDeviceAddressNull} {};
+    flxDevice() : _autoload{false}, _address{kSparkDeviceAddressNull}, _isInitalized{false} {};
 
     virtual ~flxDevice()
     {
@@ -91,6 +91,7 @@ class flxDevice : public flxOperation
         return initialize();
     };
 
+    // autoload property
     bool autoload(void)
     {
         return false;
@@ -99,6 +100,8 @@ class flxDevice : public flxOperation
     {
         _autoload = true;
     }
+
+    // Device address property
     void setAddress(uint8_t address)
     {
         _address = address;
@@ -109,6 +112,17 @@ class flxDevice : public flxOperation
         return _address;
     }
 
+    // device is initialized property
+    void setIsInitialized(bool isInit)
+    {
+        _isInitalized = isInit;
+    }
+
+    bool isInitialized(void)
+    {
+        return _isInitalized;
+    }
+
     virtual flxDeviceKind_t getKind(void)
     {
         return flxDeviceKindNone;
@@ -117,6 +131,7 @@ class flxDevice : public flxOperation
   private:
     bool _autoload;
     uint8_t _address;
+    bool _isInitalized;
 };
 
 using flxDeviceContainer = flxContainer<flxDevice *>;
@@ -212,6 +227,12 @@ class flxDeviceBuilderI2C
 {
   public:
     virtual flxDevice *create(void) = 0;                                 // create the underlying device obj.
+    // Destroy a device - common method
+    void destroy(flxDevice *oldDev)
+    {
+        if (oldDev)
+            delete oldDev;
+    }                     
     virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual const char *getDeviceName(void);                            // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;

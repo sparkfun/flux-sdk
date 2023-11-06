@@ -120,16 +120,16 @@ bool flxDevBioHub::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevBioHub::onInitialize(TwoWire &wirePort)
 {
     // On success, begin will return 0x00. It will return 0xFF if the pins have not been defined
-    _begun = SparkFun_Bio_Sensor_Hub::begin(wirePort, _resetPin, _mfioPin) == 0x00;
-    if (_begun)
+    bool status = SparkFun_Bio_Sensor_Hub::begin(wirePort, _resetPin, _mfioPin) == 0x00;
+    if (status)
         SparkFun_Bio_Sensor_Hub::configBpm(MODE_TWO); // MODE_TWO provides the oxygen R value
-    return _begun;
+    return status;
 }
 
 // GETTER methods for output params
 uint16_t flxDevBioHub::read_heart_rate()
 {
-    if (!_begun) // Only call readBpm if the device has been begun sucessfully
+    if (!isInitialized()) // Only call readBpm if the device has been begun sucessfully
         return 0;
 
     if (!_heartRate)
@@ -146,7 +146,7 @@ uint16_t flxDevBioHub::read_heart_rate()
 }
 uint8_t flxDevBioHub::read_confidence()
 {
-    if (!_begun) // Only call readBpm if the device has been begun sucessfully
+    if (!isInitialized()) // Only call readBpm if the device has been begun sucessfully
         return 0;
 
     if (!_confidence)
@@ -163,7 +163,7 @@ uint8_t flxDevBioHub::read_confidence()
 }
 uint16_t flxDevBioHub::read_oxygen()
 {
-    if (!_begun) // Only call readBpm if the device has been begun sucessfully
+    if (!isInitialized()) // Only call readBpm if the device has been begun sucessfully
         return 0;
 
     if (!_o2)
@@ -180,7 +180,7 @@ uint16_t flxDevBioHub::read_oxygen()
 }
 uint8_t flxDevBioHub::read_status()
 {
-    if (!_begun) // Only call readBpm if the device has been begun sucessfully
+    if (!isInitialized()) // Only call readBpm if the device has been begun sucessfully
         return 0;
 
     if (!_status)
@@ -197,7 +197,7 @@ uint8_t flxDevBioHub::read_status()
 }
 int8_t flxDevBioHub::read_extended_status()
 {
-    if (!_begun) // Only call readBpm if the device has been begun sucessfully
+    if (!isInitialized()) // Only call readBpm if the device has been begun sucessfully
         return 0;
 
     if (!_eStatus)
@@ -214,7 +214,7 @@ int8_t flxDevBioHub::read_extended_status()
 }
 float flxDevBioHub::read_r_value()
 {
-    if (!_begun) // Only call readBpm if the device has been begun sucessfully
+    if (!isInitialized()) // Only call readBpm if the device has been begun sucessfully
         return 0.0;
 
     if (!_o2r)

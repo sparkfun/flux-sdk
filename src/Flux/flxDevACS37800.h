@@ -121,8 +121,6 @@ private:
     float _dividerResistance = ACS37800_DEFAULT_DIVIDER_RES;
     float _currentRange = ACS37800_DEFAULT_CURRENT_RANGE;
 
-    bool _begun = false;
-
 public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevACS37800, &flxDevACS37800::read_volts> volts;

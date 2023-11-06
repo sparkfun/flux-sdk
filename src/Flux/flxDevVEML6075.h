@@ -71,8 +71,6 @@ private:
     uint8_t _integrationTime = VEML6075::IT_100MS;
     uint8_t _highDynamic = VEML6075::DYNAMIC_NORMAL;
 
-    bool _begun = false;
-
 public:
     // Define our read-write properties
     flxPropertyRWUint8<flxDevVEML6075, &flxDevVEML6075::get_integration_time, &flxDevVEML6075::set_integration_time> integrationTime

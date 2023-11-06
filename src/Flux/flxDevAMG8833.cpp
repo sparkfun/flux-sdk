@@ -138,9 +138,7 @@ bool flxDevAMG8833::onInitialize(TwoWire &wirePort)
     bool result = GridEYE::getFramerate(&is10FPS); // Checks I2C is working
     result &= is10FPS == _frameRate10FPS; // Not a great test, but something...
     
-    if (result)
-        _begun = true;
-    else
+    if (!result)
         flxLog_E("AMG8833 - begin failed");
 
     return result;
@@ -151,7 +149,7 @@ uint8_t flxDevAMG8833::get_frame_rate() { return (uint8_t)_frameRate10FPS; }
 void flxDevAMG8833::set_frame_rate(uint8_t is10FPS)
 {
     _frameRate10FPS = (bool)is10FPS;
-    if (_begun)
+    if (isInitialized())
     {
         if (_frameRate10FPS)
             GridEYE::setFramerate10FPS();

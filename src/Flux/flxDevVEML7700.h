@@ -74,8 +74,6 @@ private:
     uint8_t _sensitivity = VEML7700_SENSITIVITY_x1;
     uint8_t _persistence = VEML7700_PERSISTENCE_1;
 
-    bool _begun = false;
-
 public:
     // Define our read-write properties
     flxPropertyRWUint8<flxDevVEML7700, &flxDevVEML7700::get_integration_time, &flxDevVEML7700::set_integration_time> integrationTime

@@ -96,8 +96,6 @@ private:
 
     float _theTemperatureOffset = 0.0;
 
-    bool _begun = false;
-
 public:
     flxPropertyRWFloat<flxDevSEN54, &flxDevSEN54::get_temperature_offset, &flxDevSEN54::set_temperature_offset> temperatureOffset;
 

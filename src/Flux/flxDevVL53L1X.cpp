@@ -88,8 +88,8 @@ bool flxDevVL53L1X::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevVL53L1X::onInitialize(TwoWire &wirePort)
 {
 
-    _begun = (SFEVL53L1X::begin(wirePort) == 0);
-    if (_begun)
+    bool status = (SFEVL53L1X::begin(wirePort) == 0);
+    if (status)
     {
         (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
         // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
@@ -100,7 +100,7 @@ bool flxDevVL53L1X::onInitialize(TwoWire &wirePort)
                 SFEVL53L1X::setIntermeasurementPeriod(140);
         SFEVL53L1X::startRanging();
     }
-    return _begun;
+    return status;
 }
 
 // GETTER methods for output params
@@ -130,7 +130,7 @@ uint8_t flxDevVL53L1X::get_distance_mode()
 void flxDevVL53L1X::set_distance_mode(uint8_t mode)
 {
     _shortDistanceMode = (mode == DISTANCE_SHORT);
-    if (_begun)
+    if (isInitialized())
     {
         SFEVL53L1X::stopRanging();
         (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
@@ -146,7 +146,7 @@ void flxDevVL53L1X::set_distance_mode(uint8_t mode)
 
 uint16_t flxDevVL53L1X::get_intermeasurment_period()
 {
-    if (_begun)
+    if (isInitialized())
         _intermeasurementPeriod = SFEVL53L1X::getIntermeasurementPeriod();
     return _intermeasurementPeriod;
 }
@@ -163,7 +163,7 @@ void flxDevVL53L1X::set_intermeasurment_period(uint16_t period)
         period = 1000;
     _intermeasurementPeriod = period;
 
-    if (_begun)
+    if (isInitialized())
     {
         SFEVL53L1X::stopRanging();
         SFEVL53L1X::setIntermeasurementPeriod(period);
@@ -173,7 +173,7 @@ void flxDevVL53L1X::set_intermeasurment_period(uint16_t period)
 
 uint16_t flxDevVL53L1X::get_crosstalk()
 {
-    if (_begun)
+    if (isInitialized())
         _crosstalk = SFEVL53L1X::getXTalk();
     return _crosstalk;
 }
@@ -181,7 +181,7 @@ uint16_t flxDevVL53L1X::get_crosstalk()
 void flxDevVL53L1X::set_crosstalk(uint16_t level)
 {
     _crosstalk = level;
-    if (_begun)
+    if (isInitialized())
     {
         SFEVL53L1X::stopRanging();
         SFEVL53L1X::setXTalk(level);
@@ -191,7 +191,7 @@ void flxDevVL53L1X::set_crosstalk(uint16_t level)
 
 uint16_t flxDevVL53L1X::get_offset()
 {
-    if (_begun)
+    if (isInitialized())
         _offset = SFEVL53L1X::getOffset();
     return _offset;
 }
@@ -199,7 +199,7 @@ uint16_t flxDevVL53L1X::get_offset()
 void flxDevVL53L1X::set_offset(uint16_t offset)
 {
     _offset = offset;
-    if (_begun)
+    if (isInitialized())
     {
         SFEVL53L1X::stopRanging();
         SFEVL53L1X::setOffset(offset);
