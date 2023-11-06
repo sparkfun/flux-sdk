@@ -14,23 +14,29 @@
  *
  *  flxDevENS160.cpp
  *
- *  Spark Device object for the CCS811 Qwiic device.
+ *  Spark Device object for the ENS160  Qwiic device.
  */
 
 #include "Arduino.h"
 
 #include "flxDevENS160.h"
 
+// device addresses for our device interface -- using macros from qwiic/arduino library
 uint8_t flxDevENS160::defaultDeviceAddress[] = {ENS160_ADDRESS_HIGH, ENS160_ADDRESS_LOW, kSparkDeviceAddressNull};
 
-// Register this class with the system - this enables the *auto load* of this device
+///
+/// @brief Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevENS160);
 
+//----------------------------------------------------------------------------------------------------------
+/// @brief Constructor
+///
 flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}, _rhComp{nullptr}, _lastCompCheck{0}
 {
 
     setName(getDeviceName(), "ScioSense ENS160 Indoor Air Quality Sensor");
 
+    // Register properties
     flxRegister(operatingMode, "Operating Mode", "The Sensor Operating Mode");
     flxRegister(enableCompensation, "Enable Compensation", "Compensation from external device if connected");
     flxRegister(tempComp, "Temperature Compensation", "Manually set the compensation value");
@@ -47,8 +53,14 @@ flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}
     ;
 }
 
-// Static method used to determine if this device is connected
-
+//----------------------------------------------------------------------------------------------------------
+/// @brief  Static method called to determine if device is connected
+///
+/// @param  i2cDriver - Framework i2c bus driver
+/// @param  address - The address to check
+///
+/// @return true if the device is connected
+///
 bool flxDevENS160::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // For speed, ping the device address first
@@ -68,12 +80,13 @@ bool flxDevENS160::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 }
 
 //----------------------------------------------------------------------------------------------------------
-// onInitialize()
-//
-// Called during the startup/initialization of the driver (after the constructor is called).
-//
-// Place to initialized the underlying device library/driver
-//
+///
+/// @brief Called during the startup/initialization of the driver (after the constructor is called).
+///
+/// @param wirePort - The Arduino wire port for the I2C bus
+///
+/// @return true on success
+///
 bool flxDevENS160::onInitialize(TwoWire &wirePort)
 {
 
@@ -92,18 +105,29 @@ bool flxDevENS160::onInitialize(TwoWire &wirePort)
 //---------------------------------------------------------------------------
 // props
 //---------------------------------------------------------------------------
-// Operating mode
+
+///
+/// @brief Operating mode property getter
+///
+/// @return - The value of the operating mode of the device.
 uint8_t flxDevENS160::get_operating_mode(void)
 {
+    // is the up? If not, send our cached value
     if (!isInitialized())
         return _opMode;
 
     int8_t mode = SparkFun_ENS160::getOperatingMode();
 
-    return ( mode > 0 ? mode : SFE_ENS160_STANDARD);
+    // if in error - the value is negative -- if this is the case, send standard
+    return (mode > 0 ? mode : SFE_ENS160_STANDARD);
 }
 
 //---------------------------------------------------------------------------
+///
+/// @brief Operating Mode setter
+///
+/// @param newMode - the new mode to set the device to
+///
 void flxDevENS160::set_operating_mode(uint8_t newMode)
 {
     if (isInitialized())
@@ -112,106 +136,153 @@ void flxDevENS160::set_operating_mode(uint8_t newMode)
         _opMode = newMode;
 }
 
-// methodd to set a parameter to use for temp compensation
-void flxDevENS160::setTemperatureCompParameter(flxParameterOutScalar& compParam)
+//---------------------------------------------------------------------------
+///
+/// @brief method to set a parameter to use for temp compensation
+///
+/// @param compParam - the input parameter to pull Temp compensation values from
+///
+void flxDevENS160::setTemperatureCompParameter(flxParameterOutScalar &compParam)
 {
+    // Get the actual input scalar parameter that we can call directly.
     _tempCComp = compParam.accessor();
 }
 
-// Relitive humidity comp
-void flxDevENS160::setHumidityCompParameter(flxParameterOutScalar& compParam)
+//---------------------------------------------------------------------------
+///
+/// @brief method to set a parameter to use for relative humidity compensation
+///
+/// @param compParam - the input parameter to pull humidity compensation values from
+///
+void flxDevENS160::setHumidityCompParameter(flxParameterOutScalar &compParam)
 {
+    // Get the actual input scalar parameter that we can call directly.
     _rhComp = compParam.accessor();
 }
 
-
+//---------------------------------------------------------------------------
+///
+/// @brief loop method - system interface for the device object - called every loop iteration
+/// @note  If the ENS160 has an input device set for temp and humidity compensation, the loop
+///        method will pull in new values every N seconds and set these values in the sensor
+///
+/// @return - always false -- a true value cases the system to update UX/LED
+///
 bool flxDevENS160::loop(void)
 {
-    // Time to update our comp values?
+    // Time to update our comp values? - initialized? enabled? have input params?
 
     if (!isInitialized() || !enableCompensation() || (_rhComp == nullptr && _tempCComp == nullptr))
         return false;
 
-    // we need a time element here ..
-
-    if (millis() - _lastCompCheck > updatePeriodSecs() * 1000 )
+    // Has enough time pasted since our last check?
+    if (millis() - _lastCompCheck > updatePeriodSecs() * 1000)
     {
         float value;
         if (_rhComp != nullptr)
         {
+            // get the Humidity value from the input device and set in our device
             value = _rhComp->getFloat();
             SparkFun_ENS160::setRHCompensationFloat(value);
         }
 
         if (_tempCComp != nullptr)
         {
+            // get the Temperature value from the input device and set in our device
             value = _tempCComp->getFloat();
             SparkFun_ENS160::setTempCompensationCelsius(value);
         }
-
+        // update our time since last check
         _lastCompCheck = millis();
     }
 
     return false;
 }
 
-
+//---------------------------------------------------------------------------
+///
+/// @brief - setter for temp compensation property. Helpful if not input device set
+///
+/// @param value - new value to set
+///
 void flxDevENS160::set_temp_comp(float value)
 {
+    // only set if the device is up and running
     if (isInitialized())
         SparkFun_ENS160::setTempCompensationCelsius(value);
 }
 
+//---------------------------------------------------------------------------
+///
+/// @brief - setter for humidity compensation property. Helpful if not input device set
+///
+/// @param value - new value to set
+///
 void flxDevENS160::set_humid_comp(float value)
 {
-    if (isInitialized() )
+    // only set if the device is up and running
+    if (isInitialized())
         SparkFun_ENS160::setRHCompensationFloat(value);
 }
 //---------------------------------------------------------------------------
 // Outputs
 //---------------------------------------------------------------------------
-// read_AQI()
 
+//---------------------------------------------------------------------------
+/// @brief Parameter read method  - AQI
+/// @param  none
+/// @return the current AQI value
+///
 uint8_t flxDevENS160::read_AQI(void)
 {
     return SparkFun_ENS160::getAQI();
 }
 
 //---------------------------------------------------------------------------
-// read_TVOC()
-
+/// @brief Parameter read method  - TVOC
+/// @param  none
+/// @return the current TVOC value
+///
 uint16_t flxDevENS160::read_TVOC(void)
 {
     return SparkFun_ENS160::getTVOC();
 }
 
 //---------------------------------------------------------------------------
-// read_ETOH()
-
+/// @brief Parameter read method  - Ethanol
+/// @param  none
+/// @return the current ETHO value
+///
 uint16_t flxDevENS160::read_ETOH(void)
 {
     return SparkFun_ENS160::getETOH();
 }
 
 //---------------------------------------------------------------------------
-// read_ECO2()
-
+/// @brief Parameter read method  - CO2
+/// @param  none
+/// @return the current CO2 value
+///
 uint16_t flxDevENS160::read_ECO2(void)
 {
     return SparkFun_ENS160::getECO2();
 }
 
 //---------------------------------------------------------------------------
-// read_TempC()
-
+/// @brief Parameter read method  - Compensation Temperature (C)
+/// @param  none
+/// @return the current Temperature value
+///
 float flxDevENS160::read_TempC(void)
 {
     return SparkFun_ENS160::getTempCelsius();
 }
 
 //---------------------------------------------------------------------------
-// read_RH()
-
+/// @brief Parameter read method  - Compensation Humidity
+/// @param  none
+/// @return the current Humidity value
+///
 float flxDevENS160::read_RH(void)
 {
     return SparkFun_ENS160::getRH();
