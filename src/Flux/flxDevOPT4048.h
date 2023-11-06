@@ -74,9 +74,37 @@ class flxDevOPT4048 : public flxDeviceI2CType<flxDevOPT4048>, public QwOpt4048
 
   public:
     // Define our output parameters - specify the get functions to call.
-    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_range, &flxDevOPT4048::set_range> range;
-    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_conversion_time, &flxDevOPT4048::set_conversion_time> time;
-    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_operation_mode, &flxDevOPT4048::set_operation_mode> mode;
+    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_range, &flxDevOPT4048::set_range> range
+        = { RANGE_2KLUX2 ,{ { "2254 Lux", RANGE_2KLUX2}
+                          { "4509 Lux", RANGE_4KLUX5 } 
+                          { "9018 Lux", RANGE_9LUX } 
+                          { "18036 Lux", RANGE_18LUX } 
+                          { "36071 Lux", RANGE_36LUX } 
+                          { "72142 Lux", RANGE_72LUX } 
+                          { "144284 Lux", RANGE_144LUX } 
+                          {"Auto Range", RANGE_AUTO } }};
+
+
+    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_conversion_time, &flxDevOPT4048::set_conversion_time> time
+        = { CONVERSION_TIME_1MS,{ { "600us", CONVERSION_TIME_600US}
+                                  { "1ms", CONVERSION_TIME_1MS } 
+                                  { "1.8ms", CONVERSION_TIME_1MS8 } 
+                                  { "3.4ms", CONVERSION_TIME_M3S4 } 
+                                  { "6.5ms", CONVERSION_TIME_6MS5 } 
+                                  { "12.7ms", CONVERSION_TIME_12MS7 } 
+                                  { "25ms", CONVERSION_TIME_25MS } 
+                                  { "50ms", CONVERSION_TIME_50MS } 
+                                  { "100ms", CONVERSION_TIME_100MS } 
+                                  { "200ms", CONVERSION_TIME_200MS } 
+                                  { "400ms", CONVERSION_TIME_400MS } 
+                                  { "800ms", CONVERSION_TIME_800MS } }};
+
+    flxPropertyRWUint<flxDevOPT4048,  &flxDevOPT4048::get_operation_mode, &flxDevOPT4048::set_operation_mode> mode
+        = { OPERATION_MODE_POWER_DOWN,{ { "Power Down" , OPERATION_MODE_POWER_DOWN }
+                                      { "Auto One Shot", OPERATION_MODE_AUTO_ONE_SHOT }
+                                      { "One Shot", OPERATION_MODE_ONE_SHOT } 
+                                      { "Continuous", OPERATION_MODE_CONTINUOUS } }};
+
     flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CIEx> CIEx;
     flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CIEy> CIEy;
     flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CCT> CCT;
