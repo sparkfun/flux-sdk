@@ -42,6 +42,9 @@ flxDevADS1015::flxDevADS1015()
     flxRegister(sampleRate, "Sample Rate", "The sample rate in Hz");
     flxRegister(gain, "Gain", "Programmable gain setting");
 
+    flxRegister(singleEndedType, "Singled-Ended Type", "The output type for Single-Ended values");
+    flxRegister(differentialType, "Differential Type", "The output type for Differential values");
+
     // Register output params
     flxRegister(channel0_f, "Channel 0 Single-Ended (mV)", "Channel 0 Single-Ended (millivolts)");
     flxRegister(channel1_f, "Channel 1 Single-Ended (mV)", "Channel 1 Single-Ended (millivolts)");
@@ -217,6 +220,10 @@ bool flxDevADS1015::onInitialize(TwoWire &wirePort)
 
     if (result)
         ADS1015::useConversionReady(true);
+
+    // set up our types
+    set_se_type(_seType);
+    set_diff_type(_diffType);
 
     return result;
 }
