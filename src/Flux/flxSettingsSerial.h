@@ -6,16 +6,15 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
-#include "flxFlux.h"
 #include "flxCore.h"
 #include "flxDevice.h"
+#include "flxFlux.h"
 
 #define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
@@ -23,7 +22,7 @@
 #define kReadBufferReturn 252
 #define kReadBufferNoMatch 251
 
-#define kPromptTimeoutValueSec  60
+#define kPromptTimeoutValueSec 60
 
 class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
@@ -42,7 +41,6 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
         // Our menu timeout value
 
         flxRegister(menuTimeout, "Menu Timeout", "Inactivity timeout period for the menu system");
-        
     }
 
     void setSystemRoot(flxObjectContainer *theRoot)
@@ -56,20 +54,20 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     bool drawPage(flxOperation *);
     bool drawPage(flxOperation *, flxParameter *);
     bool drawPage(flxOperation *, flxParameterIn *);
-    bool drawPage(flxObject *, flxParameterIn *, flxDataLimit * );
-    bool drawPage(flxObject *, flxProperty *, flxDataLimit * );
+    bool drawPage(flxObject *, flxParameterIn *, flxDataLimit *);
+    bool drawPage(flxObject *, flxProperty *, flxDataLimit *);
     bool drawPage(flxObjectContainer *);
     bool drawPage(flxOperationContainer *);
     bool drawPage(flxActionContainer *);
     bool drawPage(flxDeviceContainer *);
 
-
     uint8_t getMenuSelectionYN(uint timeout = kPromptTimeoutValueSec);
 
     // Property for the timeout value in the menu system.
 
-    flxPropertyUint<flxSettingsSerial> menuTimeout = { kPromptTimeoutValueSec,
-        {{"30 Seconds", 30}, {"60 Seconds", 60}, {"2 Minutes", 120}, {"5 Minutes", 300}, {"10 Minutes", 600} } };
+    flxPropertyUint<flxSettingsSerial> menuTimeout = {
+        kPromptTimeoutValueSec,
+        {{"30 Seconds", 30}, {"60 Seconds", 60}, {"2 Minutes", 120}, {"5 Minutes", 300}, {"10 Minutes", 600}}};
 
     // Our output event
     flxSignalVoid on_finished;
@@ -87,8 +85,8 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     int drawMenu(flxOperationContainer *, uint);
     int drawMenu(flxActionContainer *, uint);
     int drawMenu(flxDeviceContainer *, uint);
-    int drawMenu(std::vector<std::string> &, uint );
-    
+    int drawMenu(std::vector<std::string> &, uint);
+
     // Select menu entries
     int selectMenu(flxObject *, uint);
     int selectMenu(flxOperation *, uint);
@@ -100,16 +98,14 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     // get the selected menu item
     uint8_t getMenuSelection(uint max, uint timeout = kPromptTimeoutValueSec);
 
-
   private:
-
     // after set message timeout in ms
-    static constexpr uint16_t  kMessageDelayTimeout = 700;
+    static constexpr uint16_t kMessageDelayTimeout = 700;
 
     uint8_t getMenuSelectionFunc(uint max, bool isYN, uint timeout = kPromptTimeoutValueSec);
 
     void drawEntryBanner(void);
-    
+
     //-----------------------------------------------------------------------------
     // drawPage()  - flxContainer version
     //
@@ -238,7 +234,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             return returnLevel + pCurrent->size();
         }
 
-        while ( item < pCurrent->size())
+        while (item < pCurrent->size())
         {
             auto pNext = pCurrent->at(item);
             if (!pNext->hidden())
@@ -280,8 +276,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     //-----------------------------------------------------------------------------
     // drawPage()  - property with a limit edition
 
-    template <class T>
-    bool drawPage(flxObject *pCurrent, T *pEntity, flxDataLimit *propLimit, bool showValue = false)
+    template <class T> bool drawPage(flxObject *pCurrent, T *pEntity, flxDataLimit *propLimit, bool showValue = false)
     {
         if (!pCurrent || !pEntity || !propLimit)
             return false;
@@ -336,8 +331,9 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
                 Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
                 returnValue = true;
                 break;
-            }else
-                returnValue = true;  // a number was selected. 
+            }
+            else
+                returnValue = true; // a number was selected.
 
             Serial.println(selected);
 
@@ -345,7 +341,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
             if (result)
             {
-                _bIsDirty=true;
+                _bIsDirty = true;
                 Serial.printf("\t[The value of %s was updated to %s = %s ]\n\r", pEntity->name(),
                               limitTags.at(selected - 1).name.c_str(),
                               limitTags.at(selected - 1).data.to_string().c_str());
@@ -361,6 +357,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
         return returnValue;
     };
     void drawMenuEntry(uint item, flxDescriptor *pDesc);
+    void drawMenuEntry(uint item, flxParameter *pParam);
     void drawMenuEntry(uint item, const char *);
     void drawPageHeader(flxObject *, const char *szItem = nullptr);
     void drawPageFooter(flxObject *);
