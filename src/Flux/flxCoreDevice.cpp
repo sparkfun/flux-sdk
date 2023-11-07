@@ -6,7 +6,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 /*
@@ -18,7 +18,6 @@
 #include "flxCoreDevice.h"
 #include "flxFlux.h"
 
-
 bool flxDevice::initialize()
 {
     flux.add(this);
@@ -26,7 +25,18 @@ bool flxDevice::initialize()
     return true;
 }
 
+// Input param/function methods to enable/disable all parameters
+void flxDevice::disable_all_parameters(void)
+{
+    for (auto param : getOutputParameters())
+        param->setEnabled(false);
+}
 
+void flxDevice::enable_all_parameters(void)
+{
+    for (auto param : getOutputParameters())
+        param->setEnabled(true);
+}
 //----------------------------------------------------------------
 // Device Factory
 //----------------------------------------------------------------
@@ -68,7 +78,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
     {
 
         // Only autoload i2c devices
-        if ( deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
+        if (deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
             continue;
 
         deviceAddresses = deviceBuilder->getDefaultAddresses();
@@ -84,7 +94,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
             // See if the device is connected
             if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
             {
-                flxDevice *pDevice = deviceBuilder->create();                
+                flxDevice *pDevice = deviceBuilder->create();
                 if (!pDevice)
                 {
                     flxLog_E("Device create failed - %s", deviceBuilder->getDeviceName());
@@ -101,7 +111,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
                         deviceBuilder->destroy(pDevice);
                         continue;
                     }
-                    nDevs++;                    
+                    nDevs++;
                 }
             }
         }

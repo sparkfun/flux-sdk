@@ -6,7 +6,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 /*
@@ -73,8 +73,16 @@ class flxDeviceFactory_;
 class flxDevice : public flxOperation
 {
 
+  private:
+    void disable_all_parameters(void);
+    void enable_all_parameters(void);
+
   public:
-    flxDevice() : _autoload{false}, _address{kSparkDeviceAddressNull}, _isInitalized{false} {};
+    flxDevice() : _autoload{false}, _address{kSparkDeviceAddressNull}, _isInitalized{false}
+    {
+        flxRegister(disableAllParameters, "Disable All Parameters", "Disables all output parameters");
+        flxRegister(enableAllParameters, "Enable All Parameters", "Enable all output parameters");
+    };
 
     virtual ~flxDevice()
     {
@@ -127,7 +135,10 @@ class flxDevice : public flxOperation
     {
         return flxDeviceKindNone;
     }
-    
+
+    flxParameterInVoid<flxDevice, &flxDevice::disable_all_parameters> disableAllParameters;
+    flxParameterInVoid<flxDevice, &flxDevice::enable_all_parameters> enableAllParameters;
+
   private:
     bool _autoload;
     uint8_t _address;
@@ -138,7 +149,6 @@ using flxDeviceContainer = flxContainer<flxDevice *>;
 
 // Macro used to simplify device setup
 #define spSetupDeviceIdent(_name_) this->setName(_name_);
-
 
 //----------------------------------------------------------------------------------
 // Factory/Builder pattern to dynamically register devices at runtime.
@@ -226,15 +236,15 @@ class flxDeviceFactory
 class flxDeviceBuilderI2C
 {
   public:
-    virtual flxDevice *create(void) = 0;                                 // create the underlying device obj.
+    virtual flxDevice *create(void) = 0; // create the underlying device obj.
     // Destroy a device - common method
     void destroy(flxDevice *oldDev)
     {
         if (oldDev)
             delete oldDev;
-    }                     
+    }
     virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
-    virtual const char *getDeviceName(void);                            // To report connected devices.
+    virtual const char *getDeviceName(void);                             // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
     virtual flxDeviceKind_t getDeviceKind(void) = 0;
 };
