@@ -56,3 +56,4 @@ SdFat
 "ArduinoIoTCloud"
 "SparkFun STHS34PF80 Arduino Library"
 "SparkFun Indoor Air Quality Sensor - ENS160"
+"SparkFun Color Sensor OPT4048"
