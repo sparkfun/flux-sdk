@@ -97,12 +97,13 @@ std::string _flxClock::get_ref_clock(void)
 //----------------------------------------------------------------
 void _flxClock::set_timezone(std::string tz)
 {
-    if (!tz.empty())
-    {
-        _tzStorage = tz; // we need to save this
-        if (_systemClock)
-            _systemClock->set_timezone(tz.c_str());
-    }
+    if (tz.empty())
+        return;
+
+    _tzStorage = tz;
+    if (_bInitialized && _systemClock)
+        _systemClock->set_timezone(tz.c_str());
+    
 }
 //----------------------------------------------------------------
 std::string _flxClock::get_timezone(void)
@@ -245,8 +246,7 @@ void _flxClock::updateClock()
 //----------------------------------------------------------------
 bool _flxClock::initialize(void)
 {
-    // Any restore value could of been
-    // do we have a timezone and a system clock?
+    // setup time zone for the system....
     if (!_tzStorage.empty() && _systemClock)
         _systemClock->set_timezone(_tzStorage.c_str());
 

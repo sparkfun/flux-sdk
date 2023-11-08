@@ -91,9 +91,7 @@ bool flxDevVEML7700::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevVEML7700::onInitialize(TwoWire &wirePort)
 {
-
-    _begun = VEML7700::begin(wirePort);
-    return _begun;
+    return VEML7700::begin(wirePort);
 }
 
 // GETTER methods for output params
@@ -115,7 +113,7 @@ float flxDevVEML7700::read_lux()
 // methods for read-write properties
 uint8_t flxDevVEML7700::get_integration_time()
 {
-    if (_begun)
+    if (isInitialized())
         _integrationTime = VEML7700::getIntegrationTime();
     return _integrationTime;
 }
@@ -123,13 +121,13 @@ uint8_t flxDevVEML7700::get_integration_time()
 void flxDevVEML7700::set_integration_time(uint8_t intTime)
 {
     _integrationTime = intTime;
-    if (_begun)
+    if (isInitialized())
         VEML7700::setIntegrationTime((VEML7700_integration_time_t)intTime);
 }
 
 uint8_t flxDevVEML7700::get_sensitivity()
 {
-    if (_begun)
+    if (isInitialized())
         _sensitivity = VEML7700::getSensitivityMode();
     return _sensitivity;
 }
@@ -137,13 +135,13 @@ uint8_t flxDevVEML7700::get_sensitivity()
 void flxDevVEML7700::set_sensitivity(uint8_t sens)
 {
     _sensitivity = sens;
-    if (_begun)
+    if (isInitialized())
         VEML7700::setSensitivityMode((VEML7700_sensitivity_mode_t)sens);
 }
 
 uint8_t flxDevVEML7700::get_persistence()
 {
-    if (_begun)
+    if (isInitialized())
         _persistence = VEML7700::getPersistenceProtect();
     return _persistence;
 }
@@ -151,7 +149,7 @@ uint8_t flxDevVEML7700::get_persistence()
 void flxDevVEML7700::set_persistence(uint8_t pers)
 {
     _persistence = pers;
-    if (_begun)
+    if (isInitialized())
         VEML7700::setPersistenceProtect((VEML7700_persistence_protect_t)pers);
 }
 

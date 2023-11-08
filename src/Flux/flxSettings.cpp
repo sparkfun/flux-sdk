@@ -43,6 +43,9 @@ void flxSettingsSave::setFallback(flxStorage *pStorage)
 
     snprintf(szBuffer, sizeof(szBuffer), "%s (%s)", restoreFallback.description(), pStorage->name());
     restoreFallback.setDescriptionAlloc(szBuffer);
+
+    snprintf(szBuffer, sizeof(szBuffer), fallbackBuffer.name(), pStorage->name());
+    fallbackBuffer.setNameAlloc(szBuffer);
 }
 
 //----------------------------------------------------------------------------------

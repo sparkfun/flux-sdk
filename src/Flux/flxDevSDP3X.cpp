@@ -115,9 +115,9 @@ bool flxDevSDP3X::onInitialize(TwoWire &wirePort)
 {
 
     SDP3X::stopContinuousMeasurement(address(), wirePort); // Make sure continuous measurements are stopped or .begin will fail
-    _begun = SDP3X::begin(address(), wirePort);
-    _begun &= (SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg) == SDP3X_SUCCESS);
-    return _begun;
+    bool status = SDP3X::begin(address(), wirePort);
+    status &= (SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg) == SDP3X_SUCCESS);
+    return status;
 }
 
 // GETTER methods for output params
@@ -154,7 +154,7 @@ uint8_t flxDevSDP3X::get_temperature_compensation()
 void flxDevSDP3X::set_temperature_compensation(uint8_t mode)
 {
     _tempComp = mode;
-    if (_begun)
+    if (isInitialized())
     {
         SDP3X::stopContinuousMeasurement();
         SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);
@@ -169,7 +169,7 @@ uint8_t flxDevSDP3X::get_measurement_averaging()
 void flxDevSDP3X::set_measurement_averaging(uint8_t enable)
 {
     _measAvg = (bool)enable;
-    if (_begun)
+    if (isInitialized())
     {
         SDP3X::stopContinuousMeasurement();
         SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg);

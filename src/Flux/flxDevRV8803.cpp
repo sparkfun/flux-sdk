@@ -101,9 +101,7 @@ bool flxDevRV8803::onInitialize(TwoWire &wirePort)
     RV8803::set24Hour();
     RV8803::setTimeZoneQuarterHours(0); // Make sure the time zone is zero
 
-    if (result)
-        _begun = true;
-    else
+    if (!result)
         flxLog_E("RV8803 - begin failed");
 
     return result;
@@ -436,7 +434,7 @@ uint flxDevRV8803::get_epoch()
 
 bool flxDevRV8803::valid_epoch(void)
 {
-    return  _begun;
+    return  isInitialized();
 }
 // Output parameters
 

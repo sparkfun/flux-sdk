@@ -114,8 +114,7 @@ bool flxDevACS37800::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevACS37800::onInitialize(TwoWire &wirePort)
 {
-    _begun = ACS37800::begin(address(), wirePort);
-    return _begun;
+    return ACS37800::begin(address(), wirePort);
 }
 
 // GETTER methods for output params
@@ -267,26 +266,26 @@ bool flxDevACS37800::read_pos_power_factor()
 
 uint flxDevACS37800::get_number_of_samples()
 {
-    if (_begun)
+    if (isInitialized())
         ACS37800::getNumberOfSamples(&_n);
     return _n;
 }
 void flxDevACS37800::set_number_of_samples(uint numSamples)
 {
     _n = numSamples;
-    if (_begun)
+    if (isInitialized())
         ACS37800::setNumberOfSamples(numSamples, true); // Set in EEPROM too
 }
 uint8_t flxDevACS37800::get_bypass_n_enable()
 {
-    if (_begun)
+    if (isInitialized())
         ACS37800::getBypassNenable(&_bypassNenable);
     return ((uint8_t)_bypassNenable);
 }
 void flxDevACS37800::set_bypass_n_enable(uint8_t enable)
 {
     _bypassNenable = (bool)enable;
-    if (_begun)
+    if (isInitialized())
         ACS37800::setBypassNenable(_bypassNenable, true); // Set in EEPROM too
 }
 float flxDevACS37800::get_sense_resistance()
@@ -296,7 +295,7 @@ float flxDevACS37800::get_sense_resistance()
 void flxDevACS37800::set_sense_resistance(float res)
 {
     _senseResistance = res;
-    if (_begun)
+    if (isInitialized())
         ACS37800::setSenseRes(res);
 }
 float flxDevACS37800::get_divider_resistance()
@@ -306,7 +305,7 @@ float flxDevACS37800::get_divider_resistance()
 void flxDevACS37800::set_divider_resistance(float res)
 {
     _dividerResistance = res;
-    if (_begun)
+    if (isInitialized())
         ACS37800::setDividerRes(res);
 }
 float flxDevACS37800::get_current_range()
@@ -316,7 +315,7 @@ float flxDevACS37800::get_current_range()
 void flxDevACS37800::set_current_range(float range)
 {
     _currentRange = range;
-    if (_begun)
+    if (isInitialized())
         ACS37800::setCurrentRange(range);
 }
 

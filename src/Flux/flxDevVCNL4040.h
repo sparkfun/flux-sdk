@@ -79,8 +79,6 @@ private:
     uint8_t _proxRes = 16; // Default to 16-bit
     uint16_t _ambIntTime = 80;
 
-    bool _begun = false;
-
 public:
     // Define our read-write properties
     flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_LED_current, &flxDevVCNL4040::set_LED_current> ledCurrent = { 50, 200 };
