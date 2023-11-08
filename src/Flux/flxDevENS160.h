@@ -101,8 +101,8 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
             SFE_ENS160_STANDARD,
             {{"Standard", SFE_ENS160_STANDARD}, {"Idle", SFE_ENS160_IDLE}, {"Deep Sleep", SFE_ENS160_DEEP_SLEEP}}};
 
-    // Compensation settings
-    flxPropertyBool<flxDevENS160> enableCompensation = false;
+    // Compensation settings -- enabled by default - will start operating if a compensation source is added
+    flxPropertyBool<flxDevENS160> enableCompensation = true;
 
     // If a device is connected for comp values, update period in secs
     flxPropertyUint<flxDevENS160> updatePeriodSecs = {kENS160DefaultCompUpdateTimeSecs, 5, 600};
