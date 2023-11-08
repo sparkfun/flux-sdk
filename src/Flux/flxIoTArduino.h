@@ -368,9 +368,9 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
         flxRegister(cloudAPISecret, "API Secret", "The Arduino Cloud API Secret");
 
-        flxRegister(deviceSecret, "Device Secret", "The ArduinoIoT Device Secret");
+        flxRegister(deviceSecret, "Device Secret", "The Arduino IoT Device Secret");
 
-        flxRegister(deviceID, "Device ID", "The ArduinoIoT Device ID");
+        flxRegister(deviceID, "Device ID", "The Arduino IoT Device ID");
 
         flux.add(this);
     }
