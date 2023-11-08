@@ -21,16 +21,14 @@
 #include "flxDevOPT4048.h"
 #include <cstdint>
 
-#define OPT4048_CHIP_ID_REG 0x11 // Register containing the chip ID
-#define OPT4048_UNIQUE_ID 0x2048 // Chip ID
-
-#define kOPTAddressDefault 0x44
-#define kOPTAddressAlt1 0x45
-#define kOPTAddressAlt2 0x46
+#define kOPTAddressDefault OPT4048_ADDR_DEF
+#define kOPTAddressAlt1 OPT4048_ADDR_SCL
+#define kOPTAddressAlt2 OPT4048_ADDR_SDA
 
 // Define our class static variables - allocs storage for them
 
-uint8_t flxDevOPT4048::defaultDeviceAddress[] = {kOPTAddressDefault, kOPTAddressAlt1, kOPTAddressAlt1, kSparkDeviceAddressNull};
+uint8_t flxDevOPT4048::defaultDeviceAddress[] = {kOPTAddressDefault, kOPTAddressAlt1, kOPTAddressAlt2,
+                                                 kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -48,17 +46,21 @@ flxDevOPT4048::flxDevOPT4048()
 {
 
     // Setup unique identifiers for this device and basic device object systems
-    setName(getDeviceName());
-    setDescription("The Texas Instrument OPT4048 Tristimulus Color Sensor");
+    setName(getDeviceName(), "OPT4048 Tristimulus Color Sensor");
 
     // Register parameters
-    flxRegister(CIEx, "CIEx", "The X coordinate on the CIE 1931 Color Space Graph.");
-    flxRegister(CIEy, "CIEy", "The Y coordinate on the CIE 1931 Color Space Graph.");
+    flxRegister(CIEx, "CIEx", "The X coordinate on the CIE 1931 Color Space Graph");
+    flxRegister(CIEy, "CIEy", "The Y coordinate on the CIE 1931 Color Space Graph");
+    flxRegister(CCT, "CCT", "The Correlated Color Temperature (CCT) of the sensor (K)");
     flxRegister(Lux, "Lux", "The Lux value, or 'brightness'.");
 
     flxRegister(mode, "mode", "The Operation Mode: Power Down, Auto One Shot, One Shot, Continuous");
-    flxRegister(time, "time", "Time spent converting analog values from internal sensors.");
-    flxRegister(range, "range", "Range of light being sensed.");
+    flxRegister(time, "time", "Time spent converting analog values from internal sensors");
+    flxRegister(range, "range", "Range of light being sensed");
+
+    _cacheRange = RANGE_36LUX;
+    _cacheTime = CONVERSION_TIME_200MS;
+    _cacheMode = OPERATION_MODE_CONTINUOUS;
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -69,11 +71,23 @@ bool flxDevOPT4048::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint16_t chipID = i2cDriver.readRegisterRegion(address, OPT4048_CHIP_ID_REG); // Should return 0x2048
+    uint8_t tempVal[2] = {0};
+    bool retVal =
+        i2cDriver.readRegisterRegion(address, SFE_OPT4048_REGISTER_DEVICE_ID, tempVal, 2); // Should return 0x2048
 
-    // flxLog_I("OPT4048 isConnected chip ID 0x%02x", chipID);
+    if (!retVal)
+        return false;
 
-    return (chipID == OPT4048_UNIQUE_ID);
+    // some bit field magic from the Arduino driver.
+
+    opt4048_reg_device_id_t idReg;
+
+    idReg.word = tempVal[0] << 8;
+    idReg.word |= tempVal[1];
+
+    uint16_t chipID = (idReg.DIDH << 2) | idReg.DIDL;
+
+    return (chipID == OPT4048_DEVICE_ID);
 }
 //----------------------------------------------------------------------------------------------------------
 // onInitialize()
@@ -84,10 +98,22 @@ bool flxDevOPT4048::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevOPT4048::onInitialize(TwoWire &wirePort)
 {
+    bool status = SparkFun_OPT4048::begin(wirePort, address());
 
-    // set the device address
-    QwOpt4048::setI2CAddress(address());
-    return QwOpt4048::beginI2C(wirePort);
+    // success?
+    if (status)
+    {
+        // set our initial property values...
+        // set our system init value  - normally done automatically when this method returns.
+        // But since we're calling our prop methods (who check this value), set it here
+        this->setIsInitialized(true);
+
+        set_range(_cacheRange);
+        set_conversion_time(_cacheTime);
+        set_operation_mode(_cacheMode);
+    }
+    // Call the Arduino library begin method...
+    return status;
 }
 
 // GETTER methods for output params
@@ -111,39 +137,41 @@ uint32_t flxDevOPT4048::get_lux()
     return QwOpt4048::getLux();
 }
 
-uint8_t flxDevOPT4048::get_range()
+uint flxDevOPT4048::get_range()
 {
-    opt4048_range_t _range = QwOpt4048::getRange();
-    return static_cast<uint8_t>(range);
+    return static_cast<uint>(QwOpt4048::getRange());
 }
 
-bool flxDevOPT4048::set_range(uint8_t range)
+void flxDevOPT4048::set_range(uint inRange)
 {
-    uint8_t _range = static_cast<opt4048_range_t>(range);
-    QwOpt4048::setRange(_range);
+    if (isInitialized())
+        QwOpt4048::setRange(static_cast<opt4048_range_t>(inRange));
+    else
+        _cacheRange = inRange;
 }
 
-uint8_t flxDevOPT4048::get_conversion_time()
+uint flxDevOPT4048::get_conversion_time()
 {
-    opt4048_conversion_time_t _time = QwOpt4048::get_conversion_time();
-    return static_cast<uint8_t>(_time);
+    return static_cast<uint>(QwOpt4048::getConversionTime());
 }
 
-bool flxDevOPT4048::set_conversion_time(uint8_t time)
+void flxDevOPT4048::set_conversion_time(uint inTime)
 {
-    uint8_t _time = static_cast<opt4048_conversion_time_t>(time);
-    QwOpt4048::setConversionTime(_time);
+    if (isInitialized())
+        QwOpt4048::setConversionTime(static_cast<opt4048_conversion_time_t>(inTime));
+    else
+        _cacheTime = inTime;
 }
 
-uint8_t flxDevOPT4048::get_operation_mode()
+uint flxDevOPT4048::get_operation_mode()
 {
-    opt4048_operation_mode_t _mode = QwOpt4048::get_operation_mode();
-    return static_cast<uint8_t>(_mode);
+    return static_cast<uint>(QwOpt4048::getOperationMode());
 }
 
-bool flxDevOPT4048::set_operation_mode(uint8_t mode)
+void flxDevOPT4048::set_operation_mode(uint inMode)
 {
-    uint8_t _mode = static_cast<opt4048_time_t>(time);
-    QwOpt4048::setConversionTime(_time);
+    if (isInitialized())
+        QwOpt4048::setOperationMode(static_cast<opt4048_operation_mode_t>(inMode));
+    else
+        _cacheMode = inMode;
 }
-
