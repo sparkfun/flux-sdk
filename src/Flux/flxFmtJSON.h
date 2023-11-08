@@ -38,7 +38,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
   public:
     //-----------------------------------------------------------------
-    flxFormatJSON() : _pDoc{nullptr}, _buffer_size{BUFFER_SIZE}, _isFirstRun{true} {};
+    flxFormatJSON() : _pDoc{nullptr}, _buffer_size{BUFFER_SIZE}, _isFirstRun{true}, _pSectionName{nullptr} {};
 
     //-----------------------------------------------------------------
     // value methods
@@ -178,7 +178,20 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     void beginSection(const char *szName)
     {
         if (_pDoc)
+        {
             _jSection = _pDoc->createNestedObject(szName);
+            _pSectionName = szName;
+        }
+    }
+    //-----------------------------------------------------------------
+    void endSection()
+    {
+        // if  there are no elements in the section (all params are disabled for example)
+        // just delete the object
+        if (_pDoc && _jSection.size() == 0 && _pSectionName != nullptr)
+            _pDoc->remove(_pSectionName);
+
+        _pSectionName = nullptr;
     }
     //-----------------------------------------------------------------
     void endObservation(void)
@@ -237,6 +250,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     // we need to promote the add methods from our subclass - these take flxWriter() interfaces
     using flxOutputFormat::add;
 
+    //-----------------------------------------------------------------
     // Add methods to capture the json writers
     void add(flxIWriterJSON &newWriter)
     {
@@ -246,6 +260,8 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     {
         _jsonWriters.push_back(newWriter);
     }
+
+    //-----------------------------------------------------------------
     void remove(flxIWriterJSON *oldWriter)
     {
         auto iter = std::find(_jsonWriters.begin(), _jsonWriters.end(), oldWriter);
@@ -254,6 +270,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
             _jsonWriters.erase(iter);
     }
 
+    //-----------------------------------------------------------------
     void setBufferSize(size_t new_size)
     {
         // Same?
@@ -273,6 +290,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
         _buffer_size = new_size;
     }
 
+    //-----------------------------------------------------------------
     size_t bufferSize(void)
     {
         return _buffer_size;
@@ -282,6 +300,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     using flxOutputFormat::remove;
 
   protected:
+    //-----------------------------------------------------------------
     template <typename T>
     void writeOutArrayDimension(JsonArray &jsonArray, T *&pData, flxDataArrayType<T> *theArray, uint16_t currentDim)
     {
@@ -329,4 +348,5 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     std::vector<flxIWriterJSON *> _jsonWriters;
 
     bool _isFirstRun;
+    const char *_pSectionName;
 };
