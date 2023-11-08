@@ -145,7 +145,7 @@ The above property values must be set on the Flux Arduino IoT object before use.
     "Enabled": true,
     "Thing Name": "SparkFunThing1",
     "API Client ID": "API ID",
-    "API Secret": "My API Secrete",
+    "API Secret": "My API Secret",
     "Device Secret": "My Device Secret",
     "Device ID": "My Device ID"            
   },
