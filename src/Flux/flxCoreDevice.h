@@ -120,6 +120,8 @@ class flxDevice : public flxOperation
         return _address;
     }
 
+    void addAddressToName();
+
     // device is initialized property
     void setIsInitialized(bool isInit)
     {

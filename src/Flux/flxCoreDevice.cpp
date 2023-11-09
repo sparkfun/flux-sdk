@@ -37,6 +37,23 @@ void flxDevice::enable_all_parameters(void)
     for (auto param : getOutputParameters())
         param->setEnabled(true);
 }
+
+//----------------------------------------------------------------
+// Add the address to the device name. Helps ID a device 
+void flxDevice::addAddressToName()
+{
+    // add the device address to the name of the device.
+    // Does it already exist?
+
+    if (strchr(name(), '[') != NULL)
+        return;
+
+    char szBuffer[64];
+    snprintf(szBuffer, sizeof(szBuffer), getKind() == flxDeviceKindSPI ? "%s [p%d]" : "%s [x%x]", name(), address());
+
+    setNameAlloc(szBuffer);
+}
+
 //----------------------------------------------------------------
 // Device Factory
 //----------------------------------------------------------------
