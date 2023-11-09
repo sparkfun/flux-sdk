@@ -259,6 +259,10 @@ class flxFlux : public flxObjectContainer
 
     bool getAppToken(uint8_t token[32]);
 
+    // should we add a unique value to device names?
+    void setVerboseDevNames(bool bVerbose);
+    bool verboseDevNames(void);
+    
   private:
     flxBusI2C _i2cDriver;
     flxBusSPI _spiDriver;
@@ -276,11 +280,12 @@ class flxFlux : public flxObjectContainer
 
     uint8_t _token[32];
     bool _hasToken;
+    bool _verboseDevNames;
 
     // Note private constructor...
     flxFlux()
         : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"}, _appClassID{nullptr},
-          _theApplication{nullptr}, _token{0}, _hasToken{false}
+          _theApplication{nullptr}, _token{0}, _hasToken{false}, _verboseDevNames{false}
     {
 
         // setup some default heirarchy things ...
