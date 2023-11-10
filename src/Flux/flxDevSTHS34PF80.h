@@ -61,7 +61,6 @@ class flxDevSTHS34PF80 : public flxDeviceI2CType<flxDevSTHS34PF80>, public STHS3
     float read_TemperatureC();
 
     // Methods used to get and set values for our RW properties
-    uint8_t get_DeviceID();
     bool get_DataReady();
 
     int get_AverageTObjectNumber();

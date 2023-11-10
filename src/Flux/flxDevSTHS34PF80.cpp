@@ -57,7 +57,7 @@ flxDevSTHS34PF80::flxDevSTHS34PF80()
     flxRegister(avgTAmbientNum, "Avg Samples for TAmbient", "Number of Average Samples for TAmbient");
     flxRegister(gainMode, "Enable Gain Mode", "Enables the Gain Mode");
     flxRegister(tmosODR, "Output Data Rate", "Output Data Rate");
-    flxRegister(tmosOneShot, "SENSE1 NAME", "SENSE1 DESCRIPTION");
+    flxRegister(tmosOneShot, "One Shot", "Trigger One-Shot Acquisition");
     flxRegister(memBank, "Memory Bank", "Enable Access to Embedded Functions");
 
     flxRegister(lpfMotionBandwidth, "Low Pass Motion Filter", "Low Pass Motion Filter Bandwidth");
@@ -137,13 +137,7 @@ float flxDevSTHS34PF80::read_TemperatureC()
 }
 
 // GETTER and SETTER methods for device properties
-uint8_t flxDevSTHS34PF80::get_DeviceID()
-{
-    uint8_t devID;
-    if (!getDeviceID(&devID))
-        return devID;
-    return 0;
-}
+
 bool flxDevSTHS34PF80::get_DataReady()
 {
     sths34pf80_tmos_drdy_status_t dataReady;
