@@ -30,7 +30,7 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
   public:
     flxIoTMachineChat() : _isInitalized{false}, _szLocalIP{""}
     {
-        setName("MachineChat", "Connection to MachineChat");
+        setName("Machinechat", "Connection to Machinechat IoT Server");
 
         flux.add(this);
     }
