@@ -37,11 +37,10 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
 
     void setupTargetIP(void)
     {
-        WiFiClient *myClient = getWiFiClient();
-        if (!myClient)
+        if (!_theNetwork)
             return;
 
-        IPAddress myIP = myClient->localIP();
+        IPAddress myIP = _theNetwork->localIP();
         snprintf(_szLocalIP, sizeof(_szLocalIP), "%u.%u.%u.%u", myIP[0], myIP[1], myIP[2], myIP[3]);
     }
 
