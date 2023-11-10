@@ -35,36 +35,6 @@
 
 ///---------------------------------------------------------------------------------------
 ///
-/// @brief     Creates a valid arduino variable name
-/// @param[In] szInVariable the name to convert
-/// @param[Out] szOutVariable the converted name - assumed to same len as in variable.
-///
-/// @return true on success, false on failure
-///
-bool flxIoTArduino::createVariableName(char *szInVariable, char *szOutVariable)
-{
-    if (!szInVariable || !szOutVariable)
-        return false;
-
-    size_t nChar = strlen(szInVariable);
-
-    int idst = 0;
-    int isrc = 0;
-    for (; isrc < nChar; isrc++)
-    {
-        // pass through alphanumeric and underscores
-        if (std::isalnum(szInVariable[isrc]) || szInVariable[isrc] == '_')
-            szOutVariable[idst++] = szInVariable[isrc];
-        else if (szInVariable[isrc] == ' ') // spaces to underlines
-            szOutVariable[idst++] = '_';
-    }
-    szOutVariable[idst] = '\0';
-
-    return (strlen(szOutVariable) > 1);
-}
-
-///---------------------------------------------------------------------------------------
-///
 /// @brief  Called when the network connects
 ///
 void flxIoTArduino::connect(void)
@@ -193,7 +163,7 @@ bool flxIoTArduino::getArduinoToken(void)
 
 //---------------------------------------------------------------------------------------
 ///
-/// @breif - the Web API uses oauth tokens as a credential. It has an time limit, and needs checking.
+/// @brief - the Web API uses oauth tokens as a credential. It has an time limit, and needs checking.
 ///
 bool flxIoTArduino::checkToken(void)
 {
@@ -568,7 +538,7 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
 
         char szVarName[strlen(szNameBuffer) + 1];
 
-        if (!createVariableName(szNameBuffer, szVarName))
+        if (!flx_utils::createVariableName(szNameBuffer, szVarName))
         {
             flxLog_E(F("%s: unable to create valid variable name: %s"), name(), szNameBuffer);
             return false;

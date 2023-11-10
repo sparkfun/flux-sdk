@@ -459,7 +459,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     flxPropertyRWBool<flxIoTArduino, &flxIoTArduino::get_isEnabled, &flxIoTArduino::set_isEnabled> enabled;
 
   private:
-    bool createVariableName(char *szInVariable, char *szOutVariable);
     bool getArduinoToken(void);
     bool checkToken(void);
     int postJSONPayload(const char *url, JsonDocument &jIn);
