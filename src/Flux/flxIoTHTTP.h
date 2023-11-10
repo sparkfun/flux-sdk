@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
@@ -17,11 +16,11 @@
 
 #include "flxCoreInterface.h"
 #include "flxFS.h"
-#include "flxNetwork.h"
 #include "flxFlux.h"
+#include "flxNetwork.h"
 
-#include <WiFiClientSecure.h>
 #include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 
 // A General HTTP/HTTPS output writer for the framework
 //
@@ -33,13 +32,12 @@
 template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
 {
   private:
-
     bool createWiFiClient(void)
     {
         if (_wifiClient)
             delete _wifiClient;
 
-        _wifiClient = _isSecure ?  new WiFiClientSecure : new WiFiClient;
+        _wifiClient = _isSecure ? new WiFiClientSecure : new WiFiClient;
 
         checkConnectionCert();
 
@@ -49,7 +47,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
     void checkConnectionCert()
     {
         if (_wifiClient != nullptr && _isSecure && _pCACert != nullptr)
-            ((WiFiClientSecure*)_wifiClient)->setCACert(_pCACert);
+            ((WiFiClientSecure *)_wifiClient)->setCACert(_pCACert);
     }
 
     // Enabled Property setter/getters
@@ -60,7 +58,6 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
             return;
 
         _isEnabled = bEnabled;
-
     }
 
     //----------------------------------------------------------------
@@ -99,7 +96,8 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
     //---------------------------------------------------------
     void set_URL(std::string theURL)
     {
-        if (theURL.length() < 10){
+        if (theURL.length() < 10)
+        {
             flxLog_E(F("%s: Invalid URL - failed to parse protocol: %s"), this->name(), theURL.c_str());
             return;
         }
@@ -200,32 +198,17 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
             return;
     }
 
-protected:
-
-    WiFiClient * getWiFiClient(void)
-    {
-        if (!_isEnabled || !_canConnect )
-            return nullptr;
-
-        if (!_wifiClient)
-        {
-            if (!createWiFiClient())
-                flxLog_E(F("%s: Error creating network connection."), this->name());
-        }
-        return _wifiClient;
-    }
-
   public:
-    flxIoTHTTPBase() : _isEnabled{false}, _canConnect{false}, _isSecure{false},
-                     _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr},
-                     _wifiClient{nullptr}
+    flxIoTHTTPBase()
+        : _theNetwork{nullptr}, _isEnabled{false}, _canConnect{false}, _isSecure{false}, _pCACert{nullptr},
+          _fileSystem{nullptr}, _wifiClient{nullptr}
     {
         flxRegister(enabled, "Enabled", "Enable or Disable the HTTP Client");
 
         flxRegister(URL, "URL", "The URL to call with log information");
 
         flxRegister(caCertificate, "CA Certificate",
-                   "The Certificate Authority certificate. If set, the connection is secure");
+                    "The Certificate Authority certificate. If set, the connection is secure");
 
         flxRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
     };
@@ -256,7 +239,7 @@ protected:
     {
         return (_isEnabled && _canConnect);
     }
-    
+
     //----------------------------------------------------------------------------
     // flxWriter interface method
     virtual void write(const char *value, bool newline, flxLineType_t type)
@@ -274,9 +257,9 @@ protected:
             }
         }
 
-        // Connect to server, post data, disconnnect
+        // Connect to server, post data, disconnect
 
-        HTTPClient http; 
+        HTTPClient http;
 
         if (!http.begin(*_wifiClient, _url.c_str()))
         {
@@ -286,11 +269,10 @@ protected:
 
         http.addHeader("Content-Type", "application/json");
 
-        int rc = http.POST((uint8_t*)value, strlen(value));
+        int rc = http.POST((uint8_t *)value, strlen(value));
 
         if (rc != 200)
-            flxLog_W(F("%s: Error [%s] posting to: %s"), this->name(),
-                        http.errorToString(rc).c_str(), _url.c_str());
+            flxLog_W(F("%s: Error [%s] posting to: %s"), this->name(), http.errorToString(rc).c_str(), _url.c_str());
 
         http.end();
     }
@@ -313,6 +295,9 @@ protected:
     flxPropertyRWString<flxIoTHTTPBase, &flxIoTHTTPBase::get_caCertFilename, &flxIoTHTTPBase::set_caCertFilename>
         caCertFilename;
 
+  protected:
+    flxNetwork *_theNetwork;
+
   private:
     // WiFiClientSecure _wifiClient;
 
@@ -324,8 +309,6 @@ protected:
     bool _canConnect;
     bool _isSecure;
 
-    flxNetwork *_theNetwork;
-
     // We need perm version of the keys for the secure connection, so the values are stashed in allocated
     // strings
     char *_pCACert;
@@ -333,13 +316,12 @@ protected:
     // Filesystem to load a file from
     flxIFileSystem *_fileSystem;
 
-    WiFiClient *_wifiClient;    
+    WiFiClient *_wifiClient;
 };
-
 
 class flxIoTHTTP : public flxIoTHTTPBase<flxIoTHTTP>, public flxWriter
 {
-public:
+  public:
     flxIoTHTTP()
     {
         setName("HTTP IoT", "An HTTP IoT data connector");
@@ -355,7 +337,7 @@ public:
     {
         // noop
     }
-    //---------------------------------------------------------------------    
+    //---------------------------------------------------------------------
     virtual void write(const char *value, bool newline, flxLineType_t type)
     {
 
