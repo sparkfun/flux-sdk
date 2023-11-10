@@ -200,6 +200,21 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
             return;
     }
 
+protected:
+
+    WiFiClient * getWiFiClient(void)
+    {
+        if (!_isEnabled || !_canConnect )
+            return nullptr;
+
+        if (!_wifiClient)
+        {
+            if (!createWiFiClient())
+                flxLog_E(F("%s: Error creating network connection."), this->name());
+        }
+        return _wifiClient;
+    }
+
   public:
     flxIoTHTTPBase() : _isEnabled{false}, _canConnect{false}, _isSecure{false},
                      _theNetwork{nullptr}, _pCACert{nullptr}, _fileSystem{nullptr},
