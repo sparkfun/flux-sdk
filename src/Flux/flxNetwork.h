@@ -19,6 +19,7 @@ class flxNetwork
 {
 public:
     virtual bool isConnected() = 0;
+    virtual IPAddress localIP(void) = 0;
 
     // Event - triggered on connection changes
     flxSignalBool on_connectionChange;
