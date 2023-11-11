@@ -258,7 +258,7 @@ class flxLogger : public flxActionType<flxLogger>
     std::vector<flxOutputFormat *> _Formatters;
 
     // The things we're logging
-    flxOperationContainer _objsToLog;
+    flxOperationContainer _opsToLog;
     flxParameterOutList _paramsToLog;
     flxPropertyList _propsToLog;
 
@@ -362,7 +362,7 @@ class flxLogger : public flxActionType<flxLogger>
     void _add(flxOperation *op)
     {
         if (op != nullptr)
-            _objsToLog.push_back(op);
+            _opsToLog.push_back(op);
     }
 
     void _add(flxParameterOut &param)
