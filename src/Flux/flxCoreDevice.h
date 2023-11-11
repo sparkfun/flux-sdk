@@ -88,6 +88,12 @@ class flxDevice : public flxOperation
     {
     }
 
+    // override our operation class 
+    virtual bool execute(void)
+    {
+        return true;
+    }
+
     // Methods called on initialize
     bool initialize();
     virtual bool initialize(flxBusI2C &)

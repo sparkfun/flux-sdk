@@ -1206,9 +1206,16 @@ class flxOperation : public flxObject, public _flxParameterContainer
         return (flxTypeID) nullptr;
     }
 
+    // Virtual method called every loop cycle ...
     virtual bool loop(void)
     {
         return false;
+    }
+
+    /// @brief Virtual method called to run the operation - called before data is retrieved
+    virtual bool execute(void)
+    {
+        return true;
     }
 
     virtual bool onSave(flxStorageBlock *stBlk)
