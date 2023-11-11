@@ -44,7 +44,7 @@ flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{fal
 
     flxRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
 
-    _objsToLog.setName("Logger Objects");
+    _opsToLog.setName("Logger Objects");
     
     flux.add(this);
 }
@@ -195,10 +195,14 @@ void flxLogger::logObservation(void)
     if (_paramsToLog.size() > 0)
         logSection("General", _paramsToLog);
 
-    // loop over objs to log - each object is in a named section. Logs to all
+    // loop over ops to log - operations - each object is in a named section. Logs to all
     // formatters
-    for (auto pObj : _objsToLog)
+    for (auto pObj : _opsToLog)
+    {
+        // call execute if the operation needs to run ...
+        pObj->execute();
         logSection(pObj->name(), pObj->getOutputParameters());
+    }
 
     // And end the observation for each formatter
     for (auto theFormatter : _Formatters)
