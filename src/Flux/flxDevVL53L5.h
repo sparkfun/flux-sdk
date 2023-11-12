@@ -74,8 +74,6 @@ private:
     uint8_t _sharpenerPercent = 5; // Default is 5%
     uint8_t _targetOrder = (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST;
 
-    bool _begun = false;
-
 public:
     // Define our read-write properties
     flxPropertyRWUint<flxDevVL53L5, &flxDevVL53L5::get_integration_time, &flxDevVL53L5::set_integration_time> integrationTime

@@ -18,6 +18,9 @@
 #include <map>
 #include <vector>
 
+// default tz
+#define kClockTimeZoneSparkFun "MST7MDT,M3.2.0,M11.1.0"
+
 // Define a clock interface -- really just want secs from unix epoch
 class flxIClock
 {
@@ -27,10 +30,19 @@ class flxIClock
     virtual bool valid_epoch(void) = 0;
 };
 
+// Define a System Clock interface -- a clock interface and some TimeZone magic
+
+class flxISystemClock : public flxIClock
+{
+  public:
+    virtual void set_timezone(const char *) = 0;
+    virtual int get_timezone(char *, size_t) = 0;
+};
+
 #ifdef ESP32
 
 #include <time.h>
-class flxClockESP32 : public flxIClock
+class flxClockESP32 : public flxISystemClock
 {
   public:
     uint get_epoch(void)
@@ -62,6 +74,28 @@ class flxClockESP32 : public flxIClock
 
         return (tm_now && tm_now->tm_year > (2020 - 1900));
     }
+
+    void set_timezone(const char *szTimeZone)
+    {
+        if (!szTimeZone)
+            return;
+
+        setenv("TZ", szTimeZone, 1);
+        tzset();
+    }
+
+    int get_timezone(char *szTimeZone, size_t len)
+    {
+        if (!szTimeZone || !len)
+            return 0;
+
+        char *tz = getenv("TZ");
+
+        if (!tz)
+            return 0;
+
+        return (int)strlcpy(szTimeZone, tz, len);
+    }
 };
 #endif
 
@@ -72,6 +106,9 @@ class _flxClock : public flxActionType<_flxClock>
     // prop things
     void set_ref_clock(std::string name);
     std::string get_ref_clock(void);
+
+    void set_timezone(std::string tz);
+    std::string get_timezone(void);
 
   public:
     // flxClock is a singleton
@@ -89,7 +126,7 @@ class _flxClock : public flxActionType<_flxClock>
 
     uint32_t now();
 
-    void setDefaultClock(flxIClock *clock);
+    void setSystemClock(flxISystemClock *clock);
 
     bool setReferenceClock(flxIClock *clock, const char *name = nullptr);
 
@@ -116,11 +153,18 @@ class _flxClock : public flxActionType<_flxClock>
     flxPropertyUint<_flxClock> connectedClockInterval = {60};
     flxPropertyBool<_flxClock> updateConnectedOnUpdate = {true};
 
+    // TimeZone string
+    flxPropertyRWString<_flxClock, &_flxClock::get_timezone, &_flxClock::set_timezone> timeZone = {
+        kClockTimeZoneSparkFun};
+
   private:
     _flxClock();
     flxIClock *findRefClockByName(const char *name);
 
-    flxIClock *_defaultClock;
+    // our system / runtime clock
+    flxISystemClock *_systemClock;
+
+    // The reference clock
     flxIClock *_refClock;
 
     uint32_t _lastRefCheck;
@@ -139,5 +183,7 @@ class _flxClock : public flxActionType<_flxClock>
     std::vector<flxIClock *> _connectedClocks;
 
     std::string _nameRefClock;
+
+    std::string _tzStorage;
 };
 extern _flxClock &flxClock;

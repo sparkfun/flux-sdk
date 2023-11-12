@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 // Action to control save of settings ...
 #pragma once
@@ -22,7 +21,6 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
 {
 
   private:
-
     //------------------------------------------------------------------------------
     void save_settings(void)
     {
@@ -36,20 +34,30 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     };
 
     void restore_fallback(void);
-    void save_fallback(void);    
+    void save_fallback(void);
 
     void saveEvent_CB(void)
     {
         // Enabled?
         if (saveOnEvent())
             save_settings();
-
     }
     void restoreEvent_CB(void)
     {
         // Enabled?
         if (restoreOnEvent())
             restore_settings();
+    }
+
+    void set_fallbackSize(uint sz)
+    {
+        if (_fallbackStorage)
+            _fallbackStorage->setBufferSize(sz);
+    }
+
+    uint get_fallBackSize(void)
+    {
+        return _fallbackStorage ? _fallbackStorage->bufferSize() : 0;
     }
 
   public:
@@ -63,13 +71,12 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     // This is a singleton class - so delete copy & assignment constructors
     flxSettingsSave(flxSettingsSave const &) = delete;
     void operator=(flxSettingsSave const &) = delete;
-    
-    
+
     //------------------------------------------------------------
-    // settings/storage things. 
+    // settings/storage things.
     //------------------------------------------------------------
     //
-    // Storage device for settings - set this in the system.     
+    // Storage device for settings - set this in the system.
 
     void setStorage(flxStorage *pStorage);
     void setFallback(flxStorage *pStorage);
@@ -89,7 +96,6 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     bool restore(flxObject *pObject);
     void reset(void);
 
-
     bool isAvailable()
     {
         return _primaryStorage != nullptr;
@@ -104,8 +110,11 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     flxPropertyHiddenBool<flxSettingsSave> saveOnEvent = {true};
     flxPropertyHiddenBool<flxSettingsSave> restoreOnEvent = {true};
 
-    flxPropertyBool<flxSettingsSave> fallbackSave = {false};    
+    flxPropertyBool<flxSettingsSave> fallbackSave = {false};
     flxPropertyBool<flxSettingsSave> fallbackRestore = {true};
+
+    flxPropertyRWUint<flxSettingsSave, &flxSettingsSave::get_fallBackSize, &flxSettingsSave::set_fallbackSize>
+        fallbackBuffer;
 
     // Our input parameters
     flxParameterInVoid<flxSettingsSave, &flxSettingsSave::save_settings> saveSettings;
@@ -113,11 +122,9 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     flxParameterInVoid<flxSettingsSave, &flxSettingsSave::reset> clearSettings;
 
     flxParameterInVoid<flxSettingsSave, &flxSettingsSave::restore_fallback> restoreFallback;
-    flxParameterInVoid<flxSettingsSave, &flxSettingsSave::save_fallback> saveFallback;    
+    flxParameterInVoid<flxSettingsSave, &flxSettingsSave::save_fallback> saveFallback;
 
-
-private:
-
+  private:
     flxSettingsSave() : _primaryStorage{nullptr}, _fallbackStorage{nullptr}
     {
 
@@ -125,27 +132,27 @@ private:
         setName("Save Settings", "Save, Restore and Reset System settings.");
 
         flxRegister(saveOnEvent, "Save Events", "Save settings on save system events");
-        flxRegister(restoreOnEvent, "Restore Events", "Restore settings on restore esystem vents");
+        flxRegister(restoreOnEvent, "Restore Events", "Restore settings on restore system events");
 
         flxRegister(fallbackRestore, "Fallback Restore", "If unable to restore settings, use the fallback source");
-        flxRegister(fallbackSave, "Fallback Save", "Save settings also saves to the fallback storage");        
+        flxRegister(fallbackSave, "Fallback Save", "Save settings also saves to the fallback storage");
 
+        flxRegister(fallbackBuffer, "%s Buffer Size", "The size in bytes used for the internal I/O buffer");
 
         flxRegister(saveSettings, "Save Settings", "Save current settings to persistent storage");
         flxRegister(restoreSettings, "Restore Settings", "Restore saved settings");
         flxRegister(clearSettings, "Clear Settings", "Erase the settings saved on this device");
 
-        flxRegister(saveFallback, "Save to Fallback", "Save system settings to the fallback storage");                
-        flxRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage");        
-
+        flxRegister(saveFallback, "Save to Fallback", "Save system settings to the fallback storage");
+        flxRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage");
 
         flux.add(this);
     }
 
-    bool saveObjectToStorage(flxObject*, flxStorage *);
-    bool restoreObjectFromStorage(flxObject*, flxStorage *);    
+    bool saveObjectToStorage(flxObject *, flxStorage *);
+    bool restoreObjectFromStorage(flxObject *, flxStorage *);
 
-    flxStorage * _primaryStorage;
-    flxStorage * _fallbackStorage;
+    flxStorage *_primaryStorage;
+    flxStorage *_fallbackStorage;
 };
 extern flxSettingsSave &flxSettings;

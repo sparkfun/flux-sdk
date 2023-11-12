@@ -108,7 +108,6 @@ bool flxDevISM330Base::onInitialize(void)
         flxLog_E("ISM330 onInitialize: device did not reset");
         result = false;
     }
-    _begun = result;
     return result;
 }
 
@@ -206,7 +205,7 @@ uint8_t flxDevISM330Base::get_accel_data_rate()
 void flxDevISM330Base::set_accel_data_rate(uint8_t rate)
 {
     _accel_data_rate = rate;
-    if (_begun)
+    if (isInitialized())
         setAccelDataRate(rate);
 }
 uint8_t flxDevISM330Base::get_accel_full_scale()
@@ -216,7 +215,7 @@ uint8_t flxDevISM330Base::get_accel_full_scale()
 void flxDevISM330Base::set_accel_full_scale(uint8_t scale)
 {
     _accel_full_scale = scale;
-    if (_begun)
+    if (isInitialized())
         setAccelFullScale(scale);
 }
 uint8_t flxDevISM330Base::get_gyro_data_rate()
@@ -226,7 +225,7 @@ uint8_t flxDevISM330Base::get_gyro_data_rate()
 void flxDevISM330Base::set_gyro_data_rate(uint8_t rate)
 {
     _gyro_data_rate = rate;
-    if (_begun)
+    if (isInitialized())
         setGyroDataRate(rate);
 }
 uint8_t flxDevISM330Base::get_gyro_full_scale()
@@ -236,7 +235,7 @@ uint8_t flxDevISM330Base::get_gyro_full_scale()
 void flxDevISM330Base::set_gyro_full_scale(uint8_t scale)
 {
     _gyro_full_scale = scale;
-    if (_begun)
+    if (isInitialized())
         setGyroFullScale(scale);
 }
 uint8_t flxDevISM330Base::get_accel_filter_lp2()
@@ -246,7 +245,7 @@ uint8_t flxDevISM330Base::get_accel_filter_lp2()
 void flxDevISM330Base::set_accel_filter_lp2(uint8_t enable)
 {
     _accel_filter_lp2 = (bool)enable;
-    if (_begun)
+    if (isInitialized())
         setAccelFilterLP2((bool)enable);
 }
 uint8_t flxDevISM330Base::get_gyro_filter_lp1()
@@ -256,7 +255,7 @@ uint8_t flxDevISM330Base::get_gyro_filter_lp1()
 void flxDevISM330Base::set_gyro_filter_lp1(uint8_t enable)
 {
     _gyro_filter_lp1 = (bool)enable;
-    if (_begun)
+    if (isInitialized())
         setGyroFilterLP1((bool)enable);
 }
 uint8_t flxDevISM330Base::get_accel_slope_filter()
@@ -266,7 +265,7 @@ uint8_t flxDevISM330Base::get_accel_slope_filter()
 void flxDevISM330Base::set_accel_slope_filter(uint8_t slope)
 {
     _accel_slope_filter = slope;
-    if (_begun)
+    if (isInitialized())
         setAccelSlopeFilter(slope);
 }
 uint8_t flxDevISM330Base::get_gyro_lp1_bandwidth()
@@ -276,7 +275,7 @@ uint8_t flxDevISM330Base::get_gyro_lp1_bandwidth()
 void flxDevISM330Base::set_gyro_lp1_bandwidth(uint8_t bw)
 {
     _gyro_lp1_bandwidth = bw;
-    if (_begun)
+    if (isInitialized())
         setGyroLP1Bandwidth(bw);
 }
 

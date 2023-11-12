@@ -61,8 +61,6 @@ private:
     uint8_t get_frame_rate();
     void set_frame_rate(uint8_t);
 
-    bool _begun = false;
-
 public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevAMG8833, &flxDevAMG8833::read_device_temperature_C> deviceTemperatureC;

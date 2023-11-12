@@ -19,8 +19,8 @@
 
 #include "time.h"
 #include "lwip/apps/sntp.h"
+#include "esp_netif.h"
 
-#define kNTPServerAddress "pool.ntp.org"
 //----------------------------------------------------------------
 // Enabled Property setter/getters
 void flxNTPESP32::set_isEnabled(bool bEnabled)
@@ -73,8 +73,28 @@ bool flxNTPESP32::start(void)
         return false;
     }
     
-    // Leverage ESP32 Arduino setup
-    configTzTime(timeZone().c_str(), ntpServerOne().c_str(), ntpServerTwo().c_str());
+    // KDB - Nov 2023
+    // 
+    // We were using the helper method - configTZTime() in the Arudino ESP port, but
+    // it set the Timezone and the ntp servers (and got everything going). But for Flux,
+    // the timezone is handled by the framework Clock object -- which would cause 
+    // a conflict -- either this object could grab the TZ from the clock, which connects
+    // the two object together - not good design. Or just setup the NTP system, but skip
+    // the Time zone work . This is what is done here.
+    //
+    // The following are from the implementation of configTzTime() - minus the TZ setup.
+
+
+    esp_netif_init();
+    if(sntp_enabled()){
+        sntp_stop();
+    }
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_setservername(0, (char*)ntpServerOne().c_str());
+    sntp_setservername(1, (char*)ntpServerTwo().c_str());
+    sntp_init();
+    
+    // end configTZtime() inline
 
     // wait for time to sync if a delay is set. 
     // The indication that NTP is working is time moves to a current year

@@ -235,6 +235,17 @@ class flxFlux : public flxObjectContainer
 
     const char *deviceId(void);
 
+    // user set app specific name
+    void setLocalName(std::string name)
+    {
+        _localName = name;
+    }
+
+    std::string localName(void)
+    {
+        return _localName;
+    }
+
     void setApplication(flxApplication &theApp)
     {
         setApplication(&theApp);
@@ -255,9 +266,13 @@ class flxFlux : public flxObjectContainer
         return _theApplication;
     }
 
-    void setAppToken(uint8_t *data, size_t len);
+    void setAppToken(const uint8_t *data, size_t len);
 
     bool getAppToken(uint8_t token[32]);
+
+    // should we add a unique value to device names?
+    void setVerboseDevNames(bool bVerbose);
+    bool verboseDevNames(void);
 
   private:
     flxBusI2C _i2cDriver;
@@ -276,11 +291,14 @@ class flxFlux : public flxObjectContainer
 
     uint8_t _token[32];
     bool _hasToken;
+    bool _verboseDevNames;
+
+    std::string _localName;
 
     // Note private constructor...
     flxFlux()
         : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"}, _appClassID{nullptr},
-          _theApplication{nullptr}, _token{0}, _hasToken{false}
+          _theApplication{nullptr}, _token{0}, _hasToken{false}, _verboseDevNames{false}
     {
 
         // setup some default heirarchy things ...

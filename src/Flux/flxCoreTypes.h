@@ -6,7 +6,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 // flxCoreType.h
@@ -35,54 +35,168 @@
 class flxDescriptor
 {
   public:
-    flxDescriptor() : _name{""}, _description{""}, _title(nullptr)
+    flxDescriptor()
+        : _name{nullptr}, _nameAlloc{false}, _desc{nullptr}, _descAlloc{false}, _title(nullptr), _titleAlloc{false}
     {
     }
 
+    //-----------------------------------------------------------
     void setName(const char *new_name)
     {
+
+        if (_nameAlloc)
+        {
+            if (_name != nullptr)
+                delete _name;
+
+            _nameAlloc = false;
+        }
         _name = new_name;
-    }
-    void setName(const char *new_name, const char *new_desc)
-    {
-        _name = new_name;
-        setDescription(new_desc);
-    }
-    const char *name()
-    {
-        return _name.c_str();
-    }
-    std::string name_(void)
-    {
-        return _name;
-    }
-    void setDescription(const char *new_desc)
-    {
-        _description = new_desc;
-    }
-    const char *description()
-    {
-        return _description.c_str();
-    }
-    std::string description_(void)
-    {
-        return _description;
     }
 
-    // Title - mostly used for UX/Org structure
-    void setTitle(const char * title)
+    //-----------------------------------------------------------
+    void setName(const char *new_name, const char *new_desc)
     {
+        setName(new_name);
+        setDescription(new_desc);
+    }
+
+    //-----------------------------------------------------------
+    // Set name, but make a copy of the input name
+    void setNameAlloc(const char *new_name)
+    {
+        // clear out anything we currently have
+        setName("");
+
+        if (!new_name)
+            return;
+
+        int len = strlen(new_name) + 1;
+
+        char *pTmp = new char[len];
+        if (!pTmp)
+        {
+            flxLog_E("Unable to allocate memory for name");
+            return;
+        }
+        strncpy(pTmp, new_name, len);
+
+        _name = (const char *)pTmp;
+        _nameAlloc = true;
+    }
+
+    //-----------------------------------------------------------
+    const char *name()
+    {
+        return _name == nullptr ? "" : _name;
+    }
+
+    //-----------------------------------------------------------
+    std::string name_(void)
+    {
+        return std::string(_name);
+    }
+
+    //-----------------------------------------------------------
+    void setDescription(const char *new_desc)
+    {
+        if (_descAlloc)
+        {
+            if (_desc != nullptr)
+                delete _desc;
+
+            _descAlloc = false;
+        }
+        _desc = new_desc;
+    }
+
+    //-----------------------------------------------------------
+    // Set description, but make a copy of the input desc
+    void setDescriptionAlloc(const char *new_desc)
+    {
+        // clear out anything we currently have
+        setDescription("");
+
+        if (!new_desc)
+            return;
+
+        int len = strlen(new_desc) + 1;
+
+        char *pTmp = new char[len];
+        if (!pTmp)
+        {
+            flxLog_E("Unable to allocate memory for description");
+            return;
+        }
+        strncpy(pTmp, new_desc, len);
+
+        _desc = (const char *)pTmp;
+        _descAlloc = true;
+    }
+
+    //-----------------------------------------------------------
+    const char *description()
+    {
+        return _desc == nullptr ? "" : _desc;
+    }
+
+    //-----------------------------------------------------------
+    std::string description_(void)
+    {
+        return std::string(_desc);
+    }
+
+    //-----------------------------------------------------------
+    // Title - mostly used for UX/Org structure
+    void setTitle(const char *title)
+    {
+        if (_titleAlloc)
+        {
+            if (_title != nullptr)
+                delete _title;
+
+            _titleAlloc = false;
+        }
         _title = title;
     }
-    const char * title(void)
+    //-----------------------------------------------------------
+    // Set description, but make a copy of the input title
+    void setTitleAlloc(char *new_title)
+    {
+        // clear out anything we currently have
+        setTitle("");
+
+        if (!new_title)
+            return;
+
+        int len = strlen(new_title) + 1;
+
+        char *pTmp = new char[len];
+        if (!pTmp)
+        {
+            flxLog_E("Unable to allocate memory for title");
+            return;
+        }
+        strncpy(pTmp, new_title, len);
+
+        _title = (const char *)pTmp;
+        _titleAlloc = true;
+    }
+    //-----------------------------------------------------------
+    const char *title(void)
     {
         return _title;
     }
 
   protected:
-    std::string _name;
-    std::string _description;
-    const char * _title;
+    const char *_name;
+    bool _nameAlloc;
+
+    const char *_desc;
+    bool _descAlloc;
+
+    const char *_title;
+    bool _titleAlloc;
 };
 
 typedef enum
@@ -120,12 +234,10 @@ class flxDataVariable
     flxDataType_t type;
     flxDataAllType_t value;
 
-
-private: 
+  private:
     std::string _sValue;
 
-public:
-
+  public:
     flxDataVariable() : type{flxTypeNone}
     {
     }
@@ -177,7 +289,7 @@ public:
     void set(const char *v)
     {
         type = flxTypeString;
-        _sValue=v;
+        _sValue = v;
         value.str = _sValue.c_str();
     };
     void set(std::string &v)
@@ -1019,7 +1131,7 @@ template <typename T> class flxDataLimitSetType : public flxDataLimitType<T>
         addItem(name.c_str(), value);
     }
 
-    void addItem(const char *name, T value)    
+    void addItem(const char *name, T value)
     {
         flxDataLimitDesc limit;
         limit.name = name;

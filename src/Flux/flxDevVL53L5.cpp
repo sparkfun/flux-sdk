@@ -94,13 +94,13 @@ bool flxDevVL53L5::onInitialize(TwoWire &wirePort)
 {
     flxLog_W("VL53L5 is being initialized. This could take 10 seconds...");
 
-    _begun = SparkFun_VL53L5CX::begin(flxDevice::address(), wirePort);
-    if (_begun)
+    bool status = SparkFun_VL53L5CX::begin(flxDevice::address(), wirePort);
+    if (status)
     {
         SparkFun_VL53L5CX::setResolution(8*8);
         SparkFun_VL53L5CX::startRanging();
     }
-    return _begun;
+    return status;
 }
 
 // GETTER methods for output params
@@ -130,7 +130,7 @@ bool flxDevVL53L5::read_distance(flxDataArrayInt16 *distances)
 // methods for read-write properties
 uint32_t flxDevVL53L5::get_integration_time()
 {
-    if (_begun)
+    if (isInitialized())
         _integrationTime = SparkFun_VL53L5CX::getIntegrationTime();
     return _integrationTime;
 }
@@ -138,7 +138,7 @@ uint32_t flxDevVL53L5::get_integration_time()
 void flxDevVL53L5::set_integration_time(uint32_t intTime)
 {
     _integrationTime = intTime;
-    if (_begun)
+    if (isInitialized())
     {
         SparkFun_VL53L5CX::stopRanging();
         SparkFun_VL53L5CX::setIntegrationTime(intTime);
@@ -148,7 +148,7 @@ void flxDevVL53L5::set_integration_time(uint32_t intTime)
 
 uint8_t flxDevVL53L5::get_sharpener_percent()
 {
-    if (_begun)
+    if (isInitialized())
         _sharpenerPercent = SparkFun_VL53L5CX::getSharpenerPercent();
     return _sharpenerPercent;
 }
@@ -157,7 +157,7 @@ void flxDevVL53L5::set_sharpener_percent(uint8_t percent)
 {
     _sharpenerPercent = percent;
 
-    if (_begun)
+    if (isInitialized())
     {
         SparkFun_VL53L5CX::stopRanging();
         SparkFun_VL53L5CX::setSharpenerPercent(percent);
@@ -167,7 +167,7 @@ void flxDevVL53L5::set_sharpener_percent(uint8_t percent)
 
 uint8_t flxDevVL53L5::get_target_order()
 {
-    if (_begun)
+    if (isInitialized())
         _targetOrder = (uint8_t)SparkFun_VL53L5CX::getTargetOrder();
     return _targetOrder;
 }
@@ -175,7 +175,7 @@ uint8_t flxDevVL53L5::get_target_order()
 void flxDevVL53L5::set_target_order(uint8_t order)
 {
     _targetOrder = order;
-    if (_begun)
+    if (isInitialized())
     {
         SparkFun_VL53L5CX::stopRanging();
         SparkFun_VL53L5CX::setTargetOrder((SF_VL53L5CX_TARGET_ORDER)order);

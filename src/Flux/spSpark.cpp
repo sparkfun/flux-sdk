@@ -33,13 +33,13 @@ flxFlux &flux = flxFlux::get();
 bool flxFlux::start(bool bAutoLoad)
 {
 
-    // if we have an application, call the init method. 
+    // if we have an application, call the init method.
     // The intent is to give the app time to setup anything before
     // the system sets up
 
     if (_theApplication)
         _theApplication->onInit();
-    
+
     // setup our logging system.
     _logDriver.setOutput(flxSerial());
     flxLog.setLogDriver(_logDriver);
@@ -100,10 +100,10 @@ bool flxFlux::start(bool bAutoLoad)
             flxLog_E(F("Error during application start"));
             return false;
         }
-        // There is a chance, that after startup and device load, the 
+        // There is a chance, that after startup and device load, the
         // board name will change (devices are used to determine board name)
         // Soooo reset the name.
-         if (strlen(_theApplication->name()) > 0)
+        if (strlen(_theApplication->name()) > 0)
             this->setName(_theApplication->name());
     }
     return true;
@@ -153,6 +153,29 @@ void flxFlux::add(flxDevice *theDevice)
 {
     if (!theDevice->autoload())
         flxDeviceFactory::get().pruneAutoload(theDevice, Devices);
+
+    // do we want to use a verbose device name - one that includes an ID?
+    // start with our app setting. ...
+    bool isVerbose = _verboseDevNames;
+
+    if (!isVerbose)
+    {
+        // Check for any name collisions before we add the device to the list ...
+        for (auto device : Devices)
+        {
+            // If the same name, we need to use a verbose name with the added device.
+            if (!strcmp(device->name(), theDevice->name()))
+            {
+                isVerbose = true;
+                break;
+            }
+        }
+    }
+
+    // If using verbose naming , let's make a new name - 'NAME [ID]'.
+    //  ID = HEX for I2c device, DEC for SPI
+    if (isVerbose)
+        theDevice->addAddressToName();
 
     Devices.push_back(theDevice);
 }
@@ -285,7 +308,7 @@ const char *flxFlux::deviceId(void)
 //      Convert into ascii ints in python %    data = [ord(c) for c in ss]
 //      Map those numbers into a uint8_t array (i.e. uint8_t mykey[] = {...];)
 //
-void flxFlux::setAppToken(uint8_t *data, size_t len)
+void flxFlux::setAppToken(const uint8_t *data, size_t len)
 {
     if (!data || len == 0)
         return;
@@ -306,4 +329,25 @@ bool flxFlux::getAppToken(uint8_t outtok[32])
 
     memcpy(outtok, _token, 32);
     return true;
+}
+
+//---------------------------------------------------------------------------------
+// Manage the verbose name setting....
+void flxFlux::setVerboseDevNames(bool bVerbose)
+{
+    if (_verboseDevNames == bVerbose)
+        return;
+
+    _verboseDevNames = bVerbose;
+    if (bVerbose)
+    {
+        // Check for any name collisions before we add the device to the list ...
+        for (auto device : Devices)
+            device->addAddressToName();
+    }
+}
+
+bool flxFlux::verboseDevNames(void)
+{
+    return _verboseDevNames;
 }

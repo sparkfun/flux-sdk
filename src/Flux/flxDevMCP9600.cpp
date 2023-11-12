@@ -84,19 +84,18 @@ bool flxDevMCP9600::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevMCP9600::onInitialize(TwoWire &wirePort)
 {
-    _begun = MCP9600::begin(address(), wirePort);
-    return _begun;
+    return MCP9600::begin(address(), wirePort);
 }
 
 void flxDevMCP9600::set_AmbientResolution(uint8_t value)
 {
     _ambientResolution = value;
-    if (_begun)
+    if (isInitialized())
         MCP9600::setAmbientResolution((Ambient_Resolution)value);
 }
 uint8_t flxDevMCP9600::get_AmbientResolution(void)
 {
-    if (_begun)
+    if (isInitialized())
         _ambientResolution = MCP9600::getAmbientResolution();
     return _ambientResolution;
 }
@@ -104,12 +103,12 @@ uint8_t flxDevMCP9600::get_AmbientResolution(void)
 void flxDevMCP9600::set_ThermocoupleResolution(uint8_t value)
 {
     _thermoResolution = value;
-    if (_begun)
+    if (isInitialized())
         MCP9600::setThermocoupleResolution((Thermocouple_Resolution)value);
 }
 uint8_t flxDevMCP9600::get_ThermocoupleResolution(void)
 {
-    if (_begun)
+    if (isInitialized())
         _thermoResolution = MCP9600::getThermocoupleResolution();
     return _thermoResolution;
 }
@@ -117,12 +116,12 @@ uint8_t flxDevMCP9600::get_ThermocoupleResolution(void)
 void flxDevMCP9600::set_ThermocoupleType(uint8_t value)
 {
     _thermoType = value;
-    if (_begun)
+    if (isInitialized())
         MCP9600::setThermocoupleType((Thermocouple_Type)value);
 }
 uint8_t flxDevMCP9600::get_ThermocoupleType(void)
 {
-    if (_begun)
+    if (isInitialized())
         _thermoType = MCP9600::getThermocoupleType();
     return (_thermoType);
 }
@@ -130,12 +129,12 @@ uint8_t flxDevMCP9600::get_ThermocoupleType(void)
 void flxDevMCP9600::set_FilterCoefficient(uint8_t value)
 {
     _filterCoeff = value;
-    if (_begun)
+    if (isInitialized())
         MCP9600::setFilterCoefficient(value);
 }
 uint8_t flxDevMCP9600::get_FilterCoefficient(void)
 {
-    if (_begun)
+    if (isInitialized())
         _filterCoeff = MCP9600::getFilterCoefficient();
     return _filterCoeff;
 }
@@ -143,12 +142,12 @@ uint8_t flxDevMCP9600::get_FilterCoefficient(void)
 void flxDevMCP9600::set_BurstSamples(uint8_t value)
 {
     _burstSamples = value;
-    if (_begun)
+    if (isInitialized())
         MCP9600::setBurstSamples((Burst_Sample)value);
 }
 uint8_t flxDevMCP9600::get_BurstSamples(void)
 {
-    if (_begun)
+    if (isInitialized())
         _burstSamples = MCP9600::getBurstSamples();
     return _burstSamples;
 }

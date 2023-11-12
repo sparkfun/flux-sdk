@@ -76,7 +76,6 @@ private:
 
     int _resetPin = -1;
     int _mfioPin = -1;
-    bool _begun = false;
 
     // flags to prevent readBpm being called multiple times
     bool _heartRate = false;

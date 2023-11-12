@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 //
 // Define interfaces/base classes for output
 //
@@ -23,13 +23,13 @@
 
 #include <vector>
 
-// define a simple interface to output the actual JSON document, not 
+// define a simple interface to output the actual JSON document, not
 // the serialized string.
 //
 
-class flxIWriterJSON 
+class flxIWriterJSON
 {
-public:
+  public:
     virtual void write(JsonDocument &jsonDoc) = 0;
 };
 
@@ -38,7 +38,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
   public:
     //-----------------------------------------------------------------
-    flxFormatJSON() : buffer_size{BUFFER_SIZE}, _isFirstRun{true} {};
+    flxFormatJSON() : _pDoc{nullptr}, _buffer_size{BUFFER_SIZE}, _isFirstRun{true}, _pSectionName{nullptr} {};
 
     //-----------------------------------------------------------------
     // value methods
@@ -111,7 +111,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     void logValue(const std::string &tag, const char *value)
     {
         if (!_jSection.isNull())
-            (_jSection)[tag] = (char*)value;
+            (_jSection)[tag] = (char *)value;
     }
 
     //-----------------------------------------------------------------
@@ -163,14 +163,35 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     virtual void beginObservation(const char *szTitle = nullptr)
     {
         reset(); // just incase
+
+        if (!_pDoc)
+            setBufferSize(_buffer_size);
+
+        if (!_pDoc)
+            return;
+
         if (szTitle)
-            _jDoc["title"] = szTitle;
+            (*_pDoc)["title"] = szTitle;
     }
 
     //-----------------------------------------------------------------
     void beginSection(const char *szName)
     {
-        _jSection = _jDoc.createNestedObject(szName);
+        if (_pDoc)
+        {
+            _jSection = _pDoc->createNestedObject(szName);
+            _pSectionName = szName;
+        }
+    }
+    //-----------------------------------------------------------------
+    void endSection()
+    {
+        // if  there are no elements in the section (all params are disabled for example)
+        // just delete the object
+        if (_pDoc && _jSection.size() == 0 && _pSectionName != nullptr)
+            _pDoc->remove(_pSectionName);
+
+        _pSectionName = nullptr;
     }
     //-----------------------------------------------------------------
     void endObservation(void)
@@ -181,14 +202,21 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     //-----------------------------------------------------------------
     virtual void writeObservation()
     {
-        char szBuffer[buffer_size + 1];
-        size_t n = serializeJson(_jDoc, szBuffer, buffer_size);
+
+        if (!_pDoc)
+        {
+            flxLog_E(F("No JSON buffer available."));
+            return;
+        }
+
+        char szBuffer[_buffer_size + 1];
+        size_t n = serializeJson(*_pDoc, szBuffer, _buffer_size);
 
         // TODO: Add Error output
-        if (n > buffer_size + 1)
+        if (n > _buffer_size + 1)
         {
             flxLog_W(" JSON document buffer output buffer trimmed");
-            szBuffer[buffer_size] = '\0';
+            szBuffer[_buffer_size] = '\0';
         }
 
         // dump out mime type
@@ -201,10 +229,9 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
         outputObservation(szBuffer);
 
         // if we have any output writers that want the actual json document,
-        // send the mthe document.
-
-        for ( auto aWriter : _jsonWriters)
-            aWriter->write(_jDoc);
+        // send the document.
+        for (auto aWriter : _jsonWriters)
+            aWriter->write(*_pDoc);
     }
 
     //-----------------------------------------------------------------
@@ -216,14 +243,14 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     //-----------------------------------------------------------------
     void reset(void)
     {
-        _jDoc.clear();
+        if (_pDoc)
+            _pDoc->clear();
     }
-
-    size_t buffer_size;
 
     // we need to promote the add methods from our subclass - these take flxWriter() interfaces
     using flxOutputFormat::add;
 
+    //-----------------------------------------------------------------
     // Add methods to capture the json writers
     void add(flxIWriterJSON &newWriter)
     {
@@ -233,6 +260,8 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     {
         _jsonWriters.push_back(newWriter);
     }
+
+    //-----------------------------------------------------------------
     void remove(flxIWriterJSON *oldWriter)
     {
         auto iter = std::find(_jsonWriters.begin(), _jsonWriters.end(), oldWriter);
@@ -241,11 +270,37 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
             _jsonWriters.erase(iter);
     }
 
+    //-----------------------------------------------------------------
+    void setBufferSize(size_t new_size)
+    {
+        // Same?
+        if (new_size == _buffer_size && _pDoc)
+            return;
+
+        if (_pDoc)
+            delete _pDoc;
+
+        _pDoc = new DynamicJsonDocument(new_size);
+        if (!_pDoc)
+        {
+            _buffer_size = 0;
+            flxLog_E(F("Error allocating JSON buffer size"));
+            return;
+        }
+        _buffer_size = new_size;
+    }
+
+    //-----------------------------------------------------------------
+    size_t bufferSize(void)
+    {
+        return _buffer_size;
+    }
+
     // bring up our sub-class remove to handle standard writers
     using flxOutputFormat::remove;
 
-
   protected:
+    //-----------------------------------------------------------------
     template <typename T>
     void writeOutArrayDimension(JsonArray &jsonArray, T *&pData, flxDataArrayType<T> *theArray, uint16_t currentDim)
     {
@@ -284,10 +339,14 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
     JsonObject _jSection;
 
-    StaticJsonDocument<BUFFER_SIZE> _jDoc;
+    size_t _buffer_size;
+    // Pointer to the json document
 
-private:
-    std::vector<flxIWriterJSON *>  _jsonWriters;
+    DynamicJsonDocument *_pDoc;
+
+  private:
+    std::vector<flxIWriterJSON *> _jsonWriters;
 
     bool _isFirstRun;
+    const char *_pSectionName;
 };

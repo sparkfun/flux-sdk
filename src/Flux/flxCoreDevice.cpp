@@ -6,7 +6,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 /*
@@ -18,7 +18,6 @@
 #include "flxCoreDevice.h"
 #include "flxFlux.h"
 
-
 bool flxDevice::initialize()
 {
     flux.add(this);
@@ -26,6 +25,34 @@ bool flxDevice::initialize()
     return true;
 }
 
+// Input param/function methods to enable/disable all parameters
+void flxDevice::disable_all_parameters(void)
+{
+    for (auto param : getOutputParameters())
+        param->setEnabled(false);
+}
+
+void flxDevice::enable_all_parameters(void)
+{
+    for (auto param : getOutputParameters())
+        param->setEnabled(true);
+}
+
+//----------------------------------------------------------------
+// Add the address to the device name. Helps ID a device 
+void flxDevice::addAddressToName()
+{
+    // add the device address to the name of the device.
+    // Does it already exist?
+
+    if (strchr(name(), '[') != NULL)
+        return;
+
+    char szBuffer[64];
+    snprintf(szBuffer, sizeof(szBuffer), getKind() == flxDeviceKindSPI ? "%s [p%d]" : "%s [x%x]", name(), address());
+
+    setNameAlloc(szBuffer);
+}
 
 //----------------------------------------------------------------
 // Device Factory
@@ -68,7 +95,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
     {
 
         // Only autoload i2c devices
-        if ( deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
+        if (deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
             continue;
 
         deviceAddresses = deviceBuilder->getDefaultAddresses();
@@ -91,11 +118,17 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
                 }
                 else
                 {
-                    nDevs++;
                     pDevice->setName(deviceBuilder->getDeviceName());
                     pDevice->setAddress(deviceAddresses[i]);
                     pDevice->setAutoload();
-                    pDevice->initialize(i2cDriver);
+                    if (!pDevice->initialize(i2cDriver))
+                    {
+                        // device failed to init - delete it ...
+                        flxLog_E(F("Deviced %s failed to initialize."), deviceBuilder->getDeviceName());
+                        deviceBuilder->destroy(pDevice);
+                        continue;
+                    }
+                    nDevs++;
                 }
             }
         }

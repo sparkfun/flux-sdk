@@ -18,7 +18,7 @@
 #ifdef ESP32
 
 #define DEFAULT_DEFINED
-flxClockESP32 defaultClock;
+flxClockESP32 systemClock;
 
 #endif
 
@@ -28,13 +28,16 @@ flxClockESP32 defaultClock;
 _flxClock &flxClock = _flxClock::get();
 
 _flxClock::_flxClock()
-    : _defaultClock{nullptr}, _refClock{nullptr}, _lastRefCheck{0}, _lastConnCheck{0}, _bInitialized{false},
+    : _systemClock{nullptr}, _refClock{nullptr}, _lastRefCheck{0}, _lastConnCheck{0}, _bInitialized{false},
       _nameRefClock{kNoClockName}
 {
     // Set name and description
-    setName("Time Sources", "Manage time reference sources");
+    setName("Time Setup", "Manage time configuration and reference sources");
 
     flux.add(this);
+
+    // Timezone
+    flxRegister(timeZone, "The Time Zone", "Time zone setting string for the device");
 
     flxRegister(referenceClock, "Reference Clock", "The current reference clock source");
 
@@ -53,7 +56,7 @@ _flxClock::_flxClock()
     _refClockLimitSet.addItem("", kNoClockName);
 
 #ifdef DEFAULT_DEFINED
-    setDefaultClock(&defaultClock);
+    setSystemClock(&systemClock);
 #endif
 }
 
@@ -83,7 +86,6 @@ void _flxClock::set_ref_clock(std::string selClock)
     _nameRefClock = selClock;
 
     _refClock = findRefClockByName(selClock.c_str());
-
 }
 
 //----------------------------------------------------------------
@@ -92,6 +94,33 @@ std::string _flxClock::get_ref_clock(void)
     return _nameRefClock;
 }
 
+//----------------------------------------------------------------
+void _flxClock::set_timezone(std::string tz)
+{
+    if (tz.empty())
+        return;
+
+    _tzStorage = tz;
+    if (_bInitialized && _systemClock)
+        _systemClock->set_timezone(tz.c_str());
+    
+}
+//----------------------------------------------------------------
+std::string _flxClock::get_timezone(void)
+{
+    std::string stmp = "";
+    // do we have a system clock?
+    if (_systemClock)
+    {
+        char szBuffer[128];
+        if (_systemClock->get_timezone(szBuffer, sizeof(szBuffer)) > 0)
+            stmp = szBuffer;
+    }
+    else if (!_tzStorage.empty())
+        stmp = _tzStorage;
+
+    return stmp;
+}
 //----------------------------------------------------------------
 // Add a reference clock to the system
 void _flxClock::addReferenceClock(flxIClock *clock, const char *name)
@@ -136,8 +165,8 @@ int _flxClock::addConnectedClock(flxIClock *clock)
 //----------------------------------------------------------------
 uint32_t _flxClock::epoch()
 {
-    if (_defaultClock)
-        return _defaultClock->get_epoch();
+    if (_systemClock)
+        return _systemClock->get_epoch();
 
     // We need something ...
     return millis() / 1000; // TODO - Revisit
@@ -148,10 +177,10 @@ uint32_t _flxClock::now()
     return epoch();
 }
 //----------------------------------------------------------------
-void _flxClock::setDefaultClock(flxIClock *clock)
+void _flxClock::setSystemClock(flxISystemClock *clock)
 {
     if (clock)
-        _defaultClock = clock;
+        _systemClock = clock;
 }
 
 //----------------------------------------------------------------
@@ -159,7 +188,11 @@ void _flxClock::setDefaultClock(flxIClock *clock)
 
 void _flxClock::updateConnectedClocks(void)
 {
-    uint32_t epoch = _defaultClock->get_epoch();
+
+    if (!_systemClock)
+        return;
+
+    uint32_t epoch = _systemClock->get_epoch();
 
     if (!epoch)
         return;
@@ -173,7 +206,7 @@ void _flxClock::updateConnectedClocks(void)
 void _flxClock::updateClock()
 {
 
-    if (!_bInitialized || !_defaultClock)
+    if (!_bInitialized || !_systemClock)
         return;
 
     flxIClock *theClock = _refClock;
@@ -199,7 +232,7 @@ void _flxClock::updateClock()
         uint32_t epoch = theClock->get_epoch();
         if (epoch)
         {
-            _defaultClock->set_epoch(epoch);
+            _systemClock->set_epoch(epoch);
 
             // update our connected clocks?
             if (updateConnectedOnUpdate())
@@ -213,6 +246,10 @@ void _flxClock::updateClock()
 //----------------------------------------------------------------
 bool _flxClock::initialize(void)
 {
+    // setup time zone for the system....
+    if (!_tzStorage.empty() && _systemClock)
+        _systemClock->set_timezone(_tzStorage.c_str());
+
     _bInitialized = true;
     updateClock();
     return true;

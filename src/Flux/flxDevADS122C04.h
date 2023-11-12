@@ -66,8 +66,6 @@ private:
     uint8_t _wireMode;
     uint8_t _sampleRate;
 
-    bool _begun = false;
-
 public:
     flxPropertyRWUint8<flxDevADS122C04, &flxDevADS122C04::get_wire_mode, &flxDevADS122C04::set_wire_mode> wireMode
            = { ADS122C04_4WIRE_MODE, { { "4-Wire Mode", ADS122C04_4WIRE_MODE }, { "3-Wire Mode", ADS122C04_3WIRE_MODE },

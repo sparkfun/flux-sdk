@@ -437,8 +437,8 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
         // Secure string? 
         if ( stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
         {
-            // get buffer length 
-            len = stBlk->getBytesLength(name());
+            // get buffer length. Note, add one to make sure we have room for line termination
+            len = stBlk->getBytesLength(name()) + 1;
             if (!len)
                 return false;
 
@@ -1337,7 +1337,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         // setup a default name for this device.
         char szBuffer[64];
         snprintf(szBuffer, sizeof(szBuffer), "flxObject%04u", getNextNameNumber());
-        setName(szBuffer);
+        setNameAlloc(szBuffer); // make sure we create a copy - this name is stack based
     }
     virtual ~flxObject()
     {

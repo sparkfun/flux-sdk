@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *---------------------------------------------------------------------------------
  * QwiicLog.h
@@ -27,8 +27,8 @@
 #include <initializer_list>
 #include <vector>
 
-#include "flxOutput.h"
 #include "flxFlux.h"
+#include "flxOutput.h"
 
 // Define the QwiicLog class
 class flxLogger : public flxActionType<flxLogger>
@@ -41,6 +41,16 @@ class flxLogger : public flxActionType<flxLogger>
 
     std::string get_timestamp(void);
 
+    bool get_id_enable(void);
+    void set_id_enable(bool);
+
+    std::string get_device_id(void);
+
+    bool get_name_enable(void);
+    void set_name_enable(bool);
+
+    std::string get_name(void);
+
     bool get_num_mode(void);
     void set_num_mode(bool);
 
@@ -48,13 +58,12 @@ class flxLogger : public flxActionType<flxLogger>
 
     void reset_sample_number(const uint &number = 0);
 
-    
   public:
     flxLogger();
 
     // output a general message
-    void logMessage(char * header, char * message);
-    
+    void logMessage(char *header, char *message);
+
     // Template trick - use template varargs to allow multiple objs to be
     // added as part of the constructor call. Note, first arg is a writer,
     // object or property to imply some sort of typing to the call. The
@@ -242,6 +251,14 @@ class flxLogger : public flxActionType<flxLogger>
     // output parameter for the timestamp
     flxParameterOutString<flxLogger, &flxLogger::get_timestamp> timestamp;
 
+    // output ID to the log
+    flxPropertyRWBool<flxLogger, &flxLogger::get_id_enable, &flxLogger::set_id_enable> enableIDOutput = {false};
+    flxParameterOutString<flxLogger, &flxLogger::get_device_id> getDeviceID;
+
+    // output Local name to the log
+    flxPropertyRWBool<flxLogger, &flxLogger::get_name_enable, &flxLogger::set_name_enable> enableNameOutput = {false};
+    flxParameterOutString<flxLogger, &flxLogger::get_name> getLocalName;
+
     // Sample number - this increments and outputs a number for each sample taken.
     flxPropertyRWBool<flxLogger, &flxLogger::get_num_mode, &flxLogger::set_num_mode> numberMode = {false};
 
@@ -252,11 +269,12 @@ class flxLogger : public flxActionType<flxLogger>
     flxParameterInUint<flxLogger, &flxLogger::reset_sample_number> resetSampleNumber = {0, 10000};
 
   private:
+    void updateTimeParameterName(void);
     // Output devices
     std::vector<flxOutputFormat *> _Formatters;
 
     // The things we're logging
-    flxOperationContainer _objsToLog;
+    flxOperationContainer _opsToLog;
     flxParameterOutList _paramsToLog;
     flxPropertyList _propsToLog;
 
@@ -266,6 +284,11 @@ class flxLogger : public flxActionType<flxLogger>
     // Timestamp things
     Timestamp_t _timestampType;
 
+    // output device id?
+    bool _outputDeviceID;
+
+    bool _outputLocalName;
+    
     bool _sampleNumberEnabled;
     uint32_t _currentSampleNumber;
 
@@ -360,7 +383,7 @@ class flxLogger : public flxActionType<flxLogger>
     void _add(flxOperation *op)
     {
         if (op != nullptr)
-            _objsToLog.push_back(op);
+            _opsToLog.push_back(op);
     }
 
     void _add(flxParameterOut &param)

@@ -139,10 +139,15 @@ bool flxWiFiESP32::connect(void)
         {
             flxLog_E_(F("Unable to connect to a provided WiFi access point. Verify AP availability and credentials."));
 
+            // TODO: Revisit
+            // back to normal esp logging
+            esp_log_level_set("wifi", level);
+
             WiFi.disconnect(true);
             return false;
         }
     }
+    // TODO: Revisit
     // back to normal esp logging
     esp_log_level_set("wifi", level);
 
@@ -214,7 +219,10 @@ uint flxWiFiESP32::rating(void)
 
     int8_t rssi = WiFi.RSSI();
 
-    return rssi > -40 ? kWiFiLevelExcellent : rssi > -60 ? kWiFiLevelGood: rssi > -80 ? kWiFiLevelFair : kWiFiLevelPoor;
+    return rssi > -40   ? kWiFiLevelExcellent
+           : rssi > -60 ? kWiFiLevelGood
+           : rssi > -80 ? kWiFiLevelFair
+                        : kWiFiLevelPoor;
 }
 
 #endif

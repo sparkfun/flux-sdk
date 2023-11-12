@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #include "flxUtils.h"
 
@@ -166,7 +165,7 @@ const std::string &flx_utils::to_string(std::string const &data)
     return data;
 }
 //-------------------------------------------------------------------
-std::string flx_utils::to_string(char * const data)
+std::string flx_utils::to_string(char *const data)
 {
     std::string stmp = data;
     return stmp;
@@ -256,7 +255,7 @@ std::string flx_utils::to_string(bool const data)
 }
 
 //-------------------------------------------------------------------
-std::string flx_utils::strtrim(const std::string& str, const std::string& whitespace)
+std::string flx_utils::strtrim(const std::string &str, const std::string &whitespace)
 {
     const auto strBegin = str.find_first_not_of(whitespace);
     if (strBegin == std::string::npos)
@@ -267,36 +266,33 @@ std::string flx_utils::strtrim(const std::string& str, const std::string& whites
 
     return str.substr(strBegin, strRange);
 }
-// Simple data encoder - using a randome number gnerator and XOR
-// because this uses xor - encode/decode are the same 
+// Simple data encoder - using a random number generator and XOR
+// because this uses xor - encode/decode are the same
 
 static void simple_encode(uint8_t *source, uint8_t *dest, size_t len, uint32_t key)
 {
     randomSeed(key);
 
-    for(int i =0; i < len; i++)
-        *dest++ = *source++ ^ random(1,255);
-
+    for (int i = 0; i < len; i++)
+        *dest++ = *source++ ^ random(1, 255);
 }
 void flx_utils::encode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key)
 {
-    simple_encode(source, dest, len ,key);
+    simple_encode(source, dest, len, key);
 }
-
 
 void flx_utils::decode_data(uint8_t *source, uint8_t *dest, size_t len, uint32_t key)
 {
-    simple_encode(source, dest, len ,key);    
+    simple_encode(source, dest, len, key);
 }
 
-
-bool flx_utils::encode_data_aes( uint8_t key[32], unsigned char iv[16], char * source, char * output, size_t len )
+bool flx_utils::encode_data_aes(uint8_t key[32], unsigned char iv[16], char *source, char *output, size_t len)
 {
     if (!source || !output)
         return false;
 
-    // Expect intputs to be in 16 byte blocks.
-    if (len % 16 != 0 )
+    // Expect inputs to be in 16 byte blocks.
+    if (len % 16 != 0)
     {
         flxLog_E(F("Invalid data encryption block size."));
         return false;
@@ -304,14 +300,14 @@ bool flx_utils::encode_data_aes( uint8_t key[32], unsigned char iv[16], char * s
 
     mbedtls_aes_context ctxAES;
     int rc = mbedtls_aes_setkey_enc(&ctxAES, key, 256);
-    if (rc != 0 )
+    if (rc != 0)
     {
         flxLog_E(F("Invalid encryption key length"));
         return false;
     }
-    rc = mbedtls_aes_crypt_cbc(&ctxAES, MBEDTLS_AES_ENCRYPT, len, iv, (unsigned char*)source, (unsigned char*)output);
+    rc = mbedtls_aes_crypt_cbc(&ctxAES, MBEDTLS_AES_ENCRYPT, len, iv, (unsigned char *)source, (unsigned char *)output);
 
-    if (rc != 0 )
+    if (rc != 0)
     {
         flxLog_E(F("Invalid encryption key length"));
         return false;
@@ -321,13 +317,13 @@ bool flx_utils::encode_data_aes( uint8_t key[32], unsigned char iv[16], char * s
 
     return true;
 }
-bool flx_utils::decode_data_aes( uint8_t * key, unsigned char iv[16], char * source, char * output, size_t len )
+bool flx_utils::decode_data_aes(uint8_t *key, unsigned char iv[16], char *source, char *output, size_t len)
 {
     if (!source || !output)
         return false;
 
-    // Expect intputs to be in 16 byte blocks.
-    if (len % 16 != 0 )
+    // Expect inputs to be in 16 byte blocks.
+    if (len % 16 != 0)
     {
         flxLog_E(F("Invalid data encryption block size."));
         return false;
@@ -335,14 +331,14 @@ bool flx_utils::decode_data_aes( uint8_t * key, unsigned char iv[16], char * sou
 
     mbedtls_aes_context ctxAES;
     int rc = mbedtls_aes_setkey_dec(&ctxAES, key, 256);
-    if (rc != 0 )
+    if (rc != 0)
     {
         flxLog_E(F("Invalid decryption key length"));
         return false;
     }
-    rc = mbedtls_aes_crypt_cbc (&ctxAES, MBEDTLS_AES_DECRYPT, len, iv, (unsigned char*)source, (unsigned char*)output);
+    rc = mbedtls_aes_crypt_cbc(&ctxAES, MBEDTLS_AES_DECRYPT, len, iv, (unsigned char *)source, (unsigned char *)output);
 
-    if (rc != 0 )
+    if (rc != 0)
     {
         flxLog_E(F("Invalid decryption key length"));
         return false;
@@ -368,9 +364,9 @@ void flx_utils::uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint3
 }
 //---------------------------------------------------------------------------------------------------
 // Return a ISO8601 timestamp
-void flx_utils::timestampISO8601( time_t &t_time, char * buffer, size_t length, bool bTZ)
+void flx_utils::timestampISO8601(time_t &t_time, char *buffer, size_t length, bool bTZ)
 {
-   
+
     struct tm *tmLocal = localtime(&t_time);
     strftime(buffer, length, "%G-%m-%dT%T", tmLocal);
 
@@ -401,7 +397,7 @@ void flx_utils::timestampISO8601( time_t &t_time, char * buffer, size_t length, 
 
 //---------------------------------------------------------------------------------------------------
 // formatBytes()
-//   
+//
 // Return a formatted byte string. This returns values of B (1000), not iB (1024)
 
 void flx_utils::formatByteString(uint64_t nBytes, uint prec, char *szBuffer, size_t len)
@@ -415,14 +411,45 @@ void flx_utils::formatByteString(uint64_t nBytes, uint prec, char *szBuffer, siz
     if (prec < 0)
         prec = 0;
 
-    double tmp1 = floor( (nBytes ? log(nBytes) : 0) / log(1000.));
+    double tmp1 = floor((nBytes ? log(nBytes) : 0) / log(1000.));
 
     // overflow our name array?
-    if ( tmp1 > (sizeof(sizeNames)/sizeof(char*))-1)
-        tmp1 = (sizeof(sizeNames)/sizeof(char*))-1;
+    if (tmp1 > (sizeof(sizeNames) / sizeof(char *)) - 1)
+        tmp1 = (sizeof(sizeNames) / sizeof(char *)) - 1;
 
     char szFormat[32];
     snprintf(szFormat, sizeof(szFormat), "%%.%df%%s", prec);
-    snprintf(szBuffer, len, szFormat, nBytes/pow(1000., tmp1), sizeNames[(int)tmp1]);
+    snprintf(szBuffer, len, szFormat, nBytes / pow(1000., tmp1), sizeNames[(int)tmp1]);
+}
 
+//
+//---------------------------------------------------------------------------------------
+/// createVariableName()
+///
+/// @brief     Creates a valid arduino variable name
+/// @param[In] szInVariable the name to convert
+/// @param[Out] szOutVariable the converted name - assumed to same len as in variable.
+///
+/// @return true on success, false on failure
+///
+bool flx_utils::createVariableName(const char *szInVariable, char *szOutVariable)
+{
+    if (!szInVariable || !szOutVariable)
+        return false;
+
+    size_t nChar = strlen(szInVariable);
+
+    int idst = 0;
+    int isrc = 0;
+    for (; isrc < nChar; isrc++)
+    {
+        // pass through alphanumeric and underscores
+        if (std::isalnum(szInVariable[isrc]) || szInVariable[isrc] == '_')
+            szOutVariable[idst++] = szInVariable[isrc];
+        else if (szInVariable[isrc] == ' ') // spaces to underlines
+            szOutVariable[idst++] = '_';
+    }
+    szOutVariable[idst] = '\0';
+
+    return (strlen(szOutVariable) > 1);
 }

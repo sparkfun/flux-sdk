@@ -6,13 +6,12 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
-#include "flxFlux.h"
 #include "flxSettingsSerial.h"
+#include "flxFlux.h"
 #include "flxSerialField.h"
 #include "flxUtils.h"
 #include <ctype.h>
@@ -120,63 +119,63 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
     bool bHasLimits = false;
     char limitRange[64] = {'\0'};
 
-    flxDataLimit *propLimit = pProp->dataLimit();   
-    if (propLimit )
+    flxDataLimit *propLimit = pProp->dataLimit();
+    if (propLimit)
     {
         // limits sets are handled in another routine
-        if ( propLimit->type() == flxDataLimitTypeSet)
+        if (propLimit->type() == flxDataLimitTypeSet)
             return drawPage<flxProperty>(pCurrent, pProp, propLimit, true);
 
-        if ( propLimit->type() == flxDataLimitTypeRange)
+        if (propLimit->type() == flxDataLimitTypeRange)
         {
-            bHasLimits=true;
+            bHasLimits = true;
             const flxDataLimitList limitTags = propLimit->limits();
-            if(limitTags.size() > 1)
-                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(), limitTags.at(1).name.c_str());
+            if (limitTags.size() > 1)
+                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(),
+                         limitTags.at(1).name.c_str());
         }
     }
-    
+
     // The data editor we're using - serial field
     flxSerialField theDataEditor;
 
     // let's edit the property value
-	flxEditResult_t result;
-    
+    flxEditResult_t result;
+
     // Header
     drawPageHeader(pCurrent, pProp->name());
 
     // Editing Intro
-    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(),
-                  flxGetTypeName(pProp->type()));
+    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(), flxGetTypeName(pProp->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
     while (true)
     {
-    	if (bHasLimits && strlen(limitRange) > 0 )
-    	    Serial.printf("\tRange for %s is %s\n\r", pProp->name(), limitRange);
+        if (bHasLimits && strlen(limitRange) > 0)
+            Serial.printf("\tRange for %s is %s\n\r", pProp->name(), limitRange);
 
-    	// prompt
-    	Serial.printf("\t%s = ", pProp->name());
+        // prompt
+        Serial.printf("\t%s = ", pProp->name());
 
-    	// Call the property editValue() method with our editor
-    	result = pProp->editValue(theDataEditor);
+        // Call the property editValue() method with our editor
+        result = pProp->editValue(theDataEditor);
 
-    	Serial.printf("\n\r\n\r");
+        Serial.printf("\n\r\n\r");
 
-    	if (result == flxEditOutOfRange)
-    	{
-        	Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", limitRange);
-        	theDataEditor.beep();
-        	delay(kMessageDelayTimeout/3);
-    	}
-       	else 
-       		break;
+        if (result == flxEditOutOfRange)
+        {
+            Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", limitRange);
+            theDataEditor.beep();
+            delay(kMessageDelayTimeout / 3);
+        }
+        else
+            break;
     }
-       		 	
+
     if (result == flxEditSuccess)
     {
-        _bIsDirty=true;
+        _bIsDirty = true;
         Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());
     }
     else
@@ -309,24 +308,25 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
     bool bHasLimits = false;
     char limitRange[64] = {'\0'};
 
-    flxDataLimit *propLimit = pParam->dataLimit();   
-    if (propLimit )
+    flxDataLimit *propLimit = pParam->dataLimit();
+    if (propLimit)
     {
         // limits sets are handled in another routine
-        if ( propLimit->type() == flxDataLimitTypeSet)
-            return drawPage<flxParameterIn>(pCurrent, pParam, propLimit );
-            
-        if ( propLimit->type() == flxDataLimitTypeRange)
+        if (propLimit->type() == flxDataLimitTypeSet)
+            return drawPage<flxParameterIn>(pCurrent, pParam, propLimit);
+
+        if (propLimit->type() == flxDataLimitTypeRange)
         {
-            bHasLimits=true;
+            bHasLimits = true;
             const flxDataLimitList limitTags = propLimit->limits();
-            if(limitTags.size() > 1)
-                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(), limitTags.at(1).name.c_str());
+            if (limitTags.size() > 1)
+                snprintf(limitRange, sizeof(limitRange), "[%s to %s]", limitTags.at(0).name.c_str(),
+                         limitTags.at(1).name.c_str());
         }
     }
     // The data editor we're using - serial field
     flxSerialField theDataEditor;
-   
+
     flxEditResult_t result;
 
     // Header
@@ -334,15 +334,14 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
 
     // if the parameter is a void type (flxTypeNone),
     // Editing Intro
-    Serial.printf("\tEnter the value to pass into `%s`(<%s>)\n\r\n\r", pParam->name(),
-                  flxGetTypeName(pParam->type()));
+    Serial.printf("\tEnter the value to pass into `%s`(<%s>)\n\r\n\r", pParam->name(), flxGetTypeName(pParam->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 
     while (true)
     {
-        if (bHasLimits && strlen(limitRange) > 0 )
-    	    Serial.printf("\tRange for %s is %s\n\r", pParam->name(), limitRange);
+        if (bHasLimits && strlen(limitRange) > 0)
+            Serial.printf("\tRange for %s is %s\n\r", pParam->name(), limitRange);
 
         // prompt
         Serial.printf("\t%s = ", pParam->name());
@@ -356,9 +355,9 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
         {
             Serial.printf("\tERROR: The entered value is out of range %s \n\r\n\r", limitRange);
             theDataEditor.beep();
-            delay(kMessageDelayTimeout/3);
+            delay(kMessageDelayTimeout / 3);
         }
-        else 
+        else
             break;
     }
 
@@ -371,7 +370,6 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
 
     return result == flxEditSuccess;
 }
-
 
 //-----------------------------------------------------------------------------
 // drawPage() - VOID Input Parameter Editing edition
@@ -386,12 +384,11 @@ bool flxSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameter
 
     // let's get a value for the parameter
 
-
     // Header
     drawPageHeader(pCurrent, pParam->name());
 
     uint8_t selected = 'y';
-    flxParameterInVoidType * pVoid = reinterpret_cast<flxParameterInVoidType *>(pParam);
+    flxParameterInVoidType *pVoid = reinterpret_cast<flxParameterInVoidType *>(pParam);
 
     // prompt before calling (some void calls do their own prompt/ux)
     if (pVoid->prompt)
@@ -451,7 +448,6 @@ void flxSettingsSerial::drawPageHeader(flxObject *pCurrent, const char *szItem)
     char szBuffer[kOutputBufferSize];
     char szOutput[kOutputBufferSize];
 
-
     memset(szBuffer, '\0', kOutputBufferSize);
     memset(szOutput, '\0', kOutputBufferSize);
     Serial.println();
@@ -510,8 +506,28 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
 
     if (pDesc->title())
         Serial.printf("\n\r    %s\n\r", pDesc->title());
-        
+
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
+}
+//-----------------------------------------------------------------------------
+// drawMenuEntry()
+//
+// Draw the entry in the menu for the give item - output parameter version
+//
+void flxSettingsSerial::drawMenuEntry(uint item, flxParameter *pParam)
+{
+
+    if (!pParam)
+        return;
+
+    if (pParam->title())
+        Serial.printf("\n\r    %s\n\r", pParam->title());
+
+    Serial.printf("\t%2d)  %s - %s", item, pParam->name(), pParam->description());
+    if (!pParam->enabled())
+        Serial.printf("        {disabled}");
+
+    Serial.printf("\n\r");
 }
 //-----------------------------------------------------------------------------
 // drawMenuEntry()  -- non-object edition
@@ -552,7 +568,7 @@ int flxSettingsSerial::drawMenu(flxObject *pCurrent, uint level)
     for (auto prop : pCurrent->getProperties())
     {
         if (prop->hidden())
-            break; 
+            break;
         level++;
         drawMenuEntry(level, prop);
     }
@@ -590,15 +606,12 @@ int flxSettingsSerial::selectMenu(flxObject *pCurrent, uint level)
     return level;
 }
 
-
-
 int flxSettingsSerial::drawMenu(std::vector<std::string> &entries, uint level)
 {
     if (entries.size() == 0)
         return level;
 
-    
-    for (auto item : entries )
+    for (auto item : entries)
     {
         level++;
         drawMenuEntry(level, item.c_str());
@@ -851,7 +864,7 @@ uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint t
     unsigned long startTime = millis();
 
     uint8_t chIn;
-    uint    current=0;
+    uint current = 0;
     uint8_t number;
 
     while (true)
@@ -863,7 +876,7 @@ uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint t
             if (isYN)
             {
                 number = menuEventYN(chIn);
-                if( number )
+                if (number)
                     break;
             }
             else
@@ -871,24 +884,24 @@ uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint t
                 number = menuEventNormal(chIn, maxEntry, current * 10);
 
                 // Jump out of this menu
-                if ( number == kReadBufferEscape || number == kReadBufferExit)
+                if (number == kReadBufferEscape || number == kReadBufferExit)
                     break;
 
                 // user hit return - do we have pending data.
-                if ( number == kReadBufferReturn )
+                if (number == kReadBufferReturn)
                 {
-                    // Pending selection? 
-                    if ( current )
+                    // Pending selection?
+                    if (current)
                     {
                         number = current;
                         break;
                     }
                     // nothing, just continue
                     continue;
-                }   // no match?
-                else if ( number == kReadBufferNoMatch )
+                } // no match?
+                else if (number == kReadBufferNoMatch)
                 {
-                    // Invalid entry 
+                    // Invalid entry
                     Serial.write(kCodeBell);
                     // reset timeout
                     startTime = millis();
@@ -896,10 +909,10 @@ uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint t
                 }
 
                 // Add up the curent digits - for multi digit entries
-                current = current * 10 + number; 
+                current = current * 10 + number;
 
                 // Is there room for a possible additional digit? If not, return this number
-                if ( current * 10 >  maxEntry)
+                if (current * 10 > maxEntry)
                 {
                     number = current;
                     break;
@@ -918,7 +931,7 @@ uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint t
         if ((millis() - startTime) > timeout)
         {
             // number in the queue?
-            if ( current )
+            if (current)
                 number = current;
             else
             {
@@ -946,7 +959,7 @@ uint8_t flxSettingsSerial::getMenuSelectionYN(uint timeout)
 
 void flxSettingsSerial::drawEntryBanner(void)
 {
-    // Let's draw a header as we enter 
+    // Let's draw a header as we enter
 
     flux.writeBanner();
 
@@ -960,7 +973,6 @@ void flxSettingsSerial::drawEntryBanner(void)
     memset(szBuffer, '\0', sizeof(szBuffer));
     strftime(szBuffer, sizeof(szBuffer), "%G-%m-%dT%T", tmLocal);
     Serial.printf("Time: %s\n\r", szBuffer);
-
 
     // uptime
     uint32_t days, hours, minutes, secs, mills;
@@ -978,11 +990,10 @@ void flxSettingsSerial::drawEntryBanner(void)
 bool flxSettingsSerial::loop(void)
 {
 
-
     if (_systemRoot && Serial.available())
     {
-        _bIsDirty=false;
-        
+        _bIsDirty = false;
+
         on_editing.emit(1);
         drawEntryBanner();
 
@@ -1002,7 +1013,6 @@ bool flxSettingsSerial::loop(void)
             on_finished.emit();
         }
         on_editing.emit(0);
-        
     }
 
     return false;
