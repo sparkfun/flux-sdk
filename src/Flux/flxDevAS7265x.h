@@ -51,49 +51,76 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
     bool execute(void);
 
   private:
+
+    // property methods
+
+    bool get_indicator(void);
+    void set_indicator(bool);
+
+    bool _indicator;
+
+
+
+
     // Parameter methods
-    float read_calA();
-    float read_calB();
-    float read_calC();
-    float read_calD();
-    float read_calE();
-    float read_calF();
+    bool  read_output_type(void);
+    float read_A(void);
+    float read_B(void);
+    float read_C(void);
+    float read_D(void);
+    float read_E(void);
+    float read_F(void);
 
-    float read_calG();
-    float read_calH();
-    float read_calI();
-    float read_calJ();
-    float read_calK();
-    float read_calL();
+    float read_G(void);
+    float read_H(void);
+    float read_I(void);
+    float read_J(void);
+    float read_K(void);
+    float read_L(void);
 
-    float read_calR();
-    float read_calS();
-    float read_calT();
-    float read_calU();
-    float read_calV();
-    float read_calW();
+    float read_R(void);
+    float read_S(void);
+    float read_T(void);
+    float read_U(void);
+    float read_V(void);
+    float read_W(void);
 
   public:
 
-    // Define our output parameters - specify the get functions to call.
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calA> outCalA;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calB> outCalB;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calC> outCalC;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calD> outCalD;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calE> outCalE;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calF> outCalF;      
+    // Properties
 
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calG> outCalG;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calH> outCalH;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calI> outCalI;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calJ> outCalJ;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calK> outCalK;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calL> outCalL;
+    // Read with LED active?
 
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calR> outCalR;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calS> outCalS;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calT> outCalT;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calU> outCalU;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calV> outCalV;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_calW> outCalW;              
+    flxPropertyBool<flxDevAS7265X> readWithLED = {false};
+
+    flxPropertyRWBool<flxDevAS7265X, &flxDevAS7265X::get_indicator, &flxDevAS7265X::set_indicator> enableIndicator = {true};
+
+    flxPropertyBool<flxDevAS7265X> outputCal = {true};
+
+
+    // Outputs
+    // define parameters for calibrarted outputs
+    flxParameterOutBool<flxDevAS7265X, &flxDevAS7265X::read_output_type> outputType;
+
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_A> outA;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_B> outB;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_C> outC;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_D> outD;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_E> outE;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_F> outF;      
+
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_G> outG;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_H> outH;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_I> outI;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_J> outJ;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_K> outK;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_L> outL;
+
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_R> outR;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_S> outS;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_T> outT;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_U> outU;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_V> outV;
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_W> outW;      
+
 };

@@ -31,34 +31,41 @@ flxRegisterDevice(flxDevAS7265X);
 //----------------------------------------------------------------------------------------------------------
 /// @brief Constructor
 ///
-flxDevAS7265X::flxDevAS7265X() 
+flxDevAS7265X::flxDevAS7265X() : _indicator{true}
 {
 
     setName(getDeviceName(), "AS7265X Triad Spectroscopy Sensor");
 
-    // Register output params
-    flxRegister(outCalA, "Calibrated A", "Calibrated channel A");
-    flxRegister(outCalB, "Calibrated B", "Calibrated channel B");
-    flxRegister(outCalC, "Calibrated C", "Calibrated channel C");
-    flxRegister(outCalD, "Calibrated D", "Calibrated channel D");
-    flxRegister(outCalE, "Calibrated E", "Calibrated channel E");
-    flxRegister(outCalF, "Calibrated F", "Calibrated channel F");
+    // Properties
+    flxRegister(readWithLED, "Enable LED", "Measure with LED enabled");
+    flxRegister(enableIndicator, "Enable Indicator", "Indicator LED enabled");
+    flxRegister(outputCal, "Calibrated Output", "Return calibrated values");
 
     // Register output params
-    flxRegister(outCalG, "Calibrated G", "Calibrated channel G");
-    flxRegister(outCalH, "Calibrated H", "Calibrated channel H");
-    flxRegister(outCalI, "Calibrated I", "Calibrated channel I");
-    flxRegister(outCalJ, "Calibrated J", "Calibrated channel J");
-    flxRegister(outCalK, "Calibrated K", "Calibrated channel K");
-    flxRegister(outCalL, "Calibrated L", "Calibrated channel L"); 
+    flxRegister(outputType, "Calibrated", "True if output data is calibrated");
+
+    flxRegister(outA, "Channel A");
+    flxRegister(outB, "Channel B");
+    flxRegister(outC, "Channel C");
+    flxRegister(outD, "Channel D");
+    flxRegister(outE, "Channel E");
+    flxRegister(outF, "Channel F");
 
     // Register output params
-    flxRegister(outCalR, "Calibrated R", "Calibrated channel R");
-    flxRegister(outCalS, "Calibrated S", "Calibrated channel S");
-    flxRegister(outCalT, "Calibrated T", "Calibrated channel T");
-    flxRegister(outCalU, "Calibrated U", "Calibrated channel U");
-    flxRegister(outCalV, "Calibrated V", "Calibrated channel V");
-    flxRegister(outCalW, "Calibrated W", "Calibrated channel W");                     
+    flxRegister(outG, "Channel G");
+    flxRegister(outH, "Channel H");
+    flxRegister(outI, "Channel I");
+    flxRegister(outJ, "Channel J");
+    flxRegister(outK, "Channel K");
+    flxRegister(outL, "Channel L"); 
+
+    // Register output params
+    flxRegister(outR, "Channel R");
+    flxRegister(outS, "Channel S");
+    flxRegister(outT, "Channel T");
+    flxRegister(outU, "Channel U");
+    flxRegister(outV, "Channel V");
+    flxRegister(outW, "Channel W");                     
 
 }
 
@@ -91,9 +98,39 @@ bool flxDevAS7265X::onInitialize(TwoWire &wirePort)
 }
 
 
+//---------------------------------------------------------------------------
+// Indicator property
+//---------------------------------------------------------------------------
+bool flxDevAS7265X::get_indicator(void)
+{
+    return _indicator;
+}
+
+
+void flxDevAS7265X::set_indicator(bool isOn)
+{
+    if (_indicator == isOn)
+        return;
+
+    if (isOn)
+        AS7265X::enableIndicator();
+    else 
+        AS7265X::disableIndicator();    
+
+    _indicator = isOn;
+}
+
+//---------------------------------------------------------------------------
+///
+/// @brief Called right before data parameters are read - take measurments called
+///
+
 bool flxDevAS7265X::execute(void)
 {
-    AS7265X::takeMeasurements();
+    if (readWithLED())
+        AS7265X::takeMeasurementsWithBulb();
+    else
+        AS7265X::takeMeasurements();
 
     return true;
 }
@@ -102,83 +139,87 @@ bool flxDevAS7265X::execute(void)
 // Outputs
 //---------------------------------------------------------------------------
 
+bool flxDevAS7265X::read_output_type(void)
+{
+    return outputCal();
+}
 //---------------------------------------------------------------------------
 
-float flxDevAS7265X::read_calA(void)
+float flxDevAS7265X::read_A(void)
 {
-    return AS7265X::getCalibratedA();
+    return outputCal() ? AS7265X::getCalibratedA() : AS7265X::getA();
 }
 
-float flxDevAS7265X::read_calB(void)
+float flxDevAS7265X::read_B(void)
 {
-    return AS7265X::getCalibratedB();
+    return outputCal() ? AS7265X::getCalibratedB() : AS7265X::getB();
 }
 
-float flxDevAS7265X::read_calC(void)
+float flxDevAS7265X::read_C(void)
 {
-    return AS7265X::getCalibratedC();
+    return outputCal() ? AS7265X::getCalibratedC() : AS7265X::getC();
 }
 
-float flxDevAS7265X::read_calD(void)
+float flxDevAS7265X::read_D(void)
 {
-    return AS7265X::getCalibratedD();
+    return outputCal() ? AS7265X::getCalibratedD() : AS7265X::getD();
 }
 
-float flxDevAS7265X::read_calE(void)
+float flxDevAS7265X::read_E(void)
 {
-    return AS7265X::getCalibratedE();
+    return outputCal() ? AS7265X::getCalibratedE() : AS7265X::getE();
 }
 
-float flxDevAS7265X::read_calF(void)
+float flxDevAS7265X::read_F(void)
 {
-    return AS7265X::getCalibratedF();
+    return outputCal() ? AS7265X::getCalibratedF() : AS7265X::getF();
 }
 
-float flxDevAS7265X::read_calG(void)
+float flxDevAS7265X::read_G(void)
 {
-    return AS7265X::getCalibratedG();
+    return outputCal() ? AS7265X::getCalibratedG() : AS7265X::getG();
 }
-float flxDevAS7265X::read_calH(void)
+float flxDevAS7265X::read_H(void)
 {
-    return AS7265X::getCalibratedH();
+    return outputCal() ? AS7265X::getCalibratedH() : AS7265X::getH();
 }
-float flxDevAS7265X::read_calI(void)
+float flxDevAS7265X::read_I(void)
 {
-    return AS7265X::getCalibratedI();
+    return outputCal() ? AS7265X::getCalibratedI() : AS7265X::getI();
 }
-float flxDevAS7265X::read_calJ(void)
+float flxDevAS7265X::read_J(void)
 {
-    return AS7265X::getCalibratedJ();
+    return outputCal() ? AS7265X::getCalibratedJ() : AS7265X::getJ();
 }
-float flxDevAS7265X::read_calK(void)
+float flxDevAS7265X::read_K(void)
 {
-    return AS7265X::getCalibratedK();
+    return outputCal() ? AS7265X::getCalibratedK() : AS7265X::getK();
 }
-float flxDevAS7265X::read_calL(void)
+float flxDevAS7265X::read_L(void)
 {
-    return AS7265X::getCalibratedL();
+    return outputCal() ? AS7265X::getCalibratedL() : AS7265X::getL();
 }
-float flxDevAS7265X::read_calR(void)
+float flxDevAS7265X::read_R(void)
 {
-    return AS7265X::getCalibratedR();
+    return outputCal() ? AS7265X::getCalibratedR() : AS7265X::getR();
 }
-float flxDevAS7265X::read_calS(void)
+float flxDevAS7265X::read_S(void)
 {
-    return AS7265X::getCalibratedS();
+    return outputCal() ? AS7265X::getCalibratedS() : AS7265X::getS();
 }
-float flxDevAS7265X::read_calT(void)
+float flxDevAS7265X::read_T(void)
 {
-    return AS7265X::getCalibratedT();
+    return outputCal() ? AS7265X::getCalibratedT() : AS7265X::getT();
 }
-float flxDevAS7265X::read_calU(void)
+float flxDevAS7265X::read_U(void)
 {
-    return AS7265X::getCalibratedU();
+    return outputCal() ? AS7265X::getCalibratedU() : AS7265X::getU();
 }
-float flxDevAS7265X::read_calV(void)
+float flxDevAS7265X::read_V(void)
 {
-    return AS7265X::getCalibratedV();
+    return outputCal() ? AS7265X::getCalibratedV() : AS7265X::getV();
 }
-float flxDevAS7265X::read_calW(void)
+float flxDevAS7265X::read_W(void)
 {
-    return AS7265X::getCalibratedW();
+    return outputCal() ? AS7265X::getCalibratedW() : AS7265X::getW();
 }
