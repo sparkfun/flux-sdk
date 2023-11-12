@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *---------------------------------------------------------------------------------
  *
@@ -22,7 +22,8 @@
 #include <string.h>
 #include <time.h>
 
-flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
+flxLogger::flxLogger()
+    : _timestampType{TimeStampNone}, _outputDeviceID{false}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
 {
     setName("Logger", "Data logging action");
 
@@ -44,8 +45,15 @@ flxLogger::flxLogger() : _timestampType{TimeStampNone}, _sampleNumberEnabled{fal
 
     flxRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
 
+    // Output the device ID to the log output?
+    flxRegister(enableIDOutput, "Output ID", "Include the Device ID in the log output");
+
+    // and the parameter to support the ID?
+    flxRegister(getDeviceID, "Device ID");
+    removeParameter(getDeviceID); // added on enable of prop
+
     _opsToLog.setName("Logger Objects");
-    
+
     flux.add(this);
 }
 //----------------------------------------------------------------------------
@@ -218,9 +226,9 @@ void flxLogger::logObservation(void)
 // log message
 //
 // Output a general message to the log output. When called, this will leave a text
-// blurb in a log stream. 
+// blurb in a log stream.
 
-void flxLogger::logMessage(char * header, char * message)
+void flxLogger::logMessage(char *header, char *message)
 {
     // Begin the observation with all our formatters
     for (auto theFormatter : _Formatters)
@@ -229,7 +237,7 @@ void flxLogger::logMessage(char * header, char * message)
         theFormatter->reset();
 
         theFormatter->beginObservation();
-        
+
         theFormatter->beginSection("Message");
         theFormatter->logValue(header, message);
         theFormatter->endSection();
@@ -237,29 +245,27 @@ void flxLogger::logMessage(char * header, char * message)
         theFormatter->endObservation();
         theFormatter->writeObservation();
         theFormatter->clearObservation();
-        
-        theFormatter->reset();        
-    }
 
+        theFormatter->reset();
+    }
 }
 
 //----------------------------------------------------------------------------
-// 
+//
 // When the timestamp type changes, change the name of the timestamp output parameter
 void flxLogger::updateTimeParameterName(void)
 {
 
-    char * timeTitle = "Time";
+    char *timeTitle = "Time";
     switch (_timestampType)
     {
     case TimeStampMillis:
-        timeTitle =  "Time (millis)";
+        timeTitle = "Time (millis)";
         break;
 
     case TimeStampEpoch:
         timeTitle = "Time (Epoch)";
         break;
-
     }
     timestamp.setName(timeTitle);
 }
@@ -301,6 +307,7 @@ void flxLogger::set_ts_type(uint newType)
 
     updateTimeParameterName();
 }
+
 //----------------------------------------------------------------------------
 // Return the current timestamp, as outlined in the timestamp mode.
 std::string flxLogger::get_timestamp(void)
@@ -333,8 +340,7 @@ std::string flxLogger::get_timestamp(void)
 
     case TimeStampISO8601:
     case TimeStampISO8601TZ:
-        flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), 
-                _timestampType == TimeStampISO8601TZ);
+        flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), _timestampType == TimeStampISO8601TZ);
         break;
 
     case TimeStampNone:
@@ -343,6 +349,55 @@ std::string flxLogger::get_timestamp(void)
     }
 
     std::string sBuffer = szBuffer;
+    return sBuffer;
+}
+
+//----------------------------------------------------------------------------
+// Device ID methods for output
+//----------------------------------------------------------------------------
+bool flxLogger::get_id_enable(void)
+{
+    return _outputDeviceID;
+}
+
+//----------------------------------------------------------------------------
+void flxLogger::set_id_enable(bool newMode)
+{
+    if (newMode == _outputDeviceID)
+        return;
+
+    // Are we going from having an ID to not having an ID?
+    if (!newMode)
+    {
+        // Remove ID parameter from our internal parameter list
+        auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &getDeviceID);
+
+        if (iter != _paramsToLog.end())
+            _paramsToLog.erase(iter);
+    }
+    else
+    {
+        // We want the ID to be after sample number and timestamp - if they are enabled.
+        auto iter = _paramsToLog.begin();
+        if (iter != _paramsToLog.end())
+        {
+            // sample number?
+            if (*iter == &sampleNumber)
+                iter++;
+
+            if (iter != _paramsToLog.end() && *iter == &timestamp)
+                iter++;
+        }
+
+        // Add the ID parameter to our output list.
+        _paramsToLog.insert(iter, &getDeviceID);
+    }
+    _outputDeviceID = newMode;
+}
+//----------------------------------------------------------------------------
+std::string flxLogger::get_device_id(void)
+{
+    std::string sBuffer = flux.deviceId();
     return sBuffer;
 }
 
@@ -360,15 +415,15 @@ void flxLogger::set_num_mode(bool newMode)
         return;
 
     // Are we going from having a number to not having a number?
-    if (!newMode )
+    if (!newMode)
     {
-        // Remove the sample number parameter from our internal timestamp list
+        // Remove the sample number parameter from our internal parameter list
         auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &sampleNumber);
 
         if (iter != _paramsToLog.end())
             _paramsToLog.erase(iter);
     }
-    else 
+    else
     {
         // Add the sample number parameter to our output list. It should be position 0
         _paramsToLog.insert(_paramsToLog.begin(), &sampleNumber);
@@ -382,7 +437,7 @@ void flxLogger::set_num_mode(bool newMode)
 //
 // Reset the sample number to the provided number. Note, the parameter is optional with a
 // default value of 0
-void flxLogger::reset_sample_number(const uint & number)
+void flxLogger::reset_sample_number(const uint &number)
 {
     _currentSampleNumber = number;
 }
