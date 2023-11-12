@@ -235,6 +235,17 @@ class flxFlux : public flxObjectContainer
 
     const char *deviceId(void);
 
+    // user set app specific name
+    void setLocalName(std::string name)
+    {
+        _localName = name;
+    }
+
+    std::string localName(void)
+    {
+        return _localName;
+    }
+
     void setApplication(flxApplication &theApp)
     {
         setApplication(&theApp);
@@ -262,7 +273,7 @@ class flxFlux : public flxObjectContainer
     // should we add a unique value to device names?
     void setVerboseDevNames(bool bVerbose);
     bool verboseDevNames(void);
-    
+
   private:
     flxBusI2C _i2cDriver;
     flxBusSPI _spiDriver;
@@ -281,6 +292,8 @@ class flxFlux : public flxObjectContainer
     uint8_t _token[32];
     bool _hasToken;
     bool _verboseDevNames;
+
+    std::string _localName;
 
     // Note private constructor...
     flxFlux()
