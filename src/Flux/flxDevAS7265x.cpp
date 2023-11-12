@@ -31,7 +31,10 @@ flxRegisterDevice(flxDevAS7265X);
 //----------------------------------------------------------------------------------------------------------
 /// @brief Constructor
 ///
-flxDevAS7265X::flxDevAS7265X() : _indicator{true}, _gain{AS7265X_GAIN_16X}
+flxDevAS7265X::flxDevAS7265X()
+    : _indicator{true}, _gain{AS7265X_GAIN_16X}, _mmode{AS7265X_MEASUREMENT_MODE_6CHAN_ONE_SHOT},
+      _icycles{kAS7265xDefaultIntCycles}, _ind_current{AS7265X_INDICATOR_CURRENT_LIMIT_8MA},
+      _white_current{AS7265X_LED_CURRENT_LIMIT_12_5MA}, _ir_current{AS7265X_LED_CURRENT_LIMIT_12_5MA}
 {
 
     setName(getDeviceName(), "AS7265X Triad Spectroscopy Sensor");
@@ -40,6 +43,12 @@ flxDevAS7265X::flxDevAS7265X() : _indicator{true}, _gain{AS7265X_GAIN_16X}
     flxRegister(readWithLED, "Enable LED", "Measure with LED enabled");
     flxRegister(enableIndicator, "Enable Indicator", "Indicator LED enabled");
     flxRegister(sensorGain, "Gain", "Gain settings for sensor");
+    flxRegister(measureMode, "Measurement Mode", "Mode use when taking measurements");
+    flxRegister(intCycles, "Integration Cycles", "The number of cycles per reading (n * 2.8ms)");
+    flxRegister(whiteCurrent, "White LED Current", "White LED current - milli amps");
+    flxRegister(irCurrent, "IR LED Current", "IR LED current - milli amps");
+    flxRegister(indicatorCurrent, "Indicator Current", "Indicator current - milli amps");
+
     flxRegister(outputCal, "Calibrated Output", "Return calibrated values");
 
     // Register output params
@@ -95,15 +104,21 @@ bool flxDevAS7265X::onInitialize(TwoWire &wirePort)
 {
     bool status = AS7265X::begin(wirePort);
 
+    // if initialization was successful - true - set parameters
     if (status)
     {
         AS7265X::setGain(_gain);
+        AS7265X::setMeasurementMode(_mmode);
+        AS7265X::setIntegrationCycles(_icycles);
+        AS7265X::setIndicatorCurrent(_ind_current);
+        AS7265X::setBulbCurrent(_white_current, AS7265x_LED_WHITE);
+        AS7265X::setBulbCurrent(_ir_current, AS7265x_LED_IR);
     }
     return status;
 }
 
 //---------------------------------------------------------------------------
-// Indicator property
+// Indicator property - getter/setter
 //---------------------------------------------------------------------------
 bool flxDevAS7265X::get_indicator(void)
 {
@@ -124,7 +139,7 @@ void flxDevAS7265X::set_indicator(bool isOn)
 }
 
 //---------------------------------------------------------------------------
-// Gain property
+// Gain property - getter/setter
 //---------------------------------------------------------------------------
 
 uint8_t flxDevAS7265X::get_gain(void)
@@ -138,9 +153,84 @@ void flxDevAS7265X::set_gain(uint8_t value)
     if (isInitialized())
         AS7265X::setGain(value);
 }
+
+//---------------------------------------------------------------------------
+// Measurement Mode property - getter/setter
+//---------------------------------------------------------------------------
+uint8_t flxDevAS7265X::get_mmode(void)
+{
+    return _mmode;
+}
+
+void flxDevAS7265X::set_mmode(uint8_t value)
+{
+    _mmode = value;
+    if (isInitialized())
+        AS7265X::setMeasurementMode(value);
+}
+
+//---------------------------------------------------------------------------
+// Integration Cycles property - getter/setter
+//---------------------------------------------------------------------------
+uint8_t flxDevAS7265X::get_icycles(void)
+{
+    return _icycles;
+}
+
+void flxDevAS7265X::set_icycles(uint8_t value)
+{
+    _icycles = value;
+    if (isInitialized())
+        AS7265X::setIntegrationCycles(value);
+}
+
+//---------------------------------------------------------------------------
+// Indicator Current property - getter/setter
+//---------------------------------------------------------------------------
+uint8_t flxDevAS7265X::get_ind_current(void)
+{
+    return _ind_current;
+}
+
+void flxDevAS7265X::set_ind_current(uint8_t value)
+{
+    _ind_current = value;
+    if (isInitialized())
+        AS7265X::setIndicatorCurrent(value);
+}
+
+//---------------------------------------------------------------------------
+// White LED Current property - getter/setter
+//---------------------------------------------------------------------------
+uint8_t flxDevAS7265X::get_white_current(void)
+{
+    return _white_current;
+}
+
+void flxDevAS7265X::set_white_current(uint8_t value)
+{
+    _white_current = value;
+    if (isInitialized())
+        AS7265X::setBulbCurrent(value, AS7265x_LED_WHITE);
+}
+
+//---------------------------------------------------------------------------
+// IR LED Current property - getter/setter
+//---------------------------------------------------------------------------
+uint8_t flxDevAS7265X::get_ir_current(void)
+{
+    return _ir_current;
+}
+
+void flxDevAS7265X::set_ir_current(uint8_t value)
+{
+    _ir_current = value;
+    if (isInitialized())
+        AS7265X::setBulbCurrent(value, AS7265x_LED_IR);
+}
 //---------------------------------------------------------------------------
 ///
-/// @brief Called right before data parameters are read - take measurments called
+/// @brief Called right before data parameters are read - take measurements called
 ///
 
 bool flxDevAS7265X::execute(void)
