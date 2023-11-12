@@ -51,7 +51,6 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
     bool execute(void);
 
   private:
-
     // property methods
 
     bool get_indicator(void);
@@ -59,11 +58,13 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
 
     bool _indicator;
 
+    uint8_t get_gain(void);
+    void set_gain(uint8_t);
 
-
+    uint8_t _gain;
 
     // Parameter methods
-    bool  read_output_type(void);
+    bool read_output_type(void);
     float read_A(void);
     float read_B(void);
     float read_C(void);
@@ -86,17 +87,20 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
     float read_W(void);
 
   public:
-
     // Properties
 
     // Read with LED active?
 
     flxPropertyBool<flxDevAS7265X> readWithLED = {false};
 
-    flxPropertyRWBool<flxDevAS7265X, &flxDevAS7265X::get_indicator, &flxDevAS7265X::set_indicator> enableIndicator = {true};
+    flxPropertyRWBool<flxDevAS7265X, &flxDevAS7265X::get_indicator, &flxDevAS7265X::set_indicator> enableIndicator = {
+        true};
 
     flxPropertyBool<flxDevAS7265X> outputCal = {true};
 
+    flxPropertyRWUint8<flxDevAS7265X, &flxDevAS7265X::get_gain, &flxDevAS7265X::set_gain> sensorGain = {
+        AS7265X_GAIN_16X,
+        {{"1X", AS7265X_GAIN_1X}, {"3.7X", AS7265X_GAIN_37X}, {"16X", AS7265X_GAIN_16X}, {"64X", AS7265X_GAIN_64X}}};
 
     // Outputs
     // define parameters for calibrarted outputs
@@ -107,7 +111,7 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_C> outC;
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_D> outD;
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_E> outE;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_F> outF;      
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_F> outF;
 
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_G> outG;
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_H> outH;
@@ -121,6 +125,5 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_T> outT;
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_U> outU;
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_V> outV;
-    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_W> outW;      
-
+    flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_W> outW;
 };

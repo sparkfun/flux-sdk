@@ -31,7 +31,7 @@ flxRegisterDevice(flxDevAS7265X);
 //----------------------------------------------------------------------------------------------------------
 /// @brief Constructor
 ///
-flxDevAS7265X::flxDevAS7265X() : _indicator{true}
+flxDevAS7265X::flxDevAS7265X() : _indicator{true}, _gain{AS7265X_GAIN_16X}
 {
 
     setName(getDeviceName(), "AS7265X Triad Spectroscopy Sensor");
@@ -39,6 +39,7 @@ flxDevAS7265X::flxDevAS7265X() : _indicator{true}
     // Properties
     flxRegister(readWithLED, "Enable LED", "Measure with LED enabled");
     flxRegister(enableIndicator, "Enable Indicator", "Indicator LED enabled");
+    flxRegister(sensorGain, "Gain", "Gain settings for sensor");
     flxRegister(outputCal, "Calibrated Output", "Return calibrated values");
 
     // Register output params
@@ -57,7 +58,7 @@ flxDevAS7265X::flxDevAS7265X() : _indicator{true}
     flxRegister(outI, "Channel I");
     flxRegister(outJ, "Channel J");
     flxRegister(outK, "Channel K");
-    flxRegister(outL, "Channel L"); 
+    flxRegister(outL, "Channel L");
 
     // Register output params
     flxRegister(outR, "Channel R");
@@ -65,8 +66,7 @@ flxDevAS7265X::flxDevAS7265X() : _indicator{true}
     flxRegister(outT, "Channel T");
     flxRegister(outU, "Channel U");
     flxRegister(outV, "Channel V");
-    flxRegister(outW, "Channel W");                     
-
+    flxRegister(outW, "Channel W");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -93,10 +93,14 @@ bool flxDevAS7265X::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 ///
 bool flxDevAS7265X::onInitialize(TwoWire &wirePort)
 {
-    return AS7265X::begin(wirePort);
-        return false;
-}
+    bool status = AS7265X::begin(wirePort);
 
+    if (status)
+    {
+        AS7265X::setGain(_gain);
+    }
+    return status;
+}
 
 //---------------------------------------------------------------------------
 // Indicator property
@@ -106,7 +110,6 @@ bool flxDevAS7265X::get_indicator(void)
     return _indicator;
 }
 
-
 void flxDevAS7265X::set_indicator(bool isOn)
 {
     if (_indicator == isOn)
@@ -114,12 +117,27 @@ void flxDevAS7265X::set_indicator(bool isOn)
 
     if (isOn)
         AS7265X::enableIndicator();
-    else 
-        AS7265X::disableIndicator();    
+    else
+        AS7265X::disableIndicator();
 
     _indicator = isOn;
 }
 
+//---------------------------------------------------------------------------
+// Gain property
+//---------------------------------------------------------------------------
+
+uint8_t flxDevAS7265X::get_gain(void)
+{
+    return _gain;
+}
+
+void flxDevAS7265X::set_gain(uint8_t value)
+{
+    _gain = value;
+    if (isInitialized())
+        AS7265X::setGain(value);
+}
 //---------------------------------------------------------------------------
 ///
 /// @brief Called right before data parameters are read - take measurments called
