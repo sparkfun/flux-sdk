@@ -46,6 +46,11 @@ class flxLogger : public flxActionType<flxLogger>
 
     std::string get_device_id(void);
 
+    bool get_name_enable(void);
+    void set_name_enable(bool);
+
+    std::string get_name(void);
+
     bool get_num_mode(void);
     void set_num_mode(bool);
 
@@ -250,6 +255,10 @@ class flxLogger : public flxActionType<flxLogger>
     flxPropertyRWBool<flxLogger, &flxLogger::get_id_enable, &flxLogger::set_id_enable> enableIDOutput = {false};
     flxParameterOutString<flxLogger, &flxLogger::get_device_id> getDeviceID;
 
+    // output Local name to the log
+    flxPropertyRWBool<flxLogger, &flxLogger::get_name_enable, &flxLogger::set_name_enable> enableNameOutput = {false};
+    flxParameterOutString<flxLogger, &flxLogger::get_name> getLocalName;
+
     // Sample number - this increments and outputs a number for each sample taken.
     flxPropertyRWBool<flxLogger, &flxLogger::get_num_mode, &flxLogger::set_num_mode> numberMode = {false};
 
@@ -278,6 +287,8 @@ class flxLogger : public flxActionType<flxLogger>
     // output device id?
     bool _outputDeviceID;
 
+    bool _outputLocalName;
+    
     bool _sampleNumberEnabled;
     uint32_t _currentSampleNumber;
 

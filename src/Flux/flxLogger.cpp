@@ -23,7 +23,7 @@
 #include <time.h>
 
 flxLogger::flxLogger()
-    : _timestampType{TimeStampNone}, _outputDeviceID{false}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
+    : _timestampType{TimeStampNone}, _outputDeviceID{false}, _outputLocalName{false}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
 {
     setName("Logger", "Data logging action");
 
@@ -46,11 +46,18 @@ flxLogger::flxLogger()
     flxRegister(resetSampleNumber, "Reset Sample Counter", "Reset the sample number counter to the provided value");
 
     // Output the device ID to the log output?
-    flxRegister(enableIDOutput, "Output ID", "Include the Device ID in the log output");
+    flxRegister(enableIDOutput, "Output ID", "Include the Board ID in the log output");
 
     // and the parameter to support the ID?
-    flxRegister(getDeviceID, "Device ID");
+    flxRegister(getDeviceID, "Board ID");
     removeParameter(getDeviceID); // added on enable of prop
+
+    // Output the device Name/ to the log output?
+    flxRegister(enableNameOutput, "Output Name", "Include the Board Name in the log output");
+
+    // and the parameter to support the Name?
+    flxRegister(getLocalName, "Board Name");
+    removeParameter(getLocalName); // added on enable of prop
 
     _opsToLog.setName("Logger Objects");
 
@@ -400,6 +407,59 @@ std::string flxLogger::get_device_id(void)
     std::string sBuffer = flux.deviceId();
     return sBuffer;
 }
+
+
+//----------------------------------------------------------------------------
+// Device name methods for output
+//----------------------------------------------------------------------------
+bool flxLogger::get_name_enable(void)
+{
+    return _outputLocalName;
+}
+
+//----------------------------------------------------------------------------
+void flxLogger::set_name_enable(bool newMode)
+{
+    if (newMode == _outputLocalName)
+        return;
+
+    // Are we going from having an ID to not having an ID?
+    if (!newMode)
+    {
+        // Remove ID parameter from our internal parameter list
+        auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &getLocalName);
+
+        if (iter != _paramsToLog.end())
+            _paramsToLog.erase(iter);
+    }
+    else
+    {
+        // We want the name to be after sample number, timestamp and ID - if they are enabled.
+        auto iter = _paramsToLog.begin();
+        if (iter != _paramsToLog.end())
+        {
+            // sample number?
+            if (*iter == &sampleNumber)
+                iter++;
+
+            if (iter != _paramsToLog.end() && *iter == &timestamp)
+                iter++;
+
+            if (iter != _paramsToLog.end() && *iter == &getDeviceID)
+                iter++;
+        }
+
+        // Add the ID parameter to our output list.
+        _paramsToLog.insert(iter, &getLocalName);
+    }
+    _outputLocalName = newMode;
+}
+//----------------------------------------------------------------------------
+std::string flxLogger::get_name(void)
+{
+    return flux.localName();
+}
+
 
 //----------------------------------------------------------------------------
 // Log sample number property get/set
