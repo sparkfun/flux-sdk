@@ -58,6 +58,16 @@ flxDevBME280::flxDevBME280()
     flxRegister(pressure, "Pressure", "The sensed pressure");
     flxRegister(altitudeM, "AltitudeM", "The sensed altitude in meters");
     flxRegister(altitudeF, "AltitudeF", "The sensed altitude in feet");
+
+
+
+    // KDB TEST
+    // setup value event test
+    _testTempC.setParameter(temperatureC);
+    _testTempC.setEvent(on_enable);
+    _testTempC.currentMode.setTitle("Trigger Value for Temperature C");
+    addProperty(_testTempC.currentMode);
+    addProperty(_testTempC.testValue);
 }
 
 //----------------------------------------------------------------------------------------------------------

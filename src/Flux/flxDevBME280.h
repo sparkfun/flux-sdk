@@ -24,8 +24,10 @@
 
 #include "Arduino.h"
 
+#include "flxCoreValEvt.h"
 #include "flxDevice.h"
 #include "SparkFunBME280.h"
+
 
 // What is the name used to ID this device?
 #define kBME280DeviceName "BME280"
@@ -55,6 +57,8 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
+    flxSignalBool on_enable;
+    
 private:
     // methods used to get values for our output parameters
     float read_Humidity();
@@ -63,6 +67,14 @@ private:
     float read_Pressure();
     float read_AltitudeM();
     float read_AltitudeF();
+
+    // KDB HACK
+
+    // For our value based events
+    flxCoreValueEvt<float> _testTempC;
+
+
+    // END
 
 public:
     // Define our output parameters - specify the get functions to call.
