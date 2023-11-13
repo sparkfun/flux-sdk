@@ -43,7 +43,7 @@ flxRegisterDevice(flxDevBMI270);
 //
 // Object constructor. Performs initialization of device values, including
 // device identifiers (name, I2C address) and managed properties.
-flxDevBMI270::flxDevBMI270()
+flxDevBMI270::flxDevBMI270() : _validData{false}
 {
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName(), "BMI270 6DoF IMU");
@@ -52,29 +52,28 @@ flxDevBMI270::flxDevBMI270()
     // needed to support managed properties/public properties and parameters
 
     // Register Properties
-    flxRegister(accelDataRate, "Accelerometer ODR", "Output Data Rate for the accelerometer in Hz.");
-    flxRegister(accelPowerMode, "Accelerometer Power Mode", "Power mode for the accelerometer.");
-    flxRegister(accelFilterBW, "Accelerometer Filter Bandwidth",
-                "Filter BW for the accelerometer in order of Performance or Power Saving Mode.");
-    flxRegister(accelRange, "Accelerometer Data Range", "Scale range for the accelerometer in g.");
-    flxRegister(gyroDataRate, "Gyroscope ODR", "Output Data Rate for the Gyroscope in Hz.");
-    flxRegister(gyroFilterPowerMode, "Gyroscope Filter Power Mode", "Power Mode for the Gyroscope Filter.");
-    flxRegister(gyroNoisePowerMode, "Gyroscope Noise Power Mode", "Low noise mode for precision yaw rate sensing.");
-    flxRegister(gyroFilterBW, "Gyroscope Filter Bandwidth", "Filter BW for the gyroscope.");
-    flxRegister(gyroRange, "Gyroscope Data Range", "Scale range for the gyroscope in deg/s.");
+    flxRegister(accelDataRate, "Accel ODR", "Output Data Rate in Hz");
+    flxRegister(accelPowerMode, "Accel  Power", "Accelerometer Power mode");
+    flxRegister(accelFilterBW, "Accel Filter Bandwidth", "Filter BW for the accelerometer");
+    flxRegister(accelRange, "Accel Data Range", "Range for the accelerometer in g");
+    flxRegister(gyroDataRate, "Gyros ODR", "Output Data Rate in Hz");
+    flxRegister(gyroFilterPowerMode, "Gyro Filter Power Mode", "Power Mode for the Filter");
+    flxRegister(gyroNoisePowerMode, "Gyro Noise Power Mode", "Low noise mode for precision yaw rate sensing");
+    flxRegister(gyroFilterBW, "Gyro Filter Bandwidth", "Filter BW for the gyroscope");
+    flxRegister(gyroRange, "Gyro Data Range", "Scale range in deg/sec");
 
     // Register Output Parameters
-    flxRegister(accelX, "Accel X (g)", "Accelerometer X (g)");
-    flxRegister(accelY, "Accel Y (g)", "Accelerometer Y (g)");
-    flxRegister(accelZ, "Accel Z (g)", "Accelerometer Z (g)");
-    flxRegister(gyroX, "Gyro X (deg/s)", "Gyroscope X (deg/s)");
-    flxRegister(gyroY, "Gyro Y (deg/s)", "Gyroscope Y (deg/s)");
-    flxRegister(gyroZ, "Gyro Z (deg/s)", "Gyroscope Z (deg/s)");
+    flxRegister(accelX, "Accel X (g)", "Accelerometer X");
+    flxRegister(accelY, "Accel Y (g)", "Accelerometer Y");
+    flxRegister(accelZ, "Accel Z (g)", "Accelerometer Z");
+    flxRegister(gyroX, "Gyro X (deg/s)", "Gyroscope X");
+    flxRegister(gyroY, "Gyro Y (deg/s)", "Gyroscope Y");
+    flxRegister(gyroZ, "Gyro Z (deg/s)", "Gyroscope Z");
     flxRegister(temperature, "Temp (C)", "Temperature (C)");
     flxRegister(stepCount, "Steps", "# of steps");
 
     // Register Input Parameters
-    flxRegister(resetStepCount, "Reset Step Count", "Resets the number of steps counted.");
+    flxRegister(resetStepCount, "Reset Step Count", "Resets the number of steps");
 }
 
 //-----------------------------------------------------------------------------
@@ -89,10 +88,7 @@ bool flxDevBMI270::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     uint8_t readValue;
 
     if (!i2cDriver.readRegister(address, BMI2_CHIP_ID_ADDR, &readValue))
-    {
-        flxLog_E("BMI270::isConnected: Failed to read prodID.");
         return false;
-    }
 
     return (readValue == kDefaultProdID);
 }
@@ -112,143 +108,66 @@ bool flxDevBMI270::onInitialize(TwoWire &wirePort)
     {
         delay(200);
         retries--;
-        flxLog_D("BMI270::onInitialize: Begin #%d failed, retrying...", (3 - retries));
+
         if (retries <= 0)
         {
-            flxLog_E("BMI270::onInitialize: Sensor failed to respond!");
+            flxLog_E(F("%s: Sensor failed to respond"), name());
             return false;
         }
     }
-
-    _sensorInitialized = true;
-
-    // TODO: Finish Initialization
-
     return true;
 }
 
+//---------------------------------------------------------------------------
+///
+/// @brief Called right before data parameters are read -
+///
+
+bool flxDevBMI270::execute(void)
+{
+    _validData = getSensorData() == BMI2_OK;
+
+    if (!_validData)
+        flxLog_E(F("%s: Error reading sensor data values"), name());
+
+    return _validData;
+}
 /* Read methods for parameters */
 
 float flxDevBMI270::read_accel_x()
 {
-    if (!_accelX)
-    {
-        if (BMI2_OK == getSensorData())
-        {
-            _accelY = true;
-            _accelZ = true;
-            _gyroX = true;
-            _gyroY = true;
-            _gyroZ = true;
-        }
-        else
-        {
-            flxLog_E("BMI270::read_accel_x: Failed to get sensor data.");
-        }
-    }
-    _accelX = false;
-    return data.accelX;
+    return _validData ? data.accelX : 0.;
 }
 
 float flxDevBMI270::read_accel_y()
 {
-    if (!_accelY)
-    {
-        if (BMI2_OK == getSensorData())
-        {
-            _accelX = true;
-            _accelZ = true;
-            _gyroX = true;
-            _gyroY = true;
-            _gyroZ = true;
-        }
-        else
-            flxLog_E("BMI270::read_accel_y: Failed to get sensor data.");
-    }
-    _accelY = false;
-    return data.accelY;
+    return _validData ? data.accelY : 0.;
 }
 
 float flxDevBMI270::read_accel_z()
 {
-    if (!_accelZ)
-    {
-        if (BMI2_OK == getSensorData())
-        {
-            _accelY = true;
-            _accelX = true;
-            _gyroX = true;
-            _gyroY = true;
-            _gyroZ = true;
-        }
-        else
-            flxLog_E("BMI270::read_accel_z: Failed to get sensor data.");
-    }
-    _accelZ = false;
-    return data.accelZ;
+    return _validData ? data.accelZ : 0.;
 }
 
 float flxDevBMI270::read_gyro_x()
 {
-    if (!_gyroX)
-    {
-        if (BMI2_OK == getSensorData())
-        {
-            _accelX = true;
-            _accelY = true;
-            _accelZ = true;
-            _gyroY = true;
-            _gyroZ = true;
-        }
-        else
-            flxLog_E("BMI270::read_gyro_x: Failed to get sensor data.");
-    }
-    _gyroX = false;
-    return data.gyroX;
+    return _validData ? data.gyroX : 0.;
 }
 
 float flxDevBMI270::read_gyro_y()
 {
-    if (!_gyroY)
-    {
-        if (BMI2_OK == getSensorData())
-        {
-            _accelX = true;
-            _accelY = true;
-            _accelZ = true;
-            _gyroX = true;
-            _gyroZ = true;
-        }
-        else
-            flxLog_E("BMI270::read_gyro_y: Failed to get sensor data.");
-    }
-    _gyroY = false;
-    return data.gyroY;
+    return _validData ? data.gyroY : 0.;
 }
 
 float flxDevBMI270::read_gyro_z()
 {
-    if (!_gyroZ)
-    {
-        if (BMI2_OK == getSensorData())
-        {
-            _accelX = true;
-            _accelY = true;
-            _accelZ = true;
-            _gyroY = true;
-            _gyroX = true;
-        }
-        else
-            flxLog_E("BMI270::read_gyro_z: Failed to get sensor data.");
-    }
-    _gyroZ = false;
-    return data.gyroZ;
+    return _validData ? data.gyroZ : 0.;
 }
 
 float flxDevBMI270::read_temperature()
 {
     if (BMI2_OK != BMI270::getTemperature(&_tempC))
-        flxLog_E("BMI270::read_temperature: Failed to get temperature data.");
+        flxLog_E(F("%s: Failed to read temperature data"), name());
 
     return _tempC;
 }
@@ -257,18 +176,18 @@ uint flxDevBMI270::read_step_count()
 {
     if (!_stepCounterEnabled)
     {
-        flxLog_W("BMI270::read_step_count: Step counting feature not enabled. Enabling...");
         if (!enable_step_counter(true))
-            flxLog_E("BMI270::read_step_count: Failed to enable step counting feature. Logging last good value.");
+            flxLog_E(F("%s: Failed to enable step counting feature"), name());
     }
 
     if (_stepCounterEnabled)
     {
         if (BMI2_OK != BMI270::getStepCount(&_countedSteps))
-            flxLog_E("BMI270::read_step_count: Failed to get step count. Logging last good value.");
+            flxLog_E(F("%s: Failed to get step count. Logging last good value"), name());
+        ;
     }
 
-    return ((uint)_countedSteps);
+    return _countedSteps;
 }
 
 /* Write methods for parameters */
@@ -278,7 +197,7 @@ void flxDevBMI270::write_reset_step_count()
     if (_stepCounterEnabled)
     {
         if (BMI2_OK != BMI270::resetStepCount())
-            flxLog_E("BMI270::write_reset_step_count: Failed to reset step count");
+            flxLog_E(F("%s: Failed to reset step count"), name());
     }
 }
 
@@ -334,7 +253,7 @@ uint8_t flxDevBMI270::get_gyro_range()
 void flxDevBMI270::set_accel_odr(uint8_t dataRate)
 {
     if (BMI2_OK != setAccelODR(dataRate))
-        flxLog_E("BMI270::set_accel_odr: Could not set ODR.");
+        flxLog_E(F("%s: Could not set ODR"), name());
     else
         accelConfig.cfg.acc.odr = dataRate;
 }
@@ -342,7 +261,7 @@ void flxDevBMI270::set_accel_odr(uint8_t dataRate)
 void flxDevBMI270::set_accel_power_mode(uint8_t powerMode)
 {
     if (BMI2_OK != setAccelPowerMode(powerMode))
-        flxLog_E("BMI270::set_accel_power_mode: Could not set mode.");
+        flxLog_E(F("%s: Could not set mode"), name());
     else
         accelConfig.cfg.acc.filter_perf = powerMode;
 }
@@ -350,7 +269,7 @@ void flxDevBMI270::set_accel_power_mode(uint8_t powerMode)
 void flxDevBMI270::set_accel_filter_bandwidth(uint8_t bandwidth)
 {
     if (BMI2_OK != setAccelFilterBandwidth(bandwidth))
-        flxLog_E("BMI270::set_accel_filter_bandwidth: Could not set bandwidth.");
+        flxLog_E(F("%s: Could not set bandwidth"), name());
     else
         accelConfig.cfg.acc.bwp = bandwidth;
 }
@@ -363,7 +282,7 @@ void flxDevBMI270::set_accel_range(uint8_t range)
 
     if (BMI2_OK != setConfig(accelConfig))
     {
-        flxLog_E("BMI270::set_accel_range: Could not set range.");
+        flxLog_E(F("%s: Could not set range"), name());
         accelConfig.cfg.acc.range = prevRange;
     }
 }
@@ -371,7 +290,7 @@ void flxDevBMI270::set_accel_range(uint8_t range)
 void flxDevBMI270::set_gyro_odr(uint8_t dataRate)
 {
     if (BMI2_OK != setGyroODR(dataRate))
-        flxLog_E("BMI270::set_gyro_odr: Could not set ODR.");
+        flxLog_E(F("%s: Could not set ODR"), name());
     else
         gyroConfig.cfg.gyr.odr = dataRate;
 }
@@ -379,7 +298,7 @@ void flxDevBMI270::set_gyro_odr(uint8_t dataRate)
 void flxDevBMI270::set_gyro_power_mode_filter(uint8_t powerMode)
 {
     if (BMI2_OK != setGyroPowerMode(powerMode, gyroConfig.cfg.gyr.noise_perf))
-        flxLog_E("BMI270::set_gyro_power_mode_filter: Could not set filter mode.");
+        flxLog_E(F("%s: Could not set gyro filter mode"), name());
     else
         gyroConfig.cfg.gyr.filter_perf = powerMode;
 }
@@ -387,7 +306,7 @@ void flxDevBMI270::set_gyro_power_mode_filter(uint8_t powerMode)
 void flxDevBMI270::set_gyro_power_mode_noise(uint8_t powerMode)
 {
     if (BMI2_OK != setGyroPowerMode(gyroConfig.cfg.gyr.filter_perf, powerMode))
-        flxLog_E("BMI270::set_gyro_power_mode_filter: Could not set filter mode.");
+        flxLog_E(F("%s: Could not set gyro power mode."), name());
     else
         gyroConfig.cfg.gyr.noise_perf = powerMode;
 }
@@ -395,7 +314,7 @@ void flxDevBMI270::set_gyro_power_mode_noise(uint8_t powerMode)
 void flxDevBMI270::set_gyro_filter_bandwidth(uint8_t bandwidth)
 {
     if (BMI2_OK != setGyroFilterBandwidth(bandwidth))
-        flxLog_E("BMI270::set_gyro_filter_bandwidth: Could not set bandwidth.");
+        flxLog_E(F("%s: Could not set bandwidth"), name());
     else
         gyroConfig.cfg.gyr.bwp = bandwidth;
 }
@@ -408,7 +327,7 @@ void flxDevBMI270::set_gyro_range(uint8_t range)
 
     if (BMI2_OK != setConfig(gyroConfig))
     {
-        flxLog_E("BMI270::set_gyro_range: Could not set range.");
+        flxLog_E(F("%s: Could not set range"), name());
         gyroConfig.cfg.gyr.range = prevRange;
     }
 }
@@ -418,14 +337,14 @@ bool flxDevBMI270::enable_step_counter(bool enabled)
     if (enabled && !_stepCounterEnabled)
     {
         if (BMI2_OK != enableFeature(BMI2_STEP_COUNTER))
-            flxLog_E("BMI270::enable_step_counter: Could not enable step counter.");
+            flxLog_E(F("%s: Could not enable step counter"), name());
 
         _stepCounterEnabled = true;
     }
     else if (!enabled && _stepCounterEnabled)
     {
         if (BMI2_OK != disableFeature(BMI2_STEP_COUNTER))
-            flxLog_E("BMI270::enable_step_counter: Could not disable step counter.");
+            flxLog_E(F("%s: Could not disable step counter"), name());
 
         _stepCounterEnabled = false;
     }

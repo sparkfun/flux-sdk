@@ -55,6 +55,8 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
+    bool execute(void);
+
   private:
     // Methods used to get values for our output parameters
     float read_accel_x();
@@ -92,12 +94,7 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
     void set_gyro_filter_bandwidth(uint8_t);
     void set_gyro_range(uint8_t);
 
-    bool _accelX = false;
-    bool _accelY = false;
-    bool _accelZ = false;
-    bool _gyroX = false;
-    bool _gyroY = false;
-    bool _gyroZ = false;
+    bool _validData;
 
     float _tempC = 0.0;
 
@@ -117,8 +114,6 @@ class flxDevBMI270 : public flxDeviceI2CType<flxDevBMI270>, public BMI270
     bool enable_step_counter(bool);
     bool _stepCounterEnabled = false;
     uint32_t _countedSteps = 0;
-
-    bool _sensorInitialized = false;
 
   public:
     // Define the sensor's Accelerometer Output Data Rate (ODR) in Hz.
