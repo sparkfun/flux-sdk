@@ -20,8 +20,8 @@
 
 // helpers
 
-#define devAddrToKey(__addr__, __conf__)  ( (__addr__*10 + (uint16_t)__conf__ ))
-#define devKeyToAddr(__key__)  (__key__/10)
+#define devAddrToKey(__addr__, __conf__) ((__addr__ * 10 + (uint16_t)__conf__))
+#define devKeyToAddr(__key__) (__key__ / 10)
 
 bool flxDevice::initialize()
 {
@@ -44,7 +44,7 @@ void flxDevice::enable_all_parameters(void)
 }
 
 //----------------------------------------------------------------
-// Add the address to the device name. Helps ID a device 
+// Add the address to the device name. Helps ID a device
 void flxDevice::addAddressToName()
 {
     // add the device address to the name of the device.
@@ -80,36 +80,35 @@ bool flxDeviceFactory::addressInUse(uint8_t address)
 
 bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 {
-    // Add the builder to the device map - the map keys is the address, and sorted
+    // Add the builder to the device map - the map key is the address + a confidence value, and sorted
 
     flxDeviceConfidence_t devConfidence = deviceBuilder->connectedConfidence();
 
     // loop over the available addresses for this device ...
     const uint8_t *devAddr = deviceBuilder->getDefaultAddresses();
-    
+
     uint16_t devKey;
 
-    for  (int i =0; devAddr[i] != kSparkDeviceAddressNull; i++)
+    for (int i = 0; devAddr[i] != kSparkDeviceAddressNull; i++)
     {
         devKey = devAddrToKey(devAddr[i], devConfidence);
 
-        // if the confidence type is PING, we can only really have one ping device per ID.
-        // Make sure we don't have two - this would be ambiquous...
+        // if the confidence type is PING, we can only really have one ping device per address.
+        // Make sure we don't have two - this would be ambiguous...
 
-        if ( devConfidence == flxDevConfidencePing)
+        if (devConfidence == flxDevConfidencePing)
         {
             auto search = _buildersByAddress.find(devKey);
             if (search != _buildersByAddress.end())
             {
                 // we have two pings - wut?
-                flxLog_E(F("Unable to support the device %s. The address is ambiguous with %s"), 
-                        deviceBuilder->getDeviceName(), search->second->getDeviceName());
+                flxLog_E(F("Unable to support the device %s. The address is ambiguous with %s"),
+                         deviceBuilder->getDeviceName(), search->second->getDeviceName());
                 continue;
             }
         }
         _buildersByAddress.insert(std::pair<uint16_t, flxDeviceBuilderI2C *>(devKey, deviceBuilder));
     }
-
 
     return true;
 }
@@ -154,7 +153,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
         // address in use? Jump ahead
         if (addressInUse(devAddr))
         {
-            // skip head to the next address block - address + ping key
+            // skip head to the next address block - follows the (address + ping) key
             it = _buildersByAddress.upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
             continue;
         }
@@ -162,10 +161,11 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
         // Is this device at this address?
         if (it->second->isConnected(i2cDriver, devAddr))
         {
+            // yes connected - build a device driver
             flxDevice *pDevice = it->second->create();
 
             if (!pDevice)
-                flxLog_E("Device create failed - %s", it->second->getDeviceName());
+                flxLog_E(F("Device create failed - %s"), it->second->getDeviceName());
             else
             {
                 // setup the device object.
@@ -182,7 +182,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
                 }
                 else
                 {
-                    // the device is added - skip to next address block - the address + PING key
+                    // the device is added - skip to next address block - just after (the address + PING) key
                     it = _buildersByAddress.upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
                     nDevs++;
                     continue;

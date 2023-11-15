@@ -23,7 +23,6 @@
  *   - Logging method interface (called to capture data to record)
  *
  * TODO:
- *    Name!
  */
 
 #pragma once
@@ -47,23 +46,17 @@ typedef enum
     flxDeviceKindNone
 } flxDeviceKind_t;
 
-
-// KDB Testing
-// Define a type that is used for qualifying the type of isConnected Alogirthm used.
+// Define a type that is used for qualifying the type of isConnected Algorithm used.
 //
 // This is used to define the *confidence* of isConnected() method employed
 //
 // These values need to range from 0-9, with Exact =0, Ping (worse) = 0
-typedef enum 
+typedef enum
 {
     flxDevConfidenceExact = 0,
     flxDevConfidenceFuzzy = 5,
-    flxDevConfidencePing  = 9
+    flxDevConfidencePing = 9
 } flxDeviceConfidence_t;
-
-
-
-// END testing
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -106,7 +99,7 @@ class flxDevice : public flxOperation
     {
     }
 
-    // override our operation class 
+    // override our operation class
     virtual bool execute(void)
     {
         return true;
@@ -243,8 +236,8 @@ class flxDeviceFactory
     flxDeviceFactory(flxDeviceFactory const &) = delete;
     void operator=(flxDeviceFactory const &) = delete;
 
-    //void debugMapDump(void);
-    
+    // void debugMapDump(void);
+
   private:
     bool addressInUse(uint8_t);
     flxDeviceFactory(){}; // hide constructor - this is a singleton
@@ -269,7 +262,7 @@ class flxDeviceBuilderI2C
     }
     virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
     virtual flxDeviceConfidence_t connectedConfidence(void) = 0;
-    virtual const char *getDeviceName(void);                             // To report connected devices.
+    virtual const char *getDeviceName(void); // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
     virtual flxDeviceKind_t getDeviceKind(void) = 0;
 };
