@@ -36,6 +36,12 @@ class flxDevCCS811 : public flxDeviceI2CType<flxDevCCS811>, public CCS811
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+    
+
     static const char *getDeviceName()
     {
         return kCCS811DeviceName;

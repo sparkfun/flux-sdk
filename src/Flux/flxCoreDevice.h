@@ -47,6 +47,24 @@ typedef enum
     flxDeviceKindNone
 } flxDeviceKind_t;
 
+
+// KDB Testing
+// Define a type that is used for qualifying the type of isConnected Alogirthm used.
+//
+// This is used to define the *confidence* of isConnected() method employed
+//
+// These values need to range from 0-9, with Exact =0, Ping (worse) = 0
+typedef enum 
+{
+    flxDevConfidenceExact = 0,
+    flxDevConfidenceFuzzy = 5,
+    flxDevConfidencePing  = 9
+} flxDeviceConfidence_t;
+
+
+
+// END testing
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // flxDevice()
@@ -209,15 +227,11 @@ class flxDeviceFactory
         return instance;
     }
     // The callback Builders use to register themselves.
-    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder)
-    {
-        _Builders.push_back(deviceBuilder);
-        return true;
-    }
+    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder);
 
     int factory_count(void)
     {
-        return _Builders.size();
+        return _buildersByAddress.size();
     };
 
     // Called to build a list of device objects for the devices connected to the system.
@@ -229,11 +243,13 @@ class flxDeviceFactory
     flxDeviceFactory(flxDeviceFactory const &) = delete;
     void operator=(flxDeviceFactory const &) = delete;
 
+    //void debugMapDump(void);
+    
   private:
     bool addressInUse(uint8_t);
     flxDeviceFactory(){}; // hide constructor - this is a singleton
 
-    std::vector<flxDeviceBuilderI2C *> _Builders;
+    std::multimap<uint16_t, flxDeviceBuilderI2C *> _buildersByAddress;
 };
 
 //----------------------------------------------------------------------------------
@@ -252,6 +268,7 @@ class flxDeviceBuilderI2C
             delete oldDev;
     }
     virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
+    virtual flxDeviceConfidence_t connectedConfidence(void) = 0;
     virtual const char *getDeviceName(void);                             // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
     virtual flxDeviceKind_t getDeviceKind(void) = 0;
@@ -281,6 +298,11 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
     bool isConnected(flxBusI2C &i2cDriver, uint8_t address)
     {
         return DeviceType::isConnected(i2cDriver, address); // calls device object static isConnected method()
+    }
+
+    flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return DeviceType::connectedConfidence();
     }
 
     const char *getDeviceName(void)

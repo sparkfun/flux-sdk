@@ -18,6 +18,11 @@
 #include "flxCoreDevice.h"
 #include "flxFlux.h"
 
+// helpers
+
+#define devAddrToKey(__addr__, __conf__)  ( (__addr__*10 + (uint16_t)__conf__ ))
+#define devKeyToAddr(__key__)  (__key__/10)
+
 bool flxDevice::initialize()
 {
     flux.add(this);
@@ -71,6 +76,52 @@ bool flxDeviceFactory::addressInUse(uint8_t address)
 }
 
 //-------------------------------------------------------------------------------
+// The callback Builders use to register themselves.
+
+bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
+{
+    // Add the builder to the device map - the map keys is the address, and sorted
+
+    flxDeviceConfidence_t devConfidence = deviceBuilder->connectedConfidence();
+
+    // loop over the available addresses for this device ...
+    const uint8_t *devAddr = deviceBuilder->getDefaultAddresses();
+    
+    uint16_t devKey;
+
+    for  (int i =0; devAddr[i] != kSparkDeviceAddressNull; i++)
+    {
+        devKey = devAddrToKey(devAddr[i], devConfidence);
+
+        // if the confidence type is PING, we can only really have one ping device per ID.
+        // Make sure we don't have two - this would be ambiquous...
+
+        if ( devConfidence == flxDevConfidencePing)
+        {
+            auto search = _buildersByAddress.find(devKey);
+            if (search != _buildersByAddress.end())
+            {
+                // we have two pings - wut?
+                flxLog_E(F("Unable to support the device %s. The address is ambiguous with %s"), 
+                        deviceBuilder->getDeviceName(), search->second->getDeviceName());
+                continue;
+            }
+        }
+        _buildersByAddress.insert(std::pair<uint16_t, flxDeviceBuilderI2C *>(devKey, deviceBuilder));
+    }
+
+
+    return true;
+}
+
+// void flxDeviceFactory::debugMapDump(void)
+// {
+//     flxLog_E("MULTIMAP: - size: %d", _buildersByAddress.size());
+//     // TESTING multimap output
+//     for (auto it = _buildersByAddress.begin(); it != _buildersByAddress.end(); it++)
+//         flxLog_I("\t %u, %s", it->first, it->second->getDeviceName());
+// }
+//-------------------------------------------------------------------------------
 // buildConnectedDevices()
 //
 // Walks through the list of registered drivers and determines if the device is
@@ -87,56 +138,64 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
 {
 
     // walk the list of registered drivers
-
     int nDevs = 0;
-    const uint8_t *deviceAddresses;
+    uint8_t devAddr;
 
-    for (auto deviceBuilder : _Builders)
+    auto it = _buildersByAddress.begin();
+    while (it != _buildersByAddress.end())
     {
-
         // Only autoload i2c devices
-        if (deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
+        if (it->second->getDeviceKind() != flxDeviceKindI2C)
             continue;
 
-        deviceAddresses = deviceBuilder->getDefaultAddresses();
-        if (!deviceAddresses)
-            break;
+        // Get the devices I2C address;
+        devAddr = devKeyToAddr(it->first);
 
-        for (int i = 0; deviceAddresses[i] != kSparkDeviceAddressNull; i++)
+        // address in use? Jump ahead
+        if (addressInUse(devAddr))
         {
-            // Address already in use? If so, skip to next address
-            if (addressInUse(deviceAddresses[i]))
-                continue; // next
+            // skip head to the next address block - address + ping key
+            it = _buildersByAddress.upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
+            continue;
+        }
 
-            // See if the device is connected
-            if (deviceBuilder->isConnected(i2cDriver, deviceAddresses[i]))
+        // Is this device at this address?
+        if (it->second->isConnected(i2cDriver, devAddr))
+        {
+            flxDevice *pDevice = it->second->create();
+
+            if (!pDevice)
+                flxLog_E("Device create failed - %s", it->second->getDeviceName());
+            else
             {
-                flxDevice *pDevice = deviceBuilder->create();
-                if (!pDevice)
+                // setup the device object.
+                pDevice->setName(it->second->getDeviceName());
+                pDevice->setAddress(devAddr);
+                pDevice->setAutoload();
+
+                // call device initialize...
+                if (!pDevice->initialize(i2cDriver))
                 {
-                    flxLog_E("Device create failed - %s", deviceBuilder->getDeviceName());
+                    // device failed to init - delete it ...
+                    flxLog_E(F("Deviced %s failed to initialize."), it->second->getDeviceName());
+                    it->second->destroy(pDevice);
                 }
                 else
                 {
-                    pDevice->setName(deviceBuilder->getDeviceName());
-                    pDevice->setAddress(deviceAddresses[i]);
-                    pDevice->setAutoload();
-                    if (!pDevice->initialize(i2cDriver))
-                    {
-                        // device failed to init - delete it ...
-                        flxLog_E(F("Deviced %s failed to initialize."), deviceBuilder->getDeviceName());
-                        deviceBuilder->destroy(pDevice);
-                        continue;
-                    }
+                    // the device is added - skip to next address block - the address + PING key
+                    it = _buildersByAddress.upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
                     nDevs++;
+                    continue;
                 }
             }
         }
+
+        // okay, device not connected, or failed to init - check the next device in the list
+        it++;
     }
 
-    // Okay, we are done - clear out the builders list.
-    _Builders.clear();
-
+    // done - no longer need the builders list/data
+    _buildersByAddress.clear();
     return nDevs;
 }
 

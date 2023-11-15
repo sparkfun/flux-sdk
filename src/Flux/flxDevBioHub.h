@@ -48,6 +48,12 @@ public:
     bool initialize( int connectResetPin, int connectMfioPin );
 
     static bool isConnected( flxBusI2C &i2cDriver, uint8_t address);
+
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidencePing;
+    }
+    
     static const char *getDeviceName()
     {
         return kBioHubDeviceName;

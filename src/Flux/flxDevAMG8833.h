@@ -38,6 +38,11 @@ public:
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceFuzzy;
+    }
+
     static const char *getDeviceName()
     {
         return kAMG8833DeviceName;

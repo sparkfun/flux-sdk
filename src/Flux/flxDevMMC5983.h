@@ -91,6 +91,12 @@ class flxDevMMC5983 : public flxDeviceI2CType<flxDevMMC5983, flxDevMMC5983Base>
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
+
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+    
     static const char *getDeviceName()
     {
         return kMMC5983DeviceName;
