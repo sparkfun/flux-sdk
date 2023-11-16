@@ -22,6 +22,9 @@ class flxApplication;
 // bool spark_start(bool bAutoLoad = true);
 // bool spark_loop();
 
+// Define a default app class name
+#define kDefaultAppClassName "SFE-FLUX-APPLICATION"
+
 // Define the main framework class  - note it's a singleton
 class flxFlux : public flxObjectContainer
 {
@@ -297,7 +300,7 @@ class flxFlux : public flxObjectContainer
 
     // Note private constructor...
     flxFlux()
-        : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"}, _appClassID{nullptr},
+        : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"}, _appClassID{kDefaultAppClassName},
           _theApplication{nullptr}, _token{0}, _hasToken{false}, _verboseDevNames{false}
     {
 
