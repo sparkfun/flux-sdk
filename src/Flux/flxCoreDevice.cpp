@@ -18,10 +18,16 @@
 #include "flxCoreDevice.h"
 #include "flxFlux.h"
 
-// helpers
+///////////////////////////////////////////////////////////////////////////////////////
+// Device factory things
 
+// Handy macro helpers for the device multi-map key creation
 #define devAddrToKey(__addr__, __conf__) ((__addr__ * 10 + (uint16_t)__conf__))
 #define devKeyToAddr(__key__) (__key__ / 10)
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Base Device class Impl
+///////////////////////////////////////////////////////////////////////////////////////
 
 bool flxDevice::initialize()
 {
@@ -59,9 +65,9 @@ void flxDevice::addAddressToName()
     setNameAlloc(szBuffer);
 }
 
-//----------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////
 // Device Factory
-//----------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////
 
 //-------------------------------------------------------------------------------
 bool flxDeviceFactory::addressInUse(uint8_t address)
@@ -74,9 +80,8 @@ bool flxDeviceFactory::addressInUse(uint8_t address)
     }
     return false;
 }
-
-//-------------------------------------------------------------------------------
-// The callback Builders use to register themselves.
+///////////////////////////////////////////////////////////////////////////////////////
+// The callback Builders use to register themselves at startup
 
 bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 {
@@ -91,6 +96,7 @@ bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 
     for (int i = 0; devAddr[i] != kSparkDeviceAddressNull; i++)
     {
+        // key for the multi-map
         devKey = devAddrToKey(devAddr[i], devConfidence);
 
         // if the confidence type is PING, we can only really have one ping device per address.
@@ -107,20 +113,14 @@ bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
                 continue;
             }
         }
+        // Add this address-key <> builder pair to our multimap. Values are sorted by key
         _buildersByAddress.insert(std::pair<uint16_t, flxDeviceBuilderI2C *>(devKey, deviceBuilder));
     }
 
     return true;
 }
 
-// void flxDeviceFactory::debugMapDump(void)
-// {
-//     flxLog_E("MULTIMAP: - size: %d", _buildersByAddress.size());
-//     // TESTING multimap output
-//     for (auto it = _buildersByAddress.begin(); it != _buildersByAddress.end(); it++)
-//         flxLog_I("\t %u, %s", it->first, it->second->getDeviceName());
-// }
-//-------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////
 // buildConnectedDevices()
 //
 // Walks through the list of registered drivers and determines if the device is
@@ -131,7 +131,7 @@ bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 //
 // Return Value
 //    The count of devices connected and the driver was successfully created...
-//-------------------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////////
 
 int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
 {
@@ -153,7 +153,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
         // address in use? Jump ahead
         if (addressInUse(devAddr))
         {
-            // skip head to the next address block - follows the (address + ping) key
+            // skip head to the next address block - follows the (address + ping) key in the map
             it = _buildersByAddress.upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
             continue;
         }
