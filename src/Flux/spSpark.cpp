@@ -187,7 +187,12 @@ bool flxFlux::save(flxStorage *pStorage)
 {
     // Write a block to the storage system that has a has of or name/desc
     // Use this to validate that the settings in the storage system are ours
-    flxStorageBlock *stBlk = pStorage->beginBlock(name());
+
+    // 11/2023 - originally used the name to find our start key, but names change
+    //           switching to appliction class name - which doesn't change
+
+
+    flxStorageBlock *stBlk = pStorage->beginBlock(appClassID());
     if (!stBlk)
         return false;
 
@@ -197,13 +202,13 @@ bool flxFlux::save(flxStorage *pStorage)
     // This allows rapid ID of a valid storage source
     if (pStorage->kind() == flxStorage::flxStorageKindInternal)
     {
-        char szBuffer[128] = {0};
-        strlcpy(szBuffer, name(), sizeof(szBuffer));
-        strlcat(szBuffer, description(), sizeof(szBuffer));
-
+        // 11/2023
+        // we just want to write a key at this level that can be used on restore
+        // to indicate this is this applications prefs/state. Just put hash of 
+        // the app class id in this store
         char szHash[kApplicationHashIDSize];
 
-        status = flx_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
+        status = flx_utils::id_hash_string_to_string(appClassID(), szHash, sizeof(szHash));
 
         // Write out the ID tag
         if (status)
@@ -217,7 +222,7 @@ bool flxFlux::save(flxStorage *pStorage)
     // everything go okay?
     if (!status)
     {
-        flxLog_D(F("Unable to store application ID key"));
+        flxLog_W(F("Unable to store application ID key"));
         return false;
     }
 
@@ -231,7 +236,9 @@ bool flxFlux::restore(flxStorage *pStorage)
     // Do we have our ID block in storage? If not, then there's no need to continue
     // since the data isn't for this app
 
-    flxStorageBlock *stBlk = pStorage->beginBlock(name());
+    // 11/2023 - originally used the name to find our start key, but names change
+    //           switching to appliction class name - which doesn't change
+    flxStorageBlock *stBlk = pStorage->beginBlock(appClassID());
     if (!stBlk)
         return false;
 
@@ -241,15 +248,40 @@ bool flxFlux::restore(flxStorage *pStorage)
     // Note for external sources (files...etc), we load in and validate based on
     // source name. This makes it easier to manually write out a settings file
     bool status;
+    bool oldIDFound = false;
+    char szBuffer[128] = {0};    
     if (pStorage->kind() == flxStorage::flxStorageKindInternal)
     {
         status = stBlk->valueExists(kApplicationHashIDTag);
+
+        if (!status)
+        {
+            // 11/2023
+            // The App pref block and key value doesn't exist, it could be we have an older system,
+            // which used the app name() not app classID to name the block store the app ID key 
+            // so try the name(). Over time, re-saves of prefs will transition things to the
+            // app ID, but we'll also transition below
+            pStorage->endBlock(stBlk);
+            stBlk = pStorage->beginBlock(name());
+            if (!stBlk)
+                return false;
+
+            status = stBlk->valueExists(kApplicationHashIDTag);
+            if (status)
+            {
+                oldIDFound = true;
+
+                // use the original method for the hash ID gen - name and desc
+                strlcpy(szBuffer, name(), sizeof(szBuffer));
+                strlcat(szBuffer, description(), sizeof(szBuffer));
+            }
+        }
+        else
+            strlcpy(szBuffer, appClassID(), sizeof(szBuffer));
+
         if (status)
         {
-            char szBuffer[128] = {0};
-            strlcpy(szBuffer, name(), sizeof(szBuffer));
-            strlcat(szBuffer, description(), sizeof(szBuffer));
-
+            // just hash the app class id
             char szHash[kApplicationHashIDSize];
 
             status = flx_utils::id_hash_string_to_string(szBuffer, szHash, sizeof(szHash));
@@ -261,6 +293,24 @@ bool flxFlux::restore(flxStorage *pStorage)
 
                 if (status)
                     status = strncmp(szHash, szBuffer, strlen(szHash)) == 0;
+            }
+
+            // 11/23
+            // if we have success and we used an old key, transition to the new key
+            if (status && oldIDFound)
+            {
+                pStorage->endBlock(stBlk);
+                stBlk = pStorage->beginBlock(appClassID());
+                if (stBlk)
+                {
+                    if (flx_utils::id_hash_string_to_string(appClassID(), szHash, sizeof(szHash)))
+                    {
+                        stBlk->setReadOnly(false);
+                        if(!stBlk->write(kApplicationHashIDTag, szHash))
+                            flxLog_W("Preferences app key failed to write");
+
+                    }
+                }
             }
         }
 
