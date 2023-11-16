@@ -42,7 +42,7 @@ void flxIoTArduino::connect(void)
 
     if (deviceID().empty() || deviceSecret().empty())
     {
-        flxLog_E(F("%d: Device credentials (ID, Secret) not set - unable to continue"), this->name());
+        flxLog_E(F("%s: Device credentials (ID, Secret) not set - unable to continue"), this->name());
         return;
     }
 
