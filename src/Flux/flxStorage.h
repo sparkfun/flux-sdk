@@ -126,6 +126,7 @@ class flxStorageBlock
     virtual bool writeBytes(const char * tag, const uint8_t* data, size_t len) = 0;
 
     virtual flxStorage::flxStorageKind_t kind(void)=0;
+    virtual void setReadOnly(bool) = 0;
     
     // Overloaded versions
     bool write(const char *tag, bool data)
