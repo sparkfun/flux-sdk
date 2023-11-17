@@ -237,6 +237,9 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
         _canConnect = bConnected;
 
+        if (!_isEnabled)
+            return;
+
         if (_canConnect)
         {
             if (cloudAPISecret().empty() || cloudAPISecret().empty())
@@ -293,6 +296,10 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
             return;
 
         _isEnabled = bEnabled;
+
+        // Can we connect?
+        if (_canConnect)
+            onConnectionChange(_canConnect);
     }
 
     ///---------------------------------------------------------------------------------------

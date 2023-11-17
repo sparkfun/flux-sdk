@@ -71,6 +71,11 @@ public:
         return flxStorage::flxStorageKindInternal;
     }
 
+    void setReadOnly(bool readonly)
+    {
+        _readOnly=readonly;
+    }
+
 private:
     friend flxStorageESP32Pref;
 
@@ -82,10 +87,6 @@ private:
         _prefs = pPrefs;
     }
 
-    void setReadOnly(bool readonly)
-    {
-        _readOnly=readonly;
-    }
 };
 
 //------------------------------------------------------------------------------

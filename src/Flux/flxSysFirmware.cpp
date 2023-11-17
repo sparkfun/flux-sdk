@@ -531,7 +531,7 @@ bool flxSysFirmware::doFirmwareUpdateFromOTA(const char *firmwareURL, const char
     if (ret != HTTP_CODE_OK)
     {
         http.end();
-        flxLog_E(F("Error accessing update firmware file. Error %d"), ret);
+        flxLog_E(F("Error accessing update firmware file. Error: %s"), http.errorToString(ret).c_str());
         return false;
     }
 

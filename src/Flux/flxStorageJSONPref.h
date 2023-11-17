@@ -72,6 +72,11 @@ class flxStorageJSONBlock : public flxStorageBlock
         return flxStorage::flxStorageKindExternal;
     }
 
+    void setReadOnly(bool readonly)
+    {
+        _readOnly = readonly;
+    }
+    
   private:
     friend flxStorageJSONPref;
 
@@ -84,10 +89,7 @@ class flxStorageJSONBlock : public flxStorageBlock
         _jSection = jsonSection;
     }
 
-    void setReadOnly(bool readonly)
-    {
-        _readOnly = readonly;
-    }
+    
 };
 
 //------------------------------------------------------------------------------
