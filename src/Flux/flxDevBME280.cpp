@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBME280.cpp
@@ -70,7 +70,7 @@ bool flxDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 
     uint8_t chipID = i2cDriver.readRegister(address, BME280_CHIP_ID_REG); // Should return 0x60 or 0x58
 
-    //flxLog_I("BME280 isConnected chip ID 0x%02x", chipID);
+    // flxLog_I("BME280 isConnected chip ID 0x%02x", chipID);
 
     return (chipID == 0x58 || chipID == 0x60);
 }
@@ -90,12 +90,30 @@ bool flxDevBME280::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-float flxDevBME280::read_Humidity() { return BME280::readFloatHumidity(); }
+float flxDevBME280::read_Humidity()
+{
+    return BME280::readFloatHumidity();
+}
 
-float flxDevBME280::read_TemperatureF() { return BME280::readTempF(); }
-float flxDevBME280::read_TemperatureC() { return BME280::readTempC(); }
+float flxDevBME280::read_TemperatureF()
+{
+    return BME280::readTempF();
+}
+float flxDevBME280::read_TemperatureC()
+{
+    return BME280::readTempC();
+}
 
-float flxDevBME280::read_Pressure() { return BME280::readFloatPressure(); }
+float flxDevBME280::read_Pressure()
+{
+    return BME280::readFloatPressure();
+}
 
-float flxDevBME280::read_AltitudeM() { return BME280::readFloatAltitudeMeters(); }
-float flxDevBME280::read_AltitudeF() { return BME280::readFloatAltitudeFeet(); }
+float flxDevBME280::read_AltitudeM()
+{
+    return BME280::readFloatAltitudeMeters();
+}
+float flxDevBME280::read_AltitudeF()
+{
+    return BME280::readFloatAltitudeFeet();
+}
