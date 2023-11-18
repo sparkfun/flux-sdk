@@ -84,7 +84,7 @@ bool flxDeviceFactory::addressInUse(uint8_t address)
 // The callback Builders use to register themselves at startup
 
 // bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
-bool flxDeviceFactory::registerDevice(flxIDeviceBuilderWr *deviceBuilderWr)
+bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 {
 
     if (!_buildersByAddress)
@@ -92,8 +92,6 @@ bool flxDeviceFactory::registerDevice(flxIDeviceBuilderWr *deviceBuilderWr)
         flxLog_E(F("Driver builder storage map is unavailable"));
         return false;
     }
-
-    flxDeviceBuilderI2C *deviceBuilder = deviceBuilderWr->get();
 
     if (!deviceBuilder)
         return false;
@@ -122,12 +120,12 @@ bool flxDeviceFactory::registerDevice(flxIDeviceBuilderWr *deviceBuilderWr)
             {
                 // we have two pings - wut?
                 flxLog_E(F("Unable to support the device %s. The address is ambiguous with %s"),
-                         deviceBuilder->getDeviceName(), search->second->get()->getDeviceName());
+                         deviceBuilder->getDeviceName(), search->second->getDeviceName());
                 continue;
             }
         }
         // Add this address-key <> builder pair to our multimap. Values are sorted by key
-        _buildersByAddress->insert(std::pair<uint16_t, flxIDeviceBuilderWr *>(devKey, deviceBuilderWr));
+        _buildersByAddress->insert(std::pair<uint16_t, flxDeviceBuilderI2C *>(devKey, deviceBuilder));
     }
     return true;
 }
@@ -160,7 +158,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
     auto it = _buildersByAddress->begin();
     while (it != _buildersByAddress->end())
     {
-        deviceBuilder = it->second->get();
+        deviceBuilder = it->second;
         // Only autoload i2c devices
         if (deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
             continue;
@@ -213,18 +211,10 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
     }
 
     // done - no longer need the builders list/data
-    flxLog_I("DEBUG: BUILD - MAP <<<BEFORE>>> -  Free Heap: %d", ESP.getFreeHeap());
-
-    // Clear out our descriptors - contained in our simple smart pointer saves some bytes :)
-    for (auto entry : *_buildersByAddress)
-        entry.second->reset();
-
-    flxLog_I("DEBUG: BUILD - MAP clear >>>AFTER<<< -  Free Heap: %d", ESP.getFreeHeap());
-
     delete _buildersByAddress;
     _buildersByAddress = nullptr;
 
-    flxLog_I("DEBUG: BUILD - MAP DELETE >>>AFTER<<< -  Free Heap: %d", ESP.getFreeHeap());
+    // flxLog_I("DEBUG: BUILD - MAP DELETE >>>AFTER<<< -  Free Heap: %d", ESP.getFreeHeap());
 
     return nDevs;
 }

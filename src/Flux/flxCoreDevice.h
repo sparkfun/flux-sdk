@@ -290,7 +290,7 @@ class flxDeviceFactory
         return instance;
     }
     // The callback Builders use to register themselves.
-    bool registerDevice(flxIDeviceBuilderWr *deviceBuilder);
+    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder);
 
     int factory_count(void)
     {
@@ -318,7 +318,7 @@ class flxDeviceFactory
 
     // 11/2023 -- the multi map use to store registered device drivers. Key [addr & confidence level] -> *builder]
 
-    typedef std::multimap<uint16_t, flxIDeviceBuilderWr *> _BuilderMMap_t;
+    typedef std::multimap<uint16_t, flxDeviceBuilderI2C *> _BuilderMMap_t;
 
     _BuilderMMap_t *_buildersByAddress;
 
@@ -360,7 +360,7 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
   public:
     DeviceBuilder()
     {
-        // flxDeviceFactory::get().registerDevice(this);
+        flxDeviceFactory::get().registerDevice(this);
     }
 
     DeviceType *create()
@@ -395,40 +395,5 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
     }
 };
 
-class flxIDeviceBuilderWr
-{
-  public:
-    virtual flxDeviceBuilderI2C *get() = 0;
-    virtual void reset(void) = 0;
-};
-// a "smart wrapper" for the builder class - allows us to free up a little memory
-// after autoload
-template <class T> class flxDeviceBuilderWr : public flxIDeviceBuilderWr
-{
-  public:
-    flxDeviceBuilderWr()
-    {
-        _pDevBuilder = new DeviceBuilder<T>;
-        flxDeviceFactory::get().registerDevice(this);
-    }
-
-    flxDeviceBuilderI2C *get()
-    {
-        return _pDevBuilder;
-    }
-
-    void reset(void)
-    {
-        if (_pDevBuilder)
-        {
-            delete _pDevBuilder;
-            _pDevBuilder = nullptr;
-        }
-    }
-
-  private:
-    DeviceBuilder<T> *_pDevBuilder;
-};
 // Macro to define the global builder object.
-// #define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
-#define flxRegisterDevice(kDevice) static flxDeviceBuilderWr<kDevice> global2_##kDevice##Builder;
+#define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
