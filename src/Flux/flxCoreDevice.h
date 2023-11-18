@@ -275,6 +275,7 @@ using flxDeviceContainer = flxContainer<flxDevice *>;
 
 // it's c++ - you have to do this
 class flxDeviceBuilderI2C;
+class flxIDeviceBuilderWr;
 
 // Our factory class
 class flxDeviceFactory
@@ -289,11 +290,11 @@ class flxDeviceFactory
         return instance;
     }
     // The callback Builders use to register themselves.
-    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder);
+    bool registerDevice(flxIDeviceBuilderWr *deviceBuilder);
 
     int factory_count(void)
     {
-        return _buildersByAddress.size();
+        return _buildersByAddress != nullptr ? _buildersByAddress->size() : 0;
     };
 
     // Called to build a list of device objects for the devices connected to the system.
@@ -309,11 +310,19 @@ class flxDeviceFactory
 
   private:
     bool addressInUse(uint8_t);
-    flxDeviceFactory(){}; // hide constructor - this is a singleton
+    // hide constructor - this is a singleton
+    flxDeviceFactory()
+    {
+        _buildersByAddress = new _BuilderMMap_t;
+    };
 
     // 11/2023 -- the multi map use to store registered device drivers. Key [addr & confidence level] -> *builder]
 
-    std::multimap<uint16_t, flxDeviceBuilderI2C *> _buildersByAddress;
+    typedef std::multimap<uint16_t, flxIDeviceBuilderWr *> _BuilderMMap_t;
+
+    _BuilderMMap_t *_buildersByAddress;
+
+    // std::vector<flxDeviceBuilderI2C *> _Builders;
 };
 
 //----------------------------------------------------------------------------------
@@ -351,7 +360,7 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
   public:
     DeviceBuilder()
     {
-        flxDeviceFactory::get().registerDevice(this);
+        // flxDeviceFactory::get().registerDevice(this);
     }
 
     DeviceType *create()
@@ -386,5 +395,40 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
     }
 };
 
+class flxIDeviceBuilderWr
+{
+  public:
+    virtual flxDeviceBuilderI2C *get() = 0;
+    virtual void reset(void) = 0;
+};
+// a "smart wrapper" for the builder class - allows us to free up a little memory
+// after autoload
+template <class T> class flxDeviceBuilderWr : public flxIDeviceBuilderWr
+{
+  public:
+    flxDeviceBuilderWr()
+    {
+        _pDevBuilder = new DeviceBuilder<T>;
+        flxDeviceFactory::get().registerDevice(this);
+    }
+
+    flxDeviceBuilderI2C *get()
+    {
+        return _pDevBuilder;
+    }
+
+    void reset(void)
+    {
+        if (_pDevBuilder)
+        {
+            delete _pDevBuilder;
+            _pDevBuilder = nullptr;
+        }
+    }
+
+  private:
+    DeviceBuilder<T> *_pDevBuilder;
+};
 // Macro to define the global builder object.
-#define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
+// #define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
+#define flxRegisterDevice(kDevice) static flxDeviceBuilderWr<kDevice> global2_##kDevice##Builder;

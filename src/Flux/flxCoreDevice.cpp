@@ -83,8 +83,21 @@ bool flxDeviceFactory::addressInUse(uint8_t address)
 ///////////////////////////////////////////////////////////////////////////////////////
 // The callback Builders use to register themselves at startup
 
-bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
+// bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
+bool flxDeviceFactory::registerDevice(flxIDeviceBuilderWr *deviceBuilderWr)
 {
+
+    if (!_buildersByAddress)
+    {
+        flxLog_E(F("Driver builder storage map is unavailable"));
+        return false;
+    }
+
+    flxDeviceBuilderI2C *deviceBuilder = deviceBuilderWr->get();
+
+    if (!deviceBuilder)
+        return false;
+
     // Add the builder to the device map - the map key is the address + a confidence value, and sorted
 
     flxDeviceConfidence_t devConfidence = deviceBuilder->connectedConfidence();
@@ -104,19 +117,18 @@ bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 
         if (devConfidence == flxDevConfidencePing)
         {
-            auto search = _buildersByAddress.find(devKey);
-            if (search != _buildersByAddress.end())
+            auto search = _buildersByAddress->find(devKey);
+            if (search != _buildersByAddress->end())
             {
                 // we have two pings - wut?
                 flxLog_E(F("Unable to support the device %s. The address is ambiguous with %s"),
-                         deviceBuilder->getDeviceName(), search->second->getDeviceName());
+                         deviceBuilder->getDeviceName(), search->second->get()->getDeviceName());
                 continue;
             }
         }
         // Add this address-key <> builder pair to our multimap. Values are sorted by key
-        _buildersByAddress.insert(std::pair<uint16_t, flxDeviceBuilderI2C *>(devKey, deviceBuilder));
+        _buildersByAddress->insert(std::pair<uint16_t, flxIDeviceBuilderWr *>(devKey, deviceBuilderWr));
     }
-
     return true;
 }
 
@@ -135,16 +147,22 @@ bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 
 int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
 {
-
+    if (!_buildersByAddress)
+    {
+        flxLog_E(F("Driver builder storage map is unavailable"));
+        return 0;
+    }
     // walk the list of registered drivers
     int nDevs = 0;
     uint8_t devAddr;
+    flxDeviceBuilderI2C *deviceBuilder;
 
-    auto it = _buildersByAddress.begin();
-    while (it != _buildersByAddress.end())
+    auto it = _buildersByAddress->begin();
+    while (it != _buildersByAddress->end())
     {
+        deviceBuilder = it->second->get();
         // Only autoload i2c devices
-        if (it->second->getDeviceKind() != flxDeviceKindI2C)
+        if (deviceBuilder->getDeviceKind() != flxDeviceKindI2C)
             continue;
 
         // Get the devices I2C address;
@@ -154,22 +172,22 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
         if (addressInUse(devAddr))
         {
             // skip head to the next address block - follows the (address + ping) key in the map
-            it = _buildersByAddress.upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
+            it = _buildersByAddress->upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
             continue;
         }
 
         // Is this device at this address?
-        if (it->second->isConnected(i2cDriver, devAddr))
+        if (deviceBuilder->isConnected(i2cDriver, devAddr))
         {
             // yes connected - build a device driver
-            flxDevice *pDevice = it->second->create();
+            flxDevice *pDevice = deviceBuilder->create();
 
             if (!pDevice)
-                flxLog_E(F("Device create failed - %s"), it->second->getDeviceName());
+                flxLog_E(F("Device create failed - %s"), deviceBuilder->getDeviceName());
             else
             {
                 // setup the device object.
-                pDevice->setName(it->second->getDeviceName());
+                pDevice->setName(deviceBuilder->getDeviceName());
                 pDevice->setAddress(devAddr);
                 pDevice->setAutoload();
 
@@ -177,13 +195,13 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
                 if (!pDevice->initialize(i2cDriver))
                 {
                     // device failed to init - delete it ...
-                    flxLog_E(F("Deviced %s failed to initialize."), it->second->getDeviceName());
-                    it->second->destroy(pDevice);
+                    flxLog_E(F("Deviced %s failed to initialize."), deviceBuilder->getDeviceName());
+                    deviceBuilder->destroy(pDevice);
                 }
                 else
                 {
                     // the device is added - skip to next address block - just after (the address + PING) key
-                    it = _buildersByAddress.upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
+                    it = _buildersByAddress->upper_bound(devAddrToKey(devAddr, flxDevConfidencePing));
                     nDevs++;
                     continue;
                 }
@@ -195,7 +213,19 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
     }
 
     // done - no longer need the builders list/data
-    _buildersByAddress.clear();
+    flxLog_I("DEBUG: BUILD - MAP <<<BEFORE>>> -  Free Heap: %d", ESP.getFreeHeap());
+
+    // Clear out our descriptors - contained in our simple smart pointer saves some bytes :)
+    for (auto entry : *_buildersByAddress)
+        entry.second->reset();
+
+    flxLog_I("DEBUG: BUILD - MAP clear >>>AFTER<<< -  Free Heap: %d", ESP.getFreeHeap());
+
+    delete _buildersByAddress;
+    _buildersByAddress = nullptr;
+
+    flxLog_I("DEBUG: BUILD - MAP DELETE >>>AFTER<<< -  Free Heap: %d", ESP.getFreeHeap());
+
     return nDevs;
 }
 
