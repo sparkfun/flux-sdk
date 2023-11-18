@@ -204,6 +204,15 @@ void flxSettingsSave::restore_fallback(void)
 
     if (!restoreObjectFromStorage(&flux, _fallbackStorage))
         flxLog_E(F("Unable to restore settings from %s"), _fallbackStorage->name());
+    else
+    {
+        flxLog_I(F("\tSettings restored from %s"), _fallbackStorage->name());
+        // now save these restore settings locally
+        if (saveSystem())
+            flxLog_I(F("\tSettings saved to %s"), _primaryStorage->name());
+        else
+            flxLog_W(F("\tUnable to save settings to %s"), _primaryStorage->name());
+    }
 }
 //----------------------------------------------------------------------------------
 void flxSettingsSave::save_fallback(void)
