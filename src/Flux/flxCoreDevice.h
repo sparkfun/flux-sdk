@@ -321,8 +321,6 @@ class flxDeviceFactory
     typedef std::multimap<uint16_t, flxDeviceBuilderI2C *> _BuilderMMap_t;
 
     _BuilderMMap_t *_buildersByAddress;
-
-    // std::vector<flxDeviceBuilderI2C *> _Builders;
 };
 
 //----------------------------------------------------------------------------------
