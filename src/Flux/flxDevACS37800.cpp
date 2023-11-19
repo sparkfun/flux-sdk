@@ -80,23 +80,8 @@ bool flxDevACS37800::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    // It is difficult to prove if an ACS37800 is connected without (e.g.) attempting to write to volatile memory
-    // So, let's prove that it is not an MCP9600 or VCNL4040
-
-    // MCP9600
-    uint8_t devID[2] = {0};
-    i2cDriver.readRegisterRegion(address, 0x20, devID, 2);
-    bool couldBe9600 = i2cDriver.readRegisterRegion(address, 0x20, devID, 2);
-    couldBe9600 &= devID[0] == 0x40;
-    if (couldBe9600)
-        return false;
-
-    // VEML4040
-    uint16_t idReg; // VCNL4040_ID
-    bool couldBe4040 = i2cDriver.readRegister16(address, 0x0C, &idReg, true); // Little Endian
-    couldBe4040 &= (idReg == 0x0186);
-    if (couldBe4040)
-        return false; 
+    // NOTE: This device could clash with the MCP9600 or the VEML4040. Get a definitive ID, the 
+    //       confidence value of this device is FUZZY
 
     // ACS37800
     // Read EEPROM address 0x0B and check the two ECC bits are clear. Not a great check, but something...
