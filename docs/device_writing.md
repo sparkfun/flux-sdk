@@ -251,9 +251,11 @@ bool flxDevBME280::onInitialize(TwoWire &wirePort)
 }
 ```
 
-Note
+> Note: The ```address()``` method returns the device address for this instance of the driver.
 
-* The ```address()``` method returns the device address for this instance of the driver.
+### Determining if a Device is Initialized
+
+To determine if a device is initialised, the Device Driver impelementation should call the method ```isInitialized()```, which returns the value that was retunred by ```onInitialize()```. It also returns false before the call to ```isInitialized()```
 
 ## Device Properties
 
