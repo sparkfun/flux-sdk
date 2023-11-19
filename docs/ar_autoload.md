@@ -32,7 +32,9 @@ The class hierarchy for the Device class is outlined in the following diagram:
 
 ![Device Class](images/ar-flux-device-class.png)
 
-The following static methods form the device discovery interface:
+#### Static Methods
+
+The following **static** methods form the device discovery interface:
 
 |||
 |----|---|
@@ -42,4 +44,71 @@ The following static methods form the device discovery interface:
 ```getDefaultAddress()``` | Returns the default I2C address for the device. *This method is deprecated*
 ```getDefaultAddresses()``` | Returns a list of I2C addresses the device can use. The first address should be the default address for the device. This array is terminated with the value ```kSparkDeviceAddressNull```
 
-Additionally, the device implements a non-static  ```onInitialize()``` method that returns a boolean. When a device object is created, this method is called to "initialize" the device.
+#### Instance Methods
+
+For the startup sequence the following instance methods are important
+|||
+|------|--------|
+```onInitialize()``` | Called during the initialization process allowing the performance of the driver specific startup sequence. The Arduino TwoWire (Wire) object is passed in for use by the driver. Note: to get the address to use for the device, the driver calls the ```address()``` method.
+```address()``` | Inherited - this method returns the address for the attached device
+```isInitialized()``` | Returns true of the method ```onInitialized()``` returned true - indicating the driver is initialized.
+
+### Device Builder Class
+
+This class provides a common interface for the Factory class to use during the discovery and instantiation phase of device creation. The class is defined as a template, with the only template parameter being the class name of the Driver it represents.
+
+The template definition for the ```DeviceBuilder``` class:
+
+```c++
+template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
+```
+
+For the most part, all the methods in this class just wrap the *introspection* methods provided by the underlying Device class it represents. This allows allows the Factory class to work with object instances that bridge calls to the *static* methods of a Device object.
+
+Example of a wrapped method in the ```DeviceBuilder``` template:
+
+```C++
+bool isConnected(flxBusI2C &i2cDriver, uint8_t address)
+{
+    return DeviceType::isConnected(i2cDriver, address);
+}
+```
+
+#### DeviceBuilder Instantiation
+
+A goal of the Flux framework was to *automatically* register a device driver only by its implementation, not leveraging any external registration or implementation. The ```DeviceBuilder``` object is the key to meeting this goal.
+
+In the implementation file of each device driver, a static ```global``` instance of the device drivers DeviceBuilder class is defined. Since all global objects are created during the system environment initialization, the DeviceBuilder can *register* itself with the Flux device Factory in its factory method. This is the ***trick*** to meeting the goal of device driver "auto registration".
+
+The definition of the ```DeviceBuilder``` constructor:
+
+```C++
+DeviceBuilder()
+{
+    flxDeviceFactory::get().registerDevice(this);
+}
+```
+
+The Flux Factory class ```flxDeviceFactory``` is a *singleton*, and globally accessible. The first call to ```get()``` will create the only instance of the object, enabling creation at startup.
+
+#### Developer Device Registration
+
+To register a device driver, a static ```DeviceBuilder``` is added to the drivers implementation file.
+
+```C++
+static DeviceBuilder<kDevice> global_##kDevice##Builder;
+```
+
+But to make this easier, the following macro is defined.
+
+```C++
+#define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
+```
+
+Using this macro, device registration looks like the following (using the BME280 driver)
+
+```C++
+flxRegisterDevice(flxDevBME280);
+```
+
+Easy, and similar to other use patters throughout the Flux framework.
