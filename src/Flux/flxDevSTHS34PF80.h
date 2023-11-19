@@ -39,6 +39,11 @@ class flxDevSTHS34PF80 : public flxDeviceI2CType<flxDevSTHS34PF80>, public STHS3
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+    
     static const char *getDeviceName()
     {
         return kSTHS34PF80DeviceName;

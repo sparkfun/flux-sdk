@@ -36,6 +36,11 @@ class flxDevLPS25HB : public flxDeviceI2CType<flxDevLPS25HB>, public LPS25HB
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+
     static const char *getDeviceName()
     {
         return kLPS25HBDeviceName;

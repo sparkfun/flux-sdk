@@ -40,6 +40,12 @@ class flxDevTwist : public flxDeviceI2CType<flxDevTwist>, public TWIST
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
+
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceFuzzy;
+    }
+
     static const char *getDeviceName()
     {
         return kTwistDeviceName;

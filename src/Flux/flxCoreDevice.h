@@ -23,7 +23,6 @@
  *   - Logging method interface (called to capture data to record)
  *
  * TODO:
- *    Name!
  */
 
 #pragma once
@@ -47,7 +46,88 @@ typedef enum
     flxDeviceKindNone
 } flxDeviceKind_t;
 
-/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+// 11/2023  I2C Auto Load update
+/////////////////////////////////////////////////////////////////////////////////////
+//
+// Issue:
+//    One issue with the initial auto load logic was making decisions when
+//    address collisions occurred - a device mapped to 2 or more device drivers.
+//    Normally, the first driver loaded (which is indeterminate) that
+//    matched the Device was selected. Sometimes this worked - the driver had
+//    support for exact device identification - and other times it did not -
+//    a device could not be identified.
+//
+// Solution:
+//    The device drivers have an idea of how accurate the identification
+//    capabilities they implement, so the new method has each driver
+//    return a match *confidence* level as part of the autoload interface.
+//
+//    The system uses this confidence level to sort the device drivers
+//    for each I2C address. For each address, higher match confidence
+//    drivers query and address first, followed drivers with less
+//    confidence. The last driver used is one that just performs a PING
+//    to the attached address.
+//
+//    By prioritizing identification based on the driver confidence level
+//    most if not all collision issue of the initial implementation are
+//    resolved. Additionally, the system restricts the use of PING only
+//    devices for an address to only one driver. Any driver beyond the
+//    first PING-only driver would never be used.
+//
+// Implementation:
+//    This system is implemented using the following:
+//
+//      * Each device driver implements a confidence method - connectedConfidence(),
+//        which returns a confidence value
+//      * When drivers register, the driver is added to a multimap, which maintains
+//        a sorted list of available drivers.
+//          - The map key is created using an I2C address and confidence value.
+//               key =  address * 10 + confidence_value
+//          - The confidence value ranges from 0 - 9, with 0 being high confidence, 9 low
+//          - This key ensures higher confidence drivers are sorted before lower
+//            confidence drivers.
+//      * For each address a device driver supports, an entry for that driver is
+//        added to the driver multi-map.
+//      * When autoload occurs, the system traverses the sorted multimap, calling
+//        the the "isConnected()" methods for the drivers at each address, starting
+//        the high-confidence drivers.
+//      * If a device is found at an address, a driver instance is created for that device
+//        and any remaining drivers for that address skipped.
+//
+//  Potential Future Additions?
+//      * User prioritization of a driver in the auto-load list
+//      * User added addresses for a device
+//      * User defined locked address-to-device/driver
+//      * Device load prioritization based on previous use - <last loaded tested first>
+//      * User defined load/device limits ....
+//
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+//
+// Define a type that is used for qualifying the type of isConnected Algorithm results.
+//
+// This is used to define the *confidence* of isConnected() method employed.
+// Some devices are definitive in being identified, others are not. A
+// confidence value allows the system to prioritize device when a
+// conflict occurs.
+//
+// A 0-9 value is used to quantify confidence - with 0 representing
+// an exact match (high confidence) and a 9 representing low confidence.
+//
+// The device load algorithm uses this number to create a sorted list
+// of devices to test at an address, with those having a high-confidence
+// level tested (isConnected()) first.
+//
+// These values need to range from 0-9, with Exact =0, Ping (worse) = 0
+typedef enum
+{
+    flxDevConfidenceExact = 0,
+    flxDevConfidenceFuzzy = 5,
+    flxDevConfidencePing = 9
+} flxDeviceConfidence_t;
+
+/////////////////////////////////////////////////////////////////////////////////////
 //
 // flxDevice()
 //
@@ -88,7 +168,7 @@ class flxDevice : public flxOperation
     {
     }
 
-    // override our operation class 
+    // override our operation class
     virtual bool execute(void)
     {
         return true;
@@ -195,6 +275,7 @@ using flxDeviceContainer = flxContainer<flxDevice *>;
 
 // it's c++ - you have to do this
 class flxDeviceBuilderI2C;
+class flxIDeviceBuilderWr;
 
 // Our factory class
 class flxDeviceFactory
@@ -209,15 +290,11 @@ class flxDeviceFactory
         return instance;
     }
     // The callback Builders use to register themselves.
-    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder)
-    {
-        _Builders.push_back(deviceBuilder);
-        return true;
-    }
+    bool registerDevice(flxDeviceBuilderI2C *deviceBuilder);
 
     int factory_count(void)
     {
-        return _Builders.size();
+        return _buildersByAddress != nullptr ? _buildersByAddress->size() : 0;
     };
 
     // Called to build a list of device objects for the devices connected to the system.
@@ -229,11 +306,21 @@ class flxDeviceFactory
     flxDeviceFactory(flxDeviceFactory const &) = delete;
     void operator=(flxDeviceFactory const &) = delete;
 
+    // void debugMapDump(void);
+
   private:
     bool addressInUse(uint8_t);
-    flxDeviceFactory(){}; // hide constructor - this is a singleton
+    // hide constructor - this is a singleton
+    flxDeviceFactory()
+    {
+        _buildersByAddress = new _BuilderMMap_t;
+    };
 
-    std::vector<flxDeviceBuilderI2C *> _Builders;
+    // 11/2023 -- the multi map use to store registered device drivers. Key [addr & confidence level] -> *builder]
+
+    typedef std::multimap<uint16_t, flxDeviceBuilderI2C *> _BuilderMMap_t;
+
+    _BuilderMMap_t *_buildersByAddress;
 };
 
 //----------------------------------------------------------------------------------
@@ -252,6 +339,7 @@ class flxDeviceBuilderI2C
             delete oldDev;
     }
     virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
+    virtual flxDeviceConfidence_t connectedConfidence(void) = 0;         // 11/2023 update add
     virtual const char *getDeviceName(void);                             // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
     virtual flxDeviceKind_t getDeviceKind(void) = 0;
@@ -281,6 +369,12 @@ template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
     bool isConnected(flxBusI2C &i2cDriver, uint8_t address)
     {
         return DeviceType::isConnected(i2cDriver, address); // calls device object static isConnected method()
+    }
+
+    // pass through the confidence level from the underlying driver.
+    flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return DeviceType::connectedConfidence();
     }
 
     const char *getDeviceName(void)

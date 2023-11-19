@@ -35,6 +35,12 @@ class flxDevMS5637 : public flxDeviceI2CType<flxDevMS5637>, public MS5637
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+    
+
     static const char *getDeviceName()
     {
         return kMS5637DeviceName;

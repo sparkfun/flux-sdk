@@ -37,6 +37,10 @@ class flxDevMAX17048 : public flxDeviceI2CType<flxDevMAX17048>, public SFE_MAX17
     flxDevMAX17048();
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
 
     static const char *getDeviceName()
     {

@@ -36,6 +36,11 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
     // Implement the device interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidencePing;
+    }
+
     static const char *getDeviceName()
     {
         return kAS7265xDeviceName;

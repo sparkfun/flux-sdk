@@ -36,6 +36,11 @@ class flxDevMS8607 : public flxDeviceI2CType<flxDevMS8607>, public MS8607
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+
     static const char *getDeviceName()
     {
         return kMS8607DeviceName;

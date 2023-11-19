@@ -38,6 +38,11 @@ class flxDevADS122C04 : public flxDeviceI2CType<flxDevADS122C04>, public SFE_ADS
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+
     static const char *getDeviceName()
     {
         return kADS122C04DeviceName;

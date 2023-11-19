@@ -40,6 +40,12 @@ public:
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
+    
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+
     static const char *getDeviceName()
     {
         return kBMP581DeviceName;

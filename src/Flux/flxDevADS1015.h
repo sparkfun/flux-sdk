@@ -36,6 +36,11 @@ class flxDevADS1015 : public flxDeviceI2CType<flxDevADS1015>, public ADS1015
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
+
     static const char *getDeviceName()
     {
         return kADS1015DeviceName;
