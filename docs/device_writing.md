@@ -255,7 +255,7 @@ bool flxDevBME280::onInitialize(TwoWire &wirePort)
 
 ### Determining if a Device is Initialized
 
-To determine if a device is initialised, the Device Driver impelementation should call the method ```isInitialized()```, which returns the value that was retunred by ```onInitialize()```. It also returns false before the call to ```isInitialized()```
+To determine if a device is initialized, the Device Driver implementation should call the method ```isInitialized()```, which returns the value that was returned by ```onInitialize()```. It also returns false before the call to ```isInitialized()```
 
 ## Device Properties
 
