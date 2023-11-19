@@ -41,6 +41,7 @@ To accomplish this task, class level (static) methods and data are implemented b
  ```bool isConnected(flxBusI2C, address)``` | Returns true if the device is connected |
  ```char* getDeviceName()``` | Returns the Device Name |
 |```uint8_t *getDefaultAddresses()``` | Return a list of addresses for the device. This list terminates with the value of ```kSparkDeviceAddressNull``` |
+|```flxDeviceConfidence_t connectedConfidence()``` | Returns the confidence level of the drivers ```isConnected()``` algorithm. Values supported range from *Exact* to *Ping* |
 
 Note
 >
@@ -51,7 +52,7 @@ Note
 
 #### Device Addresses
 
-The first step for a given driver is the retrieval of default addresses for the device. In this step, the system calls the ```getDefaultAddresses()``` method of the driver. The driver should return an array of type uint8_t, with the last value of the array being the sentinel value of ```kSparkDeviceAddressNull```. 
+The first step for a given driver is the retrieval of default addresses for the device. In this step, the system calls the ```getDefaultAddresses()``` method of the driver. The driver should return an array of type uint8_t, with the last value of the array being the sentinel value of ```kSparkDeviceAddressNull```.
 
 The system uses the array of addresses to determine what addresses are currently available, and call the ```isConnected()``` with the possible and available addresses until a connection is found, or it hits the end of the possible addresses for the device.
 
@@ -80,7 +81,7 @@ static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
 #### Device Name
 
-The static interface for the device also includes a method to return the name of the device. 
+The static interface for the device also includes a method to return the name of the device.
 
 ##### Method Signature
 
@@ -90,11 +91,34 @@ static const char *getDeviceName()
 
 This method returns a constant C string.
 
+#### Connected Confidence
+
+This method returns the confidence level for the algorithm in the devices ```isConnected()``` algorithm in exactly determining if a device is connected at the specific address.
+
+This confidence level is used to resolve detection conflicts between devices that support the same address on the I2C bus. Drivers that have a higher confidence level are evaluated first.
+
+#### Method Signature
+
+```C++
+static flxDeviceConfidence_t connectedConfidence(void)
+```
+
+The return value should be one of the following:
+
+|||
+|---|---|
+```flxDevConfidenceExact``` | The algorithm can perform an exact match
+```flxDevConfidenceFuzzy``` | The algorithm has high-confidence in a match, but it's not exact
+```flxDevConfidencePing``` | An address "ping" is used - just detecting a device at a location, but not verifying the device type.
+
+> Note: Only one device with a PING confidence is allowed at an address.
+
 #### Example Method Definition
 
 This example is taken from the device driver for the BME280 device.
 
 The class definition - ```flxDevBME280.h```
+
 ```C++
 // What is the name used to ID this device?
 #define kBME280DeviceName "bme280";
@@ -108,6 +132,10 @@ class flxDevBME280 : public flxDevice<flxDevBME280>, public BME280
 
     // Device is connected methods
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
+    static flxDeviceConfidence_t connectedConfidence(void)
+    {
+        return flxDevConfidenceExact;
+    }
     static const char *getDeviceName()
     {
         return kBME280DeviceName;
