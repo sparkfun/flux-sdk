@@ -7,7 +7,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 
@@ -44,7 +44,7 @@ class flxParameter : public flxDescriptor
         return _isEnabled;
     }
 
-    void setEnabled(bool enabled)
+    virtual void setEnabled(bool enabled)
     {
         _isEnabled = enabled;
     };
@@ -123,17 +123,17 @@ class _flxParameterContainer
 
   public:
     //---------------------------------------------------------------------------------
-    void addParameter(flxParameterIn *newParam, bool head=false)
+    void addParameter(flxParameterIn *newParam, bool head = false)
     {
         // Insert at the head?
         if (head)
             _input_parameters.insert(_input_parameters.begin(), newParam);
-        else 
+        else
             _input_parameters.push_back(newParam);
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(flxParameterIn &newParam, bool head=false)
+    void addParameter(flxParameterIn &newParam, bool head = false)
     {
         addParameter(&newParam, head);
     };
@@ -146,11 +146,11 @@ class _flxParameterContainer
             _input_parameters.erase(iter);
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     void removeParameter(flxParameterIn &rmParam)
     {
         removeParameter(&rmParam);
-    } 
+    }
 
     //---------------------------------------------------------------------------------
     size_t nInputParameters()
@@ -159,7 +159,7 @@ class _flxParameterContainer
     }
 
     //---------------------------------------------------------------------------------
-    void addParameter(flxParameterOut *newParam, bool head=false)
+    void addParameter(flxParameterOut *newParam, bool head = false)
     {
         // Insert at the head?
         if (head)
@@ -169,7 +169,7 @@ class _flxParameterContainer
     };
 
     //---------------------------------------------------------------------------------
-    void addParameter(flxParameterOut &newParam, bool head=false)
+    void addParameter(flxParameterOut &newParam, bool head = false)
     {
         addParameter(&newParam, head);
     };
@@ -183,11 +183,11 @@ class _flxParameterContainer
             _output_parameters.erase(iter);
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     void removeParameter(flxParameterOut &rmParam)
     {
         removeParameter(&rmParam);
-    }    
+    }
     //---------------------------------------------------------------------------------
     size_t nOutputParameters()
     {
@@ -237,7 +237,7 @@ class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
     Object *my_object; // Pointer to the containing object
 
   public:
-    _flxParameterOut() : my_object(0)
+    _flxParameterOut() : my_object{nullptr}
     {
     }
 
@@ -291,6 +291,18 @@ class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
 
         // cascade to other version of method
         (*this)(obj, name);
+    }
+
+    // override to deal with dirty status of object.
+    void setEnabled(bool bEnabled)
+    {
+        if (bEnabled == this->enabled())
+            return;
+
+        this->flxParameter::setEnabled(bEnabled);
+
+        if (my_object)
+            my_object->setIsDirty();
     }
 
     //---------------------------------------------------------------------------------
@@ -425,7 +437,7 @@ class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutSt
     Object *my_object; // Pointer to the containing object
 
   public:
-    flxParameterOutString() : my_object(0)
+    flxParameterOutString() : my_object{nullptr}
     {
     }
 
@@ -474,6 +486,18 @@ class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutSt
 
         // cascade to other version of method
         (*this)(obj, name);
+    }
+
+    // override to deal with dirty status of object.
+    void setEnabled(bool bEnabled)
+    {
+        if (bEnabled == enabled())
+            return;
+
+        this->flxParameter::setEnabled(bEnabled);
+
+        if (my_object)
+            my_object->setIsDirty();
     }
 
     //---------------------------------------------------------------------------------
@@ -565,7 +589,7 @@ class flxParameterOutArrayType : public flxParameterOutArray
     Object *my_object; // Pointer to the containing object
 
   public:
-    flxParameterOutArrayType() : my_object(0)
+    flxParameterOutArrayType() : my_object{nullptr}
     {
     }
 
@@ -619,6 +643,17 @@ class flxParameterOutArrayType : public flxParameterOutArray
         (*this)(obj, name);
     }
 
+    // override to deal with dirty status of object.
+    void setEnabled(bool bEnabled)
+    {
+        if (bEnabled == enabled())
+            return;
+
+        this->flxParameter::setEnabled(bEnabled);
+
+        if (my_object)
+            my_object->setIsDirty();
+    }
     //---------------------------------------------------------------------------------
     // get the value of the parameter.
     //
@@ -721,7 +756,7 @@ class flxParameterOutArrayString : public flxParameterOutArray
     Object *my_object; // Pointer to the containing object
 
   public:
-    flxParameterOutArrayString() : my_object(0)
+    flxParameterOutArrayString() : my_object{nullptr}
     {
     }
 
@@ -772,6 +807,18 @@ class flxParameterOutArrayString : public flxParameterOutArray
 
         // cascade to other version of method
         (*this)(obj, name);
+    }
+
+    // override to deal with dirty status of object.
+    void setEnabled(bool bEnabled)
+    {
+        if (bEnabled == enabled())
+            return;
+
+        this->flxParameter::setEnabled(bEnabled);
+
+        if (my_object)
+            my_object->setIsDirty();
     }
     //---------------------------------------------------------------------------------
     // get the value of the parameter.
@@ -1079,7 +1126,9 @@ class flxParameterInString : public flxParameterIn, _flxDataInString
 class flxParameterInVoidType : public flxParameterIn
 {
   public:
-    flxParameterInVoidType() : prompt{true}{}
+    flxParameterInVoidType() : prompt{true}
+    {
+    }
 
     virtual void set(void) = 0;
     bool prompt;
@@ -1187,7 +1236,8 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
 // Use some macro magic to determine which actual call to make based on the number of passed in
 // parameters..
 #define _spGetRegAttributeMacro(_1, _2, _3, _NAME_, ...) _NAME_
-#define flxRegister(...) _spGetRegAttributeMacro(__VA_ARGS__, flxRegisterDesc, flxRegisterName, flxRegisterObj)(__VA_ARGS__)
+#define flxRegister(...)                                                                                               \
+    _spGetRegAttributeMacro(__VA_ARGS__, flxRegisterDesc, flxRegisterName, flxRegisterObj)(__VA_ARGS__)
 
 #define flxRegisterObj(_obj_name_) _obj_name_(this, #_obj_name_)
 
@@ -1226,7 +1276,7 @@ class flxOperation : public flxObject, public _flxParameterContainer
         // se need to stash our parameter enable flags.
         flxParameterOutList outParams = getOutputParameters();
 
-        for( auto param : outParams)
+        for (auto param : outParams)
         {
             if (!stBlk->write(param->name(), param->enabled()))
                 flxLog_E(F("Error saving enabled flag for %s - parameter %s"), name(), param->name());
@@ -1243,8 +1293,8 @@ class flxOperation : public flxObject, public _flxParameterContainer
         // se need to restore our parameter enable flags.
         flxParameterOutList outParams = getOutputParameters();
 
-        bool isEnabled; 
-        for( auto param : outParams)
+        bool isEnabled;
+        for (auto param : outParams)
         {
             if (stBlk->read(param->name(), isEnabled))
                 param->setEnabled(isEnabled);
@@ -1252,7 +1302,6 @@ class flxOperation : public flxObject, public _flxParameterContainer
 
         return flxObject::onRestore(stBlk);
     }
-
 };
 
 using flxOperationContainer = flxContainer<flxOperation *>;
@@ -1262,12 +1311,11 @@ using flxOperationContainer = flxContainer<flxOperation *>;
 // flxAction - just to enable grouping of actions
 class flxAction : public flxOperation
 {
-public:
+  public:
     virtual bool initialize(void)
     {
         return true;
     }
-
 };
 // Container for actions
 using flxActionContainer = flxContainer<flxAction *>;
@@ -1302,15 +1350,15 @@ template <typename T> class flxActionType : public flxAction
 
 // KDB - Temporary ...
 
-template <typename T>
-class flxSystemType : public flxActionType<T> {
+template <typename T> class flxSystemType : public flxActionType<T>
+{
 
-public:
+  public:
     // setup and lifecycle of the file system interface
-    virtual bool initialize()=0;
+    virtual bool initialize() = 0;
 
     // Power interface
-    virtual void setPower(bool powerOn)=0;
+    virtual void setPower(bool powerOn) = 0;
     void powerOn(void)
     {
         setPower(true);
