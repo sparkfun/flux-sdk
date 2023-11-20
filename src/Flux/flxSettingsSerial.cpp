@@ -104,6 +104,9 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent)
         selectMenu(pCurrent, selected);
     }
 
+    // Is this object's value/state now dirty?
+    _bIsDirty = _bIsDirty || pCurrent->isDirty();
+
     return returnValue;
 }
 
@@ -174,10 +177,7 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
     }
 
     if (result == flxEditSuccess)
-    {
-        _bIsDirty = true;
         Serial.printf("\t[The value of %s was updated]\n\r", pProp->name());
-    }
     else
         Serial.printf("\t[%s is unchanged]\n\r", pProp->name());
 
@@ -232,9 +232,11 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent)
         }
 
         Serial.println(selected);
-
         selectMenu(pCurrent, selected);
     }
+
+    // Is this operations value/state now dirty?
+    _bIsDirty = _bIsDirty || pCurrent->isDirty();
 
     return returnValue;
 }
@@ -279,9 +281,6 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
             returnValue = true;
             break;
         }
-
-        _bIsDirty = pParam->enabled() != (selected == 1);
-
         pParam->setEnabled(selected == 1);
     }
 
