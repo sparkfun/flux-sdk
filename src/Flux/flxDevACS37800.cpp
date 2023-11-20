@@ -25,9 +25,11 @@
 
 #define kACS37800AddressDefault 0x60
 
-// Define our class static variables - allocs storage for them
+// Define our class static variables - allocs storage for them. Note, adding support for 0x60 - 0x63
 
-uint8_t flxDevACS37800::defaultDeviceAddress[] = {kACS37800AddressDefault, kSparkDeviceAddressNull};
+uint8_t flxDevACS37800::defaultDeviceAddress[] = {kACS37800AddressDefault, kACS37800AddressDefault + 1,
+                                                  kACS37800AddressDefault + 2, kACS37800AddressDefault + 3,
+                                                  kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
