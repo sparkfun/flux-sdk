@@ -6,7 +6,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 
@@ -94,18 +94,20 @@ class _flxPropertyContainer
 {
 
   public:
-    _flxPropertyContainer() : _nProperties{0}{}
+    _flxPropertyContainer() : _nProperties{0}
+    {
+    }
     //---------------------------------------------------------------------------------
     void addProperty(flxProperty *newProperty)
     {
 
-        if ( !newProperty)
+        if (!newProperty)
             return;
 
         // We store hidden properties at the end of the list, all others at the
         // head.
         if (newProperty->hidden())
-           _properties.push_back(newProperty);
+            _properties.push_back(newProperty);
         else
         {
             // find the location to insert the property...
@@ -115,7 +117,7 @@ class _flxPropertyContainer
             {
                 // is the current prop hidden? If so, we will insert here, which
                 // pushes the hidden values just past this value
-                if ((*itProp)->hidden()) 
+                if ((*itProp)->hidden())
                     break;
                 itProp++;
             }
@@ -139,11 +141,11 @@ class _flxPropertyContainer
             _properties.erase(iter);
     }
 
-    //---------------------------------------------------------------------------------    
+    //---------------------------------------------------------------------------------
     void removeProperty(flxProperty &rmProp)
     {
         removeProperty(&rmProp);
-    } 
+    }
     //---------------------------------------------------------------------------------
     flxPropertyList &getProperties(void)
     {
@@ -200,7 +202,7 @@ class _flxPropertyContainer
     flxPropertyList _properties;
 
     // The number of "visible" (not hidden) properties
-    uint  _nProperties;  
+    uint _nProperties;
 };
 
 //----------------------------------------------------------------------------------------
@@ -212,13 +214,13 @@ class _flxPropertyContainer
 //        templates.  Although some "using" magic might work ...
 //
 
-template <class T, bool HIDDEN, bool SECURE> class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDataOut<T>
+template <class T, bool HIDDEN, bool SECURE>
+class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDataOut<T>
 {
 
   public:
     _flxPropertyBase() : _isHidden{HIDDEN}, _isSecure{SECURE}
     {
-
     }
 
     bool hidden()
@@ -261,7 +263,7 @@ template <class T, bool HIDDEN, bool SECURE> class _flxPropertyBase : public flx
         bool status = true;
 
         // We don't save hidden or secure properties if this is an external source
-        if ( stBlk->kind() == flxStorage::flxStorageKindInternal || (!_isHidden && !_isSecure))
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal || (!_isHidden && !_isSecure))
         {
             T c = get();
             bool status = stBlk->write(name(), c);
@@ -330,7 +332,8 @@ template <class T, bool HIDDEN, bool SECURE> class _flxPropertyBase : public flx
     {
         return _flxDataIn<T>::dataLimit();
     }
-private:
+
+  private:
     bool _isHidden;
     bool _isSecure;
 };
@@ -408,19 +411,19 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     {
         bool status = true;
 
-        // If this is a secure string and storage is internal, the strings are stored 
+        // If this is a secure string and storage is internal, the strings are stored
         // encrypted
-        if ( stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
-            return stBlk->saveSecureString(name(), get().c_str() );
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
+            return stBlk->saveSecureString(name(), get().c_str());
 
         // If we are saving to an external source, we don't save hidden values or secure values.
         // But, for secure props, we to write the key and a blank string (makes it easier to enter values)
 
         // We don't save hidden or secure properties if this is an external source
-        if ( stBlk->kind() == flxStorage::flxStorageKindInternal || !_isHidden)
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal || !_isHidden)
         {
             // if a secure property and external storage, set value to an empty string
-            std::string c = ( stBlk->kind() == flxStorage::flxStorageKindExternal && _isSecure) ? "" : get();
+            std::string c = (stBlk->kind() == flxStorage::flxStorageKindExternal && _isSecure) ? "" : get();
 
             status = stBlk->writeString(name(), c.c_str());
             if (!status)
@@ -434,8 +437,8 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     {
         size_t len;
 
-        // Secure string? 
-        if ( stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
+        // Secure string?
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
         {
             // get buffer length. Note, add one to make sure we have room for line termination
             len = stBlk->getBytesLength(name()) + 1;
@@ -443,7 +446,7 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
                 return false;
 
             char szBuffer[len];
-            if (!stBlk->restoreSecureString(name(), szBuffer, len) ) 
+            if (!stBlk->restoreSecureString(name(), szBuffer, len))
                 return false;
 
             set(szBuffer);
@@ -452,15 +455,13 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
         {
             len = stBlk->getStringLength(name());
             if (!len)
-                return false; 
+                return false;
 
-            char szBuffer[len + 1]= {'\0'};
+            char szBuffer[len + 1] = {'\0'};
             len = stBlk->readString(name(), szBuffer, sizeof(szBuffer));
 
             set(szBuffer);
-
         }
-
 
         return true;
     };
@@ -499,8 +500,8 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
         }
         return false;
     };
-private:
 
+  private:
     bool _isHidden;
     bool _isSecure;
 };
@@ -518,7 +519,8 @@ private:
 // A read/write property base class that takes a getter and a setter method and the target object
 //
 //
-template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T), bool HIDDEN=false, bool SECURE=false>
+template <class T, class Object, T (Object::*_getter)(), void (Object::*_setter)(T), bool HIDDEN = false,
+          bool SECURE = false>
 class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
 {
     Object *my_object; // Pointer to the containing object
@@ -528,7 +530,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     bool _hasInitial;
 
   public:
-    _flxPropertyTypedRW() : my_object(nullptr), _hasInitial{false}
+    _flxPropertyTypedRW() : my_object{nullptr}, _hasInitial{false}
     {
     }
     // Initial Value
@@ -628,6 +630,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
         }
 
         (my_object->*_setter)(value);
+        my_object->setIsDirty();
     }
 
     //---------------------------------------------------------------------------------
@@ -708,7 +711,6 @@ using flxPropertyRWFloat = _flxPropertyTypedRW<float, Object, _getter, _setter>;
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using flxPropertyRWDouble = _flxPropertyTypedRW<double, Object, _getter, _setter>;
 
-
 // HIDDEN
 // bool
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
@@ -746,7 +748,6 @@ using flxPropertyRWHiddenFloat = _flxPropertyTypedRW<float, Object, _getter, _se
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using flxPropertyRWHiddenDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, true>;
 
-
 // Secure
 // bool
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
@@ -783,7 +784,6 @@ using flxPropertyRWSecureFloat = _flxPropertyTypedRW<float, Object, _getter, _se
 // double
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using flxPropertyRWSecureDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, false, true>;
-
 
 // Hidden Secure
 // bool
@@ -829,7 +829,8 @@ using flxPropertyRWSecretDouble = _flxPropertyTypedRW<double, Object, _getter, _
 //
 // A read/write property string class that takes a getter and a setter method and the target object
 //
-template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string), bool HIDDEN=false, bool SECURE=false>
+template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string), bool HIDDEN = false,
+          bool SECURE = false>
 class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
 {
     Object *my_object;
@@ -839,7 +840,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     bool _hasInitial;
 
   public:
-    flxPropertyRWString() : my_object(0), _hasInitial{false}
+    flxPropertyRWString() : my_object{nullptr}, _hasInitial{false}
     {
     }
     // Initial Value
@@ -938,6 +939,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
         }
 
         (my_object->*_setter)(value);
+        my_object->setIsDirty();
     }
 
     //---------------------------------------------------------------------------------
@@ -987,11 +989,13 @@ using flxPropertyRWSecretString = flxPropertyRWString<Object, _getter, _setter, 
 //
 // Template class for a property object that contains storage for the property.
 //
-template <class Object, class T, bool HIDDEN=false, bool SECURE=false> 
+template <class Object, class T, bool HIDDEN = false, bool SECURE = false>
 class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
 {
+    Object *my_object; // Pointer to the containing object
+
   public:
-    _flxPropertyTyped()
+    _flxPropertyTyped() : my_object{nullptr}
     {
     }
     // Create property with an initial value
@@ -1016,7 +1020,8 @@ class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
         _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
     // Initial value and limit data set.
-    _flxPropertyTyped(T value, std::initializer_list<std::pair<const std::string, T>> limitSet) : _flxPropertyTyped(value)
+    _flxPropertyTyped(T value, std::initializer_list<std::pair<const std::string, T>> limitSet)
+        : _flxPropertyTyped(value)
     {
         _flxDataIn<T>::addDataLimitValidValue(limitSet);
     }
@@ -1038,7 +1043,10 @@ class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
         // my_object must be derived from _flxPropertyContainer
         assert(me);
         if (me)
+        {
             me->addProperty(this);
+            my_object = me;
+        }
     }
     void operator()(Object *obj, const char *name)
     {
@@ -1071,6 +1079,9 @@ class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
     void set(T const &value)
     {
         data = value;
+
+        if (my_object)
+            my_object->setIsDirty();
     }
 
     bool operator>(int rhs)
@@ -1169,12 +1180,13 @@ template <class Object> using flxPropertySecretDouble = _flxPropertyTyped<Object
 //
 // Implements the property, but uses string specific logic
 
-template <class Object, bool HIDDEN=false, bool SECURE=false> 
+template <class Object, bool HIDDEN = false, bool SECURE = false>
 class flxPropertyString : public _flxPropertyBaseString<HIDDEN, SECURE>
 {
+    Object *my_object;
 
   public:
-    flxPropertyString()
+    flxPropertyString() : my_object{nullptr}
     {
     }
 
@@ -1201,6 +1213,7 @@ class flxPropertyString : public _flxPropertyBaseString<HIDDEN, SECURE>
         assert(me);
         if (me)
             me->addProperty(this);
+        my_object = me;
     }
     // set the name of the property on init
     void operator()(Object *obj, const char *name)
@@ -1233,6 +1246,8 @@ class flxPropertyString : public _flxPropertyBaseString<HIDDEN, SECURE>
     void set(std::string const &value)
     {
         data = value;
+        if (my_object)
+            my_object->setIsDirty();
     }
 
     //---------------------------------------------------------------------------------
@@ -1291,17 +1306,13 @@ class flxPropertyString : public _flxPropertyBaseString<HIDDEN, SECURE>
 };
 
 // HIDDEN
-template <class Object>
-using flxPropertyHiddenString = flxPropertyString<Object, true, false>;
+template <class Object> using flxPropertyHiddenString = flxPropertyString<Object, true, false>;
 
 // SECURE
-template <class Object>
-using flxPropertySecureString = flxPropertyString<Object, false, true>;
-
+template <class Object> using flxPropertySecureString = flxPropertyString<Object, false, true>;
 
 // Hidden/SECURE
-template <class Object>
-using flxPropertySecretString = flxPropertyString<Object, true, true>;
+template <class Object> using flxPropertySecretString = flxPropertyString<Object, true, true>;
 //----------------------------------------------------------------------------------------------------
 // flxObject
 //
@@ -1321,6 +1332,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
   private:
     flxObject *_parent;
     bool _hidden;
+    bool _isDirty; // needs saving of props/data
 
     //---------------------------------------------------------------------------------
     static uint16_t getNextNameNumber(void)
@@ -1332,7 +1344,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
     }
 
   public:
-    flxObject() : _hidden{false}, _parent(nullptr)
+    flxObject() : _hidden{false}, _parent(nullptr), _isDirty{false}
     {
         // setup a default name for this device.
         char szBuffer[64];
@@ -1357,18 +1369,34 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         return _parent;
     }
 
-    void setHidden(bool bHide=true)
+    void setHidden(bool bHide = true)
     {
-        _hidden=bHide;
+        _hidden = bHide;
     }
     bool hidden()
     {
         return _hidden;
     }
+
+    void setIsDirty(bool bDirty = true)
+    {
+        _isDirty = bDirty;
+    }
+
+    bool isDirty(void)
+    {
+        return _isDirty;
+    }
     //---------------------------------------------------------------------------------
     virtual bool onSave(flxStorageBlock *stBlk)
     {
-        return saveProperties(stBlk);
+        bool status = saveProperties(stBlk);
+
+        // clear our dirty flag
+        if (status)
+            setIsDirty(false);
+
+        return status;
     }
     //---------------------------------------------------------------------------------
     virtual bool save(flxStorage *pStorage)
@@ -1381,7 +1409,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         bool status = onSave(stBlk);
 
         if (!status)
-            flxLog_W("Error saving state for %s", name());            
+            flxLog_W("Error saving state for %s", name());
 
         pStorage->endBlock(stBlk);
 
@@ -1405,13 +1433,17 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
             return true; // nothing to restore
         }
 
-        // restore the object 
+        // restore the object
         bool status = onRestore(stBlk);
 
         if (!status)
             flxLog_D("Error restoring state for %s", name());
 
         pStorage->endBlock(stBlk);
+
+        // when you restore and set new values to this object, the dirty flag is set
+        // But since the values were from storage, we are not dirty
+        setIsDirty(false);
 
         return true;
     };
@@ -1430,13 +1462,13 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         return _myTypeID;
     }
 };
-//####################################################################
-// Container update
+// ####################################################################
+//  Container update
 //
-// flxContainer
+//  flxContainer
 //
-// A list/container that holds flxObjects and supports serialization. The
-// container itself is a object
+//  A list/container that holds flxObjects and supports serialization. The
+//  container itself is a object
 
 template <class T> class flxContainer : public flxObject
 {
