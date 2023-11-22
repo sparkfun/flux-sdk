@@ -28,7 +28,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
 
   public:
-    flxSettingsSerial() : _systemRoot{nullptr}, _bIsDirty{false}
+    flxSettingsSerial() : _systemRoot{nullptr}
     {
 
         setName("Serial System Settings", "Set system settings via the Serial Console");
@@ -361,6 +361,4 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     // root for the system
 
     flxObjectContainer *_systemRoot;
-
-    bool _bIsDirty;
 };

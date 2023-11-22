@@ -104,9 +104,6 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent)
         selectMenu(pCurrent, selected);
     }
 
-    // Is this object's value/state now dirty?
-    _bIsDirty = _bIsDirty || pCurrent->isDirty();
-
     return returnValue;
 }
 
@@ -234,9 +231,6 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent)
         Serial.println(selected);
         selectMenu(pCurrent, selected);
     }
-
-    // Is this operations value/state now dirty?
-    _bIsDirty = _bIsDirty || pCurrent->isDirty();
 
     return returnValue;
 }
@@ -991,8 +985,6 @@ bool flxSettingsSerial::loop(void)
 
     if (_systemRoot && Serial.available())
     {
-        _bIsDirty = false;
-
         on_editing.emit(1);
         drawEntryBanner();
 
@@ -1005,8 +997,8 @@ bool flxSettingsSerial::loop(void)
 
         // send out a done event if the changes were successful.
 
-        // Was the menu returned normally and were changes made?
-        if (doSave && _bIsDirty)
+        // Was the menu returned normally and were changes made - the system root will reflect this?
+        if (doSave && _systemRoot->isDirty())
         {
             flxLog_I(F("Saving System Settings."));
             on_finished.emit();
