@@ -1381,6 +1381,10 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
     void setIsDirty(bool bDirty = true)
     {
         _isDirty = bDirty;
+
+        // if we have a parent, set it's dirty flag - if we are dirty now, so is our parent
+        if (_parent != nullptr && bDirty)
+            _parent->setIsDirty();
     }
 
     bool isDirty(void)
@@ -1605,6 +1609,10 @@ template <class T> class flxContainer : public flxObject
     //---------------------------------------------------------------------------------
     virtual bool save(flxStorage *pStorage)
     {
+        // save ourselves
+        flxObject::save(pStorage);
+
+        // Save the children
         for (auto pObj : _vector)
             pObj->save(pStorage);
 
@@ -1614,8 +1622,12 @@ template <class T> class flxContainer : public flxObject
     //---------------------------------------------------------------------------------
     virtual bool restore(flxStorage *pStorage)
     {
+        // restore our children
         for (auto pObj : _vector)
             pObj->restore(pStorage);
+
+        // restore ourselves - after our children to manage our dirty flag
+        flxObject::restore(pStorage);
 
         return true;
     };
