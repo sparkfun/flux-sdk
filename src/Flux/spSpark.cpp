@@ -189,8 +189,7 @@ bool flxFlux::save(flxStorage *pStorage)
     // Use this to validate that the settings in the storage system are ours
 
     // 11/2023 - originally used the name to find our start key, but names change
-    //           switching to appliction class name - which doesn't change
-
+    //           switching to application class name - which doesn't change
 
     flxStorageBlock *stBlk = pStorage->beginBlock(appClassID());
     if (!stBlk)
@@ -204,7 +203,7 @@ bool flxFlux::save(flxStorage *pStorage)
     {
         // 11/2023
         // we just want to write a key at this level that can be used on restore
-        // to indicate this is this applications prefs/state. Just put hash of 
+        // to indicate this is this applications prefs/state. Just put hash of
         // the app class id in this store
         char szHash[kApplicationHashIDSize];
 
@@ -237,7 +236,7 @@ bool flxFlux::restore(flxStorage *pStorage)
     // since the data isn't for this app
 
     // 11/2023 - originally used the name to find our start key, but names change
-    //           switching to appliction class name - which doesn't change
+    //           switching to application class name - which doesn't change
     flxStorageBlock *stBlk = pStorage->beginBlock(appClassID());
     if (!stBlk)
         return false;
@@ -249,7 +248,7 @@ bool flxFlux::restore(flxStorage *pStorage)
     // source name. This makes it easier to manually write out a settings file
     bool status;
     bool oldIDFound = false;
-    char szBuffer[128] = {0};    
+    char szBuffer[128] = {0};
     if (pStorage->kind() == flxStorage::flxStorageKindInternal)
     {
         status = stBlk->valueExists(kApplicationHashIDTag);
@@ -258,7 +257,7 @@ bool flxFlux::restore(flxStorage *pStorage)
         {
             // 11/2023
             // The App pref block and key value doesn't exist, it could be we have an older system,
-            // which used the app name() not app classID to name the block store the app ID key 
+            // which used the app name() not app classID to name the block store the app ID key
             // so try the name(). Over time, re-saves of prefs will transition things to the
             // app ID, but we'll also transition below
             pStorage->endBlock(stBlk);
@@ -306,9 +305,8 @@ bool flxFlux::restore(flxStorage *pStorage)
                     if (flx_utils::id_hash_string_to_string(appClassID(), szHash, sizeof(szHash)))
                     {
                         stBlk->setReadOnly(false);
-                        if(!stBlk->write(kApplicationHashIDTag, szHash))
+                        if (!stBlk->write(kApplicationHashIDTag, szHash))
                             flxLog_W("Preferences app key failed to write");
-
                     }
                 }
             }
