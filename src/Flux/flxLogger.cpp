@@ -22,8 +22,84 @@
 #include <string.h>
 #include <time.h>
 
+//----------------------------------------------------------------------------
+// Our time rate/metrics class
+//
+// This is in a class to make it easy to setup/shutdown...
+//----------------------------------------------------------------------------
+class _flxLoggerMetrics
+{
+  public:
+    _flxLoggerMetrics()
+    {
+        // adds move to next entry - so put current at end of list
+        _current = kMetricBufferSize - 1;
+        memset(_Metrics, '\0', sizeof(_Metrics));
+    }
+    //----------------------------------------------------------------------------
+    ///
+    /// @brief - constructor for metric class
+    ///
+    void captureMetric(void)
+    {
+        // grab metric - place in next slot
+        _current = nextEntry(_current);
+        _Metrics[_current] = millis();
+    }
+    //----------------------------------------------------------------------------
+    ///
+    /// @brief returns the next entry - just centralize this
+    ///
+    /// @param  current - the number to base the next value on
+    /// @retval The next number to index in the array
+    ///
+    inline uint32_t nextEntry(uint32_t current)
+    {
+        return (current + 1) % kMetricBufferSize;
+    }
+
+    //----------------------------------------------------------------------------
+    ///
+    /// @brief - returns the metric - average log intervals
+    ///
+    float getMetricRate(void)
+    {
+        // walk our list - total time deltas and return average
+        uint32_t iCurr = nextEntry(_current); // start at current+1 -- oldest entry in the list
+        uint32_t iNext = nextEntry(iCurr);
+        uint32_t sampleTotal = 0;
+        uint32_t nSamples = 0;
+
+        for (int i = 0; i < kMetricBufferSize; i++)
+        {
+            // we have times and current is less than next.
+            if (_Metrics[iCurr] != 0 && _Metrics[iNext] != 0 && _Metrics[iCurr] < _Metrics[iNext])
+            {
+                // add Time Delta
+                sampleTotal += (_Metrics[iNext] - _Metrics[iCurr]);
+                nSamples++;
+            }
+            iCurr = iNext;
+            iNext = nextEntry(iNext);
+        }
+        return nSamples == 0 ? 0. : (float)sampleTotal / (float)nSamples;
+    }
+
+  private:
+    // Our sample/buffer size...
+    static constexpr int kMetricBufferSize = 12;
+
+    uint32_t _Metrics[kMetricBufferSize];
+    uint32_t _current;
+};
+
+//---------------------------------------------------------------------------
+// flxLogger Class
+//---------------------------------------------------------------------------
+
 flxLogger::flxLogger()
-    : _timestampType{TimeStampNone}, _outputDeviceID{false}, _outputLocalName{false}, _sampleNumberEnabled{false}, _currentSampleNumber{0}
+    : _timestampType{TimeStampNone}, _outputDeviceID{false}, _outputLocalName{false}, _sampleNumberEnabled{false},
+      _currentSampleNumber{0}, _pMetrics{nullptr}
 {
     setName("Logger", "Data logging action");
 
@@ -60,6 +136,8 @@ flxLogger::flxLogger()
     removeParameter(getLocalName); // added on enable of prop
 
     _opsToLog.setName("Logger Objects");
+
+    flxRegister(logRateMetric, "Rate Metric", "Enabled to record the logging rate data");
 
     flux.add(this);
 }
@@ -228,6 +306,10 @@ void flxLogger::logObservation(void)
         theFormatter->writeObservation();
         theFormatter->clearObservation();
     }
+
+    // capture metric
+    if (_pMetrics)
+        _pMetrics->captureMetric();
 }
 //----------------------------------------------------------------------------
 // log message
@@ -408,7 +490,6 @@ std::string flxLogger::get_device_id(void)
     return sBuffer;
 }
 
-
 //----------------------------------------------------------------------------
 // Device name methods for output
 //----------------------------------------------------------------------------
@@ -460,7 +541,6 @@ std::string flxLogger::get_name(void)
     return flux.localName();
 }
 
-
 //----------------------------------------------------------------------------
 // Log sample number property get/set
 //----------------------------------------------------------------------------
@@ -508,4 +588,27 @@ uint flxLogger::get_sample_number(void)
     _currentSampleNumber = _currentSampleNumber + numberIncrement();
 
     return _currentSampleNumber;
+}
+
+//----------------------------------------------------------------------------
+void flxLogger::setEnableLogRate(bool enable)
+{
+    if (enable)
+    {
+        if (!_pMetrics)
+        {
+            _pMetrics = new _flxLoggerMetrics;
+            if (!_pMetrics)
+                flxLog_E(F("%s: Error initializing metrics"), name());
+        }
+    }
+    else if (_pMetrics)
+    {
+        delete _pMetrics;
+        _pMetrics = nullptr;
+    }
+}
+float flxLogger::getLogRate(void)
+{
+    return _pMetrics ? _pMetrics->getMetricRate() : 0;
 }

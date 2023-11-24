@@ -30,7 +30,13 @@
 #include "flxFlux.h"
 #include "flxOutput.h"
 
-// Define the QwiicLog class
+// KDB Testing begin
+
+class _flxLoggerMetrics;
+
+// KDB Testing end
+
+// Define the Logging class
 class flxLogger : public flxActionType<flxLogger>
 {
 
@@ -224,6 +230,16 @@ class flxLogger : public flxActionType<flxLogger>
         va_add(a1, args...);
     }
 
+    //------------------------------------------------------------
+    // for metrics
+    void setEnableLogRate(bool enable);
+    bool enabledLogRate(void)
+    {
+        return _pMetrics != nullptr;
+    }
+    float getLogRate(void);
+    //------------------------------------------------------------
+
     // Enum for timestamp types.
     typedef enum
     {
@@ -268,6 +284,9 @@ class flxLogger : public flxActionType<flxLogger>
 
     flxParameterInUint<flxLogger, &flxLogger::reset_sample_number> resetSampleNumber = {0, 10000};
 
+    // Logger run rate metic collection?
+    flxPropertyRWBool<flxLogger, &flxLogger::enabledLogRate, &flxLogger::setEnableLogRate> logRateMetric = {false};
+
   private:
     void updateTimeParameterName(void);
     // Output devices
@@ -288,9 +307,11 @@ class flxLogger : public flxActionType<flxLogger>
     bool _outputDeviceID;
 
     bool _outputLocalName;
-    
+
     bool _sampleNumberEnabled;
     uint32_t _currentSampleNumber;
+
+    _flxLoggerMetrics *_pMetrics;
 
     // Templates used to manage array logging based on type.
     //
