@@ -38,7 +38,8 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
   public:
     //-----------------------------------------------------------------
-    flxFormatJSON() : _pDoc{nullptr}, _buffer_size{BUFFER_SIZE}, _isFirstRun{true}, _pSectionName{nullptr} {};
+    flxFormatJSON()
+        : _pDoc{nullptr}, _buffer_size{BUFFER_SIZE}, _isFirstRun{true}, _pSectionName{nullptr}, _maxSize{0} {};
 
     //-----------------------------------------------------------------
     // value methods
@@ -212,6 +213,9 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
         char szBuffer[_buffer_size + 1];
         size_t n = serializeJson(*_pDoc, szBuffer, _buffer_size);
 
+        if (n > _maxSize)
+            _maxSize = n;
+
         // TODO: Add Error output
         if (n > _buffer_size + 1)
         {
@@ -299,6 +303,11 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     // bring up our sub-class remove to handle standard writers
     using flxOutputFormat::remove;
 
+    uint32_t getMaxSizeUsed(void)
+    {
+        return _maxSize;
+    }
+
   protected:
     //-----------------------------------------------------------------
     template <typename T>
@@ -349,4 +358,6 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
     bool _isFirstRun;
     const char *_pSectionName;
+
+    uint32_t _maxSize;
 };
