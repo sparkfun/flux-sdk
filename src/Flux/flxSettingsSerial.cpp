@@ -974,37 +974,41 @@ void flxSettingsSerial::drawEntryBanner(void)
 
     Serial.printf("Uptime: %u days, %02u:%02u:%02u.%u\n\r", days, hours, minutes, secs, mills);
 }
+
 //--------------------------------------------------------------------------
-// Loop call
-//
-// If we see input on the serial console, and we have a menu root set, start
-// a settings session
+///
+/// @brief Called to launch - run - end an edit settings session
+///
+/// @retval  -1: Error, 0:Success, 1:Success and Save
 
-bool flxSettingsSerial::loop(void)
+int flxSettingsSerial::editSettings(void)
 {
-
-    if (_systemRoot && Serial.available())
+    if (!_systemRoot)
     {
-        on_editing.emit(1);
-        drawEntryBanner();
-
-        bool doSave = drawPage(_systemRoot);
-        Serial.printf("\n\r\n\rEnd Settings\n\r");
-
-        // clear buffer
-        while (Serial.available() > 0)
-            Serial.read();
-
-        // send out a done event if the changes were successful.
-
-        // Was the menu returned normally and were changes made - the system root will reflect this?
-        if (doSave && _systemRoot->isDirty())
-        {
-            flxLog_I(F("Saving System Settings."));
-            on_finished.emit();
-        }
-        on_editing.emit(0);
+        flxLog_E(F("%s: System on provided to edit settings"));
+        return -1;
     }
 
-    return false;
+    // Edit time!
+    on_editing.emit(1);
+    drawEntryBanner();
+
+    bool doSave = drawPage(_systemRoot);
+    Serial.printf("\n\r\n\rEnd Settings\n\r");
+
+    // clear buffer
+    while (Serial.available() > 0)
+        Serial.read();
+
+    // send out a done event if the changes were successful.
+
+    // Was the menu returned normally and were changes made - the system root will reflect this?
+    if (doSave && _systemRoot->isDirty())
+    {
+        flxLog_I(F("Saving System Settings."));
+        on_finished.emit();
+    }
+    on_editing.emit(0);
+
+    return doSave ? 1 : 0;
 }

@@ -73,7 +73,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     flxSignalVoid on_finished;
     flxSignalBool on_editing;
 
-    bool loop();
+    int editSettings(void);
 
   protected:
     bool drawPageParamInVoid(flxOperation *, flxParameterIn *);
