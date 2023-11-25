@@ -36,9 +36,6 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
     bool getFirmwareFilename(void);
     bool updateFirmwareFromSD(void);
     bool updateFirmwareFromOTA(void);
-    bool factoryResetDevice(void);
-
-    // Experiement with OTA option
 
     //------------------------------------------------------------------------------
 
@@ -58,11 +55,10 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         bool status = updateFirmwareFromOTA();
     }
 
-
   public:
     flxSysFirmware()
-        : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""},
-          _wifiConnection{nullptr}, _otaURL{nullptr}, _bUpdateOTA{false}
+        : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""}, _wifiConnection{nullptr},
+          _otaURL{nullptr}, _bUpdateOTA{false}
     {
 
         // Set name and description
@@ -80,9 +76,10 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
         flxRegister(updateFirmwareFile, "Firmware Filename", "Filename to use for firmware updates");
     }
 
-    // called to restart the device 
-    void restartDevicePrompt();    
+    // called to restart the device
+    void restartDevicePrompt();
     void restartDevice();
+    bool factoryResetDevice(void);
 
     void setSerialSettings(flxSettingsSerial *pSettings)
     {
