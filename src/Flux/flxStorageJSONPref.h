@@ -76,7 +76,7 @@ class flxStorageJSONBlock : public flxStorageBlock
     {
         _readOnly = readonly;
     }
-    
+
   private:
     friend flxStorageJSONPref;
 
@@ -88,8 +88,6 @@ class flxStorageJSONBlock : public flxStorageBlock
     {
         _jSection = jsonSection;
     }
-
-    
 };
 
 //------------------------------------------------------------------------------
@@ -101,21 +99,17 @@ class flxStorageJSONPref : public flxStorage
 {
 
   public:
-    flxStorageJSONPref()
-        : _pDocument{nullptr}, _readOnly{false}, _fileSystem{nullptr}, _filename{""},
-          _jsonDocSize{kDefaultJsonDocumentSize}
+    flxStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}, _jsonDocSize{kDefaultJsonDocumentSize}
     {
-        setName("JSON File", "Device setting storage using a JSON File");
     }
 
     flxStorageKind_t kind(void)
     {
         return flxStorage::flxStorageKindExternal;
     }
-    // add begin, end stubs - the Esp32 prefs system doesn't required transaction brackets
-    bool begin(bool readonly = false);
 
-    void end(void);
+    virtual bool begin(bool readonly = false);
+    virtual void end(void);
 
     // public methods to manage a block
     flxStorageJSONBlock *beginBlock(const char *tag);
@@ -124,14 +118,6 @@ class flxStorageJSONPref : public flxStorage
     void endBlock(flxStorageBlock *);
 
     void resetStorage();
-
-    void setFileSystem(flxIFileSystem *);
-    void setFilename(std::string &name);
-    void setFilename(const char *name)
-    {
-        std::string strName = name;
-        setFilename(strName);
-    }
 
     void setBufferSize(size_t new_size)
     {
@@ -145,19 +131,41 @@ class flxStorageJSONPref : public flxStorage
         return _jsonDocSize;
     }
 
-  private:
-    void checkName();
+  protected:
     // The block used to interface with the system
     flxStorageJSONBlock _theBlock;
 
     // Pointer to the json document
-
     DynamicJsonDocument *_pDocument;
 
     bool _readOnly;
 
+    size_t _jsonDocSize;
+};
+
+//------------------------------------------------------------------
+// Pref - File based
+class flxStorageJSONPrefFile : public flxStorageJSONPref
+{
+  public:
+    flxStorageJSONPrefFile() : _fileSystem{nullptr}, _filename{""}
+    {
+        setName("JSON File", "Device setting storage using a JSON File");
+    }
+
+    virtual bool begin(bool readonly = false);
+    virtual void end(void);
+
+    void setFileSystem(flxIFileSystem *);
+    void setFilename(std::string &name);
+    void setFilename(const char *name)
+    {
+        std::string strName = name;
+        setFilename(strName);
+    }
+
+  private:
+    void checkName();
     flxIFileSystem *_fileSystem;
     std::string _filename;
-
-    size_t _jsonDocSize;
 };

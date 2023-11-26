@@ -338,18 +338,12 @@ bool flxStorageJSONBlock::valueExists(const char *tag)
         return false;
 }
 //------------------------------------------------------------------------------
-// flxStorage
+// flxStorageJSON
 //
 // Interface for a storage system to persist state of a system
 
 bool flxStorageJSONPref::begin(bool readonly)
 {
-
-    if (!_fileSystem || _filename.length() == 0 || !_fileSystem->enabled())
-    {
-        flxLog_E(F("JSON Settings unavailable - no filesystem available."));
-        return false;
-    }
 
     _pDocument = new DynamicJsonDocument(_jsonDocSize);
     if (!_pDocument)
@@ -357,47 +351,6 @@ bool flxStorageJSONPref::begin(bool readonly)
         flxLog_E(F("Unable to create JSON object for preferences. Document Size: %d"), _jsonDocSize);
         return false;
     }
-
-    if (_fileSystem->exists(_filename.c_str()))
-    {
-        bool status = false;
-        // read in the file, parse the json
-
-        flxFSFile theFile = _fileSystem->open(_filename.c_str(), flxIFileSystem::kFileRead);
-
-        if (theFile)
-        {
-            size_t nBytes = theFile.size();
-
-            if (nBytes > 0)
-            {
-                char *pBuffer = new char[nBytes];
-
-                if (pBuffer)
-                {
-                    size_t nRead = theFile.read((uint8_t *)pBuffer, nBytes);
-
-                    if (nRead == nBytes)
-                    {
-                        if (deserializeJson(*_pDocument, (const char *)pBuffer, nBytes) == DeserializationError::Ok)
-                            status = true;
-                    }
-                }
-
-                delete pBuffer;
-            }
-            else
-                flxLog_D(F("JSON Settings Begin - Empty file"));
-
-            theFile.close();
-        }
-        else
-            flxLog_I(F("JSON Settings - the file failed to open: %s"), _filename.c_str());
-
-        if (status == false)
-            flxLog_E(F("Error reading json settings file. Ignoring"));
-    }
-
     _readOnly = readonly;
 
     return true;
@@ -405,29 +358,6 @@ bool flxStorageJSONPref::begin(bool readonly)
 
 void flxStorageJSONPref::end(void)
 {
-    if (!_readOnly)
-    {
-
-        // Create a json string and write to the filesystem
-        std::string value;
-        if (!serializeJsonPretty(*_pDocument, value))
-        {
-            flxLog_E(F("Unable to generate settings JSON string"));
-        }
-        else if (_fileSystem && _filename.length() > 0)
-        {
-            flxFSFile theFile = _fileSystem->open(_filename.c_str(), flxIFileSystem::kFileWrite, true);
-
-            if (theFile)
-            {
-                if (theFile.write((uint8_t *)value.c_str(), value.length()) == 0)
-                    flxLog_E(F("Error writing JSON settings file"));
-                theFile.close();
-            }
-            else
-                flxLog_E(F("Error opening settings file - is file system available?"));
-        }
-    }
     // Clear memory
     if (_pDocument)
     {
@@ -481,8 +411,95 @@ void flxStorageJSONPref::endBlock(flxStorageBlock *)
 void flxStorageJSONPref::resetStorage()
 {
 }
+//-----------------------------------------------------------------------------------
+// File version
+//-----------------------------------------------------------------------------------
 
-void flxStorageJSONPref::checkName()
+bool flxStorageJSONPrefFile::begin(bool readonly)
+{
+
+    if (!_fileSystem || _filename.length() == 0 || !_fileSystem->enabled())
+    {
+        flxLog_E(F("JSON Settings unavailable - no filesystem available."));
+        return false;
+    }
+
+    // call super - it creates the document
+    if (!flxStorageJSONPref::begin(readonly))
+        return false;
+
+    if (_fileSystem->exists(_filename.c_str()))
+    {
+        bool status = false;
+        // read in the file, parse the json
+
+        flxFSFile theFile = _fileSystem->open(_filename.c_str(), flxIFileSystem::kFileRead);
+
+        if (theFile)
+        {
+            size_t nBytes = theFile.size();
+
+            if (nBytes > 0)
+            {
+                char *pBuffer = new char[nBytes];
+
+                if (pBuffer)
+                {
+                    size_t nRead = theFile.read((uint8_t *)pBuffer, nBytes);
+
+                    if (nRead == nBytes)
+                    {
+                        if (deserializeJson(*_pDocument, (const char *)pBuffer, nBytes) == DeserializationError::Ok)
+                            status = true;
+                    }
+                }
+
+                delete pBuffer;
+            }
+            else
+                flxLog_D(F("JSON Settings Begin - Empty file"));
+
+            theFile.close();
+        }
+        else
+            flxLog_I(F("JSON Settings - the file failed to open: %s"), _filename.c_str());
+
+        if (status == false)
+            flxLog_E(F("Error reading json settings file. Ignoring"));
+    }
+    return true;
+}
+
+void flxStorageJSONPrefFile::end(void)
+{
+    if (!_readOnly)
+    {
+
+        // Create a json string and write to the filesystem
+        std::string value;
+        if (!serializeJsonPretty(*_pDocument, value))
+        {
+            flxLog_E(F("Unable to generate settings JSON string"));
+        }
+        else if (_fileSystem && _filename.length() > 0)
+        {
+            flxFSFile theFile = _fileSystem->open(_filename.c_str(), flxIFileSystem::kFileWrite, true);
+
+            if (theFile)
+            {
+                if (theFile.write((uint8_t *)value.c_str(), value.length()) == 0)
+                    flxLog_E(F("Error writing JSON settings file"));
+                theFile.close();
+            }
+            else
+                flxLog_E(F("Error opening settings file - is file system available?"));
+        }
+    }
+    // call super to clear out everything
+    flxStorageJSONPref::end();
+}
+
+void flxStorageJSONPrefFile::checkName()
 {
     if (_filename.length() == 0 || !_fileSystem)
         return;
@@ -492,13 +509,13 @@ void flxStorageJSONPref::checkName()
     snprintf(szBuffer, sizeof(szBuffer), "%s on the %s", _filename.c_str(), _fileSystem->name());
     setNameAlloc(szBuffer);
 }
-void flxStorageJSONPref::setFileSystem(flxIFileSystem *theFilesystem)
+void flxStorageJSONPrefFile::setFileSystem(flxIFileSystem *theFilesystem)
 {
     _fileSystem = theFilesystem;
     checkName();
 }
 
-void flxStorageJSONPref::setFilename(std::string &filename)
+void flxStorageJSONPrefFile::setFilename(std::string &filename)
 {
     _filename = filename;
     checkName();
