@@ -85,8 +85,8 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     bool saveSystem(void);
 
     // save a specific object
-    bool save(flxObject &theObject);
-    bool save(flxObject *pObject);
+    bool save(flxObject &theObject, bool primary_only = false);
+    bool save(flxObject *pObject, bool primary_only = false);
 
     // Restore settings - if no parameter is passed in, the entire system is restored
     bool restoreSystem(void);
@@ -105,6 +105,10 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     // Slots for signals - Enables saving and restoring settings base on events
     void listenForSave(flxSignalVoid &theEvent);
     void listenForRestore(flxSignalVoid &theEvent);
+
+    // save/restore methods for objects
+    bool saveObjectToStorage(flxObject *, flxStorage *);
+    bool restoreObjectFromStorage(flxObject *, flxStorage *);
 
     // Properties.
     flxPropertyHiddenBool<flxSettingsSave> saveOnEvent = {true};
@@ -148,9 +152,6 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
 
         flux.add(this);
     }
-
-    bool saveObjectToStorage(flxObject *, flxStorage *);
-    bool restoreObjectFromStorage(flxObject *, flxStorage *);
 
     flxStorage *_primaryStorage;
     flxStorage *_fallbackStorage;

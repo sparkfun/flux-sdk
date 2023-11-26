@@ -78,14 +78,14 @@ bool flxSettingsSave::saveSystem(void)
 }
 //----------------------------------------------------------------------------------
 // save a specific object
-bool flxSettingsSave::save(flxObject &theObject)
+bool flxSettingsSave::save(flxObject &theObject, bool primary_only)
 {
-    return save(&theObject);
+    return save(&theObject, primary_only);
 }
 
 //----------------------------------------------------------------------------------
 // Save settings for a object
-bool flxSettingsSave::save(flxObject *pObject)
+bool flxSettingsSave::save(flxObject *pObject, bool primary_only)
 {
     if (!_primaryStorage)
         return false;
@@ -96,7 +96,7 @@ bool flxSettingsSave::save(flxObject *pObject)
         flxLog_E(F("Unable to save %s to %s"), pObject->name(), _primaryStorage->name());
 
     // Save to secondary ?
-    if (fallbackSave() && _fallbackStorage != nullptr)
+    if (!primary_only && fallbackSave() && _fallbackStorage != nullptr)
     {
         if (!saveObjectToStorage(pObject, _fallbackStorage))
             flxLog_W(F("Unable to save %s to the fallback system, %s"), pObject->name(), _fallbackStorage->name());
@@ -165,10 +165,8 @@ bool flxSettingsSave::restore(flxObject *pObject)
                 //  We restored from fallback, now save to main storage -- TODO - should this be a setting
                 flxLog_D(F("Saving settings to %s"), _primaryStorage->name());
                 strSource = (char *)_fallbackStorage->name();
-                bool tmp = fallbackSave();
-                fallbackSave = false;
-                save(pObject);
-                fallbackSave = tmp;
+                // save the new settings - to primary storage only
+                save(pObject, true);
             }
         }
     }
