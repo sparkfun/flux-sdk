@@ -102,6 +102,10 @@ class flxStorageJSONPref : public flxStorage
     flxStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}, _jsonDocSize{kDefaultJsonDocumentSize}
     {
     }
+    flxStorageJSONPref(size_t buffer_size) : flxStorageJSONPref()
+    {
+        _jsonDocSize = buffer_size;
+    }
 
     flxStorageKind_t kind(void)
     {
@@ -168,4 +172,21 @@ class flxStorageJSONPrefFile : public flxStorageJSONPref
     void checkName();
     flxIFileSystem *_fileSystem;
     std::string _filename;
+};
+
+//------------------------------------------------------------------
+// Pref - Serial based
+class flxStorageJSONPrefSerial : public flxStorageJSONPref
+{
+  public:
+    flxStorageJSONPrefSerial()
+    {
+        setName("JSON Serial", "Device setting storage using the Serial Device");
+    }
+
+    // user superclasses other constructors (besides default)
+    using flxStorageJSONPref::flxStorageJSONPref;
+
+    virtual bool begin(bool readonly = false);
+    virtual void end(void);
 };

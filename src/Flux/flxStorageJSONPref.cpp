@@ -344,6 +344,12 @@ bool flxStorageJSONBlock::valueExists(const char *tag)
 
 bool flxStorageJSONPref::begin(bool readonly)
 {
+    if (_pDocument)
+    {
+        _pDocument->clear();
+        delete _pDocument;
+        _pDocument = nullptr;
+    }
 
     _pDocument = new DynamicJsonDocument(_jsonDocSize);
     if (!_pDocument)
@@ -519,4 +525,41 @@ void flxStorageJSONPrefFile::setFilename(std::string &filename)
 {
     _filename = filename;
     checkName();
+}
+
+//-----------------------------------------------------------------------------------
+// Serial version
+//-----------------------------------------------------------------------------------
+
+bool flxStorageJSONPrefSerial::begin(bool readonly)
+{
+
+    // if we already have a document  return
+    if (_pDocument)
+        return true;
+
+    // call super - it creates the document
+    if (!flxStorageJSONPref::begin(readonly))
+        return false;
+
+    // Set Serial Timeout? Serial.setTimeout(1000);
+    DeserializationError err = deserializeJson(*_pDocument, Serial);
+    if (err)
+    {
+        if (err.code() == DeserializationError::NoMemory)
+            flxLog_E(F("JSON buffer too small - increase Save Settings buffer size"));
+        else
+            flxLog_E(F("Unable to read JSON settings: %s"), err.c_str());
+        return false;
+    }
+    return true;
+}
+
+void flxStorageJSONPrefSerial::end(void)
+{
+    if (!_readOnly && _pDocument)
+        serializeJsonPretty(*_pDocument, Serial);
+
+    // call super to clear out everything
+    flxStorageJSONPref::end();
 }
