@@ -306,7 +306,7 @@ class flxDeviceFactory
     flxDeviceFactory(flxDeviceFactory const &) = delete;
     void operator=(flxDeviceFactory const &) = delete;
 
-    // void debugMapDump(void);
+    void dumpDeviceTable(void);
 
   private:
     bool addressInUse(uint8_t);

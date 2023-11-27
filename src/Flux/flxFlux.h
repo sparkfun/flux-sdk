@@ -286,6 +286,12 @@ class flxFlux : public flxObjectContainer
         _loadSettings = bLoad;
     }
 
+    // more of a debug setting ...
+    void dumpDeviceAutoLoadTable(void)
+    {
+        flxDeviceFactory::get().dumpDeviceTable();
+    }
+
   private:
     flxBusI2C _i2cDriver;
     flxBusSPI _spiDriver;

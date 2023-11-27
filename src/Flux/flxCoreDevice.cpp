@@ -80,6 +80,20 @@ bool flxDeviceFactory::addressInUse(uint8_t address)
     }
     return false;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+///
+/// @brief dumps out the contents of the device table. Should be called before auto-load
+///
+void flxDeviceFactory::dumpDeviceTable(void)
+{
+    if (!_buildersByAddress)
+        return;
+
+    flxLog_I(F("Available I2C auto-detect drivers:"));
+    for (auto it = _buildersByAddress->begin(); it != _buildersByAddress->end(); it++)
+        flxLog_N(F("    %s\t\t0x%X"), it->second->getDeviceName(), devKeyToAddr(it->first));
+}
 ///////////////////////////////////////////////////////////////////////////////////////
 // The callback Builders use to register themselves at startup
 
