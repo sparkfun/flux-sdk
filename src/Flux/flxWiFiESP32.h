@@ -21,9 +21,9 @@
 // ESP wifi header
 #include "WiFi.h"
 
-#define kWiFiLevelPoor      0
-#define kWiFiLevelFair      1
-#define kWiFiLevelGood      2
+#define kWiFiLevelPoor 0
+#define kWiFiLevelFair 1
+#define kWiFiLevelGood 2
 #define kWiFiLevelExcellent 3
 
 // WiFi client for EsP32 boards
@@ -35,7 +35,7 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
     bool get_isEnabled(void);
 
   public:
-    flxWiFiESP32() : _wasConnected{false}, _isEnabled{true}
+    flxWiFiESP32() : _wasConnected{false}, _isEnabled{true}, _delayedStartup{false}
     {
 
         flxRegister(enabled, "Enabled", "Enable or Disable the WiFi Network connection");
@@ -105,10 +105,17 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
 
     uint rating(void);
 
+    // used to prevent auto connect when init called - rare case
+    void setDelayedStartup(bool bDelay = true)
+    {
+        _delayedStartup = bDelay;
+    }
+
   private:
     // flag used to help with connection changes.
     bool _wasConnected;
     bool _isEnabled;
+    bool _delayedStartup;
 };
 
 #endif

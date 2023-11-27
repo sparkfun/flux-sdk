@@ -186,6 +186,12 @@ bool flxWiFiESP32::isConnected()
 //----------------------------------------------------------------
 bool flxWiFiESP32::initialize(void)
 {
+    // is it desired to delay the startup/connect call?
+    if (_delayedStartup)
+    {
+        _delayedStartup = false;
+        return false;
+    }
     return connect();
 }
 
