@@ -38,7 +38,7 @@ class flxFlux : public flxObjectContainer
         return instance;
     }
 
-    bool start(bool bAutoLoad = true);
+    bool start();
 
     // Loop/operation method
     bool loop(void);
@@ -277,6 +277,15 @@ class flxFlux : public flxObjectContainer
     void setVerboseDevNames(bool bVerbose);
     bool verboseDevNames(void);
 
+    void setAutoload(bool bAuto)
+    {
+        _deviceAutoload = bAuto;
+    }
+    void setLoadSettings(bool bLoad)
+    {
+        _loadSettings = bLoad;
+    }
+
   private:
     flxBusI2C _i2cDriver;
     flxBusSPI _spiDriver;
@@ -298,10 +307,13 @@ class flxFlux : public flxObjectContainer
 
     std::string _localName;
 
+    bool _deviceAutoload;
+    bool _loadSettings;
     // Note private constructor...
     flxFlux()
-        : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"}, _appClassID{kDefaultAppClassName},
-          _theApplication{nullptr}, _token{0}, _hasToken{false}, _verboseDevNames{false}
+        : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"},
+          _appClassID{kDefaultAppClassName}, _theApplication{nullptr}, _token{0}, _hasToken{false},
+          _verboseDevNames{false}, _deviceAutoload{true}, _loadSettings{true}
     {
 
         // setup some default heirarchy things ...

@@ -30,7 +30,7 @@ flxFlux &flux = flxFlux::get();
 //-------------------------------------------------------
 //
 // Note: Autoload is true by default
-bool flxFlux::start(bool bAutoLoad)
+bool flxFlux::start()
 {
 
     // if we have an application, call the init method.
@@ -64,14 +64,14 @@ bool flxFlux::start(bool bAutoLoad)
     writeBanner();
 
     // Build drivers for the registered devices connected to the system
-    if (bAutoLoad)
+    if (_deviceAutoload)
         flxDeviceFactory::get().buildDevices(i2cDriver());
 
     if (_theApplication)
         _theApplication->onDeviceLoad();
 
     // Everything should be loaded -- restore settings from storage
-    if (flxSettings.isAvailable())
+    if (_loadSettings && flxSettings.isAvailable())
     {
         // Let the device know we're starting up
         if (_theApplication)
