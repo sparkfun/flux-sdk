@@ -90,9 +90,10 @@ void flxDeviceFactory::dumpDeviceTable(void)
     if (!_buildersByAddress)
         return;
 
-    flxLog_I(F("Available I2C auto-detect drivers:"));
+    flxLog_I(F("Auto-detect drivers (name, address, priority):"));
     for (auto it = _buildersByAddress->begin(); it != _buildersByAddress->end(); it++)
-        flxLog_N(F("    %s\t\t0x%X"), it->second->getDeviceName(), devKeyToAddr(it->first));
+        flxLog_N(F("    %s\t\t0x%X\t\t%d"), it->second->getDeviceName(), devKeyToAddr(it->first),
+                 (int)it->second->connectedConfidence());
 }
 ///////////////////////////////////////////////////////////////////////////////////////
 // The callback Builders use to register themselves at startup
