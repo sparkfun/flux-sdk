@@ -37,8 +37,8 @@ class flxTimer : public flxActionType<flxTimer>
     // Our output event
     flxSignalVoid on_interval;
 
-    // Property  - interval for the timer
-    flxPropertyUint<flxTimer> interval;
+    // Property  - interval for the timer -- and set a default value of 10 seconds
+    flxPropertyUint<flxTimer> interval = {10000};
 
     bool loop(void)
     {
