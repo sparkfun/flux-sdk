@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 #pragma once
 
 #include <Arduino.h>
@@ -28,7 +28,7 @@ class flxTimer : public flxActionType<flxTimer>
 
         flxRegister(interval, "Interval", "The timer interval in milliseconds");
         interval = start;
-        
+
         flux.add(this);
 
         setName("Timer", "A reoccurring timer");
@@ -38,7 +38,7 @@ class flxTimer : public flxActionType<flxTimer>
     flxSignalVoid on_interval;
 
     // Property  - interval for the timer
-    flxPropertyInt<flxTimer> interval;
+    flxPropertyUint<flxTimer> interval;
 
     bool loop(void)
     {
