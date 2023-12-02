@@ -534,7 +534,7 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxParameter *pParam)
     if (pParam->title())
         Serial.printf("\n\r    %s\n\r", pParam->title());
 
-    Serial.printf("\t%2d)  %-22s - %-30s   ", item, pParam->name(), pParam->description());
+    Serial.printf("\t%2d)  %-20s - %-40s  ", item, pParam->name(), pParam->description());
     if (!pParam->enabled())
     {
         flxSerial.textToYellow();
