@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 //
 // Define interfaces/base classes for output
 //
@@ -81,6 +81,11 @@ class flxOutputFormat
     void add(flxWriter *newWriter)
     {
         _Writers.push_back(newWriter);
+    }
+
+    void remove(flxWriter &oldWriter)
+    {
+        remove(&oldWriter);
     }
 
     void remove(flxWriter *oldWriter)
