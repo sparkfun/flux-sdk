@@ -534,11 +534,11 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxParameter *pParam)
     if (pParam->title())
         Serial.printf("\n\r    %s\n\r", pParam->title());
 
-    Serial.printf("\t%2d)  %s - %s", item, pParam->name(), pParam->description());
+    Serial.printf("\t%2d)  %-22s - %-30s   ", item, pParam->name(), pParam->description());
     if (!pParam->enabled())
     {
         flxSerial.textToYellow();
-        Serial.printf("        {disabled}");
+        Serial.printf("{disabled}");
         flxSerial.textToNormal();
     }
     Serial.printf("\n\r");
@@ -579,7 +579,7 @@ int flxSettingsSerial::drawMenu(flxObject *pCurrent, uint level)
         return level;
 
     flxSerial.textToWhite();
-    Serial.println("Settings:");
+    Serial.println("    Settings");
     flxSerial.textToNormal();
     for (auto prop : pCurrent->getProperties())
     {
@@ -722,7 +722,7 @@ int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
     {
         Serial.println();
         flxSerial.textToWhite();
-        Serial.println("    Outputs:");
+        Serial.println("    Outputs");
         flxSerial.textToNormal();
 
         for (auto outParam : pCurrent->getOutputParameters())
@@ -736,7 +736,7 @@ int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
     {
         Serial.println();
         flxSerial.textToWhite();
-        Serial.println("    Functions:");
+        Serial.println("    Functions");
         flxSerial.textToNormal();
 
         for (auto inParam : pCurrent->getInputParameters())
