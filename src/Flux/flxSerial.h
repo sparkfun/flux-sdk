@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 //
 // Defines an observation storage class
 //
@@ -28,11 +28,11 @@ class flxSerial_ : public flxWriter
 
   public:
     // Singleton things
-    static flxSerial_ *getInstance(void)
+    static flxSerial_ &get(void)
     {
 
         static flxSerial_ instance;
-        return &instance;
+        return instance;
     }
 
     // templated callback for the listener - so we can write out anything
@@ -49,36 +49,7 @@ class flxSerial_ : public flxWriter
     {
         Serial.println(value);
     }
-    void write(const char *value, bool newline, flxLineType_t type)
-    {
-
-        // If this is a header, we add a stream indicator to the output
-        // start the stream with a Mime Type marker, followed by CR
-        if (type == flxLineTypeMime){
-            Serial.println();
-            Serial.println(value);
-            Serial.println();
-
-            // next we'll want to do a header
-            _headerWritten = false;
-        }
-        else if (type == flxLineTypeHeader)
-        {
-            // only want to write this out once 
-            if (_headerWritten == false)
-            {
-                Serial.println(value);
-                _headerWritten = true;
-            }
-        }
-        else 
-        {
-           if (newline)
-                Serial.println(value);
-            else
-                Serial.print(value);
-        }
-    }
+    void write(const char *value, bool newline, flxLineType_t type);
 
     // Overload listen, so we can type the events, and use the templated
     // write() method above.
@@ -104,12 +75,38 @@ class flxSerial_ : public flxWriter
     flxSerial_(flxSerial_ const &) = delete;
     void operator=(flxSerial_ const &) = delete;
 
+    void setColorEnabled(bool bEnable)
+    {
+        _colorEnabled = bEnable;
+    }
+
+    bool colorEnabled(void)
+    {
+        return _colorEnabled;
+    }
+
+    // Helpful color things
+    void textToRed(void);
+    void textToGreen(void);
+    void textToYellow(void);
+    void textToBlue(void);
+    void textToWhite(void);
+    void textToNormal(void);
+
   private:
-    flxSerial_() : _headerWritten{false}{};
+    flxSerial_() : _headerWritten{false}, _colorEnabled{false} {};
+
+    // Color strings for serial consoles
+    static constexpr char *kClrNormal = "\033[0;39m";
+    static constexpr char *kClrGreen = "\033[1;32m";
+    static constexpr char *kClrYellow = "\033[1;33m";
+    static constexpr char *kClrRed = "\033[1;31m";
+    static constexpr char *kClrBlue = "\033[1;34m";
+    static constexpr char *kClrWhite = "\033[1;37m";
+
     bool _headerWritten;
+
+    bool _colorEnabled;
 };
 
-typedef flxSerial_ *flxSerial;
-
-// Accessor for the signleton
-#define flxSerial() flxSerial_::getInstance()
+extern flxSerial_ &flxSerial;

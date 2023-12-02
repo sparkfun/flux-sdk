@@ -41,7 +41,7 @@ bool flxFlux::start()
         _theApplication->onInit();
 
     // setup our logging system.
-    _logDriver.setOutput(flxSerial());
+    _logDriver.setOutput(flxSerial);
     flxLog.setLogDriver(_logDriver);
     flxLog.setLogLevel(flxLogInfo); // TODO - adjust?
 
