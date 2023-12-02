@@ -13,6 +13,7 @@
 #ifdef ESP32
 
 #include "flxWiFiESP32.h"
+#include "flxSerial.h"
 
 // ESP32 library...
 #include <WiFiMulti.h>
@@ -151,7 +152,9 @@ bool flxWiFiESP32::connect(void)
     // back to normal esp logging
     esp_log_level_set("wifi", level);
 
+    flxSerial.textToWhite();
     flxLog_N(F("Connected to %s"), WiFi.SSID().c_str());
+    flxSerial.textToNormal();
 
     // okay, we're connected.
     _wasConnected = true;
