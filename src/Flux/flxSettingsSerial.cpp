@@ -89,17 +89,17 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent)
         // done?
         if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
         {
-            textToYellow();
+            flxSerial.textToYellow();
             Serial.println("Escape");
-            textToNormal();
+            flxSerial.textToNormal();
             returnValue = false;
             break;
         }
         else if (selected == kReadBufferExit)
         {
-            textToWhite();
+            flxSerial.textToWhite();
             Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
-            textToNormal();
+            flxSerial.textToNormal();
             returnValue = true;
             break;
         }
@@ -169,9 +169,9 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
 
         if (result == flxEditOutOfRange)
         {
-            textToRed();
+            flxSerial.textToRed();
             Serial.printf("\tERROR");
-            textToNormal();
+            flxSerial.textToNormal();
             Serial.printf(": The entered value is out of range %s \n\r\n\r", limitRange);
             theDataEditor.beep();
             delay(kMessageDelayTimeout / 3);
@@ -224,17 +224,17 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent)
         // done?
         if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
         {
-            textToYellow();
+            flxSerial.textToYellow();
             Serial.println("Escape");
-            textToNormal();
+            flxSerial.textToNormal();
             returnValue = false;
             break;
         }
         else if (selected == kReadBufferExit)
         {
-            textToWhite();
+            flxSerial.textToWhite();
             Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
-            textToNormal();
+            flxSerial.textToNormal();
             returnValue = true;
             break;
         }
@@ -277,9 +277,9 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameter *pParam)
         // done?
         if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
         {
-            textToYellow();
+            flxSerial.textToYellow();
             Serial.println("Escape");
-            textToNormal();
+            flxSerial.textToNormal();
             returnValue = false;
             break;
         }
@@ -359,9 +359,9 @@ bool flxSettingsSerial::drawPage(flxOperation *pCurrent, flxParameterIn *pParam)
 
         if (result == flxEditOutOfRange)
         {
-            textToRed();
+            flxSerial.textToRed();
             Serial.printf("\tERROR");
-            textToNormal();
+            flxSerial.textToNormal();
             Serial.printf(": The entered value is out of range %s \n\r\n\r", limitRange);
             theDataEditor.beep();
             delay(kMessageDelayTimeout / 3);
@@ -476,9 +476,9 @@ void flxSettingsSerial::drawPageHeader(flxObject *pCurrent, const char *szItem)
 
         pCurrent = pCurrent->parent();
     }
-    textToWhite();
+    flxSerial.textToWhite();
     Serial.printf("\n\r\n\rSettings for:");
-    textToNormal();
+    flxSerial.textToNormal();
     Serial.printf(" %s\n\r\n\r", szOutput);
 }
 //-----------------------------------------------------------------------------
@@ -513,9 +513,9 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
 
     if (pDesc->title())
     {
-        textToWhite();
+        flxSerial.textToWhite();
         Serial.printf("\n\r    %s\n\r", pDesc->title());
-        textToNormal();
+        flxSerial.textToNormal();
     }
 
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
@@ -537,9 +537,9 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxParameter *pParam)
     Serial.printf("\t%2d)  %s - %s", item, pParam->name(), pParam->description());
     if (!pParam->enabled())
     {
-        textToYellow();
+        flxSerial.textToYellow();
         Serial.printf("        {disabled}");
-        textToNormal();
+        flxSerial.textToNormal();
     }
     Serial.printf("\n\r");
 }
@@ -578,9 +578,9 @@ int flxSettingsSerial::drawMenu(flxObject *pCurrent, uint level)
     if (pCurrent->nProperties() == 0)
         return level;
 
-    textToWhite();
+    flxSerial.textToWhite();
     Serial.println("Settings:");
-    textToNormal();
+    flxSerial.textToNormal();
     for (auto prop : pCurrent->getProperties())
     {
         if (prop->hidden())
@@ -721,9 +721,9 @@ int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
     if (pCurrent->nOutputParameters() > 0)
     {
         Serial.println();
-        textToWhite();
-        Serial.println("Outputs:");
-        textToNormal();
+        flxSerial.textToWhite();
+        Serial.println("    Outputs:");
+        flxSerial.textToNormal();
 
         for (auto outParam : pCurrent->getOutputParameters())
         {
@@ -735,9 +735,9 @@ int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
     if (pCurrent->nInputParameters() > 0)
     {
         Serial.println();
-        textToWhite();
-        Serial.println("Functions:");
-        textToNormal();
+        flxSerial.textToWhite();
+        Serial.println("    Functions:");
+        flxSerial.textToNormal();
 
         for (auto inParam : pCurrent->getInputParameters())
         {
@@ -929,9 +929,9 @@ uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint t
                 }
 
                 // print out the number that was entered as a prompt ...
-                textToGreen();
+                flxSerial.textToGreen();
                 Serial.printf("%u", number);
-                textToNormal();
+                flxSerial.textToNormal();
                 // Add up the curent digits - for multi digit entries
                 current = current * 10 + number;
 
@@ -1024,9 +1024,9 @@ int flxSettingsSerial::editSettings(void)
 
     bool doSave = drawPage(_systemRoot);
 
-    textToWhite();
+    flxSerial.textToWhite();
     Serial.printf("\n\r\n\rEnd Settings\n\r");
-    textToNormal();
+    flxSerial.textToNormal();
 
     // clear buffer
     while (Serial.available() > 0)

@@ -15,6 +15,7 @@
 #include "flxCore.h"
 #include "flxDevice.h"
 #include "flxFlux.h"
+#include "flxSerial.h"
 
 #define kReadBufferTimeoutExpired 255
 #define kReadBufferExit 254
@@ -23,13 +24,6 @@
 #define kReadBufferNoMatch 251
 
 #define kPromptTimeoutValueSec 60
-
-// Quick things for color output of text
-#define kSerialSettingsClrNormal "\033[0;39m"
-#define kSerialSettingsClrGreen "\033[1;32m"
-#define kSerialSettingsClrYellow "\033[1;33m"
-#define kSerialSettingsClrRed "\033[1;31m"
-#define kSerialSettingsClrWhite "\033[1;37m"
 
 class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
@@ -47,36 +41,6 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
         // Our menu timeout value
         flxRegister(menuTimeout, "Menu Timeout", "Inactivity timeout period for the menu system");
-
-        // colors
-        flxRegister(enableColorOutput, "Menu Colors", "Use color with the serial menu");
-    }
-    // color management things
-
-    void textToNormal(void)
-    {
-        if (enableColorOutput())
-            Serial.printf(kSerialSettingsClrNormal);
-    }
-    void textToGreen(void)
-    {
-        if (enableColorOutput())
-            Serial.printf(kSerialSettingsClrGreen);
-    }
-    void textToYellow(void)
-    {
-        if (enableColorOutput())
-            Serial.printf(kSerialSettingsClrYellow);
-    }
-    void textToRed(void)
-    {
-        if (enableColorOutput())
-            Serial.printf(kSerialSettingsClrRed);
-    }
-    void textToWhite(void)
-    {
-        if (enableColorOutput())
-            Serial.printf(kSerialSettingsClrWhite);
     }
 
     void setSystemRoot(flxObjectContainer *theRoot)
@@ -183,17 +147,17 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             // done?
             if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
             {
-                textToYellow();
+                flxSerial.textToYellow();
                 Serial.println("Escape");
-                textToNormal();
+                flxSerial.textToNormal();
                 returnValue = false;
                 break;
             }
             else if (selected == kReadBufferExit)
             {
-                textToWhite();
+                flxSerial.textToWhite();
                 Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
-                textToNormal();
+                flxSerial.textToNormal();
                 returnValue = true;
                 break;
             }
@@ -364,17 +328,17 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             // done?
             if (selected == kReadBufferTimeoutExpired || selected == kReadBufferEscape)
             {
-                textToYellow();
+                flxSerial.textToYellow();
                 Serial.println("Escape");
-                textToNormal();
+                flxSerial.textToNormal();
                 returnValue = false;
                 break;
             }
             else if (selected == kReadBufferExit)
             {
-                textToWhite();
+                flxSerial.textToWhite();
                 Serial.println((pCurrent->parent() != nullptr ? "Back" : "Exit")); // exit
-                textToNormal();
+                flxSerial.textToNormal();
                 returnValue = true;
                 break;
             }

@@ -14,6 +14,7 @@
 
 #include "flxCore.h"
 #include "flxCoreDevice.h"
+#include "flxSerial.h"
 #include <memory>
 
 class flxApplication;
@@ -230,10 +231,11 @@ class flxFlux : public flxObjectContainer
     {
         char szBuffer[128];
         versionString(szBuffer, sizeof(szBuffer), true);
-
+        flxSerial.textToWhite();
         flxLog_N("");
         flxLog_N(F("%s   %s"), name(), description());
         flxLog_N(F("Version: %s\n\r"), szBuffer);
+        flxSerial.textToNormal();
     }
 
     const char *deviceId(void);
