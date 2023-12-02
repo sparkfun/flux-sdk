@@ -6,12 +6,13 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 
 #pragma once
 
+#include <functional>
 #include <vector>
 // spEvent.h
 //
@@ -54,7 +55,7 @@ template <typename ArgT> class flxSignal
         connect([=](ArgT var) { // users a lambda for the callback
             (*func)(uValue, var);
         });
-    }   
+    }
 
     template <typename T, typename U> void call(T *inst, void (T::*func)(U uVal, ArgT var), U uValue)
     {
