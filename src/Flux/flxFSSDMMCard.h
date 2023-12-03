@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
@@ -39,7 +38,7 @@ class flxFSSDMMCFile : public flxIFile
 
     size_t size(void);
 
-    const char * name(void);
+    const char *name(void);
 
     bool isDirectory(void);
 
@@ -47,7 +46,12 @@ class flxFSSDMMCFile : public flxIFile
 
     int available(void);
 
-    Stream * stream(void);
+    Stream *stream(void);
+
+    flxFSFile openNextFile(void);
+
+    time_t getLastWrite(void);
+
   private:
     friend _flxFSSDMMCard;
 
@@ -227,16 +231,14 @@ class flxFSSDMMCard : public flxIFileSystem, public flxSystemType<flxFSSDMMCard>
     {
         return _theSDMMCard.used();
     }
-    
+
     const char *type(void)
     {
         return _theSDMMCard.type();
     }
 
-
     bool enabled(void)
     {
         return _theSDMMCard.enabled();
     };
-
 };

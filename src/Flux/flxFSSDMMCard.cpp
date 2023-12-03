@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 // Object wrapper around the SD Card object. This allows this object to
 // be part of the framework.
@@ -294,7 +293,7 @@ size_t flxFSSDMMCFile::write(const uint8_t *buf, size_t size)
     return _file.write(buf, size);
 }
 
-size_t flxFSSDMMCFile::read( uint8_t *buf, size_t size)
+size_t flxFSSDMMCFile::read(uint8_t *buf, size_t size)
 {
     if (!_file)
         return false;
@@ -321,7 +320,7 @@ size_t flxFSSDMMCFile::size(void)
     return 0;
 }
 
-const char * flxFSSDMMCFile::name(void)
+const char *flxFSSDMMCFile::name(void)
 {
     if (_file)
         return _file.name();
@@ -347,6 +346,44 @@ std::string flxFSSDMMCFile::getNextFilename(void)
     return tmp;
 }
 
+time_t flxFSSDMMCFile::getLastWrite(void)
+{
+    if (_file)
+        return _file.getLastWrite();
+
+    return 0;
+}
+
+//-----------------------------------------------------------------------
+flxFSFile flxFSSDMMCFile::openNextFile(void)
+{
+    // Framework file
+    flxFSFile theflxFile;
+
+    if (!_file || !_file.isDirectory())
+        return theflxFile;
+
+    File sdFile = _file.openNextFile();
+
+    if (sdFile)
+    {
+
+        // setup our MMC file object that implements flxIFile interface
+        flxFSSDMMCFile theMMCFile;
+
+        // set the File object in our file driver interface
+        theMMCFile.setFile(sdFile);
+
+        // Move our object to a smart pointer
+        std::shared_ptr<flxIFile> pMMCFile = std::make_shared<flxFSSDMMCFile>(std::move(theMMCFile));
+
+        // Now set our MMC driver, into the framework driver
+        theflxFile.setIFile(pMMCFile);
+    }
+
+    return theflxFile;
+}
+
 int flxFSSDMMCFile::available(void)
 {
     if (_file)
@@ -355,7 +392,7 @@ int flxFSSDMMCFile::available(void)
     return 0;
 }
 
-Stream * flxFSSDMMCFile::stream(void)
+Stream *flxFSSDMMCFile::stream(void)
 {
     if (_file)
         return &_file;
