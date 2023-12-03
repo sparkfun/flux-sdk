@@ -6,20 +6,21 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
-#include <memory>
-#include <Stream.h>
 #include "flxCoreTypes.h"
+#include <Stream.h>
+#include <memory>
 // FS Interfaces
 
 //-----------------------------------------------------------------------
 // A file interface
+
+class flxFSFile;
 
 class flxIFile
 {
@@ -36,17 +37,20 @@ class flxIFile
 
     virtual size_t read(uint8_t *buf, size_t size) = 0;
 
-    virtual const char * name(void)=0;
+    virtual const char *name(void) = 0;
 
-    virtual bool isDirectory(void)=0;
+    virtual bool isDirectory(void) = 0;
 
-    virtual std::string getNextFilename(void)=0;
+    virtual std::string getNextFilename(void) = 0;
 
     virtual int available(void) = 0;
 
-    virtual Stream* stream(void) = 0;
-};
+    virtual Stream *stream(void) = 0;
 
+    virtual flxFSFile openNextFile(void) = 0;
+
+    virtual time_t getLastWrite(void) = 0;
+};
 
 //-----------------------------------------------------------------------
 // Framework file class that is used to provide a standard output
@@ -63,6 +67,11 @@ class flxFSFile
         if (_file && _file->isValid())
             return _file->write(buf, size);
         return 0;
+    }
+
+    bool isValid(void)
+    {
+        return (_file && _file->isValid());
     }
 
     void close(void)
@@ -105,7 +114,7 @@ class flxFSFile
         return 0;
     }
 
-    const char * name(void)
+    const char *name(void)
     {
         if (_file && _file->isValid())
             return _file->name();
@@ -129,7 +138,7 @@ class flxFSFile
         std::string tmp = "";
         return tmp;
     }
-    
+
     int available(void)
     {
         if (_file && _file->isValid())
@@ -138,13 +147,31 @@ class flxFSFile
         return 0;
     }
 
-    Stream * stream(void)
+    Stream *stream(void)
     {
         if (_file && _file->isValid())
             return _file->stream();
 
         return nullptr;
     }
+
+    flxFSFile openNextFile(void)
+    {
+        if (_file && _file->isValid())
+            return _file->openNextFile();
+
+        flxFSFile cow;
+        return cow;
+    }
+
+    time_t getLastWrite(void)
+    {
+        if (!_file || !_file->isValid())
+            return 0;
+
+        return _file->getLastWrite();
+    }
+
   private:
     // note use of smart pointer for the file
     std::shared_ptr<flxIFile> _file;
@@ -181,5 +208,5 @@ class flxIFileSystem : public flxDescriptor
 
     virtual const char *type(void) = 0;
 
-    virtual bool enabled(void) =0;
+    virtual bool enabled(void) = 0;
 };
