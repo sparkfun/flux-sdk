@@ -403,7 +403,7 @@ void flx_utils::timestampISO8601(time_t &t_time, char *buffer, size_t length, bo
 void flx_utils::formatByteString(uint64_t nBytes, uint prec, char *szBuffer, size_t len)
 {
 
-    char *sizeNames[] = {"Bytes", "KB", "MB", "GB", "TB"};
+    char *sizeNames[] = {"B", "KB", "MB", "GB", "TB"};
 
     if (nBytes < 0)
         nBytes = 0;
@@ -416,6 +416,9 @@ void flx_utils::formatByteString(uint64_t nBytes, uint prec, char *szBuffer, siz
     // overflow our name array?
     if (tmp1 > (sizeof(sizeNames) / sizeof(char *)) - 1)
         tmp1 = (sizeof(sizeNames) / sizeof(char *)) - 1;
+
+    if (tmp1 < .1)
+        prec = 0;
 
     char szFormat[32];
     snprintf(szFormat, sizeof(szFormat), "%%.%df%%s", prec);
