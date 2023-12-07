@@ -52,6 +52,11 @@ class flxFSSDMMCFile : public flxIFile
 
     time_t getLastWrite(void);
 
+    File  filePointer(void)
+    {
+        return _file;
+    }
+
   private:
     friend _flxFSSDMMCard;
 
@@ -127,6 +132,7 @@ class _flxFSSDMMCard : public flxIFileSystem
     {
         return _isInitalized;
     }
+    FS fileSystem(void);
 
   private:
     // private constructor
@@ -241,4 +247,10 @@ class flxFSSDMMCard : public flxIFileSystem, public flxSystemType<flxFSSDMMCard>
     {
         return _theSDMMCard.enabled();
     };
+
+    FS fileSystem(void)
+    {
+        return _theSDMMCard.fileSystem();
+    }
+
 };

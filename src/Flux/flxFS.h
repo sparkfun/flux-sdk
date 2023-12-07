@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <FS.h>
 #include "flxCoreTypes.h"
 #include <Stream.h>
 #include <memory>
@@ -50,6 +51,8 @@ class flxIFile
     virtual flxFSFile openNextFile(void) = 0;
 
     virtual time_t getLastWrite(void) = 0;
+
+    virtual File filePointer(void) = 0;
 };
 
 //-----------------------------------------------------------------------
@@ -172,6 +175,17 @@ class flxFSFile
         return _file->getLastWrite();
     }
 
+    File filePointer(void)
+    {
+        if (!_file || !_file->isValid())
+        {
+            File emptyFile;
+            return emptyFile;
+        }
+
+        return _file->filePointer();
+    }
+
   private:
     // note use of smart pointer for the file
     std::shared_ptr<flxIFile> _file;
@@ -209,4 +223,6 @@ class flxIFileSystem : public flxDescriptor
     virtual const char *type(void) = 0;
 
     virtual bool enabled(void) = 0;
+
+    virtual FS fileSystem(void) = 0;
 };

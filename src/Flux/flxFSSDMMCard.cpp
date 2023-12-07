@@ -276,6 +276,11 @@ uint64_t _flxFSSDMMCard::used(void)
 
     return SD_MMC.usedBytes();
 }
+
+FS _flxFSSDMMCard::fileSystem(void)
+{
+    return SD_MMC;
+}
 // -------------------------------------------------------
 // File implementation
 
