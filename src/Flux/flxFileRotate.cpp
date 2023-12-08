@@ -14,10 +14,8 @@
 #include "flxClock.h"
 #include "flxUtils.h"
 
-#define kFileNameTemplate "%s%04d.txt"
-
 // number of writes between flushes
-#define kFlushIncrement 2
+const int kFlushIncrement = 2;
 
 bool flxFileRotate::getNextFilename(std::string &strFile)
 {
@@ -28,7 +26,8 @@ bool flxFileRotate::getNextFilename(std::string &strFile)
     char szBuffer[64];
     while (true)
     {
-        snprintf(szBuffer, sizeof(szBuffer), kFileNameTemplate, filePrefix.get().c_str(), _currentFileNumber());
+        snprintf(szBuffer, sizeof(szBuffer), kFileNameTemplate, filePrefix.get().c_str(), _currentFileNumber(),
+                 kLogFileSuffix);
 
         // - does this file already exist?
         if (!_theFS->exists(szBuffer))
@@ -68,7 +67,8 @@ bool flxFileRotate::openCurrentFile(void)
 
     char szBuffer[64];
 
-    snprintf(szBuffer, sizeof(szBuffer), kFileNameTemplate, filePrefix.get().c_str(), _currentFileNumber());
+    snprintf(szBuffer, sizeof(szBuffer), kFileNameTemplate, filePrefix.get().c_str(), _currentFileNumber(),
+             kLogFileSuffix);
 
     _currentFilename = szBuffer;
 
@@ -156,7 +156,7 @@ void flxFileRotate::write(const char *value, bool newline, flxLineType_t type)
     if (type == flxLineTypeData)
     {
         // Write the current line out
-         _currentFile.write((uint8_t *)value, strlen(value) + 1);
+        _currentFile.write((uint8_t *)value, strlen(value) + 1);
         // add a cr if newline set
         if (newline)
             _currentFile.write((uint8_t *)"\n", 1);
@@ -165,12 +165,12 @@ void flxFileRotate::write(const char *value, bool newline, flxLineType_t type)
     else if (type == flxLineTypeHeader && !_headerWritten)
     {
         // Write the current line out
-         _currentFile.write((uint8_t *)value, strlen(value) + 1);
+        _currentFile.write((uint8_t *)value, strlen(value) + 1);
         // add a cr if newline set
         if (newline)
             _currentFile.write((uint8_t *)"\n", 1);
 
-        _headerWritten = true; 
+        _headerWritten = true;
     }
 
     // Will we need to rotate?

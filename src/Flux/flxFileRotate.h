@@ -84,10 +84,12 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
 
     flxPropertyUint<flxFileRotate> startNumber = {1};
 
-    flxPropertyString<flxFileRotate> filePrefix = {""};
+    flxPropertyString<flxFileRotate> filePrefix = {"sfe"};
 
     // Our "New File" event
     flxSignalVoid on_newFile;
+
+    static constexpr char *kLogFileSuffix = "txt";
 
   private:
     // Hidden property - epoch when file was opened...
@@ -95,6 +97,7 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     flxPropertyHiddenUint<flxFileRotate> _currentFileNumber = {0};
 
     static constexpr uint kSecsPerHour = 3600;
+    static constexpr char *kFileNameTemplate = "%s%04d.%s";
 
     bool getNextFilename(std::string &strFile);
     bool openNextLogFile();
