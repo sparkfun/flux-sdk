@@ -133,7 +133,7 @@ typedef enum
 //
 // Define our device base class used for each device in the system.
 //
-// New devices create an object that subclasses from this object.
+// New devices create an object that sub-classes from this object.
 //
 // The device object defines the interface and underlying logic that
 // integrates the device into the overall system, and simplifies the r
@@ -141,7 +141,7 @@ typedef enum
 //
 // Key capabilities provided:
 //
-//      - object state persistance/serialization
+//      - object state persistence/serialization
 //      - Managed properties -
 //      - System data collection from the device
 //      - Works with the device Factory/Builder pattern.
