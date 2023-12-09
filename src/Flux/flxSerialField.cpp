@@ -6,10 +6,9 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #include <inttypes.h>
 #include <string.h>
@@ -68,7 +67,7 @@
 //
 // ----------------------------------------------------------------------
 // Note: While this edit field exposes interfaces for different data types,
-// at the core, it all works in "string" space. 
+// at the core, it all works in "string" space.
 // ----------------------------------------------------------------------
 // Context Struct values for the text entry session (see header file for def)
 //
@@ -88,29 +87,29 @@
 //
 #define kBCursorZero (kEditBufferMax - 1)
 
-// Defines for keycodes
+// Defines for key codes
 
-#define kCodeBS 8
-#define kCodeDEL 127
-#define kCodeSpace 32
-#define kCodeBell 7
-#define kCodeCR 13
-#define kCodeEOL 5
-#define kCodeBOL 1
-#define kCodeKillEOL 11
-#define kCodeESC 27
-#define kCodeAsterisk 42
-#define kCodeESCExtend 91
-#define kCodeArrowRight 67
-#define kCodeArrowLeft 68
-#define kCodeKPDel 126
+const uint8_t kCodeBS = 8;
+const uint8_t kCodeDEL = 127;
+const uint8_t kCodeSpace = 32;
+const uint8_t kCodeBell = 7;
+const uint8_t kCodeCR = 13;
+const uint8_t kCodeEOL = 5;
+const uint8_t kCodeBOL = 1;
+const uint8_t kCodeKillEOL = 11;
+const uint8_t kCodeESC = 27;
+const uint8_t kCodeAsterisk = 42;
+const uint8_t kCodeESCExtend = 91;
+const uint8_t kCodeArrowRight = 67;
+const uint8_t kCodeArrowLeft = 68;
+const uint8_t kCodeKPDel = 126;
 
 // Sequence to do a backspace and overwrite old text
 const char chBackSpace[] = {kCodeBS, kCodeSpace, kCodeBS};
 const char chLeftArrow[] = {kCodeESC, kCodeESCExtend, kCodeArrowLeft};
 const char chRightArrow[] = {kCodeESC, kCodeESCExtend, kCodeArrowRight};
 
-#define kInputBufferSize 32
+const uint16_t kInputBufferSize = 32;
 
 //--------------------------------------------------------------------------
 // Validators for editing operations
@@ -263,9 +262,10 @@ void flxSerialField::drawTrailing(FieldContext_t &ctx, bool isDelete)
     {
         if (ctx.hidden)
         {
-            for (int i=0; i <= kBCursorZero - ctx.bcursor; i++)
+            for (int i = 0; i <= kBCursorZero - ctx.bcursor; i++)
                 Serial.write(kCodeAsterisk);
-        }else
+        }
+        else
             Serial.write(ctx.tail + ctx.bcursor, kBCursorZero - ctx.bcursor);
         nBack = kBCursorZero - ctx.bcursor; // number of chars written
     }
@@ -295,7 +295,6 @@ void flxSerialField::resetContext(FieldContext_t &ctx)
     memset(&ctx, '\0', sizeof(FieldContext_t));
     ctx.cursor = 0;
     ctx.bcursor = kBCursorZero;
-
 }
 //--------------------------------------------------------------------------
 // processArrowKeys()
@@ -506,7 +505,7 @@ void flxSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uin
         ctxEdit.head[ctxEdit.cursor] = '\0';
 
         fulltext(ctxEdit, ctxEdit.all);
-        
+
         if (!ctxEdit.validator(ctxEdit.all))
         {
             Serial.write(kCodeBell);
@@ -557,8 +556,8 @@ bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
     if (ctxEdit.cursor > 0)
     {
         if (ctxEdit.hidden)
-        {   
-            for(int i=0; i <= ctxEdit.cursor; i++)
+        {
+            for (int i = 0; i <= ctxEdit.cursor; i++)
                 Serial.write(kCodeAsterisk);
         }
         else
@@ -662,7 +661,7 @@ bool flxSerialField::editFieldCString(char *value, size_t lenValue, bool hidden,
 
     resetContext(ctxEdit);
     ctxEdit.validator = isTrue; // always true/always blue(SV) for text
-    ctxEdit.hidden=hidden;
+    ctxEdit.hidden = hidden;
 
     // copy in our initial value.
     ctxEdit.cursor = strlen(value);
@@ -711,7 +710,7 @@ bool flxSerialField::editFieldString(std::string &value, bool hidden, uint32_t t
 }
 
 //--------------------------------------------------------------------------
-// Bool editor - 
+// Bool editor -
 bool flxSerialField::editFieldBool(bool &value, bool hidden, uint32_t timeout)
 {
     // setup context
@@ -854,7 +853,6 @@ bool flxSerialField::editFieldUInt8(uint8_t &value, bool hidden, uint32_t timeou
     // editing wasn't successful.
     return false;
 }
-
 
 //--------------------------------------------------------------------------
 bool flxSerialField::editFieldUInt16(uint16_t &value, bool hidden, uint32_t timeout)

@@ -21,10 +21,10 @@
 // ESP wifi header
 #include "WiFi.h"
 
-#define kWiFiLevelPoor 0
-#define kWiFiLevelFair 1
-#define kWiFiLevelGood 2
-#define kWiFiLevelExcellent 3
+const uint8_t kWiFiLevelPoor = 0;
+const uint8_t kWiFiLevelFair = 1;
+const uint8_t kWiFiLevelGood = 2;
+const uint8_t kWiFiLevelExcellent = 3;
 
 // WiFi client for EsP32 boards
 

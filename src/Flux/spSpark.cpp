@@ -23,7 +23,7 @@
 
 static flxLoggingDrvDefault _logDriver;
 
-#define kApplicationHashIDTag "Application ID"
+const char *kApplicationHashIDTag = "Application ID";
 
 // Global object - for quick access to Spark.
 flxFlux &flux = flxFlux::get();

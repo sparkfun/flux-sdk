@@ -17,13 +17,13 @@
 #include "flxFlux.h"
 #include "flxSerial.h"
 
-#define kReadBufferTimeoutExpired 255
-#define kReadBufferExit 254
-#define kReadBufferEscape 253
-#define kReadBufferReturn 252
-#define kReadBufferNoMatch 251
+const uint8_t kReadBufferTimeoutExpired = 255;
+const uint8_t kReadBufferExit = 254;
+const uint8_t kReadBufferEscape = 253;
+const uint8_t kReadBufferReturn = 252;
+const uint8_t kReadBufferNoMatch = 251;
 
-#define kPromptTimeoutValueSec 60
+const uint kPromptTimeoutValueSec = 60;
 
 class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
@@ -47,7 +47,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
     {
         _systemRoot = theRoot;
     }
-    // Draw Settings Page entries -- this is the entry pont for this menu
+    // Draw Settings Page entries -- this is the entry point for this menu
 
     bool drawPage(flxObject *);
     bool drawPage(flxObject *, flxProperty *);

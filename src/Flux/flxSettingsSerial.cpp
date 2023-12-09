@@ -17,7 +17,7 @@
 #include <ctype.h>
 #include <time.h>
 
-#define kOutputBufferSize 256
+const uint16_t kOutputBufferSize = 256;
 
 //-----------------------------------------------------------------------------
 // System settings user experience - via the serial console
