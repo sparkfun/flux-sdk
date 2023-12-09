@@ -103,7 +103,6 @@ void _flxClock::set_timezone(std::string tz)
     _tzStorage = tz;
     if (_bInitialized && _systemClock)
         _systemClock->set_timezone(tz.c_str());
-    
 }
 //----------------------------------------------------------------
 std::string _flxClock::get_timezone(void)
