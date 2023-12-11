@@ -519,7 +519,7 @@ void flxSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uin
         Serial.write(inputBuffer[i]);
         if (ctxEdit.hidden)
         {
-            delay(300);
+            delay(100);
             Serial.write(kCodeBS);
             Serial.write(kCodeAsterisk);
         }
