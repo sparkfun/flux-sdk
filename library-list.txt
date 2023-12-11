@@ -58,3 +58,4 @@ SdFat
 "SparkFun Indoor Air Quality Sensor - ENS160"
 "SparkFun Color Sensor OPT4048"
 "SparkFun Spectral Triad AS7265X"
+"ESPAsyncWebSrv"
