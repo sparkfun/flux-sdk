@@ -6,13 +6,14 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 
 #pragma once
 
 // Messaging/logging system for the framework
+#include "flxCoreEvent.h"
 #include <WString.h>
 #include <stdarg.h>
 
@@ -34,7 +35,7 @@ typedef enum
 // ----------------------------------------------------------------------------
 // flxLoggingDriver()
 //
-// This class actually does the log work. It allows the backend of the logging
+// This class actually does the log work. It allows the back end of the logging
 // system to be changed as needed. For example if you want to use a native
 // log system.
 
@@ -137,12 +138,16 @@ class flxLogging
     int logPrintf(const flxLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...)
     {
         int retval = 0;
-        if (_pLogDriver && level <= _logLevel )
+        if (_pLogDriver && level <= _logLevel)
         {
             va_list ap;
             va_start(ap, fmt);
-            retval = _pLogDriver->logPrintf(level,  newline, reinterpret_cast<const char *>(fmt), ap);
+            retval = _pLogDriver->logPrintf(level, newline, reinterpret_cast<const char *>(fmt), ap);
             va_end(ap);
+
+            // send out our message if level == err/warn
+            if (level == flxLogError || level == flxLogWarning)
+                onLogMessage.emit((uint8_t)level);
         }
         return retval;
     }
@@ -157,9 +162,15 @@ class flxLogging
             va_start(ap, fmt);
             retval = _pLogDriver->logPrintf(level, newline, fmt, ap);
             va_end(ap);
+
+            if (level == flxLogError || level == flxLogWarning)
+                onLogMessage.emit((uint8_t)level);
         }
         return retval;
     }
+
+    // Event to enable subscribe to a message being set. Right now - just for error and warning.
+    flxSignalUInt8 onLogMessage;
 
   private:
     flxLogging() : _logLevel{flxLogWarning}, _pLogDriver{nullptr}
@@ -193,57 +204,57 @@ extern flxLogging &flxLog;
 
 #else
 
-#define flxLog_V(format, ...)                                                                                           \
+#define flxLog_V(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_D(format, ...)                                                                                           \
+#define flxLog_D(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_I(format, ...)                                                                                           \
+#define flxLog_I(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_W(format, ...)                                                                                           \
+#define flxLog_W(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_E(format, ...)                                                                                           \
+#define flxLog_E(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_N(format, ...)                                                                                           \
+#define flxLog_N(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog__(format, ...)                                                                                           \
+#define flxLog__(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
 
 // no newline
-#define flxLog_V_(format, ...)                                                                                           \
+#define flxLog_V_(format, ...)                                                                                         \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_D_(format, ...)                                                                                           \
+#define flxLog_D_(format, ...)                                                                                         \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_I_(format, ...)                                                                                           \
+#define flxLog_I_(format, ...)                                                                                         \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_W_(format, ...)                                                                                           \
+#define flxLog_W_(format, ...)                                                                                         \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_E_(format, ...)                                                                                           \
+#define flxLog_E_(format, ...)                                                                                         \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
-#define flxLog_N_(format, ...)                                                                                           \
+#define flxLog_N_(format, ...)                                                                                         \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
