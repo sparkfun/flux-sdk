@@ -156,6 +156,8 @@ flxFSFile _flxFSSDMMCard::open(const char *name, flxFileOpenMode_t mode, bool cr
         // Now set our MMC driver, into the framework driver
         theflxFile.setIFile(pMMCFile);
     }
+    else
+        flxLog_E("Error opening file: %s", name);
 
     return theflxFile;
 }
