@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <FS.h>
 #include "flxCoreTypes.h"
+#include <FS.h>
 #include <Stream.h>
 #include <memory>
 // FS Interfaces
@@ -64,6 +64,13 @@ class flxFSFile
 
   public:
     flxFSFile() : _file{nullptr} {};
+
+    // Copy assignment
+    flxFSFile &operator=(const flxFSFile &rhs)
+    {
+        _file = rhs._file;
+        return *this;
+    }
 
     size_t write(const uint8_t *buf, size_t size)
     {
