@@ -52,7 +52,7 @@ class flxFSSDMMCFile : public flxIFile
 
     time_t getLastWrite(void);
 
-    File  filePointer(void)
+    File filePointer(void)
     {
         return _file;
     }
@@ -252,5 +252,4 @@ class flxFSSDMMCard : public flxIFileSystem, public flxSystemType<flxFSSDMMCard>
     {
         return _theSDMMCard.fileSystem();
     }
-
 };
