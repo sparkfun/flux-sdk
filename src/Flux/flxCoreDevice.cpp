@@ -62,7 +62,7 @@ void flxDevice::addAddressToName()
     char szBuffer[64];
     snprintf(szBuffer, sizeof(szBuffer), getKind() == flxDeviceKindSPI ? "%s [p%d]" : "%s [x%x]", name(), address());
 
-    setNameAlloc(szBuffer);
+    setName(szBuffer);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

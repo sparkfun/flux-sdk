@@ -63,7 +63,7 @@ class flxDescriptor
 
     //-----------------------------------------------------------
     // Set name, but make a copy of the input name
-    void setNameAlloc(const char *new_name)
+    void setName(char *new_name)
     {
         // clear out anything we currently have
         setName("");
@@ -109,10 +109,11 @@ class flxDescriptor
         }
         _desc = new_desc;
     }
-
     //-----------------------------------------------------------
-    // Set description, but make a copy of the input desc
-    void setDescriptionAlloc(const char *new_desc)
+    // non const version - needs to allocate space for the value.
+    // Note - non-const => allocate
+    //
+    void setDescription(char *new_desc)
     {
         // clear out anything we currently have
         setDescription("");
