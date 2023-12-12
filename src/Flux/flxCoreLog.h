@@ -16,6 +16,7 @@
 #include "flxCoreEvent.h"
 #include <WString.h>
 #include <stdarg.h>
+#include <vector>
 
 #include "flxCoreInterface.h"
 // Lets enable logging
@@ -116,8 +117,8 @@ class flxLogging
     void setLogLevel(flxLogLevel_t level)
     {
         _logLevel = level;
-        if (_pLogDriver)
-            _pLogDriver->setLogLevel(level);
+        for (auto logDriver : _loggingDrivers)
+            logDriver->setLogLevel(level);
     }
 
     //-------------------------------------------------------------------------
@@ -129,43 +130,41 @@ class flxLogging
     void setLogDriver(flxLoggingDriver &theDriver)
     {
 
-        _pLogDriver = &theDriver;
-        _pLogDriver->setLogLevel(_logLevel);
+        _loggingDrivers.push_back(&theDriver);
+        theDriver.setLogLevel(_logLevel);
     }
 
     //-------------------------------------------------------------------------
-    // generic log interface
+    // generic log interface - for flash strings
     int logPrintf(const flxLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...)
     {
-        int retval = 0;
-        if (_pLogDriver && level <= _logLevel)
-        {
-            va_list ap;
-            va_start(ap, fmt);
-            retval = _pLogDriver->logPrintf(level, newline, reinterpret_cast<const char *>(fmt), ap);
-            va_end(ap);
+        int retval;
 
-            // send out our message if level == err/warn
-            if (level == flxLogError || level == flxLogWarning)
-                onLogMessage.emit((uint8_t)level);
-        }
+        // pull out var arg list to pass down
+        va_list ap;
+        va_start(ap, fmt);
+
+        retval = logPrintfInternal(level, newline, reinterpret_cast<const char *>(fmt), ap);
+
+        va_end(ap);
+
         return retval;
     }
     //-------------------------------------------------------------------------
     // generic log interface
     int logPrintf(const flxLogLevel_t level, bool newline, const char *fmt, ...)
     {
-        int retval = 0;
-        if (_pLogDriver && level <= _logLevel)
-        {
-            va_list ap;
-            va_start(ap, fmt);
-            retval = _pLogDriver->logPrintf(level, newline, fmt, ap);
-            va_end(ap);
 
-            if (level == flxLogError || level == flxLogWarning)
-                onLogMessage.emit((uint8_t)level);
-        }
+        int retval;
+
+        // pull out var arg list to pass down
+        va_list ap;
+        va_start(ap, fmt);
+
+        retval = logPrintfInternal(level, newline, fmt, ap);
+
+        va_end(ap);
+
         return retval;
     }
 
@@ -173,14 +172,43 @@ class flxLogging
     flxSignalUInt8 onLogMessage;
 
   private:
-    flxLogging() : _logLevel{flxLogWarning}, _pLogDriver{nullptr}
+    flxLogging() : _logLevel{flxLogWarning}
     {
     }
 
+    //---------------------------------------------------------------------
+    // common log driver method - calls our logging drivers
+    int logPrintfInternal(const flxLogLevel_t level, bool newline, const char *fmt, va_list ap)
+    {
+        int retval = 0;
+        int tmpval;
+
+        // okay?
+        if (_loggingDrivers.size() == 0 || level > _logLevel)
+            return retval;
+
+        // loop over  drivers, send out the log info
+        for (auto logDriver : _loggingDrivers)
+        {
+            tmpval = logDriver->logPrintf(level, newline, fmt, ap);
+            retval = tmpval | retval; // is this right?
+        }
+
+        // trigger an event on error or warning
+        if (level == flxLogError || level == flxLogWarning)
+            onLogMessage.emit((uint8_t)level);
+
+        return retval;
+    }
+
+    // current log level
     flxLogLevel_t _logLevel;
 
-    flxLoggingDriver *_pLogDriver;
+    // list of output drivers used
+    std::vector<flxLoggingDriver *> _loggingDrivers;
 };
+
+// Our one logging class - easily accessible
 extern flxLogging &flxLog;
 
 // Define log macros used throughout the system for logging
