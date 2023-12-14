@@ -6,7 +6,7 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 
@@ -72,7 +72,7 @@ int flxLoggingDrvDefault::logPrintf(const flxLogLevel_t level, bool newline, con
         offset = kOutputPrefixLen;
     }
 
-    // Okay,print, staring past prefex
+    // Okay,print, staring past prefix
     vsnprintf(pBuffer + offset, len + 1, fmt, args);
 
     // send to our output device
@@ -83,6 +83,98 @@ int flxLoggingDrvDefault::logPrintf(const flxLogLevel_t level, bool newline, con
         delete pBuffer;
 
     return len;
+}
+
+//---------------------------------------------------------------------
+// flxLogging Class
+//---------------------------------------------------------------------
+//
+//
+//
+//-------------------------------------------------------------------------
+// generic log interface - for flash strings
+int flxLogging::logPrintf(const flxLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...)
+{
+    int retval;
+
+    // pull out var arg list to pass down
+    va_list ap;
+    va_start(ap, fmt);
+
+    retval = logPrintfInternal(level, newline, reinterpret_cast<const char *>(fmt), ap);
+
+    va_end(ap);
+
+    return retval;
+}
+//-------------------------------------------------------------------------
+// generic log interface
+int flxLogging::logPrintf(const flxLogLevel_t level, bool newline, const char *fmt, ...)
+{
+
+    int retval;
+
+    // pull out var arg list to pass down
+    va_list ap;
+    va_start(ap, fmt);
+
+    retval = logPrintfInternal(level, newline, fmt, ap);
+
+    va_end(ap);
+
+    return retval;
+}
+//-------------------------------------------------------------------------
+// log interface - but with the format being an message block string ID
+int flxLogging::logPrintf(const flxLogLevel_t level, bool newline, const int idFmt, ...)
+{
+    int retval = 0;
+
+    // do we have this format?
+    const char *fmt = nullptr;
+
+    for (auto msgBlock : _messageBlocks)
+    {
+        fmt = msgBlock->get(idFmt);
+        if (fmt != nullptr)
+            break;
+    }
+    if (fmt == nullptr)
+        return retval;
+
+    // pull out var arg list to pass down
+    va_list ap;
+    va_start(ap, fmt);
+
+    retval = logPrintfInternal(level, newline, fmt, ap);
+
+    va_end(ap);
+
+    return retval;
+}
+//-------------------------------------------------------------------------
+// common log driver method - calls our logging drivers
+int flxLogging::logPrintfInternal(const flxLogLevel_t level, bool newline, const char *fmt, va_list ap)
+{
+    int retval = 0;
+    int tmpval;
+
+    // okay?
+    if (_loggingDrivers.size() == 0 || level > _logLevel)
+        return retval;
+
+    // loop over  drivers, send out the log info
+    for (auto logDriver : _loggingDrivers)
+    {
+        tmpval = logDriver->logPrintf(level, newline, fmt, ap);
+        retval = tmpval | retval; // is this right?
+    }
+
+    // trigger an event on error or warning
+    if (level == flxLogError || level == flxLogWarning)
+        onLogMessage.emit((uint8_t)level);
+
+    return retval;
 }
 
 #ifdef THIS_IS_NOT_WORKING_ON_ESP32
