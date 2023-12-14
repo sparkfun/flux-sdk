@@ -60,8 +60,15 @@ template <typename T> class flxMessageBlock : public flxMessageBlockCore
 
 typedef enum
 {
-    kMsgParentObjNotSet = 100
+    kMsgParentObjNotSet = 100,
+    kMsgNotAddDupDev,
+    kMsgErrSavingProperty,
+    kMsgErrSaveResState
 } flxMessageCoreID_t;
 
-const flxMessageBlock<flxMessageCoreID_t> msgBlockFluxCore = {
-    {kMsgParentObjNotSet, "Containing object not set. Verify flxRegister() was called on this %s."}};
+// extern const flxMessageBlock<flxMessageCoreID_t> msgBlockFluxCore = {
+//     {kMsgParentObjNotSet, "Containing object not set. Verify flxRegister() was called on this %s"},
+//     {kMsgNotAddDupDev, "Not adding duplicate device item to container: %s"}};
+//
+//
+extern const flxMessageBlock<flxMessageCoreID_t> msgBlockFluxCore;
