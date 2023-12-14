@@ -54,7 +54,7 @@ void flxIoTArduino::connect(void)
         // begin our session with the ArduinoCloud - pass in our special Connection Handler
         if (!ArduinoCloud.begin(_myConnectionHandler))
         {
-            flxLog_E(F("%s: Error initializing the Arduino IoT Cloud subsystem"), this->name());
+            flxLogM_E(kMsgErrInitialization, this->name());
             return;
         }
         // Set the ArduinoCloud debug level - it's a function - global - annoying
@@ -90,7 +90,7 @@ bool flxIoTArduino::getArduinoToken(void)
     // No values, no dice
     if (cloudAPISecret().empty() || cloudAPIClientID().empty())
     {
-        flxLog_E(F("Arduino Cloud API credentials not provided. ArduinoIoT not available"));
+        flxLogM_E(kMsgErrValueNotProvided, "Arduino Cloud API credentials");
         return false;
     }
 
@@ -139,7 +139,7 @@ bool flxIoTArduino::getArduinoToken(void)
 
     if (deserializeJson(jDoc, http.getString()) != DeserializationError::Ok)
     {
-        flxLog_E(F("Unable to parse Arduino IoT token return value."));
+        flxLogM_E(kMsgErrValueError, "Arduino IoT token");
         http.end();
         return false;
     }
@@ -154,7 +154,7 @@ bool flxIoTArduino::getArduinoToken(void)
     }
     else
     {
-        flxLog_E(F(" Arduino IoT token not returned."));
+        flxLogM_E(kMsgErrValueError, "Arduino IoT token");
         return false;
     }
 
@@ -172,7 +172,7 @@ bool flxIoTArduino::checkToken(void)
     {
         if (!getArduinoToken())
         {
-            flxLog_E(F("Arduino IoT Cloud not available or account credentials incorrect"));
+            flxLogM_E(kMsgErrResourceNotAvail, "Arduino IoT Cloud/Account");
             return false;
         }
     }
@@ -181,30 +181,30 @@ bool flxIoTArduino::checkToken(void)
 }
 //---------------------------------------------------------------------------------------
 ///
-/// @brief A general PUT call for json payloads - used in this class
+/// @brief A general PUT call for JSON payloads - used in this class
 ///
-/// @param url  The full URL of the endpoint to PUT to
+/// @param URL  The full URL of the endpoint to PUT to
 /// @param jDoc[In, Out]  JsonDocument that contains the payload for the PUT call on input, results on output
 
-/// @return -1 on error, http return code otherwise
+/// @return -1 on error, HTTP return code otherwise
 ///
 int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
 {
 
     if (!url || strlen(url) < 1)
     {
-        flxLog_E(F("Arduino IoT - Invalid URL provided"));
+        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT URL");
         return -1;
     }
     if (!createWiFiClient())
     {
-        flxLog_E(F("Arduino IoT Unable to connect to WiFi"));
+        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT - WiFi");
         return -1;
     }
 
     if (_arduinoToken.empty())
     {
-        flxLog_E(F("No Arduino Cloud authentication set"));
+        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT - authentication");
         return -1;
     }
 
@@ -321,7 +321,7 @@ bool flxIoTArduino::setupArduinoThing(void)
 
     if (deviceID().empty())
     {
-        flxLog_E(F("%s: No Device ID provided - unable to  continue"), name());
+        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT - Device ID");
         return false;
     }
 
@@ -364,7 +364,7 @@ bool flxIoTArduino::setupArduinoThing(void)
 
         if (!jDoc.containsKey("id"))
         {
-            flxLog_E(F("%s: Unable to setup Thing"), name());
+            flxLogM_E(kMsgErrInitialization, "Arduino IoT Thing");
             return false;
         }
         _thingID = jDoc["id"].as<const char *>();
@@ -422,7 +422,7 @@ bool flxIoTArduino::setupArduinoThing(void)
         flxLog_N_(F("using Thing `%s` "), _thingName.c_str());
         // Okay, we now have a thing ID - let's persist it.
         if (!flxSettings.save(this))
-            flxLog_W(F("%s: Error saving Arduino Thing ID"), this->name());
+            flxLogM_W(kMsgErrSavingProperty, "Arduino IoT Thing ID");
     }
     return _thingValid;
 }
@@ -482,7 +482,7 @@ bool flxIoTArduino::linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, fl
 
     if (!pValue)
     {
-        flxLog_E(F("%s: failure to create local variable. %s"), name(), szNameBuffer);
+        flxLogM_E(kMsgErrCreateFailure, name(), szNameBuffer);
         return false;
     }
 
@@ -504,7 +504,7 @@ bool flxIoTArduino::linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, fl
     if (!status)
     {
         delete pValue;
-        flxLog_E(F("%s: failure to create local Arduino variable. %s"), name(), szNameBuffer);
+        flxLogM_E(kMsgErrCreateFailure, name(), szNameBuffer);
         return false;
     }
 
@@ -540,7 +540,7 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
 
         if (!flx_utils::createVariableName(szNameBuffer, szVarName))
         {
-            flxLog_E(F("%s: unable to create valid variable name: %s"), name(), szNameBuffer);
+            flxLogM_E(kMsgErrCreateFailure, name(), szNameBuffer);
             return false;
         }
         // Build our payload
@@ -570,7 +570,7 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
 
         default:
             // should never get here really
-            flxLog_E(F("%s: Unknown data type: %d"), name(), (int)dataType);
+            flxLogM_E(kMsgErrInvalidState, "Arduino IoT - type");
             return false;
         }
 
@@ -588,7 +588,7 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
             // get an id?
             if (!jDoc.containsKey("id"))
             {
-                flxLog_E(F("%s: create cloud variable failed"), name());
+                flxLogM_E(kMsgErrCreateFailure, name(), "cloud variable");
                 return false;
             }
             break;
@@ -657,7 +657,7 @@ void flxIoTArduino::updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair
 {
     if (!value)
     {
-        flxLog_E(F("%s: Unable to update cloud variable. Invalid value."));
+        flxLogM_E(kMsgErrValueError, "Arduino IoT - cloud variable");
         return;
     }
 
@@ -686,7 +686,7 @@ void flxIoTArduino::updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair
 }
 //---------------------------------------------------------------------------------------
 ///
-/// @brief          Receives a Json Document that contains the current values to output
+/// @brief          Receives a JSON Document that contains the current values to output
 /// @note           This method is part of the `flxIWriterJSON` interface
 /// @param jDoc     The JSON Document that contains the values to output.
 ///
@@ -694,7 +694,7 @@ void flxIoTArduino::write(JsonDocument &jDoc)
 {
 
     // The Plan:
-    // Loop over the objects in the json document, each object is a device. For each
+    // Loop over the objects in the JSON document, each object is a device. For each
     // device, loop over the data values/output parameters and:
     //	- Create a name - 64 char max
     //	- hash name, see if it's in the parameter map object

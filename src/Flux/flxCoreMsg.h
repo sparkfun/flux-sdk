@@ -61,9 +61,19 @@ template <typename T> class flxMessageBlock : public flxMessageBlockCore
 typedef enum
 {
     kMsgParentObjNotSet = 100,
+    kMsgErrAllocError,
     kMsgNotAddDupDev,
     kMsgErrSavingProperty,
-    kMsgErrSaveResState
+    kMsgErrSaveResState,
+    kMsgErrDeviceInit,
+    kMsgErrFileOpen,
+    kMsgErrSizeExceeded,
+    kMsgErrInitialization,
+    kMsgErrValueNotProvided,
+    kMsgErrValueError,
+    kMsgErrResourceNotAvail,
+    kMsgErrCreateFailure,
+    kMsgErrInvalidState
 } flxMessageCoreID_t;
 
 // extern const flxMessageBlock<flxMessageCoreID_t> msgBlockFluxCore = {

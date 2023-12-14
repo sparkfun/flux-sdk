@@ -76,7 +76,7 @@ class flxDescriptor
         char *pTmp = new char[len];
         if (!pTmp)
         {
-            flxLog_E("Unable to allocate memory for name");
+            flxLogM_E(kMsgErrAllocError, "name");
             return;
         }
         strncpy(pTmp, new_name, len);
@@ -126,7 +126,7 @@ class flxDescriptor
         char *pTmp = new char[len];
         if (!pTmp)
         {
-            flxLog_E("Unable to allocate memory for description");
+            flxLogM_E(kMsgErrAllocError, "description");
             return;
         }
         strncpy(pTmp, new_desc, len);
@@ -175,7 +175,7 @@ class flxDescriptor
         char *pTmp = new char[len];
         if (!pTmp)
         {
-            flxLog_E("Unable to allocate memory for title");
+            flxLogM_E(kMsgErrAllocError, "title");
             return;
         }
         strncpy(pTmp, new_title, len);

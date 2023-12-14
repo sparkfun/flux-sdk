@@ -123,7 +123,7 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
 //
 //      - Connects to a Thing - potentially creating the thing if needed
 //      - Maps Data Parameters from the DataLogger observation to Variables in the Arduino Thing
-//      - For each write() interation - the variable values are updated.
+//      - For each write() iteration - the variable values are updated.
 //
 // Technical Details
 //

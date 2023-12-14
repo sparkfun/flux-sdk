@@ -207,7 +207,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
 
         if (!_spDoc)
         {
-            flxLog_E(F("No JSON buffer available."));
+            flxLogM_E(kMsgErrInvalidState, "JSON Buffer");
             return;
         }
 
@@ -220,7 +220,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
         // TODO: Add Error output
         if (n > _buffer_size + 1)
         {
-            flxLog_W(" JSON document buffer output buffer trimmed");
+            flxLogM_W(kMsgErrSizeExceeded, "JSON output buffer");
             szBuffer[_buffer_size] = '\0';
         }
 
@@ -294,7 +294,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
         catch (const std::exception &e)
         {
             _buffer_size = 0;
-            flxLog_E(F("Error allocating JSON buffer size"));
+            flxLogM_E(kMsgErrAllocError, "JSON Buffer");
             return;
         }
         _buffer_size = new_size;

@@ -156,7 +156,7 @@ class flxFSSDMMCard : public flxIFileSystem, public flxSystemType<flxFSSDMMCard>
   public:
     flxFSSDMMCard()
     {
-        flxIFileSystem::setName("SD Card", "A SD Card file system using the SDMMC interface on an ESP32");
+        flxIFileSystem::setName("SD Card", "A SD Card file system using the SDMMC interface");
     }
     bool initialize()
     {
