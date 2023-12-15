@@ -187,8 +187,6 @@ extern flxLogging &flxLog;
 // Define log macros used throughout the system for logging
 #ifdef SP_LOGGING_ENABLED
 
-#define flxLog_V(format, ...) flxLog.logPrintf(flxLogVerbose, true, format, ##__VA_ARGS__)
-#define flxLog_D(format, ...) flxLog.logPrintf(flxLogDebug, true, format, ##__VA_ARGS__)
 #define flxLog_I(format, ...) flxLog.logPrintf(flxLogInfo, true, format, ##__VA_ARGS__)
 #define flxLog_W(format, ...) flxLog.logPrintf(flxLogWarning, true, format, ##__VA_ARGS__)
 #define flxLog_E(format, ...) flxLog.logPrintf(flxLogError, true, format, ##__VA_ARGS__)
@@ -196,16 +194,14 @@ extern flxLogging &flxLog;
 #define flxLog__(type, format, ...) flxLog.logPrintf(type, true, format, ##__VA_ARGS__)
 
 // versions what don't end with a newline ...
-#define flxLog_V_(format, ...) flxLog.logPrintf(flxLogVerbose, false, format, ##__VA_ARGS__)
-#define flxLog_D_(format, ...) flxLog.logPrintf(flxLogDebug, false, format, ##__VA_ARGS__)
+
 #define flxLog_I_(format, ...) flxLog.logPrintf(flxLogInfo, false, format, ##__VA_ARGS__)
 #define flxLog_W_(format, ...) flxLog.logPrintf(flxLogWarning, false, format, ##__VA_ARGS__)
 #define flxLog_E_(format, ...) flxLog.logPrintf(flxLogError, false, format, ##__VA_ARGS__)
 #define flxLog_N_(format, ...) flxLog.logPrintf(flxLogNone, false, format, ##__VA_ARGS__)
 
 // versions for message block codes
-#define flxLogM_V(format, ...) flxLog.logPrintf(flxLogVerbose, true, (const int)format, ##__VA_ARGS__)
-#define flxLogM_D(format, ...) flxLog.logPrintf(flxLogDebug, true, (const int)format, ##__VA_ARGS__)
+
 #define flxLogM_I(format, ...) flxLog.logPrintf(flxLogInfo, true, (const int)format, ##__VA_ARGS__)
 #define flxLogM_W(format, ...) flxLog.logPrintf(flxLogWarning, true, (const int)format, ##__VA_ARGS__)
 #define flxLogM_E(format, ...) flxLog.logPrintf(flxLogError, true, (const int)format, ##__VA_ARGS__)
@@ -213,22 +209,13 @@ extern flxLogging &flxLog;
 #define flxLogM__(type, format, ...) flxLog.logPrintf(type, true, (const int)format, ##__VA_ARGS__)
 
 // versions what don't end with a newline ... but use message block codes
-#define flxLogM_V_(format, ...) flxLog.logPrintf(flxLogVerbose, false, (const int)format, ##__VA_ARGS__)
-#define flxLogM_D_(format, ...) flxLog.logPrintf(flxLogDebug, false, (const int)format, ##__VA_ARGS__)
+
 #define flxLogM_I_(format, ...) flxLog.logPrintf(flxLogInfo, false, (const int)format, ##__VA_ARGS__)
 #define flxLogM_W_(format, ...) flxLog.logPrintf(flxLogWarning, false, (const int)format, ##__VA_ARGS__)
 #define flxLogM_E_(format, ...) flxLog.logPrintf(flxLogError, false, (const int)format, ##__VA_ARGS__)
 #define flxLogM_N_(format, ...) flxLog.logPrintf(flxLogNone, false, (const int)format, ##__VA_ARGS__)
 #else
 
-#define flxLog_V(format, ...)                                                                                          \
-    do                                                                                                                 \
-    {                                                                                                                  \
-    } while (0)
-#define flxLog_D(format, ...)                                                                                          \
-    do                                                                                                                 \
-    {                                                                                                                  \
-    } while (0)
 #define flxLog_I(format, ...)                                                                                          \
     do                                                                                                                 \
     {                                                                                                                  \
@@ -251,14 +238,7 @@ extern flxLogging &flxLog;
     } while (0)
 
 // no newline
-#define flxLog_V_(format, ...)                                                                                         \
-    do                                                                                                                 \
-    {                                                                                                                  \
-    } while (0)
-#define flxLog_D_(format, ...)                                                                                         \
-    do                                                                                                                 \
-    {                                                                                                                  \
-    } while (0)
+
 #define flxLog_I_(format, ...)                                                                                         \
     do                                                                                                                 \
     {                                                                                                                  \
@@ -272,6 +252,55 @@ extern flxLogging &flxLog;
     {                                                                                                                  \
     } while (0)
 #define flxLog_N_(format, ...)                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#endif
+
+// Define DEBUG log macros used throughout the system for logging
+#ifdef SP_DEBUG_LOGGING_ENABLED
+
+#define flxLog_V(format, ...) flxLog.logPrintf(flxLogVerbose, true, format, ##__VA_ARGS__)
+#define flxLog_D(format, ...) flxLog.logPrintf(flxLogDebug, true, format, ##__VA_ARGS__)
+#define flxLog_V_(format, ...) flxLog.logPrintf(flxLogVerbose, false, format, ##__VA_ARGS__)
+#define flxLog_D_(format, ...) flxLog.logPrintf(flxLogDebug, false, format, ##__VA_ARGS__)
+
+#define flxLogM_V(format, ...) flxLog.logPrintf(flxLogVerbose, true, (const int)format, ##__VA_ARGS__)
+#define flxLogM_D(format, ...) flxLog.logPrintf(flxLogDebug, true, (const int)format, ##__VA_ARGS__)
+#define flxLogM_V_(format, ...) flxLog.logPrintf(flxLogVerbose, false, (const int)format, ##__VA_ARGS__)
+#define flxLogM_D_(format, ...) flxLog.logPrintf(flxLogDebug, false, (const int)format, ##__VA_ARGS__)
+#else
+
+#define flxLog_V(format, ...)                                                                                          \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define flxLog_D(format, ...)                                                                                          \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define flxLog_V_(format, ...)                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define flxLog_D_(format, ...)                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+
+#define flxLogM_V(format, ...)                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define flxLogM_D(format, ...)                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define flxLogM_V_(format, ...)                                                                                        \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
+#define flxLogM_D_(format, ...)                                                                                        \
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
