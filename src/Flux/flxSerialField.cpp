@@ -587,7 +587,7 @@ bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
 
         if (nRead == 0)
         {
-            flxLog_W("Error reading from serial device");
+            flxLog_W(F("Error reading from serial device"));
             delay(100);
             continue;
         }
