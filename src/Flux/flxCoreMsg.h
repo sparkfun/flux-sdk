@@ -65,6 +65,7 @@ typedef enum
     kMsgErrAllocError,
     kMsgErrAllocErrorN,
     kMsgErrConnectionFailure,
+    kMsgErrConnectionFailureD,
     kMsgNotAddDupDev,
     kMsgErrSavingProperty,
     kMsgErrSaveResState,

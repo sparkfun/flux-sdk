@@ -154,17 +154,17 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         // do we have all the parameters we need?
         if (clientName().length() == 0)
         {
-            flxLog_E(F("%s : No Thing/Client name set. Unable to connect"), this->name());
+            flxLogM_E(kMsgErrValueNotProvided, this->name(), "Thing Name");
             return false;
         }
         if (server().length() == 0)
         {
-            flxLog_E(F("%s : No server/endpoint set. Unable to connect"), this->name());
+            flxLogM_E(kMsgErrValueNotProvided, this->name(), "Server/Endpoint");
             return false;
         }
         if (port() < 1024)
         {
-            flxLog_E(F("%s : A valid port is not set %d. Unable to connect"), this->name(), port());
+            flxLogM_E(kMsgErrValueNotProvided, this->name(), "Valid port");
             return false;
         }
         // mqtt time
@@ -182,7 +182,7 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         {
             if (i > 3)
             {
-                flxLog_E(F("%s: MQTT connection failed. Error Code: %d"), this->name(), _mqttClient.connectError());
+                flxLogM_E(kMsgErrConnectionFailureD, this->name(), _mqttClient.connectError());
                 return false;
             }
             flxLog_N_(".");
@@ -199,7 +199,7 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     {
 
         // Should we continue?
-        // enabled? Have a value to send? We only deal with JSON - just the data 
+        // enabled? Have a value to send? We only deal with JSON - just the data
         if (!_isEnabled || !value || type != flxLineTypeData)
             return;
 
@@ -216,7 +216,7 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         // do we have a topic?
         if (topic().length() == 0)
         {
-            flxLog_E(F("%s : No MQTT topic provided."), this->name());
+            flxLog_E(kMsgErrValueNotProvided, this->name(), "MQTT Topic");
             return;
         }
 
@@ -439,14 +439,14 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
 
         if (!_fileSystem->exists(theFile.c_str()))
         {
-            flxLog_E(F("Certificate file does not exist: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrFileOpen, this->name(), theFile.c_str());
             return nullptr;
         }
 
         flxFSFile certFile = _fileSystem->open(theFile.c_str(), flxIFileSystem::kFileRead);
         if (!certFile)
         {
-            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrFileOpen, this->name(), theFile.c_str());
             return nullptr;
         }
 
@@ -454,7 +454,7 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
         if (szFile < 1)
         {
             certFile.close();
-            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrFileOpen, this->name(), theFile.c_str());
             return nullptr;
         }
         uint8_t *pCert = new uint8_t[szFile + 1];
@@ -462,7 +462,7 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
         if (!pCert)
         {
             certFile.close();
-            flxLog_E(F("Unable to allocate certificate memory: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrAllocErrorN, this->name(), theFile.c_str());
             return nullptr;
         }
 
@@ -472,7 +472,7 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
 
         if (szFile != szRead)
         {
-            flxLog_W(F("Error reading certificate file - size mismatch: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrAllocErrorN, this->name(), theFile.c_str());
             delete pCert;
             return nullptr;
         }
@@ -486,13 +486,13 @@ template <class Object> class flxMQTTESP32SecureCore : public flxMQTTESP32Base<O
     flxMQTTESP32SecureCore() : _pCACert{nullptr}, _pClientCert{nullptr}, _pClientKey{nullptr}, _fileSystem{nullptr}
     {
         flxRegister(caCertificate, "CA Certificate",
-                    "The Certificate Authority certificate. If set, the connection is secure");
-        flxRegister(clientCertificate, "Client Certificate", "The certificate for the client connection");
-        flxRegister(clientKey, "Client Key", "The secure key used for client verification");
+                    "Certificate Authority certificate. If set, the connection is secure");
+        flxRegister(clientCertificate, "Client Certificate", "Certificate for the client connection");
+        flxRegister(clientKey, "Client Key", "Secure key used for client verification");
 
-        flxRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
-        flxRegister(clientCertFilename, "Client Cert Filename", "The File to load the client certificate from");
-        flxRegister(clientKeyFilename, "Client Key Filename", "The File to load the client key from");
+        flxRegister(caCertFilename, "CA Cert Filename", "File to load the certificate from");
+        flxRegister(clientCertFilename, "Client Cert Filename", "File to load the client certificate from");
+        flxRegister(clientKeyFilename, "Client Key Filename", "File to load the client key from");
 
         // The default port for secure/TLS MQTT is 8883, so lest set that for this secure client
         flxMQTTESP32Base<Object, WiFiClientSecure>::port = 8883;

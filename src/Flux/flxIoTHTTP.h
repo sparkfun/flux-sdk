@@ -251,7 +251,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
         {
             if (!createWiFiClient())
             {
-                flxLog_E(F("%s: Error creating network connection."), this->name());
+                flxLogM_E(kMsgErrInitialization, this->name(), "Network Connection");
                 return;
             }
         }
@@ -262,7 +262,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
 
         if (!http.begin(*_wifiClient, _url.c_str()))
         {
-            flxLog_E(F("%s: Error reaching URL: %s"), this->name(), _url.c_str());
+            flxLogM_E(kMsgErrConnectionFailure, this->name(), _url.c_str());
             return;
         }
 
@@ -271,7 +271,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
         int rc = http.POST((uint8_t *)value, strlen(value));
 
         if (rc != 200)
-            flxLog_W(F("%s: Error [%s] posting to: %s"), this->name(), http.errorToString(rc).c_str(), _url.c_str());
+            flxLogM_W(kMsgErrConnectionFailure, this->name(), http.errorToString(rc).c_str());
 
         http.end();
     }
