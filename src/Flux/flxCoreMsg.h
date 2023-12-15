@@ -57,11 +57,14 @@ template <typename T> class flxMessageBlock : public flxMessageBlockCore
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Message block codes (enums) for the core flux block. These are mapped to format strings in the block
+//
 typedef enum
 {
     kMsgParentObjNotSet = 100,
     kMsgErrAllocError,
+    kMsgErrAllocErrorN,
+    kMsgErrConnectionFailure,
     kMsgNotAddDupDev,
     kMsgErrSavingProperty,
     kMsgErrSaveResState,
@@ -76,9 +79,5 @@ typedef enum
     kMsgErrInvalidState
 } flxMessageCoreID_t;
 
-// extern const flxMessageBlock<flxMessageCoreID_t> msgBlockFluxCore = {
-//     {kMsgParentObjNotSet, "Containing object not set. Verify flxRegister() was called on this %s"},
-//     {kMsgNotAddDupDev, "Not adding duplicate device item to container: %s"}};
-//
-//
+// Extern ref to the core message block for Flux
 extern const flxMessageBlock<flxMessageCoreID_t> msgBlockFluxCore;

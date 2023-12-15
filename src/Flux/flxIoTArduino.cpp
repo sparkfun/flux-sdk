@@ -54,7 +54,7 @@ void flxIoTArduino::connect(void)
         // begin our session with the ArduinoCloud - pass in our special Connection Handler
         if (!ArduinoCloud.begin(_myConnectionHandler))
         {
-            flxLogM_E(kMsgErrInitialization, this->name());
+            flxLogM_E(kMsgErrInitialization, this->name(), "connection");
             return;
         }
         // Set the ArduinoCloud debug level - it's a function - global - annoying
@@ -90,7 +90,7 @@ bool flxIoTArduino::getArduinoToken(void)
     // No values, no dice
     if (cloudAPISecret().empty() || cloudAPIClientID().empty())
     {
-        flxLogM_E(kMsgErrValueNotProvided, "Arduino Cloud API credentials");
+        flxLogM_E(kMsgErrValueNotProvided, this->name(), "API credentials");
         return false;
     }
 
@@ -109,7 +109,7 @@ bool flxIoTArduino::getArduinoToken(void)
 
     if (!http.begin(*_wifiClient, szURL))
     {
-        flxLog_E(F("%s: Error reaching URL: %s"), this->name(), szURL);
+        flxLogM_E(kMsgErrConnectionFailure, this->name(), szURL);
         return false;
     }
 
@@ -126,7 +126,7 @@ bool flxIoTArduino::getArduinoToken(void)
 
     if (rc < 200 || rc > 220)
     {
-        flxLog_E(F("ArduinoIoT HTTP communication error [%d] - token request"), rc);
+        flxLog_E(F("%s: Communication error [%d] - token request"), this->name(), rc);
         http.end();
         return false;
     }
@@ -139,7 +139,7 @@ bool flxIoTArduino::getArduinoToken(void)
 
     if (deserializeJson(jDoc, http.getString()) != DeserializationError::Ok)
     {
-        flxLogM_E(kMsgErrValueError, "Arduino IoT token");
+        flxLogM_E(kMsgErrValueError, name(), "token");
         http.end();
         return false;
     }
@@ -154,7 +154,7 @@ bool flxIoTArduino::getArduinoToken(void)
     }
     else
     {
-        flxLogM_E(kMsgErrValueError, "Arduino IoT token");
+        flxLogM_E(kMsgErrValueError, name(), "token");
         return false;
     }
 
@@ -193,18 +193,15 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
 
     if (!url || strlen(url) < 1)
     {
-        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT URL");
+        flxLogM_E(kMsgErrValueNotProvided, this->name(), "URL");
         return -1;
     }
     if (!createWiFiClient())
-    {
-        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT - WiFi");
         return -1;
-    }
 
     if (_arduinoToken.empty())
     {
-        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT - authentication");
+        flxLogM_E(kMsgErrValueNotProvided, this->name(), "authentication");
         return -1;
     }
 
@@ -215,7 +212,7 @@ int flxIoTArduino::postJSONPayload(const char *url, JsonDocument &jDoc)
 
     if (!http.begin(*_wifiClient, szURL))
     {
-        flxLog_E(F("%s: Error reaching URL: %s"), this->name(), szURL);
+        flxLogM_E(kMsgErrConnectionFailure, this->name(), szURL);
         return -1;
     }
 
@@ -321,7 +318,7 @@ bool flxIoTArduino::setupArduinoThing(void)
 
     if (deviceID().empty())
     {
-        flxLogM_E(kMsgErrValueNotProvided, "Arduino IoT - Device ID");
+        flxLogM_E(kMsgErrValueNotProvided, this->name(), "Device ID");
         return false;
     }
 
@@ -364,7 +361,7 @@ bool flxIoTArduino::setupArduinoThing(void)
 
         if (!jDoc.containsKey("id"))
         {
-            flxLogM_E(kMsgErrInitialization, "Arduino IoT Thing");
+            flxLogM_E(kMsgErrInitialization, this->name(), "Thing");
             return false;
         }
         _thingID = jDoc["id"].as<const char *>();
@@ -657,7 +654,7 @@ void flxIoTArduino::updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair
 {
     if (!value)
     {
-        flxLogM_E(kMsgErrValueError, "Arduino IoT - cloud variable");
+        flxLogM_E(kMsgErrValueError, name(), "cloud variable");
         return;
     }
 

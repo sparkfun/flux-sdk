@@ -98,7 +98,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
     {
         if (theURL.length() < 10)
         {
-            flxLog_E(F("%s: Invalid URL - failed to parse protocol: %s"), this->name(), theURL.c_str());
+            flxLogM_E(kMsgErrValueError, this->name(), theURL.c_str());
             return;
         }
 
@@ -108,7 +108,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
 
         if (!createWiFiClient())
         {
-            flxLog_E(F("%s : Error creating a wifi network client connection"), this->name());
+            flxLogM_E(kMsgErrInitialization, this->name(), "WiFi Client");
         }
     }
 
@@ -121,14 +121,14 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
 
         if (!_fileSystem->exists(theFile.c_str()))
         {
-            flxLog_E(F("Certificate file does not exist: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrFileOpen, this->name(), theFile.c_str());
             return nullptr;
         }
 
         flxFSFile certFile = _fileSystem->open(theFile.c_str(), flxIFileSystem::kFileRead);
         if (!certFile)
         {
-            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrFileOpen, this->name(), theFile.c_str());
             return nullptr;
         }
 
@@ -136,7 +136,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
         if (szFile < 1)
         {
             certFile.close();
-            flxLog_E(F("Unable to load certificate file: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrFileOpen, this->name(), theFile.c_str());
             return nullptr;
         }
         uint8_t *pCert = new uint8_t[szFile + 1];
@@ -144,7 +144,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
         if (!pCert)
         {
             certFile.close();
-            flxLog_E(F("Unable to allocate certificate memory: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrAllocErrorN, this->name(), theFile.c_str());
             return nullptr;
         }
 
@@ -154,7 +154,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
 
         if (szFile != szRead)
         {
-            flxLog_W(F("Error reading certificate file - size mismatch: %s"), theFile.c_str());
+            flxLogM_E(kMsgErrInitialization, this->name(), theFile.c_str());
             delete pCert;
             return nullptr;
         }
@@ -205,12 +205,11 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
     {
         flxRegister(enabled, "Enabled", "Enable or Disable the HTTP Client");
 
-        flxRegister(URL, "URL", "The URL to call with log information");
+        flxRegister(URL, "URL", "URL to call with log information");
 
-        flxRegister(caCertificate, "CA Certificate",
-                    "The Certificate Authority certificate. If set, the connection is secure");
+        flxRegister(caCertificate, "CA Certificate", "Certificate Authority certificate. Set to secure connection");
 
-        flxRegister(caCertFilename, "CA Cert Filename", "The File to load the certificate from");
+        flxRegister(caCertFilename, "CA Cert Filename", "File to load the certificate from");
     };
 
     ~flxIoTHTTPBase()

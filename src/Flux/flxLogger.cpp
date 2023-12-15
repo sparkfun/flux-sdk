@@ -112,7 +112,7 @@ flxLogger::flxLogger()
 
     // Sample number things
 
-    flxRegister(numberMode, "Sample Numbering", "An incremental count of the current log entry");
+    flxRegister(numberMode, "Sample Numbering", "Incremental count of the current log entry");
     flxRegister(numberIncrement, "Numbering Increment", "Increment amount for Sample Numbering");
 
     // Register and remove the output parameter in a simpler manner as the Timestamp

@@ -53,7 +53,7 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
         // no URL, no dice
         if (URL().length() == 0)
         {
-            flxLog_E(F("No URL provided for the MachineChat Server"));
+            flxLogM_E(kMsgErrValueNotProvided, name(), "URL");
             return;
         }
 
@@ -89,7 +89,7 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
             // get a proper context name/ID --
             if (!flx_utils::createVariableName(kvObj.key().c_str(), szName))
             {
-                flxLog_E(F("%s: Unable to create context id for: %s"), name(), kvObj.key().c_str());
+                flxLogM_E(kMsgErrAllocErrorN, name(), kvObj.key().c_str());
                 continue;
             }
 
@@ -104,7 +104,7 @@ class flxIoTMachineChat : public flxIoTHTTPBase<flxIoTMachineChat>, public flxIW
                 // cleanup the name
                 if (!flx_utils::createVariableName(kvParam.key().c_str(), szData))
                 {
-                    flxLog_E(F("%s: Unable to create data name for: %s"), name(), kvParam.key().c_str());
+                    flxLogM_E(kMsgErrAllocErrorN, name(), kvParam.key().c_str());
                     continue;
                 }
                 jsonOutput["data"][szData] = kvParam.value();
