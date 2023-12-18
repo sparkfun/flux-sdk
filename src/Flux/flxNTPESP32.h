@@ -51,19 +51,11 @@ class flxNTPESP32 : public flxActionType<flxNTPESP32>, public flxIClock
     bool start(void);
     void stop(void);
 
-    // Used to register the event we want to listen to, which will trigger this
-    // activity.
-    void listenToConnection(flxSignalBool &theEvent)
-    {
-        // Regisgter to get notified on connection changes
-        theEvent.call(this, &flxNTPESP32::onConnectionChange);
-    }
-
     void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
 
-        listenToConnection(theNetwork->on_connectionChange);
+        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxNTPESP32::onConnectionChange);
     }
     void setStartupDelay(uint delay)
     {

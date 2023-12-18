@@ -36,19 +36,6 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     void restore_fallback(void);
     void save_fallback(void);
 
-    void saveEvent_CB(void)
-    {
-        // Enabled?
-        if (saveOnEvent())
-            save_settings();
-    }
-    void restoreEvent_CB(void)
-    {
-        // Enabled?
-        if (restoreOnEvent())
-            restore_settings();
-    }
-
     void set_fallbackSize(uint sz)
     {
         if (_fallbackStorage)
@@ -72,6 +59,18 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     flxSettingsSave(flxSettingsSave const &) = delete;
     void operator=(flxSettingsSave const &) = delete;
 
+    void saveEvent_CB(void)
+    {
+        // Enabled?
+        if (saveOnEvent())
+            save_settings();
+    }
+    void restoreEvent_CB(void)
+    {
+        // Enabled?
+        if (restoreOnEvent())
+            restore_settings();
+    }
     //------------------------------------------------------------
     // settings/storage things.
     //------------------------------------------------------------
@@ -102,9 +101,6 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     }
 
     //------------------------------------------------------------------------------
-    // Slots for signals - Enables saving and restoring settings base on events
-    void listenForSave(flxSignalVoid &theEvent);
-    void listenForRestore(flxSignalVoid &theEvent);
 
     // save/restore methods for objects
     bool saveObjectToStorage(flxObject *, flxStorage *);

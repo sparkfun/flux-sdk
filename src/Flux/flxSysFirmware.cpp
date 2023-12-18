@@ -191,7 +191,7 @@ bool flxSysFirmware::writeOTAUpdateFromStream(Stream *fFirmware, size_t updateSi
     int displayPercent = 0;
     int percentWritten = 0;
 
-    on_firmwareload.emit(true); // starting
+    flxSendEvent(kFlxEventOnFirmwareLoad, true);
 
     flxLog_N_(F("Updating firmware... (00%%)"));
 
@@ -224,7 +224,7 @@ bool flxSysFirmware::writeOTAUpdateFromStream(Stream *fFirmware, size_t updateSi
     }
 
     flxLog_N("");
-    on_firmwareload.emit(false); // done
+    flxSendEvent(kFlxEventOnFirmwareLoad, false);
 
     if (Update.end())
     {
@@ -462,7 +462,7 @@ bool flxSysFirmware::writeOTAUpdateFromWiFi(WiFiClient *fFirmware, size_t update
 
     flxLog_N_(F("\tUpdating firmware... (00%%)"));
 
-    on_firmwareload.emit(true); // starting
+    flxSendEvent(kFlxEventOnFirmwareLoad, true);
 
     // check connected status -- wifi connections can be slow/spurty...
     while (fFirmware->connected() && bytesWritten < updateSize)
@@ -497,7 +497,7 @@ bool flxSysFirmware::writeOTAUpdateFromWiFi(WiFiClient *fFirmware, size_t update
     }
 
     flxLog_N(""); // end the update
-    on_firmwareload.emit(false);
+    flxSendEvent(kFlxEventOnFirmwareLoad, false);
 
     if (Update.end())
     {

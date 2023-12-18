@@ -401,21 +401,9 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     //----------------------------------------------------------------------
     ///
-    /// @brief  Inteface method - called with data to write to the cloud
+    /// @brief  Interface method - called with data to write to the cloud
     ///
     void write(JsonDocument &jsonDoc);
-
-    ///---------------------------------------------------------------------------------------
-    ///
-    /// @brief  Used to register for network events .
-    ///
-    /// @param theEvent     The Event object to register with
-    ///
-    void listenToConnection(flxSignalBool &theEvent)
-    {
-        // Register to get notified on connection changes
-        theEvent.call(this, &flxIoTArduino::onConnectionChange);
-    }
 
     ///---------------------------------------------------------------------------------------
     ///
@@ -427,7 +415,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     {
         _theNetwork = theNetwork;
 
-        listenToConnection(theNetwork->on_connectionChange);
+        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxIoTArduino::onConnectionChange);
     }
     ///---------------------------------------------------------------------------------------
     ///

@@ -13,7 +13,7 @@
 #pragma once
 
 // Messaging/logging system for the framework
-#include "flxCoreEvent.h"
+//#include "flxCoreEvent.h"
 #include <WString.h>
 #include <map>
 #include <stdarg.h>
@@ -155,9 +155,6 @@ class flxLogging
         if (theBlock)
             _messageBlocks.push_back(theBlock);
     }
-
-    // Event to enable subscribe to a message being set. Right now - just for error and warning.
-    flxSignalUInt8 onLogMessage;
 
   private:
     flxLogging() : _logLevel{flxLogWarning}

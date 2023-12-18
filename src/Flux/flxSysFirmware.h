@@ -57,8 +57,8 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
 
   public:
     flxSysFirmware()
-        : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""}, _wifiConnection{nullptr},
-          _otaURL{nullptr}, _bUpdateOTA{false}
+        : _pSerialSettings{nullptr}, _fileSystem{nullptr}, _firmwareFilePrefix{""},
+          _wifiConnection{nullptr}, _otaURL{nullptr}, _bUpdateOTA{false}
     {
 
         // Set name and description
@@ -136,8 +136,6 @@ class flxSysFirmware : public flxActionType<flxSysFirmware>
             _bUpdateOTA = true;
         }
     }
-
-    flxSignalBool on_firmwareload;
 
   private:
     int getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit);

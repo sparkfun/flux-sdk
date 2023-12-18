@@ -221,14 +221,3 @@ void flxSettingsSave::save_fallback(void)
     if (!saveObjectToStorage(&flux, _fallbackStorage))
         flxLog_E(F("Unable to save settings to %s"), _fallbackStorage->name());
 }
-//------------------------------------------------------------------------------
-// Events
-// Slots for signals - Enables saving and restoring settings base on events
-void flxSettingsSave::listenForSave(flxSignalVoid &theEvent)
-{
-    theEvent.call(this, &flxSettingsSave::saveEvent_CB);
-};
-void flxSettingsSave::listenForRestore(flxSignalVoid &theEvent)
-{
-    theEvent.call(this, &flxSettingsSave::restoreEvent_CB);
-};

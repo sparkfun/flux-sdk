@@ -111,20 +111,14 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     {
         disconnect();
     }
-    // Used to register the event we want to listen to, which will trigger this
-    // activity.
-    void listenToConnection(flxSignalBool &theEvent)
-    {
-        // Register to get notified on connection changes
-        theEvent.call(this, &flxMQTTESP32Base::onConnectionChange);
-    }
 
     void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
 
-        listenToConnection(theNetwork->on_connectionChange);
+        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxMQTTESP32Base::onConnectionChange);
     }
+
     bool connected()
     {
         return (_isEnabled && _wifiClient.connected() != 0 && _mqttClient.connected() != 0);

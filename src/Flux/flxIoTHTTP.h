@@ -220,20 +220,13 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
         if (_wifiClient != nullptr)
             delete _wifiClient;
     }
-    // Used to register the event we want to listen to, which will trigger this
-    // activity.
-    void listenToConnection(flxSignalBool &theEvent)
-    {
-        // Register to get notified on connection changes
-        theEvent.call(this, &flxIoTHTTPBase::onConnectionChange);
-    }
 
     void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
-
-        listenToConnection(theNetwork->on_connectionChange);
+        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxIoTHTTPBase::onConnectionChange);
     }
+
     bool connected()
     {
         return (_isEnabled && _canConnect);

@@ -1,3 +1,4 @@
+
 /*
  *---------------------------------------------------------------------------------
  *
@@ -10,13 +11,17 @@
  *---------------------------------------------------------------------------------
  */
 
-#pragma once
-
 #include "flxCoreEvent.h"
-// Network interface
-class flxNetwork
+
+#include "flxFlux.h"
+
+// Declare the storage for the singleton
+_flxEventHub &flxEventHub = _flxEventHub::get();
+
+//---------------------------------------------------------------
+// Implementation of the flxSendEvent() function
+//
+void flxSendEvent(flxEventID_t id)
 {
-  public:
-    virtual bool isConnected() = 0;
-    virtual IPAddress localIP(void) = 0;
-};
+    flxEventHub.sendEvent(id);
+}
