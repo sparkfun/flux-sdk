@@ -1019,9 +1019,8 @@ int flxSettingsSerial::editSettings(void)
     }
 
     // Edit time!
-    flxEventPost(kFlxEventOnEdit, true);
+    flxSendEvent(kFlxEventOnEdit, true);
 
-    // on_editing.emit(1);
     drawEntryBanner();
 
     bool doSave = drawPage(_systemRoot);
@@ -1040,11 +1039,9 @@ int flxSettingsSerial::editSettings(void)
     if (doSave && _systemRoot->isDirty())
     {
         flxLog_I(F("Saving System Settings"));
-        // on_finished.emit();
-        flxEventPost(kFlxEventOnEditFinished);
+        flxSendEvent(kFlxEventOnEditFinished);
     }
-    // on_editing.emit(0);
-    flxEventPost(kFlxEventOnEdit, false);
+    flxSendEvent(kFlxEventOnEdit, false);
 
     return doSave ? 1 : 0;
 }
