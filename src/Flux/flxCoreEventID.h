@@ -23,3 +23,5 @@ flxEventID_t kFlxEventOnEdit = 0x1001;
 flxEventID_t kFlxEventOnEditFinished = 0x1002;
 flxEventID_t kFlxEventOnNewFile = 0x1003;
 flxEventID_t kFlxEventOnConnectionChange = 0x1004;
+flxEventID_t kFlxEventOnFirmwareLoad = 0x1005;
+flxEventID_t kFlxEventOnSystemActivity = 0x1006;

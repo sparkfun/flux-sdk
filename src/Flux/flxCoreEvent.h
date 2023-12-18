@@ -107,34 +107,58 @@ typedef flxSignal<void> flxSignalVoid;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //
-// event Hub testing
+// Event Hub work
 //
-
+// Purpose:
+//    The original event method - modeled after the signal and slot pattern - relied on the event receiver /observer
+//    having a direct connection/access to the object being observed. This doesn't scale well, and fails with *general*
+//    events ( a system *busy* event fired ... etc). So added an event hub
+//
+//    The event hub decouples the source from the sink of the event model. Events are posted, and if someone is
+//    interested in it, they event is sent to a registered callback. In practice, the hub automatically creates the
+//    above signal objects and maps them to an ID. This ID is used to register callbacks and post messages. The event
+//    source and sink don't know about each other, but they use the same event ID to pass information via the Event Hub.
+//
+// Implementation:
+//    The event hub is singleton that is built around a std::map. The event ID is mapped to an event signal object
+//    (one of the above). When an event is registered, the provided callback is passed to the signal object. If
+//    a signal object doesn't exist for the provided event ID, one is created.
+//
+//    When an event is *sent*, the event signal object is retrieved from the map, and the emit() method  called.
+//
+// Potential Issues:
+//    Type matching of the event callback parameters might cause an issue. But since everything is tightly controlled
+//    at this point in the implementation, this is not a major concern.
+//
 class _flxEventHub
 {
-
   public:
     // _flxEventHub is a singleton
     static _flxEventHub &get(void)
     {
-
         static _flxEventHub instance;
         return instance;
     }
+
     // This is a singleton class - so delete copy & assignment constructors
     _flxEventHub(_flxEventHub const &) = delete;
     void operator=(_flxEventHub const &) = delete;
 
-    // connects a member function to this flxSignal
+    //----------------------------------------------------------------------------------------------------
+    // Connects a member function to an Event ID using a Signal object. Template parameters are used to
+    // determine types of the underlying signal object created.
+    //
     template <typename T, typename TP> void registerEventCallback(flxEventID_t id, T *inst, void (T::*func)(TP var))
     {
-        // do we have this
+        // do we have this event already registered
 
         flxSignal<TP, TP> *theSignal = nullptr;
 
         auto mpSig = _eventSignals.find(id);
+
         if (mpSig == _eventSignals.end())
         {
+            // not setup, create it
             theSignal = new flxSignal<TP, TP>;
             if (!theSignal)
             {
@@ -144,20 +168,25 @@ class _flxEventHub
             _eventSignals[id] = theSignal;
         }
         else
-            theSignal = reinterpret_cast<flxSignal<TP, TP> *>(mpSig->second);
+            theSignal = reinterpret_cast<flxSignal<TP, TP> *>(mpSig->second); // exists
 
         theSignal->call(inst, func);
     }
-    // connects a member function to this flxSignal
+
+    //----------------------------------------------------------------------------------------------------
+    // Connects a member function to an Event ID using a void Signal object.
+    //
     template <typename T> void registerEventCallback(flxEventID_t id, T *inst, void (T::*func)(void))
     {
-        // do we have this
+        // do we have this event already registered
 
         flxSignal<void> *theSignal = nullptr;
 
         auto mpSig = _eventSignals.find(id);
+
         if (mpSig == _eventSignals.end())
         {
+            // not setup, create it
             theSignal = new flxSignal<void>;
             if (!theSignal)
             {
@@ -167,34 +196,38 @@ class _flxEventHub
             _eventSignals[id] = theSignal;
         }
         else
-            theSignal = reinterpret_cast<flxSignal<void> *>(mpSig->second);
+            theSignal = reinterpret_cast<flxSignal<void> *>(mpSig->second); // exists
 
         theSignal->call(inst, func);
     }
 
-    // template <typename T> void makeCBCall(std::pair<flxEventID_t, flxSignal<T, T>> *theSignal, T &value)
-    // {
-    //     theSignal->second->emit(value);
-    // }
-
-    template <typename T> void postEvent(flxEventID_t id, T value)
+    //----------------------------------------------------------------------------------------------------
+    // Send and event with the given value.
+    //
+    template <typename T> void sendEvent(flxEventID_t id, T value)
     {
+        // does this event exist/registered?
         auto mpSig = _eventSignals.find(id);
+
         if (mpSig == _eventSignals.end())
         {
-            flxLog_E("Event handler not found: %u", id);
+            // no event, no need to continue - just eat this
             return;
         }
 
         reinterpret_cast<flxSignal<T, T> *>(mpSig->second)->emit(value);
     }
-
-    void postEvent(flxEventID_t id)
+    //----------------------------------------------------------------------------------------------------
+    // Send a void event
+    //
+    void sendEvent(flxEventID_t id)
     {
+        // does this event exist/registered?
         auto mpSig = _eventSignals.find(id);
+
         if (mpSig == _eventSignals.end())
         {
-            flxLog_E("Event handler not found: %u", id);
+            // no event, no need to continue - just eat this
             return;
         }
 
@@ -207,21 +240,32 @@ class _flxEventHub
     // map event ID to event signal
     std::map<flxEventID_t, flxSignalBase *> _eventSignals;
 };
+//
 extern _flxEventHub &flxEventHub;
 
+//----------------------------------------------------------------------------------------------------
+// User exposed convenience function to register a value based callback
+//
 template <typename T, typename TP> void flxRegisterEventCB(flxEventID_t id, T *inst, void (T::*func)(TP var))
 {
     flxEventHub.registerEventCallback(id, inst, func);
 }
-
+//----------------------------------------------------------------------------------------------------
+// User exposed convenience function to register a void callback
+//
 template <typename T> void flxRegisterEventCB(flxEventID_t id, T *inst, void (T::*func)(void))
 {
     flxEventHub.registerEventCallback(id, inst, func);
 }
+//----------------------------------------------------------------------------------------------------
+// User exposed convenience function to send a void /empty event
+//
+void flxSendEvent(flxEventID_t id);
 
-void flxEventPost(flxEventID_t id);
-
-template <typename T> void flxEventPost(flxEventID_t id, T value)
+//----------------------------------------------------------------------------------------------------
+// User exposed convenience function to sent an event that takes a valu
+//
+template <typename T> void flxSendEvent(flxEventID_t id, T value)
 {
-    flxEventHub.postEvent(id, value);
+    flxEventHub.sendEvent(id, value);
 }

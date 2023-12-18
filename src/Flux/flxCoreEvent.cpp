@@ -15,10 +15,13 @@
 
 #include "flxFlux.h"
 
-// Global object -
+// Declare the storage for the singleton
 _flxEventHub &flxEventHub = _flxEventHub::get();
 
-void flxEventPost(flxEventID_t id)
+//---------------------------------------------------------------
+// Implementation of the flxSendEvent() function
+//
+void flxSendEvent(flxEventID_t id)
 {
-    flxEventHub.postEvent(id);
+    flxEventHub.sendEvent(id);
 }
