@@ -269,7 +269,7 @@ class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDa
             bool status = stBlk->write(name(), c);
 
             if (!status)
-                flxLog_E("Error saving property %s", name());
+                flxLogM_E(kMsgErrSavingProperty, name());
         }
         return status;
     };
@@ -427,7 +427,7 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
 
             status = stBlk->writeString(name(), c.c_str());
             if (!status)
-                flxLog_E("Error saving string for property: %s", name());
+                flxLogM_E(kMsgErrSavingProperty, name());
         }
         return status;
     }
@@ -573,8 +573,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxPropertyContainer
-        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
-                      "_flxPropertyTypedRW: type parameter of this class must derive from flxPropertyContainer");
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value, "TypedRW: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -614,7 +613,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
+            flxLogM_E(kMsgParentObjNotSet, "property");
             return (T)0;
         }
 
@@ -625,7 +624,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
+            flxLogM_E(kMsgParentObjNotSet, "property");
             return; // would normally throw an exception, but not very Arduino like!
         }
 
@@ -861,8 +860,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         // Make sure the container type has spPropContainer as it's base class or it's a flxObject
         // Compile-time check
-        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
-                      "_flxPropertyTypedRWString: type parameter of this class must derive from flxPropertyContainer");
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value, "RWString: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -922,7 +920,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
+            flxLogM_E(kMsgParentObjNotSet, "property");
             return "";
         }
 
@@ -934,7 +932,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this property.");
+            flxLogM_E(kMsgParentObjNotSet, "property");
             return;
         }
 
@@ -1037,8 +1035,7 @@ class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
     {
         // Make sure the container type has spPropContainer as it's base class or it's a flxObject
         // Compile-time check
-        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
-                      "_flxPropertyTyped: type parameter of this class must derive from flxPropertyContainer");
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value, "PropTyped: invalid object");
 
         // my_object must be derived from _flxPropertyContainer
         assert(me);
@@ -1207,8 +1204,7 @@ class flxPropertyString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         // Make sure the container type has spPropContainer as it's base class or it's a flxObject
         // Compile-time check
-        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value,
-                      "_flxPropertyString: type parameter of this class must derive from flxPropertyContainer");
+        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value, "PropString: invalid object");
 
         assert(me);
         if (me)
@@ -1413,7 +1409,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         bool status = onSave(stBlk);
 
         if (!status)
-            flxLog_W("Error saving state for %s", name());
+            flxLogM_W(kMsgErrSaveResState, "saving", name());
 
         pStorage->endBlock(stBlk);
 
@@ -1433,7 +1429,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
 
         if (!stBlk)
         {
-            flxLog_I("Object Restore - error getting storage block");
+            flxLogM_I(kMsgErrSaveResState, "restoring", name());
             return true; // nothing to restore
         }
 
@@ -1441,7 +1437,7 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         bool status = onRestore(stBlk);
 
         if (!status)
-            flxLog_D("Error restoring state for %s", name());
+            flxLogM_D(kMsgErrSaveResState, "restoring", name());
 
         pStorage->endBlock(stBlk);
 
@@ -1496,7 +1492,7 @@ template <class T> class flxContainer : public flxObject
         // make sure the value isn't already in the list...
         if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
         {
-            flxLog_I(F("Not adding duplicate device item to container: %s"), name());
+            flxLogM_I(kMsgNotAddDupDev, name());
             return;
         }
         _vector.push_back(value);
@@ -1505,19 +1501,7 @@ template <class T> class flxContainer : public flxObject
         if (!value->parent())
             value->setParent(this);
     }
-    // void push_back(T *value)
-    // {
-    //     // make sure the value isn't already in the list...
-    //     if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
-    //     {
-    //         flxLog_I(F("Not adding duplicate device item to container: %s"), name());
-    //         return;
-    //     }
 
-    //     _vector.push_back(value);
-    //     value->setParent(this);
-
-    // }
     void pop_back(void)
     {
         _vector.pop_back();
@@ -1528,7 +1512,7 @@ template <class T> class flxContainer : public flxObject
         // make sure the value isn't already in the list...
         if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
         {
-            flxLog_I(F("Not adding duplicate device item to container: %s"), name());
+            flxLogM_I(kMsgNotAddDupDev, name());
             return;
         }
         _vector.insert(it, value);
@@ -1591,7 +1575,7 @@ template <class T> class flxContainer : public flxObject
     // of an instance.
     //
     // The typeID is determined by hashing the name of the class.
-    // This way the type ID is consistant across invocations
+    // This way the type ID is consistent across invocations
 
     static flxTypeID type(void)
     {

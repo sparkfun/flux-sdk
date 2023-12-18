@@ -22,137 +22,76 @@
 // flxSignals - sort of  - support for our simple observer pattern for events
 //
 
-template <typename ArgT> class flxSignal
+template <typename TB, typename... ArgT> class flxSignal
 {
 
   public:
     // connects a member function to this flxSignal
-    template <typename T> void call(T *inst, void (T::*func)(ArgT var))
+    template <typename T> void call(T *inst, void (T::*func)(ArgT...))
     {
-        connect([=](ArgT var) { // uses a lambda for the callback
-            (inst->*func)(var);
+        connect([=](ArgT... args) { // uses a lambda for the callback
+            (inst->*func)(args...);
         });
     }
 
     // connects a const member function to this flxSignal
-    template <typename T> void call(T *inst, void (T::*func)(ArgT var) const)
+    template <typename T> void call(T *inst, void (T::*func)(ArgT...) const)
     {
-        connect([=](ArgT var) { // users a lambda for the callback
-            (inst->*func)(var);
+        connect([=](ArgT... args) { // users a lambda for the callback
+            (inst->*func)(args...);
         });
     }
 
     // Just call a user supplied function - no object
-    void call(void (*func)(ArgT var))
+    void call(void (*func)(ArgT...))
     {
-        connect([=](ArgT var) { // users a lambda for the callback
-            (*func)(var);
+        connect([=](ArgT... args) { // users a lambda for the callback
+            (*func)(args...);
         });
     }
     // Just call a user supplied function - no object - but with a User Defined value
-    template <typename T> void call(void (*func)(T uval, ArgT var), T uValue)
+    template <typename T> void call(void (*func)(T uval, ArgT...), T uValue)
     {
-        connect([=](ArgT var) { // users a lambda for the callback
-            (*func)(uValue, var);
+        connect([=](ArgT... args) { // users a lambda for the callback
+            (*func)(uValue, args...);
         });
     }
 
-    template <typename T, typename U> void call(T *inst, void (T::*func)(U uVal, ArgT var), U uValue)
+    template <typename T, typename U> void call(T *inst, void (T::*func)(U uVal, ArgT...), U uValue)
     {
-        connect([=](ArgT var) { // users a lambda for the callback
-            (inst->*func)(uValue, var);
+        connect([=](ArgT... args) { // users a lambda for the callback
+            (inst->*func)(uValue, args...);
         });
     }
     // connects a std::function to the flxSignal.
-    void connect(std::function<void(ArgT var)> const &slot) const
+    void connect(std::function<void(ArgT &...Values)> const &slot) const
     {
         slots_.push_back(slot);
     }
 
     // calls all connected functions
-    void emit(ArgT p)
+    void emit(ArgT... args)
     {
         for (auto const &it : slots_)
         {
-            it(p);
+            it(args...);
         }
     }
 
-    typedef ArgT value_type;
+    typedef TB value_type;
 
   private:
-    mutable std::vector<std::function<void(ArgT &var)>> slots_;
+    mutable std::vector<std::function<void(ArgT &...Values)>> slots_;
 };
 
-typedef flxSignal<bool> flxSignalBool;
-typedef flxSignal<int8_t> flxSignalInt8;
-typedef flxSignal<int16_t> flxSignalInt16;
-typedef flxSignal<int> flxSignalInt;
-typedef flxSignal<uint8_t> flxSignalUInt8;
-typedef flxSignal<uint16_t> flxSignalUInt16;
-typedef flxSignal<uint> flxSignalUInt;
-typedef flxSignal<float> flxSignalFloat;
-typedef flxSignal<double> flxSignalDouble;
-typedef flxSignal<const char *> flxSignalString;
-
-// Signal - zero arg - aka void function callback type. Unable to template this, so
-// just brute force the impl.
-class flxSignalVoid
-{
-
-  public:
-    // connects a member function to this flxSignal
-    template <typename T> void call(T *inst, void (T::*func)())
-    {
-        connect([=]() { // uses a lambda for the callback
-            (inst->*func)();
-        });
-    }
-
-    // Just call a user supplied function - no object
-    void call(void (*func)())
-    {
-        connect([=]() { // uses a lambda for the callback
-            (*func)();
-        });
-    }
-    // Just call a user supplied function - no object - but with a User Defined value
-    template <typename T> void call(void (*func)(T uval), T uValue)
-    {
-        connect([=]() { // users a lambda for the callback
-            (*func)(uValue);
-        });
-    }
-    // Just call a user supplied function and object but with a User Defined value
-    template <typename T, typename U> void call(T *inst, void (T::*func)(U uval), U uValue)
-    {
-        connect([=]() { // users a lambda for the callback
-            (inst->*func)(uValue);
-        });
-    }
-
-    // connects a const member function to this flxSignal
-    template <typename T> void call(T *inst, void (T::*func)() const)
-    {
-        connect([=]() { // users a lambda for the callback
-            (inst->*func)();
-        });
-    }
-
-    void connect(std::function<void()> const &slot) const
-    {
-        slots_.push_back(slot);
-    }
-
-    // calls all connected functions
-    void emit(void)
-    {
-        for (auto const &it : slots_)
-        {
-            it();
-        }
-    }
-
-  private:
-    mutable std::vector<std::function<void()>> slots_;
-};
+typedef flxSignal<bool, bool> flxSignalBool;
+typedef flxSignal<int8_t, int8_t> flxSignalInt8;
+typedef flxSignal<int16_t, int16_t> flxSignalInt16;
+typedef flxSignal<int, int> flxSignalInt;
+typedef flxSignal<uint8_t, uint8_t> flxSignalUInt8;
+typedef flxSignal<uint16_t, uint16_t> flxSignalUInt16;
+typedef flxSignal<uint, uint> flxSignalUInt;
+typedef flxSignal<float, float> flxSignalFloat;
+typedef flxSignal<double, double> flxSignalDouble;
+typedef flxSignal<const char *, const char *> flxSignalString;
+typedef flxSignal<void> flxSignalVoid;

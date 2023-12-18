@@ -123,7 +123,7 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
 //
 //      - Connects to a Thing - potentially creating the thing if needed
 //      - Maps Data Parameters from the DataLogger observation to Variables in the Arduino Thing
-//      - For each write() interation - the variable values are updated.
+//      - For each write() iteration - the variable values are updated.
 //
 // Technical Details
 //
@@ -243,13 +243,13 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         if (_canConnect)
         {
             if (cloudAPISecret().empty() || cloudAPISecret().empty())
-                flxLog_W(F("ArduinoIoT - Cloud API credentials are not provided"));
+                flxLogM_W(kMsgErrValueNotProvided, this->name(), "Cloud API credentials");
 
             if (deviceID().empty() || deviceSecret().empty())
-                flxLog_W(F("ArduinoIoT - Device parameters not set"));
+                flxLogM_W(kMsgErrValueNotProvided, this->name(), "Device parameters");
 
             if (thingName().empty())
-                flxLog_W(F("ArduinoIoT - Thing Name not provided"));
+                flxLogM_W(kMsgErrValueNotProvided, this->name(), "Thing Name");
 
             connect();
         }
@@ -275,7 +275,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         _wifiClient = new WiFiClientSecure;
         if (!_wifiClient)
         {
-            flxLog_E("Arduino IoT - Unable to allocate WiFi Client");
+            flxLogM_E(kMsgErrAllocErrorN, this->name(), "WiFi Client");
             return false;
         }
 

@@ -6,17 +6,16 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
 #include "flxMQTTESP32.h"
 
-#include "flxFmtJSON.h"
 #include "flxFlux.h"
+#include "flxFmtJSON.h"
 #include "flxUtils.h"
 
 #include <map>
@@ -63,7 +62,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
 
             if (sz == std::string::npos)
             {
-                flxLog_W(F("%s:Invalid Device=Channel ID : %s"), name(), keyvalue.c_str());
+                flxLogM_W(kMsgErrValueError, name(), "Device=Channel ID");
                 continue;
             }
             _deviceToChannel[flx_utils::strtrim(keyvalue.substr(0, sz))] = flx_utils::strtrim(keyvalue.substr(sz + 1));
@@ -75,7 +74,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
     {
         setName("ThingSpeak MQTT", "Connection to ThingSpeak");
 
-        flxRegister(deviceList, "Channels", "Comma separated list of <device name>=<thingspeak channel ID>");
+        flxRegister(deviceList, "Channels", "Comma separated list of <device name>=<channel ID>");
 
         flux.add(this);
     }
@@ -114,7 +113,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
                     value = flx_utils::to_string(kv.value().as<unsigned int>());
                 else
                 {
-                    flxLog_W(F("%s: Unknown data field type"), name());
+                    flxLogM_W(kMsgErrValueError, name(), "Unknown type");
                     continue;
                 }
 
@@ -142,7 +141,8 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
     }
 
     // Device=Channel ID property
-    flxPropertyRWString<flxIoTThingSpeak, &flxIoTThingSpeak::get_channelList, &flxIoTThingSpeak::set_channelList> deviceList;
+    flxPropertyRWString<flxIoTThingSpeak, &flxIoTThingSpeak::get_channelList, &flxIoTThingSpeak::set_channelList>
+        deviceList;
 
   private:
     std::map<std::string, std::string> _deviceToChannel;

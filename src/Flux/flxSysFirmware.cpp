@@ -19,7 +19,7 @@
 
 #define kFirmwareFileExtension "bin"
 
-#define kFirmwareUpdatePageSize  2048
+#define kFirmwareUpdatePageSize 2048
 
 const char chCR = 13; // for display erase during progress
 
@@ -29,7 +29,7 @@ void flxSysFirmware::restartDevicePrompt()
 
     if (!_pSerialSettings)
     {
-        flxLog_E(F("No Settings interface available."));
+        flxLogM_E(kMsgErrInitialization, name(), "Settings Interface");
         return;
     }
 
@@ -114,10 +114,9 @@ bool flxSysFirmware::doFactoryReset(void)
 bool flxSysFirmware::factoryResetDevice(void)
 {
 
-
     if (!_pSerialSettings)
     {
-        flxLog_E(F("No Settings interface available."));
+        flxLogM_E(kMsgErrInitialization, name(), "Settings Interface");
         return false;
     }
 
@@ -233,7 +232,7 @@ bool flxSysFirmware::writeOTAUpdateFromStream(Stream *fFirmware, size_t updateSi
             return true;
     }
     else
-        flxLog_E("Update error: %s", Update.errorString());    
+        flxLog_E("Update error: %s", Update.errorString());
 
     return false;
 }
@@ -246,7 +245,7 @@ int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
 
     if (!_fileSystem)
     {
-        flxLog_E(F("No filesystem available."));
+        flxLogM_E(kMsgErrInitialization, name(), "No filesystem");
         return 0;
     }
 
@@ -325,7 +324,7 @@ bool flxSysFirmware::getFirmwareFilename(void)
 
     if (!_pSerialSettings)
     {
-        flxLog_E(F("No Settings interface available."));
+        flxLogM_E(kMsgErrInitialization, name(), "Settings Interface");
         return false;
     }
     bool status = _pSerialSettings->drawPage(this, &updateFirmwareFile);
@@ -401,9 +400,9 @@ bool flxSysFirmware::getOTAFirmwareManifest(JsonDocument &jsonDoc)
     if (!_otaURL)
         return false;
 
-    // get the json document 
+    // get the json document
     HTTPClient http;
-        
+
     http.begin(_otaURL);
 
     if (http.GET() != HTTP_CODE_OK)
@@ -412,7 +411,7 @@ bool flxSysFirmware::getOTAFirmwareManifest(JsonDocument &jsonDoc)
         http.end();
         return false;
     }
-    
+
     String payload = http.getString();
 
     http.end();
@@ -421,17 +420,14 @@ bool flxSysFirmware::getOTAFirmwareManifest(JsonDocument &jsonDoc)
     {
         flxLog_E(F("Invalid update manifest file."));
         return false;
-
     }
 
     return true;
 }
 
-
-
 //-----------------------------------------------------------------------------------------------------
 //
-bool flxSysFirmware::writeOTAUpdateFromWiFi(WiFiClient *fFirmware, size_t updateSize, const char * md5Firmware)
+bool flxSysFirmware::writeOTAUpdateFromWiFi(WiFiClient *fFirmware, size_t updateSize, const char *md5Firmware)
 {
 
     if (!fFirmware || !updateSize)
@@ -444,9 +440,10 @@ bool flxSysFirmware::writeOTAUpdateFromWiFi(WiFiClient *fFirmware, size_t update
         return false;
     }
     // if we have an MD5 string, set it - the Update system will verify the binary - note set after begin is called
-    if (md5Firmware){
+    if (md5Firmware)
+    {
 
-        if ( !Update.setMD5(md5Firmware) )
+        if (!Update.setMD5(md5Firmware))
         {
             flxLog_E(F("Unable to verify firmware contents"));
             return false;
@@ -497,7 +494,6 @@ bool flxSysFirmware::writeOTAUpdateFromWiFi(WiFiClient *fFirmware, size_t update
             Serial.write(&chCR, 1);
             flxLog_N_("\tUpdating firmware... (%2d%%)", displayPercent);
         }
-
     }
 
     flxLog_N(""); // end the update
@@ -519,7 +515,7 @@ bool flxSysFirmware::doFirmwareUpdateFromOTA(const char *firmwareURL, const char
 
     if (!firmwareURL)
     {
-        flxLog_E(F("Invalid firmware URL"));
+        flxLogM_E(kMsgErrConnectionFailure, name(), "No URL");
         return false;
     }
 
@@ -531,7 +527,7 @@ bool flxSysFirmware::doFirmwareUpdateFromOTA(const char *firmwareURL, const char
     if (ret != HTTP_CODE_OK)
     {
         http.end();
-        flxLog_E(F("Error accessing update firmware file. Error: %s"), http.errorToString(ret).c_str());
+        flxLogM_E(kMsgErrConnectionFailure, name(), http.errorToString(ret).c_str());
         return false;
     }
 
@@ -551,8 +547,6 @@ bool flxSysFirmware::doFirmwareUpdateFromOTA(const char *firmwareURL, const char
 
     return true;
 }
-
-
 
 bool flxSysFirmware::updateFirmwareFromOTA(void)
 {
@@ -582,12 +576,12 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
 
     if (!_updateManifest.containsKey("firmware"))
     {
-        flxLog_E(F("Invalid update manifest recieved - unable to continue"));
+        flxLog_E(F("Invalid update manifest received - unable to continue"));
         return false;
     }
 
     JsonObject theEntry;
-    const char * appClassID = flux.appClassID();
+    const char *appClassID = flux.appClassID();
 
     if (!appClassID)
     {
@@ -598,7 +592,7 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
     uint32_t appVersion = flux.version();
     uint32_t canidateVersion = appVersion;
 
-    // loop through all the available firmware entries in the manifest. 
+    // loop through all the available firmware entries in the manifest.
     // Find:
     //      - Firmware for this app ID
     //      - Firmware with the highest version, that is greater than
@@ -606,11 +600,11 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
 
     for (auto firmwareEntry : _updateManifest["firmware"].as<JsonArray>())
     {
-        // ID? 
+        // ID?
         if (!firmwareEntry.containsKey("ID"))
             continue;
 
-        if ( strcmp(firmwareEntry["ID"].as<const char*>(), appClassID) != 0)
+        if (strcmp(firmwareEntry["ID"].as<const char *>(), appClassID) != 0)
             continue;
 
         if (firmwareEntry["VersionNumber"].as<unsigned long>() > canidateVersion)
@@ -618,7 +612,6 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
             theEntry = firmwareEntry;
             canidateVersion = firmwareEntry["VersionNumber"].as<unsigned long>();
         }
-
     }
 
     if (theEntry.isNull() || canidateVersion == appVersion)
@@ -631,14 +624,15 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
 
     if (!_pSerialSettings)
     {
-        flxLog_E(F("No Settings interface available."));
+        flxLogM_E(kMsgErrInitialization, name(), "Settings Interface");
         return false;
     }
 
     char szVersion[64];
     flux.versionString(szVersion, sizeof(szVersion));
     // Need to prompt for an a-okay ...
-    Serial.printf("\n\r\tUpdate firmware from version `%s` to version `%s` [Y/n]? ", szVersion, theEntry["Version"].as<const char*>());
+    Serial.printf("\n\r\tUpdate firmware from version `%s` to version `%s` [Y/n]? ", szVersion,
+                  theEntry["Version"].as<const char *>());
 
     uint8_t selected = _pSerialSettings->getMenuSelectionYN();
 
@@ -650,7 +644,5 @@ bool flxSysFirmware::updateFirmwareFromOTA(void)
     }
 
     // go time
-    return doFirmwareUpdateFromOTA(theEntry["URL"].as<const char*>(), theEntry["Hash"].as<const char*>());
-
-
+    return doFirmwareUpdateFromOTA(theEntry["URL"].as<const char *>(), theEntry["Hash"].as<const char *>());
 }

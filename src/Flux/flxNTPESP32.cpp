@@ -66,7 +66,7 @@ bool flxNTPESP32::start(void)
     // do we have a network and is it connected
     if (!_theNetwork || !_theNetwork->isConnected())
     {
-        flxLog_W(F("NTP Client - Unable to start, no network connection"));
+        flxLogM_W(kMsgErrInitialization, name(), "network unavailable");
         return false;
     }
 

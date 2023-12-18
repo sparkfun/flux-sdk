@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 //
 // Define interfaces/base classes for output
 //
@@ -38,7 +38,7 @@ class flxFormatCSV : public flxOutputFormat
     {
         if ((_writeHeader & kHeaderWrite) == kHeaderWrite)
             if (!append_to_header(tag))
-                flxLog_W("CSV - internal header buffer size exceeded.");
+                flxLogM_W(kMsgErrSizeExceeded, "CVS header");
     }
 
   public:
@@ -57,7 +57,7 @@ class flxFormatCSV : public flxOutputFormat
 
         std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -68,7 +68,7 @@ class flxFormatCSV : public flxOutputFormat
 
         std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -79,7 +79,7 @@ class flxFormatCSV : public flxOutputFormat
 
         std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -90,7 +90,7 @@ class flxFormatCSV : public flxOutputFormat
 
         std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -101,7 +101,7 @@ class flxFormatCSV : public flxOutputFormat
 
         std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -112,7 +112,7 @@ class flxFormatCSV : public flxOutputFormat
 
         std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -123,7 +123,7 @@ class flxFormatCSV : public flxOutputFormat
 
         std::string stmp = flx_utils::to_string(value);
         if (!append_csv_value(stmp, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -141,7 +141,7 @@ class flxFormatCSV : public flxOutputFormat
         (void)flx_utils::dtostr(value, szBuffer, sizeof(szBuffer), precision);
 
         if (!append_csv_value(szBuffer, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, const std::string &value)
@@ -150,7 +150,7 @@ class flxFormatCSV : public flxOutputFormat
         writeHeaderEntry(tag);
 
         if (!append_csv_value(value, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
     //-----------------------------------------------------------------
     void logValue(const std::string &tag, const char *value)
@@ -159,7 +159,7 @@ class flxFormatCSV : public flxOutputFormat
         writeHeaderEntry(tag);
 
         if (!append_csv_value(std::string(value), _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     void logValue(const std::string &tag, flxDataArrayBool *value)
@@ -273,7 +273,7 @@ class flxFormatCSV : public flxOutputFormat
         _writeHeader = (_writeHeader & kHeaderPending) == kHeaderPending ? kHeaderWrite : kHeaderNone;
 
         // This ends the Observation transaction...
-        _inObservation= false;
+        _inObservation = false;
     }
 
     //-----------------------------------------------------------------
@@ -283,7 +283,7 @@ class flxFormatCSV : public flxOutputFormat
         _writeHeader = kHeaderWrite;
         _section_name = nullptr;
         _inObservation = false;
-        _isFirstRun = true; 
+        _isFirstRun = true;
     }
 
     //-----------------------------------------------------------------
@@ -431,7 +431,7 @@ class flxFormatCSV : public flxOutputFormat
             writeOutArrayDimension(sData, pData, theArray, 0, precision);
 
         if (!append_csv_value(sData, _data_buffer))
-            flxLog_E("CSV - internal data buffer size exceeded.");
+            flxLogM_E(kMsgErrSizeExceeded, "CVS buffer");
     }
 
     //-----------------------------------------------------------------
@@ -453,5 +453,5 @@ class flxFormatCSV : public flxOutputFormat
     flxFmtCSVHeader_t _writeHeader;
 
     bool _inObservation;
-    bool _isFirstRun; 
+    bool _isFirstRun;
 };

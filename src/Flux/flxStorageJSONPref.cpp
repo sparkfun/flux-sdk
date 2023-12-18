@@ -426,7 +426,7 @@ bool flxStorageJSONPrefFile::begin(bool readonly)
 
     if (!_fileSystem || _filename.length() == 0 || !_fileSystem->enabled())
     {
-        flxLog_E(F("JSON Settings unavailable - no filesystem available."));
+        flxLogM_E(kMsgErrResourceNotAvail, "JSON File Settings:");
         return false;
     }
 
@@ -437,7 +437,7 @@ bool flxStorageJSONPrefFile::begin(bool readonly)
     if (_fileSystem->exists(_filename.c_str()))
     {
         bool status = false;
-        // read in the file, parse the json
+        // read in the file, parse the JSON
 
         flxFSFile theFile = _fileSystem->open(_filename.c_str(), flxIFileSystem::kFileRead);
 
@@ -468,10 +468,10 @@ bool flxStorageJSONPrefFile::begin(bool readonly)
             theFile.close();
         }
         else
-            flxLog_I(F("JSON Settings - the file failed to open: %s"), _filename.c_str());
+            flxLogM_W(kMsgErrFileOpen, "JSON Settings", _filename.c_str());
 
         if (status == false)
-            flxLog_E(F("Error reading json settings file. Ignoring"));
+            flxLogM_E(kMsgErrValueError, "JSON Settings", _filename.c_str());
     }
     return true;
 }
@@ -485,7 +485,7 @@ void flxStorageJSONPrefFile::end(void)
         std::string value;
         if (!serializeJsonPretty(*_pDocument, value))
         {
-            flxLog_E(F("Unable to generate settings JSON string"));
+            flxLogM_E(kMsgErrCreateFailure, "JSON Settings", "JSON string");
         }
         else if (_fileSystem && _filename.length() > 0)
         {
@@ -498,7 +498,7 @@ void flxStorageJSONPrefFile::end(void)
                 theFile.close();
             }
             else
-                flxLog_E(F("Error opening settings file - is file system available?"));
+                flxLogM_E(kMsgErrFileOpen, "JSON Settings", _filename.c_str());
         }
     }
     // call super to clear out everything
@@ -547,9 +547,9 @@ bool flxStorageJSONPrefSerial::begin(bool readonly)
     if (err)
     {
         if (err.code() == DeserializationError::NoMemory)
-            flxLog_E(F("JSON buffer too small - increase Save Settings buffer size"));
+            flxLogM_E(kMsgErrSizeExceeded, "Preferences JSON Read");
         else
-            flxLog_E(F("Unable to read JSON settings: %s"), err.c_str());
+            flxLogM_E(kMsgErrValueError, "JSON Settings", err.c_str());
         return false;
     }
     return true;

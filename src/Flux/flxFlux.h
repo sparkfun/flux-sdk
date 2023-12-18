@@ -324,7 +324,7 @@ class flxFlux : public flxObjectContainer
           _verboseDevNames{false}, _deviceAutoload{true}, _loadSettings{true}
     {
 
-        // setup some default heirarchy things ...
+        // setup some default hierarchy things ...
         this->setName("Flux", "The SparkFun Flux Framework");
         Actions.setName("Settings", "System settings and operations");
         Devices.setName("Devices Settings", "Settings for connected devices");

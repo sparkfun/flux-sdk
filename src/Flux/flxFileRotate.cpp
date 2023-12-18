@@ -48,7 +48,7 @@ bool flxFileRotate::openLogFile(bool bAppend)
 
     if (!_currentFile)
     {
-        flxLog_E(F("File Rotate - Unable to open log file %s"), _currentFilename.c_str());
+        flxLogM_E(kMsgErrFileOpen, name(), _currentFilename.c_str());
         return false;
     }
     _flushCount = 0; // new file, new start

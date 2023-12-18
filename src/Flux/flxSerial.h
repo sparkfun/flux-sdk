@@ -51,7 +51,7 @@ class flxSerial_ : public flxWriter
     }
     void write(const char *value, bool newline, flxLineType_t type);
 
-    // Overload listen, so we can type the events, and use the templated
+    // Overload listen, so we can type the events, and use the template-based
     // write() method above.
 
     void listen(flxSignalInt &theEvent)
@@ -70,7 +70,7 @@ class flxSerial_ : public flxWriter
     {
         theEvent.call(this, &flxSerial_::write);
     }
-    // copy and assign constructors - delete them to prevent extra copys being
+    // copy and assign constructors - delete them to prevent extra copy's being
     // made -- this is a singleton object.
     flxSerial_(flxSerial_ const &) = delete;
     void operator=(flxSerial_ const &) = delete;

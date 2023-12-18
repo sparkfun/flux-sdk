@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  * flxDevice.h
@@ -79,12 +79,12 @@ template <typename T, typename B = flxDevice> class flxDeviceI2CType : public B
 
         // save our status flag ...
         B::setIsInitialized(status);
-        
+
         return status;
     }
 
     //---------------------------------------------------------------
-    // i2c driver version 
+    // i2c driver version
     //
     // Will call the super class and the wireport version of this method
     bool initialize(flxBusI2C &i2cDriver)
@@ -100,7 +100,7 @@ template <typename T, typename B = flxDevice> class flxDeviceI2CType : public B
         if (!this->initialize(*wirePort))
             return false;
 
-        // Call the super class version of this method. 
+        // Call the super class version of this method.
         // It ensures that the device is added to the system
         B::initialize(i2cDriver);
 
@@ -110,13 +110,13 @@ template <typename T, typename B = flxDevice> class flxDeviceI2CType : public B
     //---------------------------------------------------------------
     // void version
     //
-    // Grabs i2c driver and calls that version of method.    
+    // Grabs i2c driver and calls that version of method.
     bool initialize(void)
     {
         return initialize(flux.i2cDriver());
     }
 
-    //---------------------------------------------------------------    
+    //---------------------------------------------------------------
     // version where a address is passed in
     bool initialize(uint8_t address)
     {
@@ -188,21 +188,19 @@ template <typename T, typename B = flxDevice> class flxDeviceSPIType : public B
     {
 
         // Everything is ready to have the driver start talking to the SPI BUS.
-        // Last step, setup 
+        // Last step, setup
         uint8_t cs = chipSelect();
         pinMode(cs, OUTPUT);
         digitalWrite(cs, HIGH);
 
-
-        // Call the devices onInitialize() method -- 
-        bool status =  onInitialize(spiPort);
+        // Call the devices onInitialize() method --
+        bool status = onInitialize(spiPort);
 
         // set our is init success flag.
         B::setIsInitialized(status);
 
         return status;
     }
-
 
     bool initialize(flxBusSPI &spiDriver)
     {
@@ -213,7 +211,7 @@ template <typename T, typename B = flxDevice> class flxDeviceSPIType : public B
             return false;
 
         // call the spi driver version of this method - will ensure device is init'd
-        if (!this->initialize(*spiPort) )
+        if (!this->initialize(*spiPort))
             return false;
 
         // Startup success - call the super class version of this method
@@ -257,7 +255,7 @@ template <typename T, typename B = flxDevice> class flxDeviceSPIType : public B
     // of an instance.
     //
     // The typeID is determined by hashing the name of the class.
-    // This way the type ID is consistant across invocations
+    // This way the type ID is consistent across invocations
 
     static flxTypeID type(void)
     {

@@ -113,7 +113,7 @@ bool flxWiFiESP32::connect(void)
     }
     if (nNet == 0)
     {
-        flxLog_E(F("WiFi: No credentials provided. Unable to connect"));
+        flxLogM_E(kMsgErrValueNotProvided, name(), "Connection Credentials");
         WiFi.mode(WIFI_OFF);
         return false;
     }
@@ -220,7 +220,7 @@ bool flxWiFiESP32::loop(void)
     return false;
 }
 //----------------------------------------------------------------
-// return an abstract rating of the Wifi
+// return an abstract rating of the WiFi
 uint flxWiFiESP32::rating(void)
 {
     if (!_isEnabled || !WiFi.isConnected())

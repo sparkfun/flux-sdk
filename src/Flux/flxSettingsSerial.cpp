@@ -29,7 +29,7 @@ const uint16_t kOutputBufferSize = 256;
 //-----------------------------------------------------------------------------
 // How this works:
 //
-// The overall intent is to navigate the heirarchy of the application. To do this
+// The overall intent is to navigate the hierarchy of the application. To do this
 // the following steps take place.
 //   - A current object is passed in to the drawPage() method for the object type
 //   - The page is rendered, often calling the "drawMenu()" method for the
@@ -46,7 +46,7 @@ const uint16_t kOutputBufferSize = 256;
 //        -- Property and Parameter pages are custom
 //
 //   Key Notes:
-//      - This system relies on method overloading to traverse the object heirarchy
+//      - This system relies on method overloading to traverse the object hierarchy
 //        of the framework
 //      - The general sequence of method calls are:
 //              drawPage() -> drawMenu() -> selectMenu()-> drawPage() ...
@@ -77,8 +77,8 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent)
             Serial.printf("\tNo Entries\n\r");
         else if (nMenuItems < 0)
         {
-            Serial.println("Error generating menu entries.");
-            flxLog_E("Error generating menu entries");
+            // Serial.println("Error generating menu entries.");
+            flxLog_E(F("Error generating menu entries"));
             return false;
         }
 

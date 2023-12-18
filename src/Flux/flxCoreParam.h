@@ -264,8 +264,7 @@ class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxParameterContainer
-        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
-                      "flxParameterOut: type parameter of this class must derive from _flxParameterContainer");
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value, "flxParameterOut: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -311,7 +310,7 @@ class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
+            flxLogM_E(kMsgParentObjNotSet, "output parameter");
             return (T)0;
         }
         return (my_object->*_getter)();
@@ -459,8 +458,7 @@ class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutSt
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxParameterContainer
-        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
-                      "flxParameterOutString: type parameter of this class must derive from _flxParameterContainer");
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value, "OutString: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -506,7 +504,7 @@ class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutSt
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
+            flxLogM_E(kMsgParentObjNotSet, "output parameter");
             return std::string("");
         }
 
@@ -614,8 +612,7 @@ class flxParameterOutArrayType : public flxParameterOutArray
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxParameterContainer
-        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
-                      "flxParameterOutArray: type parameter of this class must derive from _flxParameterContainer");
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value, "OutArray : invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -664,7 +661,7 @@ class flxParameterOutArrayType : public flxParameterOutArray
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
+            flxLogM_E(kMsgParentObjNotSet, "output parameter");
             return nullptr;
         }
         flxDataArrayType<T> *data = new flxDataArrayType<T>;
@@ -780,8 +777,7 @@ class flxParameterOutArrayString : public flxParameterOutArray
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxParameterContainer
-        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
-                      "flxParameterOutArray: type parameter of this class must derive from _flxParameterContainer");
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value, "OutArray: Invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -830,7 +826,7 @@ class flxParameterOutArrayString : public flxParameterOutArray
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this output parameter ");
+            flxLogM_E(kMsgParentObjNotSet, "output parameter");
             return nullptr;
         }
         flxDataArrayString *data = new flxDataArrayString;
@@ -888,8 +884,7 @@ class _flxParameterIn : public flxParameterIn, public _flxDataIn<T>
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxParameterContainer
-        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
-                      "flxParameterIn: type parameter of this class must derive from _flxParameterContainer");
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value, "ParamIn: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -923,7 +918,7 @@ class _flxParameterIn : public flxParameterIn, public _flxDataIn<T>
 
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this input parameter ");
+            flxLogM_E(kMsgParentObjNotSet, "input parameter");
             return;
         }
 
@@ -1039,8 +1034,7 @@ class flxParameterInString : public flxParameterIn, _flxDataInString
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxParameterContainer
-        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
-                      "flxParameterIn: type parameter of this class must derive from _flxParameterContainer");
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value, "ParamIn: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -1074,7 +1068,7 @@ class flxParameterInString : public flxParameterIn, _flxDataInString
 
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this input parameter ");
+            flxLogM_E(kMsgParentObjNotSet, "input parameter");
             return;
         }
 
@@ -1165,8 +1159,7 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
     void operator()(Object *obj)
     {
         // my_object must be derived from _flxParameterContainer
-        static_assert(std::is_base_of<_flxParameterContainer, Object>::value,
-                      "flxParameterIn: type parameter of this class must derive from _flxParameterContainer");
+        static_assert(std::is_base_of<_flxParameterContainer, Object>::value, "ParamIn: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -1199,7 +1192,7 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
     {
         if (!my_object)
         {
-            flxLog_E("Containing object not set. Verify flxRegister() was called on this input parameter ");
+            flxLogM_E(kMsgParentObjNotSet, "input parameter");
             return;
         }
 

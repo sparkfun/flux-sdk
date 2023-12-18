@@ -104,7 +104,7 @@ bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
 
     if (!_buildersByAddress)
     {
-        flxLog_E(F("Driver builder storage map is unavailable"));
+        flxLogM_E(kMsgErrInvalidState, "Driver Map");
         return false;
     }
 
@@ -134,8 +134,8 @@ bool flxDeviceFactory::registerDevice(flxDeviceBuilderI2C *deviceBuilder)
             if (search != _buildersByAddress->end())
             {
                 // we have two pings - wut?
-                flxLog_E(F("Unable to support the device %s. The address is ambiguous with %s"),
-                         deviceBuilder->getDeviceName(), search->second->getDeviceName());
+                flxLog_E(F("%s not available. Ambiguous address with %s"), deviceBuilder->getDeviceName(),
+                         search->second->getDeviceName());
                 continue;
             }
         }
@@ -162,7 +162,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
 {
     if (!_buildersByAddress)
     {
-        flxLog_E(F("Driver builder storage map is unavailable"));
+        flxLogM_E(kMsgErrInvalidState, "Driver Map");
         return 0;
     }
     // walk the list of registered drivers
@@ -196,7 +196,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
             flxDevice *pDevice = deviceBuilder->create();
 
             if (!pDevice)
-                flxLog_E(F("Device create failed - %s"), deviceBuilder->getDeviceName());
+                flxLogM_E(kMsgErrDeviceInit, deviceBuilder->getDeviceName(), "create");
             else
             {
                 // setup the device object.
@@ -208,7 +208,7 @@ int flxDeviceFactory::buildDevices(flxBusI2C &i2cDriver)
                 if (!pDevice->initialize(i2cDriver))
                 {
                     // device failed to init - delete it ...
-                    flxLog_E(F("Deviced %s failed to initialize."), deviceBuilder->getDeviceName());
+                    flxLogM_E(kMsgErrDeviceInit, deviceBuilder->getDeviceName(), "initialize");
                     deviceBuilder->destroy(pDevice);
                 }
                 else

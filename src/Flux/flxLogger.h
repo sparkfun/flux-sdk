@@ -115,7 +115,7 @@ class flxLogger : public flxActionType<flxLogger>
     {
 
         // register the logObservation() method on this instance. When an event
-        // is triggered, th logObservation method is called
+        // is triggered, the logObservation method is called
         theEvent.call(this, &flxLogger::logObservation);
     }
 
@@ -284,7 +284,7 @@ class flxLogger : public flxActionType<flxLogger>
 
     flxParameterInUint<flxLogger, &flxLogger::reset_sample_number> resetSampleNumber = {0, 10000};
 
-    // Logger run rate metic collection?
+    // Logger run rate metric collection?
     flxPropertyRWBool<flxLogger, &flxLogger::enabledLogRate, &flxLogger::setEnableLogRate> logRateMetric = {false};
 
   private:

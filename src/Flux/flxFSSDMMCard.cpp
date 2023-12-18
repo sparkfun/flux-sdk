@@ -66,7 +66,7 @@ bool _flxFSSDMMCard::initialize()
 
     if (!SD_MMC.begin())
     {
-        flxLog_E(F("Startup of the SD card failed."));
+        flxLogM_E(kMsgErrDeviceInit, "SD Card", "start");
         return false;
     }
 
@@ -157,7 +157,7 @@ flxFSFile _flxFSSDMMCard::open(const char *name, flxFileOpenMode_t mode, bool cr
         theflxFile.setIFile(pMMCFile);
     }
     else
-        flxLog_E("Error opening file: %s", name);
+        flxLogM_E(kMsgErrFileOpen, "SD Card", name);
 
     return theflxFile;
 }
