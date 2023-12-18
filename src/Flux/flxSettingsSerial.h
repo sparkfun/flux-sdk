@@ -71,9 +71,9 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
     flxPropertyBool<flxSettingsSerial> enableColorOutput = {true};
 
-    // Our output event
-    flxSignalVoid on_finished;
-    flxSignalBool on_editing;
+    // // Our output event
+    // flxSignalVoid on_finished;
+    // flxSignalBool on_editing;
 
     int editSettings(void);
 

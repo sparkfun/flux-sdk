@@ -85,9 +85,6 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
 
     flxPropertyString<flxFileRotate> filePrefix = {"sfe"};
 
-    // Our "New File" event
-    flxSignalVoid on_newFile;
-
     static constexpr char *kLogFileSuffix = "txt";
 
   private:

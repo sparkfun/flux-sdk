@@ -158,7 +158,7 @@ bool flxWiFiESP32::connect(void)
 
     // okay, we're connected.
     _wasConnected = true;
-    on_connectionChange.emit(true);
+    flxEventPost(kFlxEventOnConnectionChange, true);
 
     return true;
 }
@@ -175,7 +175,7 @@ void flxWiFiESP32::disconnect(void)
         }
     }
     if (_wasConnected)
-        on_connectionChange.emit(false);
+        flxEventPost(kFlxEventOnConnectionChange, false);
 
     _wasConnected = false;
 }
@@ -213,7 +213,7 @@ bool flxWiFiESP32::loop(void)
         if (wifiConn != _wasConnected)
         {
             _wasConnected = wifiConn;
-            on_connectionChange.emit(_wasConnected);
+            flxEventPost(kFlxEventOnConnectionChange, _wasConnected);
             return true;
         }
     }

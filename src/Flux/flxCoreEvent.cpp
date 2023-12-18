@@ -1,3 +1,4 @@
+
 /*
  *---------------------------------------------------------------------------------
  *
@@ -10,13 +11,14 @@
  *---------------------------------------------------------------------------------
  */
 
-#pragma once
-
 #include "flxCoreEvent.h"
-// Network interface
-class flxNetwork
+
+#include "flxFlux.h"
+
+// Global object -
+_flxEventHub &flxEventHub = _flxEventHub::get();
+
+void flxEventPost(flxEventID_t id)
 {
-  public:
-    virtual bool isConnected() = 0;
-    virtual IPAddress localIP(void) = 0;
-};
+    flxEventHub.postEvent(id);
+}

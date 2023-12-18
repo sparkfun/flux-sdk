@@ -1019,7 +1019,9 @@ int flxSettingsSerial::editSettings(void)
     }
 
     // Edit time!
-    on_editing.emit(1);
+    flxEventPost(kFlxEventOnEdit, true);
+
+    // on_editing.emit(1);
     drawEntryBanner();
 
     bool doSave = drawPage(_systemRoot);
@@ -1037,10 +1039,12 @@ int flxSettingsSerial::editSettings(void)
     // Was the menu returned normally and were changes made - the system root will reflect this?
     if (doSave && _systemRoot->isDirty())
     {
-        flxLog_I(F("Saving System Settings."));
-        on_finished.emit();
+        flxLog_I(F("Saving System Settings"));
+        // on_finished.emit();
+        flxEventPost(kFlxEventOnEditFinished);
     }
-    on_editing.emit(0);
+    // on_editing.emit(0);
+    flxEventPost(kFlxEventOnEdit, false);
 
     return doSave ? 1 : 0;
 }

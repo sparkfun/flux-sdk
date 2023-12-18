@@ -1,3 +1,4 @@
+
 /*
  *---------------------------------------------------------------------------------
  *
@@ -12,11 +13,13 @@
 
 #pragma once
 
-#include "flxCoreEvent.h"
-// Network interface
-class flxNetwork
-{
-  public:
-    virtual bool isConnected() = 0;
-    virtual IPAddress localIP(void) = 0;
-};
+#include <cstdint>
+// Our core Event ID registry...etc
+
+typedef const uint32_t flxEventID_t;
+
+flxEventID_t kFlxEventLogErrWarn = 0x1000;
+flxEventID_t kFlxEventOnEdit = 0x1001;
+flxEventID_t kFlxEventOnEditFinished = 0x1002;
+flxEventID_t kFlxEventOnNewFile = 0x1003;
+flxEventID_t kFlxEventOnConnectionChange = 0x1004;

@@ -12,6 +12,10 @@
 
 #pragma once
 
+#include "flxCoreEventID.h"
+#include "flxCoreLog.h"
+#include "flxCoreTypes.h"
+
 #include <functional>
 #include <vector>
 // spEvent.h
@@ -21,8 +25,13 @@
 // 5/20 - Impl based on https://schneegans.github.io/tutorials/2015/09/20/signal-slot
 // flxSignals - sort of  - support for our simple observer pattern for events
 //
+//
+class flxSignalBase
+{
+    // empty base class
+};
 
-template <typename TB, typename... ArgT> class flxSignal
+template <typename TB, typename... ArgT> class flxSignal : public flxSignalBase
 {
 
   public:
@@ -95,3 +104,124 @@ typedef flxSignal<float, float> flxSignalFloat;
 typedef flxSignal<double, double> flxSignalDouble;
 typedef flxSignal<const char *, const char *> flxSignalString;
 typedef flxSignal<void> flxSignalVoid;
+
+///////////////////////////////////////////////////////////////////////////////////////
+//
+// event Hub testing
+//
+
+class _flxEventHub
+{
+
+  public:
+    // _flxEventHub is a singleton
+    static _flxEventHub &get(void)
+    {
+
+        static _flxEventHub instance;
+        return instance;
+    }
+    // This is a singleton class - so delete copy & assignment constructors
+    _flxEventHub(_flxEventHub const &) = delete;
+    void operator=(_flxEventHub const &) = delete;
+
+    // connects a member function to this flxSignal
+    template <typename T, typename TP> void registerEventCallback(flxEventID_t id, T *inst, void (T::*func)(TP var))
+    {
+        // do we have this
+
+        flxSignal<TP, TP> *theSignal = nullptr;
+
+        auto mpSig = _eventSignals.find(id);
+        if (mpSig == _eventSignals.end())
+        {
+            theSignal = new flxSignal<TP, TP>;
+            if (!theSignal)
+            {
+                flxLogM_E(kMsgErrAllocErrorN, "Event Hub", "callback");
+                return;
+            }
+            _eventSignals[id] = theSignal;
+        }
+        else
+            theSignal = reinterpret_cast<flxSignal<TP, TP> *>(mpSig->second);
+
+        theSignal->call(inst, func);
+    }
+    // connects a member function to this flxSignal
+    template <typename T> void registerEventCallback(flxEventID_t id, T *inst, void (T::*func)(void))
+    {
+        // do we have this
+
+        flxSignal<void> *theSignal = nullptr;
+
+        auto mpSig = _eventSignals.find(id);
+        if (mpSig == _eventSignals.end())
+        {
+            theSignal = new flxSignal<void>;
+            if (!theSignal)
+            {
+                flxLogM_E(kMsgErrAllocErrorN, "Event Hub", "callback");
+                return;
+            }
+            _eventSignals[id] = theSignal;
+        }
+        else
+            theSignal = reinterpret_cast<flxSignal<void> *>(mpSig->second);
+
+        theSignal->call(inst, func);
+    }
+
+    // template <typename T> void makeCBCall(std::pair<flxEventID_t, flxSignal<T, T>> *theSignal, T &value)
+    // {
+    //     theSignal->second->emit(value);
+    // }
+
+    template <typename T> void postEvent(flxEventID_t id, T value)
+    {
+        auto mpSig = _eventSignals.find(id);
+        if (mpSig == _eventSignals.end())
+        {
+            flxLog_E("Event handler not found: %u", id);
+            return;
+        }
+
+        reinterpret_cast<flxSignal<T, T> *>(mpSig->second)->emit(value);
+    }
+
+    void postEvent(flxEventID_t id)
+    {
+        auto mpSig = _eventSignals.find(id);
+        if (mpSig == _eventSignals.end())
+        {
+            flxLog_E("Event handler not found: %u", id);
+            return;
+        }
+
+        reinterpret_cast<flxSignal<void> *>(mpSig->second)->emit();
+    }
+
+  private:
+    _flxEventHub(){};
+
+    // map event ID to event signal
+    std::map<flxEventID_t, flxSignalBase *> _eventSignals;
+};
+extern _flxEventHub &flxEventHub;
+
+template <typename T, typename TP> void flxRegisterEventCB(flxEventID_t id, T *inst, void (T::*func)(TP var))
+{
+    flxEventHub.registerEventCallback(id, inst, func);
+}
+
+template <typename T> void flxRegisterEventCB(flxEventID_t id, T *inst, void (T::*func)(void))
+{
+    flxEventHub.registerEventCallback(id, inst, func);
+}
+
+void flxEventPost(flxEventID_t id);
+
+template <typename T> void flxEventPost(flxEventID_t id, T value)
+{
+    flxEventHub.postEvent(id, value);
+}

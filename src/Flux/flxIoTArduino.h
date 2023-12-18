@@ -407,18 +407,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     ///---------------------------------------------------------------------------------------
     ///
-    /// @brief  Used to register for network events .
-    ///
-    /// @param theEvent     The Event object to register with
-    ///
-    void listenToConnection(flxSignalBool &theEvent)
-    {
-        // Register to get notified on connection changes
-        theEvent.call(this, &flxIoTArduino::onConnectionChange);
-    }
-
-    ///---------------------------------------------------------------------------------------
-    ///
     /// @brief  API method used to set the system network connection.
     /// @note   Will register for network connectivity change events
     /// @param theNetwork   The network object.
@@ -427,7 +415,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     {
         _theNetwork = theNetwork;
 
-        listenToConnection(theNetwork->on_connectionChange);
+        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxIoTArduino::onConnectionChange);
     }
     ///---------------------------------------------------------------------------------------
     ///

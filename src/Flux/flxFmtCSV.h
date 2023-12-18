@@ -310,14 +310,6 @@ class flxFormatCSV : public flxOutputFormat
             _writeHeader = kHeaderWrite;
     }
 
-    // Used to register the event we want to listen to, which will trigger this
-    // the output of the CSV header next cycle.
-
-    void listenNewFile(flxSignalVoid &theEvent)
-    {
-        theEvent.call(this, &flxFormatCSV::output_header);
-    }
-
   private:
     //-----------------------------------------------------------------
     void clear_buffers()
@@ -329,7 +321,7 @@ class flxFormatCSV : public flxOutputFormat
         // Since the header is normally printed very rarely,
         // we shrink it.
         //
-        // For data buffer, it's since is consistant between calls,
+        // For data buffer, it's since is consistent between calls,
         // so just clear it.
 
         _header_buffer.clear();

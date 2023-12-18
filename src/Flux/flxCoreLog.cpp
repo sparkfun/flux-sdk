@@ -11,6 +11,7 @@
  */
 
 #include "flxCoreLog.h"
+#include "flxCoreEvent.h"
 #include <string.h>
 
 // Global object - for quick log access
@@ -172,7 +173,7 @@ int flxLogging::logPrintfInternal(const flxLogLevel_t level, bool newline, const
 
     // trigger an event on error or warning
     if (level == flxLogError || level == flxLogWarning)
-        onLogMessage.emit((uint8_t)level);
+        flxEventPost(kFlxEventLogErrWarn, (uint8_t)level);
 
     return retval;
 }

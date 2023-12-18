@@ -107,7 +107,7 @@ bool flxFileRotate::openNextLogFile()
     _headerWritten = false;
 
     // send the new file event. Will persist prop values
-    on_newFile.emit();
+    flxEventPost(kFlxEventOnNewFile);
 
     return true;
 }
