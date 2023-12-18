@@ -401,7 +401,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     //----------------------------------------------------------------------
     ///
-    /// @brief  Inteface method - called with data to write to the cloud
+    /// @brief  Interface method - called with data to write to the cloud
     ///
     void write(JsonDocument &jsonDoc);
 
