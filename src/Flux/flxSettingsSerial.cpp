@@ -1019,7 +1019,7 @@ int flxSettingsSerial::editSettings(void)
     }
 
     // Edit time!
-    flxSendEvent(kFlxEventOnEdit, true);
+    flxSendEvent(flxEvent::kOnEdit, true);
 
     drawEntryBanner();
 
@@ -1039,9 +1039,9 @@ int flxSettingsSerial::editSettings(void)
     if (doSave && _systemRoot->isDirty())
     {
         flxLog_I(F("Saving System Settings"));
-        flxSendEvent(kFlxEventOnEditFinished);
+        flxSendEvent(flxEvent::kOnEditFinished);
     }
-    flxSendEvent(kFlxEventOnEdit, false);
+    flxSendEvent(flxEvent::kOnEdit, false);
 
     return doSave ? 1 : 0;
 }

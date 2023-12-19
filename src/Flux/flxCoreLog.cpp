@@ -173,7 +173,7 @@ int flxLogging::logPrintfInternal(const flxLogLevel_t level, bool newline, const
 
     // trigger an event on error or warning
     if (level == flxLogError || level == flxLogWarning)
-        flxSendEvent(kFlxEventLogErrWarn, (uint8_t)level);
+        flxSendEvent(flxEvent::kLogErrWarn, (uint8_t)level);
 
     return retval;
 }

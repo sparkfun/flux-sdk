@@ -21,7 +21,7 @@ _flxEventHub &flxEventHub = _flxEventHub::get();
 //---------------------------------------------------------------
 // Implementation of the flxSendEvent() function
 //
-void flxSendEvent(flxEventID_t id)
+void flxSendEvent(flxEvent::flxEventID_t id)
 {
     flxEventHub.sendEvent(id);
 }

@@ -224,7 +224,7 @@ template <class Object> class flxIoTHTTPBase : public flxActionType<Object>
     void setNetwork(flxNetwork *theNetwork)
     {
         _theNetwork = theNetwork;
-        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxIoTHTTPBase::onConnectionChange);
+        flxRegisterEventCB(flxEvent::kOnConnectionChange, this, &flxIoTHTTPBase::onConnectionChange);
     }
 
     bool connected()

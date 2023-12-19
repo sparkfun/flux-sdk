@@ -14,14 +14,33 @@
 #pragma once
 
 #include <cstdint>
-// Our core Event ID registry...etc
 
-typedef const uint32_t flxEventID_t;
+///////////////////////////////////////////////////////////////////////////////
+// Our core Event ID registry
+//
+// Goals:
+//    - Each Event ID is unique
+//    - Each ID is a constant and not mutable
+//    - Event definition is simple
+//
+// Implementation
+//    - A namespace is used to allow enable definition across different files (namespaces can do this)
+//             * The namespace provides an unique symbol (flxEvent::) for the IDs and ID Type
+//    - Use the pre-processor macro __COUNTER__ to get unique IDs for each event, so no bookkeeping needed
+//    - A macro is used - gasp - to make a simple looking function call to define an ID.
+//
+//    The pattern used for the event IDs
+//        flxEvent::k[Verb][Noun/Action]
+//
+namespace flxEvent
+{
+typedef uint32_t flxEventID_t;
 
-flxEventID_t kFlxEventLogErrWarn = 0x1000;
-flxEventID_t kFlxEventOnEdit = 0x1001;
-flxEventID_t kFlxEventOnEditFinished = 0x1002;
-flxEventID_t kFlxEventOnNewFile = 0x1003;
-flxEventID_t kFlxEventOnConnectionChange = 0x1004;
-flxEventID_t kFlxEventOnFirmwareLoad = 0x1005;
-flxEventID_t kFlxEventOnSystemActivity = 0x1006;
+inline constexpr flxEventID_t kLogErrWarn{__COUNTER__};
+inline constexpr flxEventID_t kOnNewFile{__COUNTER__};
+inline constexpr flxEventID_t kOnConnectionChange{__COUNTER__};
+inline constexpr flxEventID_t kOnEdit{__COUNTER__};
+inline constexpr flxEventID_t kOnEditFinished{__COUNTER__};
+inline constexpr flxEventID_t kOnFirmwareLoad{__COUNTER__};
+inline constexpr flxEventID_t kOnSystemActivity{__COUNTER__};
+} // namespace flxEvent

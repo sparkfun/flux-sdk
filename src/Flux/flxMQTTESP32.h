@@ -116,7 +116,7 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     {
         _theNetwork = theNetwork;
 
-        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxMQTTESP32Base::onConnectionChange);
+        flxRegisterEventCB(flxEvent::kOnConnectionChange, this, &flxMQTTESP32Base::onConnectionChange);
     }
 
     bool connected()

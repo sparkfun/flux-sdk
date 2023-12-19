@@ -415,7 +415,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     {
         _theNetwork = theNetwork;
 
-        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxIoTArduino::onConnectionChange);
+        flxRegisterEventCB(flxEvent::kOnConnectionChange, this, &flxIoTArduino::onConnectionChange);
     }
     ///---------------------------------------------------------------------------------------
     ///

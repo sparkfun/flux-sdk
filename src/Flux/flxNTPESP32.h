@@ -55,7 +55,7 @@ class flxNTPESP32 : public flxActionType<flxNTPESP32>, public flxIClock
     {
         _theNetwork = theNetwork;
 
-        flxRegisterEventCB(kFlxEventOnConnectionChange, this, &flxNTPESP32::onConnectionChange);
+        flxRegisterEventCB(flxEvent::kOnConnectionChange, this, &flxNTPESP32::onConnectionChange);
     }
     void setStartupDelay(uint delay)
     {
