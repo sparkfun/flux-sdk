@@ -25,6 +25,10 @@ const uint8_t kReadBufferNoMatch = 251;
 
 const uint kPromptTimeoutValueSec = 60;
 
+// Define the events sent by this object/module (editing and finished editing)
+flxDefineEventID(kOnEdit);
+flxDefineEventID(kOnEditFinished);
+
 class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 {
 

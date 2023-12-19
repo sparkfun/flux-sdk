@@ -21,6 +21,9 @@
 #include "flxFSSDMMCard.h"
 #include <string>
 
+// Define the "new file" event
+flxDefineEventID(kOnNewFile);
+
 // This object implements the flxWriter interface, and manages the rotation
 // of files created on the passed in filesystem.
 

@@ -25,6 +25,9 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
+// Define the firmware load event
+flxDefineEventID(kOnFirmwareLoad);
+
 class flxSysFirmware : public flxActionType<flxSysFirmware>
 {
 

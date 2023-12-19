@@ -13,6 +13,10 @@
 #pragma once
 
 #include "flxCoreEvent.h"
+
+// define the on connection change event type
+flxDefineEventID(kOnConnectionChange);
+
 // Network interface
 class flxNetwork
 {

@@ -19,11 +19,15 @@
 #include <stdarg.h>
 #include <vector>
 
+#include "flxCoreEventID.h"
 #include "flxCoreInterface.h"
 #include "flxCoreMsg.h"
 
 // Lets enable logging
 #define SP_LOGGING_ENABLED
+
+// define our logging error/warning event type
+flxDefineEventID(kLogErrWarn);
 
 // Define logging levels
 typedef enum

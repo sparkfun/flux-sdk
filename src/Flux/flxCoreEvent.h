@@ -155,7 +155,7 @@ class _flxEventHub
 
         flxSignal<TP, TP> *theSignal = nullptr;
 
-        auto mpSig = _eventSignals.find(id);
+        auto mpSig = _eventSignals.find(id());
 
         if (mpSig == _eventSignals.end())
         {
@@ -166,7 +166,7 @@ class _flxEventHub
                 flxLogM_E(kMsgErrAllocErrorN, "Event Hub", "callback");
                 return;
             }
-            _eventSignals[id] = theSignal;
+            _eventSignals[id()] = theSignal;
         }
         else
             theSignal = reinterpret_cast<flxSignal<TP, TP> *>(mpSig->second); // exists
@@ -183,7 +183,7 @@ class _flxEventHub
 
         flxSignal<void> *theSignal = nullptr;
 
-        auto mpSig = _eventSignals.find(id);
+        auto mpSig = _eventSignals.find(id());
 
         if (mpSig == _eventSignals.end())
         {
@@ -194,7 +194,7 @@ class _flxEventHub
                 flxLogM_E(kMsgErrAllocErrorN, "Event Hub", "callback");
                 return;
             }
-            _eventSignals[id] = theSignal;
+            _eventSignals[id()] = theSignal;
         }
         else
             theSignal = reinterpret_cast<flxSignal<void> *>(mpSig->second); // exists
@@ -208,7 +208,7 @@ class _flxEventHub
     template <typename T> void sendEvent(flxEvent::flxEventID_t id, T value)
     {
         // does this event exist/registered?
-        auto mpSig = _eventSignals.find(id);
+        auto mpSig = _eventSignals.find(id());
 
         if (mpSig == _eventSignals.end())
         {
@@ -224,7 +224,7 @@ class _flxEventHub
     void sendEvent(flxEvent::flxEventID_t id)
     {
         // does this event exist/registered?
-        auto mpSig = _eventSignals.find(id);
+        auto mpSig = _eventSignals.find(id());
 
         if (mpSig == _eventSignals.end())
         {
@@ -239,7 +239,7 @@ class _flxEventHub
     _flxEventHub(){};
 
     // map event ID to event signal
-    std::map<flxEvent::flxEventID_t, flxSignalBase *> _eventSignals;
+    std::map<uint32_t, flxSignalBase *> _eventSignals;
 };
 //
 extern _flxEventHub &flxEventHub;
