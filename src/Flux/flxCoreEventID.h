@@ -24,10 +24,10 @@
 //    - Event definition is simple
 //
 // Implementation
-//    - A namespace is used to allow enable definition across different files (namespaces can do this)
-//             * The namespace provides an unique symbol (flxEvent::) for the IDs and ID Type
+//    - The namespace provides an unique symbol (flxEvent::) for the IDs and ID Type
 //    - Use the pre-processor macro __COUNTER__ to get unique IDs for each event, so no bookkeeping needed
-//    - A macro is used - gasp - to make a simple looking function call to define an ID.
+//    - 'inline constexpr' is the modern method to define constants that share the same memory location
+//    - Using {} for initialization - recommended these days, but basically same as `=`
 //
 //    The pattern used for the event IDs
 //        flxEvent::k[Verb][Noun/Action]
