@@ -27,7 +27,12 @@ class flxTimer : public flxActionType<flxTimer>
 
     void set_interval(uint in_interval)
     {
+        if (_timerJob.period() == in_interval)
+            return;
+
         _timerJob.setPeriod(in_interval);
+        // update the job queue
+        flxUpdateJobInQueue(_timerJob);
     }
 
     void onTimer(void)
@@ -59,7 +64,7 @@ class flxTimer : public flxActionType<flxTimer>
     bool initialize(void)
     {
         // Add the job to the job queue
-        flxJobQueue.addJob(_timerJob);
+        flxAddJobToQueue(_timerJob);
 
         return true;
     }
