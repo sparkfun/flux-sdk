@@ -30,7 +30,7 @@ class flxJob
 {
 
   public:
-    flxJob() : _handlerSet{false}
+    flxJob()
     {
     }
 
@@ -56,8 +56,6 @@ class flxJob
         _handler = [=]() { // uses a lambda for the callback
             (inst->*func)();
         };
-
-        _handlerSet = true;
     }
 
     void setPeriod(uint32_t in_period)
@@ -82,7 +80,6 @@ class flxJob
     }
 
   private:
-    bool _handlerSet;
     // handler
     std::function<void()> _handler;
 
