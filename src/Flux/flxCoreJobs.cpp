@@ -75,7 +75,6 @@ void _flxJobQueue::updateTimer(void)
 {
     if (!hTimer || _jobQueue.size() == 0)
     {
-        flxLog_E("In updateTimer: n queue: %d", _jobQueue.size());
         return;
     }
 
