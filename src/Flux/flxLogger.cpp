@@ -310,6 +310,9 @@ void flxLogger::logObservation(void)
     // capture metric
     if (_pMetrics)
         _pMetrics->captureMetric();
+
+    // send an activity event
+    flxSendEvent(flxEvent::kOnSystemActivityLow);
 }
 //----------------------------------------------------------------------------
 // log message
