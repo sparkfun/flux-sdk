@@ -30,16 +30,19 @@ class flxJob
 {
 
   public:
-    flxJob()
+    flxJob() : _compress{true}
     {
     }
 
     flxJob(uint32_t in_period) : _period{in_period}
     {
     }
-    flxJob(uint32_t in_period, const char *in_name) : flxJob(in_period)
+
+    template <typename T> void setup(uint32_t in_period, T *inst, void (T::*func)(), bool bCompress = true)
     {
-        _name = in_name;
+        setPeriod(in_period);
+        setHandler(inst, func);
+        setCompress(bCompress);
     }
 
     void callHandler(void)
@@ -69,14 +72,14 @@ class flxJob
         return _period;
     }
 
-    void setName(const char *name)
+    void setCompress(bool bCompress)
     {
-        _name = name;
+        _compress = bCompress;
     }
 
-    const char *name(void)
+    bool compress(void)
     {
-        return _name;
+        return _compress;
     }
 
   private:
@@ -86,8 +89,7 @@ class flxJob
     // Time delta in MS
     uint32_t _period;
 
-    // Event name = helpful
-    const char *_name;
+    bool _compress;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
