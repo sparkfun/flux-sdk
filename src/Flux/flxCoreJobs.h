@@ -118,6 +118,7 @@ class _flxJobQueue
 
     void addJob(flxJob &);
     void removeJob(flxJob &);
+    void updateJob(flxJob &);
 
     bool loop(void);
 
@@ -132,3 +133,10 @@ class _flxJobQueue
     auto findJob(flxJob &theJob) -> decltype(_jobQueue.end());
 };
 extern _flxJobQueue &flxJobQueue;
+
+//----------------------------------------------------------------------------------------------------
+// User exposed convenience function help with jobs
+//
+void flxAddJobToQueue(flxJob &theJob);
+
+void flxUpdateJobInQueue(flxJob &theJob);

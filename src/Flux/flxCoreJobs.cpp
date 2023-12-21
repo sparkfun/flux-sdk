@@ -196,7 +196,25 @@ void _flxJobQueue::removeJob(flxJob &theJob)
     if (itJob == _jobQueue.end())
         return;
 
+    // If the job is at the head of the queue, and a timer is set,
+    // we need to stop that timer.
+    //
+    if (itJob == _jobQueue.begin() && xTimerIsTimerActive(hTimer) != pdFALSE)
+        xTimerStop(hTimer, 0);
+
     _jobQueue.erase(itJob);
+}
+
+//------------------------------------------------------------------
+//
+void _flxJobQueue::updateJob(flxJob &theJob)
+{
+    // the job needs to be reset it in the current job (priority) queue.
+    //
+    // To do this - just remove it and the add it back.
+
+    removeJob(theJob);
+    addJob(theJob);
 }
 //------------------------------------------------------------------
 //
@@ -209,4 +227,15 @@ bool _flxJobQueue::loop(void)
     dispatchJobs();
 
     return false;
+}
+
+// Easy to use functions
+void flxAddJobToQueue(flxJob &theJob)
+{
+    flxJobQueue.addJob(theJob);
+}
+
+void flxUpdateJobInQueue(flxJob &theJob)
+{
+    flxJobQueue.updateJob(theJob);
 }
