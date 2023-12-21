@@ -40,7 +40,7 @@ static void _fluxJobQ_TimerCallback(xTimerHandle pxTimer)
 //
 _flxJobQueue::_flxJobQueue()
 {
-    // Create a timer, which is used to drive the user experience.
+    // Create a timer, used to manage when to dispatch jobs
     hTimer = xTimerCreate("flux_job_q", kTimerPeriod / portTICK_RATE_MS, pdFALSE, (void *)0, _fluxJobQ_TimerCallback);
     if (hTimer == NULL)
     {
@@ -139,7 +139,7 @@ auto _flxJobQueue::findJob(flxJob &theJob) -> decltype(_jobQueue.end())
 void _flxJobQueue::addJob(flxJob &theJob)
 {
     // Is this job in our queue already
-    if (_jobQueue.size() > 0 && findJob(theJob) == _jobQueue.end())
+    if (_jobQueue.size() > 0 && findJob(theJob) != _jobQueue.end())
         return;
 
     // Add this job to the job queue (map)
