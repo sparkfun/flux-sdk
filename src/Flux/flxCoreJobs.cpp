@@ -17,8 +17,8 @@
 // Our FreeRTOS entities
 
 // "Command Queue"
-static QueueHandle_t hCmdQueue = NULL;
-const uint16_t kCmdQueueSize = 12;
+static QueueHandle_t hWorkQueue = NULL;
+const uint16_t kWorkQueueSize = 20;
 // Timer for job queue
 static xTimerHandle hTimer;
 const uint16_t kTimerPeriod = 100;
@@ -49,9 +49,9 @@ _flxJobQueue::_flxJobQueue()
         return;
     }
 
-    hCmdQueue = xQueueCreate(kCmdQueueSize, sizeof(flxJob *));
+    hWorkQueue = xQueueCreate(kWorkQueueSize, sizeof(flxJob *));
 
-    if (hCmdQueue == NULL)
+    if (hWorkQueue == NULL)
     {
         flxLog_E("Job Queue - Failed to create queue");
         xTimerDelete(hTimer, 100);
@@ -74,12 +74,20 @@ void _flxJobQueue::_timerCB(void)
 void _flxJobQueue::updateTimer(void)
 {
     if (!hTimer || _jobQueue.size() == 0)
+    {
+        flxLog_E("In updateTimer: n queue: %d", _jobQueue.size());
         return;
+    }
 
     // flxLog_I("JOBS: Updating Timer: %u", _jobQueue.begin()->second->period());
     // Set the timer to the period in the queue - millis(). Note the period is the key, which
     // are sorted in ascending order.
-    xTimerChangePeriod(hTimer, (_jobQueue.begin()->first - millis()) / portTICK_RATE_MS, 10);
+
+    uint32_t deltaT = (_jobQueue.begin()->first - millis()) / portTICK_RATE_MS;
+
+    // make sure the deltaT isn't near 0 - which causes an assert error - during high speed ops, it can hit 0;
+
+    xTimerChangePeriod(hTimer, deltaT < 10 ? 10 : deltaT, 10);
     xTimerReset(hTimer, 10);
 }
 //------------------------------------------------------------------
@@ -91,19 +99,48 @@ void _flxJobQueue::checkJobQueue(void)
 
     for (auto it = _jobQueue.begin(); it != _jobQueue.end(); /*nothing*/)
     {
-        // flxLog_I("check JOBS: p1: %u, ticks: %u", it->first, ticks);
         // clear anything out within 10 ms
         if (it->first - ticks < 10)
         {
-            // add job to
-            if (xQueueSend(hCmdQueue, (void *)&it->second, 5 / portTICK_RATE_MS) != pdPASS)
-                flxLog_W("Job Queue Overflow");
+            flxJob *theJob = it->second;
 
-            flxJob *pJob = it->second;
+            // remove this item from the job queue head, and since the time
+            // is recurring, put the job at the end of the queue
             it = _jobQueue.erase(it);
 
-            // re-queue
-            _jobQueue[ticks + pJob->period()] = pJob;
+            // re-queue our job in the job task timer list
+            _jobQueue[ticks + theJob->period()] = theJob;
+
+            bool bAddToQ = true;
+
+            // Can we compress this job -- skip adding to work queue if already there
+            if (theJob->compress())
+            {
+                // To see if an item is in the do work queue, we need to walk the queue
+                // and check if it exists. The only way to do this is to dequeue an
+                // item, the put it back on the queue.
+                flxJob *qJob;
+                int nItems = uxQueueMessagesWaiting(hWorkQueue);
+                for (int i = 0; i < nItems; i++)
+                {
+                    if (xQueueReceive(hWorkQueue, &qJob, (TickType_t)10) != pdPASS)
+                        break; // something else is wrong
+
+                    // First, put this item back at the end of the queue
+                    if (xQueueSend(hWorkQueue, (void *)&qJob, 10 / portTICK_RATE_MS) != pdPASS)
+                        flxLog_W("Queue compress error");
+
+                    // is the job equal to the job we want to add? If so, don't add it
+                    if (qJob == theJob)
+                        bAddToQ = false;
+                }
+            }
+            // add job to the do work queue?
+            if (bAddToQ)
+            {
+                if (xQueueSend(hWorkQueue, (void *)&theJob, 10 / portTICK_RATE_MS) != pdPASS)
+                    flxLog_W("Job Queue - work overflow");
+            }
         }
         else // since the map is sorted, no need to traverse the entire list..
             break;
@@ -115,12 +152,15 @@ void _flxJobQueue::dispatchJobs(void)
 {
     flxJob *theJob;
 
-    // Pull jobs in the queue and call the handlers
-    while (xQueueReceive(hCmdQueue, &theJob, (TickType_t)10) == pdPASS)
+    // loop over the current items in the work queue. If the time interval is fast,
+    // AND the work called is slow, the queue could continue to be filled and never
+    // be emptied unless we restrict to items at hand
+    int nItems = uxQueueMessagesWaiting(hWorkQueue);
+    for (int i = 0; i < nItems; i++)
     {
-        // flxLog_I("JOBS: dispatching a Job ptr: 0x%x", (uint)theJob);
-        theJob->callHandler();
-        // flxLog_I("dispatched");
+        // Pull jobs in the queue and call the handlers
+        if (xQueueReceive(hWorkQueue, &theJob, (TickType_t)50) == pdPASS)
+            theJob->callHandler();
     }
 }
 //------------------------------------------------------------------
@@ -163,6 +203,10 @@ void _flxJobQueue::removeJob(flxJob &theJob)
 //
 bool _flxJobQueue::loop(void)
 {
+    // not setup
+    if (hTimer == NULL)
+        return false;
+
     dispatchJobs();
 
     return false;
