@@ -108,6 +108,9 @@ bool flxFlux::start()
         if (strlen(_theApplication->name()) > 0)
             this->setName(_theApplication->name());
     }
+    // start the job queue
+    flxJobQueue.start();
+
     return true;
 }
 

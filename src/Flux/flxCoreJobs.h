@@ -122,12 +122,17 @@ class _flxJobQueue
 
     bool loop(void);
 
+    void start(void);
+    void stop(void);
+
   private:
     _flxJobQueue();
 
     void checkJobQueue(void);
     void dispatchJobs(void);
     void updateTimer(void);
+
+    bool _running;
 
     std::map<uint32_t, flxJob *> _jobQueue;
     auto findJob(flxJob &theJob) -> decltype(_jobQueue.end());

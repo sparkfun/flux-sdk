@@ -13,6 +13,8 @@
 #include "flxCoreJobs.h"
 #include <Arduino.h>
 
+#include <vector>
+
 //////////////////////////////////////////
 // Our FreeRTOS entities
 
@@ -38,7 +40,7 @@ static void _fluxJobQ_TimerCallback(xTimerHandle pxTimer)
 //------------------------------------------------------------------
 // overall job queue object
 //
-_flxJobQueue::_flxJobQueue()
+_flxJobQueue::_flxJobQueue() : _running{false}
 {
     // Create a timer, used to manage when to dispatch jobs
     hTimer = xTimerCreate("flux_job_q", kTimerPeriod / portTICK_RATE_MS, pdFALSE, (void *)0, _fluxJobQ_TimerCallback);
@@ -61,6 +63,53 @@ _flxJobQueue::_flxJobQueue()
 }
 
 //------------------------------------------------------------------
+// start
+//
+void _flxJobQueue::start(void)
+{
+    if (_running)
+        return;
+
+    // okay, we need to transition from an idle state to a running state
+    // - queue up added jobs
+    // - startup the timer
+
+    // - get a list of jobs
+
+    std::vector<flxJob *> theJobs;
+
+    for (auto aJob : _jobQueue)
+        theJobs.push_back(aJob.second);
+
+    _jobQueue.clear();
+    // now clear out the map, and add everything back with proper timing
+
+    for (auto aJob : theJobs)
+        addJob(*aJob);
+
+    // okay, ready to rock
+    _running = true;
+
+    flxLog_I("STarting the job queue: %d", _jobQueue.size());
+    // start the timer!
+    updateTimer();
+}
+//------------------------------------------------------------------
+// stop
+//
+void _flxJobQueue::stop()
+{
+    // stop the job queue
+    _running = false;
+
+    if (hTimer)
+        xTimerStop(hTimer, 0);
+
+    if (hWorkQueue)
+        xQueueReset(hWorkQueue);
+}
+
+//------------------------------------------------------------------
 // Callback for the FreeRTOS timer
 //
 void _flxJobQueue::_timerCB(void)
@@ -73,12 +122,9 @@ void _flxJobQueue::_timerCB(void)
 // update the timer
 void _flxJobQueue::updateTimer(void)
 {
-    if (!hTimer || _jobQueue.size() == 0)
-    {
+    if (!hTimer || _jobQueue.size() == 0 || !_running)
         return;
-    }
 
-    // flxLog_I("JOBS: Updating Timer: %u", _jobQueue.begin()->second->period());
     // Set the timer to the period in the queue - millis(). Note the period is the key, which
     // are sorted in ascending order.
 
@@ -93,6 +139,10 @@ void _flxJobQueue::updateTimer(void)
 //
 void _flxJobQueue::checkJobQueue(void)
 {
+
+    // not running, no dice
+    if (!_running)
+        return;
 
     uint32_t ticks = millis();
 
@@ -149,6 +199,10 @@ void _flxJobQueue::checkJobQueue(void)
 //------------------------------------------------------------------
 void _flxJobQueue::dispatchJobs(void)
 {
+
+    if (!_running)
+        return;
+
     flxJob *theJob;
 
     // loop over the current items in the work queue. If the time interval is fast,
@@ -184,7 +238,7 @@ void _flxJobQueue::addJob(flxJob &theJob)
     // Add this job to the job queue (map)
     _jobQueue[millis() + theJob.period()] = &theJob;
 
-    if (_jobQueue.size() == 1)
+    if (_running && _jobQueue.size() == 1)
         updateTimer();
 }
 //------------------------------------------------------------------
@@ -221,7 +275,7 @@ void _flxJobQueue::updateJob(flxJob &theJob)
 bool _flxJobQueue::loop(void)
 {
     // not setup
-    if (hTimer == NULL)
+    if (hTimer == NULL || !_running)
         return false;
 
     dispatchJobs();
