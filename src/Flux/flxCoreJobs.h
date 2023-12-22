@@ -114,7 +114,7 @@ class _flxJobQueue
     void operator=(_flxJobQueue const &) = delete;
 
     // internal timer callback
-    void _timerCB(void);
+    uint32_t _timerCB(void);
 
     void addJob(flxJob &);
     void removeJob(flxJob &);
@@ -122,7 +122,7 @@ class _flxJobQueue
 
     bool loop(void);
 
-    void start(void);
+    bool start(void);
     void stop(void);
 
   private:
@@ -130,9 +130,10 @@ class _flxJobQueue
 
     void checkJobQueue(void);
     void dispatchJobs(void);
-    void updateTimer(void);
+    uint32_t updateTimer(void);
 
-    bool _running;
+    bool _running; // used to flag if the queue is running
+    bool _skip;    // used to flag a job skip when a pending job is changed /removed
 
     std::map<uint32_t, flxJob *> _jobQueue;
     auto findJob(flxJob &theJob) -> decltype(_jobQueue.end());
