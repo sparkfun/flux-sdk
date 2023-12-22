@@ -109,7 +109,10 @@ bool flxFlux::start()
             this->setName(_theApplication->name());
     }
     // start the job queue
-    flxJobQueue.start();
+    if (!flxJobQueue.start())
+        flxLog_E("Job Q failed to start - unrecoverable error. ");
+    else
+        flxLog_I(F("Job queue initialized"));
 
     return true;
 }
