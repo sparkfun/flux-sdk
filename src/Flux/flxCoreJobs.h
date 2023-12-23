@@ -146,3 +146,5 @@ extern _flxJobQueue &flxJobQueue;
 void flxAddJobToQueue(flxJob &theJob);
 
 void flxUpdateJobInQueue(flxJob &theJob);
+
+void flxRemoveJobFromQueue(flxJob &theJob);

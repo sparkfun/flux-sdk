@@ -295,8 +295,8 @@ void _flxJobQueue::dispatchJobs(void)
         if (xQueueReceive(hWorkQueue, &theJob, (TickType_t)50) == pdPASS)
             theJob->callHandler();
     }
-    // if (nItems > 0 && hJobQTask != NULL)
-    //     flxLog_I("HIGH WATER MARK HEAP %u words", uxTaskGetStackHighWaterMark(hJobQTask));
+    if (nItems > 0 && hJobQTask != NULL)
+        flxLog_I("HIGH WATER MARK HEAP %u words", uxTaskGetStackHighWaterMark(hJobQTask));
 }
 //------------------------------------------------------------------
 //
@@ -397,4 +397,11 @@ void flxAddJobToQueue(flxJob &theJob)
 void flxUpdateJobInQueue(flxJob &theJob)
 {
     flxJobQueue.updateJob(theJob);
+}
+//------------------------------------------------------------------
+// Remove a job
+//
+void flxRemoveJobFromQueue(flxJob &theJob)
+{
+    flxJobQueue.removeJob(theJob);
 }
