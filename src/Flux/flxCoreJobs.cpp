@@ -129,11 +129,13 @@ auto _flxJobQueue::findJob(flxJob &theJob) -> decltype(_jobQueue.end())
 //
 void _flxJobQueue::addJob(flxJob &theJob)
 {
+
     // Is this job in our queue already
     if (_jobQueue.size() == 0 || findJob(theJob) == _jobQueue.end())
     {
         // Add this job to the job queue (map)
-        _jobQueue[millis() + theJob.period()] = &theJob;
+        if (theJob.period() > 0)
+            _jobQueue[millis() + theJob.period()] = &theJob;
     }
 }
 //------------------------------------------------------------------
