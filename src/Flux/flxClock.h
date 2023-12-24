@@ -14,6 +14,7 @@
 #pragma once
 
 #include "flxCore.h"
+#include "flxCoreJobs.h"
 
 #include <map>
 #include <vector>
@@ -110,6 +111,12 @@ class _flxClock : public flxActionType<_flxClock>
     void set_timezone(std::string tz);
     std::string get_timezone(void);
 
+    void set_ref_interval(uint);
+    uint get_ref_interval(void);
+
+    void set_conn_interval(uint);
+    uint get_conn_interval(void);
+
   public:
     // flxClock is a singleton
     static _flxClock &get(void)
@@ -139,18 +146,17 @@ class _flxClock : public flxActionType<_flxClock>
 
     void updateConnectedClocks(void);
 
-    bool loop(void);
-
     bool initialize(void);
 
     flxPropertyRWString<_flxClock, &_flxClock::get_ref_clock, &_flxClock::set_ref_clock> referenceClock;
 
-    flxPropertyUint<_flxClock> updateClockInterval = {60};
+    flxPropertyRWUint<_flxClock, &_flxClock::get_ref_interval, &_flxClock::set_ref_interval> updateClockInterval = {60};
 
     // Use alternative clock if primary isn't available?
     flxPropertyBool<_flxClock> useAlternativeClock = {true};
 
-    flxPropertyUint<_flxClock> connectedClockInterval = {60};
+    flxPropertyRWUint<_flxClock, &_flxClock::get_conn_interval, &_flxClock::set_conn_interval> connectedClockInterval =
+        {60};
     flxPropertyBool<_flxClock> updateConnectedOnUpdate = {true};
 
     // TimeZone string
@@ -160,6 +166,8 @@ class _flxClock : public flxActionType<_flxClock>
   private:
     _flxClock();
     flxIClock *findRefClockByName(const char *name);
+    void checkConnClock(void);
+    void checkRefClock(void);
 
     // our system / runtime clock
     flxISystemClock *_systemClock;
@@ -167,9 +175,9 @@ class _flxClock : public flxActionType<_flxClock>
     // The reference clock
     flxIClock *_refClock;
 
-    uint32_t _lastRefCheck;
+    uint32_t _refCheck;
 
-    uint32_t _lastConnCheck;
+    uint32_t _connCheck;
 
     bool _bInitialized;
 
@@ -185,5 +193,9 @@ class _flxClock : public flxActionType<_flxClock>
     std::string _nameRefClock;
 
     std::string _tzStorage;
+
+    // Update jobs
+    flxJob _jobRefCheck;
+    flxJob _jobConnCheck;
 };
 extern _flxClock &flxClock;
