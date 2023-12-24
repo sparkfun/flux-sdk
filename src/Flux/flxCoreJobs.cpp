@@ -101,12 +101,12 @@ void _flxJobQueue::dispatchJobs(void)
     // dispatch jobs if needed and then add back to list
     for (auto theJob : theJobs)
     {
+        // dispatch the job
+        theJob->callHandler();
+
         // re-queue our job in the job task timer list if it's not a one-shot
         if (!theJob->oneShot())
             _jobQueue[ticks + theJob->period()] = theJob;
-
-        // dispatch the job
-        theJob->callHandler();
     }
 }
 //------------------------------------------------------------------
