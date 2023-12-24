@@ -14,6 +14,7 @@
 
 #ifdef ESP32
 
+#include "flxCoreJobs.h"
 #include "flxFlux.h"
 #include "flxNetwork.h"
 #include "flxWiFi.h"
@@ -26,6 +27,7 @@ const uint8_t kWiFiLevelFair = 1;
 const uint8_t kWiFiLevelGood = 2;
 const uint8_t kWiFiLevelExcellent = 3;
 
+const uint16_t kWiFiUpdateHandlerTimeMS = 1500;
 // WiFi client for EsP32 boards
 
 class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, public flxIWiFiDevice
@@ -55,6 +57,8 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
         setName("WiFi Network", "WiFi network connection for the system");
 
         flux.add(this);
+
+        _theJob.setup("WiFi", kWiFiUpdateHandlerTimeMS, this, &flxWiFiESP32::jobHandlerCB);
     };
 
     // Properties
@@ -71,8 +75,6 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
     flxPropertySecureString<flxWiFiESP32> alt3_password;
 
     flxPropertyRWBool<flxWiFiESP32, &flxWiFiESP32::get_isEnabled, &flxWiFiESP32::set_isEnabled> enabled;
-
-    bool loop(void);
 
     bool connect(void);
     void disconnect(void);
@@ -112,10 +114,14 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
     }
 
   private:
+    void jobHandlerCB(void);
+
     // flag used to help with connection changes.
     bool _wasConnected;
     bool _isEnabled;
     bool _delayedStartup;
+
+    flxJob _theJob;
 };
 
 #endif
