@@ -30,19 +30,21 @@ class flxJob
 {
 
   public:
-    flxJob() : _compress{true}
+    flxJob() : _name{nullptr}, _one_shot{false}
     {
     }
 
-    flxJob(uint32_t in_period) : _period{in_period}
+    flxJob(const char *name, uint32_t in_period) : _name{name}, _period{in_period}
     {
     }
 
-    template <typename T> void setup(uint32_t in_period, T *inst, void (T::*func)(), bool bCompress = true)
+    template <typename T>
+    void setup(const char *name, uint32_t in_period, T *inst, void (T::*func)(), bool bOneShot = false)
     {
+        setName(name);
         setPeriod(in_period);
         setHandler(inst, func);
-        setCompress(bCompress);
+        setOneShot(bOneShot);
     }
 
     void callHandler(void)
@@ -72,24 +74,33 @@ class flxJob
         return _period;
     }
 
-    void setCompress(bool bCompress)
+    const char *name(void)
     {
-        _compress = bCompress;
+        return _name;
+    }
+    void setName(const char *name)
+    {
+        _name = name;
+    }
+    void setOneShot(bool bOneShot)
+    {
+        _one_shot = bOneShot;
     }
 
-    bool compress(void)
+    bool oneShot(void)
     {
-        return _compress;
+        return _one_shot;
     }
 
   private:
     // handler
     std::function<void()> _handler;
 
+    const char *_name;
     // Time delta in MS
     uint32_t _period;
 
-    bool _compress;
+    bool _one_shot;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,9 +124,6 @@ class _flxJobQueue
     _flxJobQueue(_flxJobQueue const &) = delete;
     void operator=(_flxJobQueue const &) = delete;
 
-    // internal timer callback
-    uint32_t _timerCB(void);
-
     void addJob(flxJob &);
     void removeJob(flxJob &);
     void updateJob(flxJob &);
@@ -128,12 +136,9 @@ class _flxJobQueue
   private:
     _flxJobQueue();
 
-    void checkJobQueue(void);
     void dispatchJobs(void);
-    uint32_t updateTimer(void);
 
     bool _running; // used to flag if the queue is running
-    bool _skip;    // used to flag a job skip when a pending job is changed /removed
 
     std::map<uint32_t, flxJob *> _jobQueue;
     auto findJob(flxJob &theJob) -> decltype(_jobQueue.end());
