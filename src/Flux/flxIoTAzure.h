@@ -6,13 +6,13 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #pragma once
 
+#include "flxCoreJobs.h"
 #include "flxMQTTESP32.h"
 
 #include <az_core.h>
@@ -21,17 +21,18 @@
 #include <string.h>
 #include <time.h>
 
+#define kAzureIoTDriverJobUpdate 1000
 ////////////////////////////////////////////////////////////////////////////////////////////
 // NOTE:
 //   This object requires the installation of the Azure SDK for C Arduino library
 //
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-// From the Azure SDK examples. Changing this randomly causes connectoin failures
+// From the Azure SDK examples. Changing this randomly causes connection failures
 #define AZURE_SDK_CLIENT_USER_AGENT "c%2F" AZ_SDK_VERSION_STRING "(ard;esp32)"
 
 // This is copied from examples in the Azure C SDK. An default constructor and initialize() method were
-// added to allow post creation setup of the object. 
+// added to allow post creation setup of the object.
 
 class AzIoTSasToken
 {
@@ -55,9 +56,7 @@ class AzIoTSasToken
     uint32_t expirationUnixTime;
 };
 
-
-
-//---------------------------------------------------------------------    
+//---------------------------------------------------------------------
 // simple class to support Azure IoT
 
 class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
@@ -71,6 +70,7 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         flxRegister(deviceKey, "Device Key", "The device key for the Azure IoT device");
 
         flux.add(this);
+        _theJob.setup("AzureIOT", kAzureIoTDriverJobUpdate, this, &flxIoTAzure::jobHandlerCB);
     }
 
     // for the Writer interface
@@ -82,7 +82,7 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
     {
         // noop
     }
-    //---------------------------------------------------------------------    
+    //---------------------------------------------------------------------
     virtual void write(const char *value, bool newline, flxLineType_t type)
     {
         // value? Connected? Data line?
@@ -103,8 +103,8 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         az_iot_hub_client_options options = az_iot_hub_client_options_default();
         options.user_agent = AZ_SPAN_FROM_STR(AZURE_SDK_CLIENT_USER_AGENT);
 
-        // need to move hostname to a persistant char array from std::string. The called function
-        // assumes the value is persistant
+        // need to move host name to a persistent char array from std::string. The called function
+        // assumes the value is persistent
         strlcpy(_az_host, server().c_str(), sizeof(_az_host));
         strlcpy(_az_device_id, deviceID().c_str(), sizeof(_az_device_id));
 
@@ -126,10 +126,10 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         }
 
         char mqtt_username[kBufferSize];
-        if (az_result_failed(az_iot_hub_client_get_user_name(&_client, mqtt_username, 
-                        sizeof(mqtt_username)/sizeof(mqtt_username[0]), NULL)))
+        if (az_result_failed(az_iot_hub_client_get_user_name(&_client, mqtt_username,
+                                                             sizeof(mqtt_username) / sizeof(mqtt_username[0]), NULL)))
         {
-            flxLog_E(F("%s: Failed to get azure username."),name());
+            flxLog_E(F("%s: Failed to get azure username."), name());
             return false;
         }
 
@@ -147,7 +147,7 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
 
     bool connect()
     {
-        // Do we need intializing
+        // Do we need initializing
         if (!_initialized)
         {
             if (!initialize())
@@ -192,6 +192,8 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
 
         _connected = flxMQTTESP32SecureCore<flxIoTAzure>::connect();
 
+        if (_connected)
+            flxAddJobToQueue(_theJob);
         return _connected;
     }
 
@@ -202,6 +204,7 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
     {
         _connected = false;
 
+        flxRemoveJobFromQueue(_theJob);
         // call super
         flxMQTTESP32SecureCore<flxIoTAzure>::disconnect();
     }
@@ -223,24 +226,23 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         if (!flxMQTTESP32SecureCore::initialize())
             return false;
 
-        // We need the key in persistant storage
+        // We need the key in persistent storage
         strlcpy(_az_device_key, deviceKey().c_str(), sizeof(_az_device_key));
 
-        _sasToken.initialize(&_client, 
-                az_span_create((uint8_t*)_az_device_key, strlen(_az_device_key)),
-                az_span_create((uint8_t*)_sas_signature_buffer, sizeof(_sas_signature_buffer)),
-                az_span_create((uint8_t*)_mqtt_password, sizeof(_mqtt_password)));                
+        _sasToken.initialize(&_client, az_span_create((uint8_t *)_az_device_key, strlen(_az_device_key)),
+                             az_span_create((uint8_t *)_sas_signature_buffer, sizeof(_sas_signature_buffer)),
+                             az_span_create((uint8_t *)_mqtt_password, sizeof(_mqtt_password)));
 
         _initialized = true;
         return true;
     }
 
-    //---------------------------------------------------------------------    
+    //---------------------------------------------------------------------
     // loop
-    bool loop(void)
+    void jobHandlerCB(void)
     {
         if (!_connected)
-            return false;
+            return;
 
         // did our sas token expire?
         if (_sasToken.IsExpired())
@@ -249,24 +251,20 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
             // and reconnect
             disconnect();
             if (!connect())
-            {
                 flxLog_E(F("%s: Failed to reconnect after auth token refresh."), name());
-                return false;
-            }else
+            else
                 flxLog_I(F("%s: SAS Auth token refreshed"), name());
-            return true;
         }
-        return false;
     }
 
     // Properties
     flxPropertyString<flxIoTAzure> deviceID;
     flxPropertySecureString<flxIoTAzure> deviceKey;
 
-private:
+  private:
     static constexpr uint kBufferSize = 128;
     static constexpr uint kBufferSize2X = kBufferSize * 2;
-    // The azure C SDK expects many of the passed in values to be persistant values, but
+    // The azure C SDK expects many of the passed in values to be persistent values, but
     // our props are std::strings, which are dynamic. So create buffers in this object
     // to manage the connection data for the SDK.
 
@@ -275,13 +273,15 @@ private:
 
     az_iot_hub_client _client;
 
-    char _az_device_id[kBufferSize];    // we need persistant storage for the device id
-    char _az_host[kBufferSize];         // we need persistant, char array, storage for this
-    char _az_device_key[kBufferSize];    // "" "" "" 
+    char _az_device_id[kBufferSize];  // we need persistent storage for the device id
+    char _az_host[kBufferSize];       // we need persistent, char array, storage for this
+    char _az_device_key[kBufferSize]; // "" "" ""
 
     bool _initialized;
     bool _hubInitialized;
     bool _connected;
 
     AzIoTSasToken _sasToken;
+
+    flxJob _theJob;
 };
