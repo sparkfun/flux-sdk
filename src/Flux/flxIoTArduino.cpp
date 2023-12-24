@@ -60,9 +60,9 @@ void flxIoTArduino::connect(void)
         // Set the ArduinoCloud debug level - it's a function - global - annoying
         setDebugMessageLevel(DBG_ERROR);
         _bInitialized = true;
-        _lastArduinoUpdate = millis();
         _startupCounter = 0;
     }
+    flxAddJobToQueue(_theJob);
     _myConnectionHandler.setConnected(true);
 }
 
@@ -73,6 +73,7 @@ void flxIoTArduino::connect(void)
 void flxIoTArduino::disconnect(void)
 {
     _myConnectionHandler.setConnected(false);
+    flxRemoveJobFromQueue(_theJob);
 }
 
 ///---------------------------------------------------------------------------------------
@@ -772,28 +773,25 @@ void flxIoTArduino::write(JsonDocument &jDoc)
 
 //---------------------------------------------------------------------------------------
 ///
-/// @brief          Framework loop call
 
-bool flxIoTArduino::loop(void)
+void flxIoTArduino::jobUpdateCB(void)
 {
     // Call Arduino update if:
-    //  - The system is initalized
+    //  - The system is initialized
     //  - our variable map contains variables
-    //  - Delta is greater than the time limit - time limit greater after startup phase
 
-    if (_bInitialized && !_parameterToVar.empty() && millis() - _lastArduinoUpdate > _loopTimeLimit)
+    if (_bInitialized && !_parameterToVar.empty())
     {
 
         // NOTE:
         //  Found that if update() is called before the variables for the Device/Thing
         //  are created and/or connected to, the variable create/connect process triggers
-        //  network disconnects (wifi drops). But, if update isn't called until we have
+        //  network disconnects (WiFi drops). But, if update isn't called until we have
         //  variables in our parameter map, the system works as expected. So update() isn't
         //  called if the _parameterToVar map is empty.
         //
         // update the Arduino Cloud
         ArduinoCloud.update();
-        _lastArduinoUpdate = millis();
 
         // inc the startup counter if below limit
         if (_startupCounter < kArduinoIoTStartupLimit)
@@ -802,8 +800,11 @@ bool flxIoTArduino::loop(void)
 
             // if at limit, adjust the loop time limit delta
             if (_startupCounter == kArduinoIoTStartupLimit)
-                _loopTimeLimit = kArduinoIoTStartupLimit * 3;
+            {
+                // do we need to update the job period
+                if (_theJob.period() != kArduinoIoTStartupLimit * 3)
+                    _theJob.setPeriod(kArduinoIoTStartupLimit * 3);
+            }
         }
     }
-    return false;
 }

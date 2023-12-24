@@ -15,6 +15,7 @@
 #include "flxFlux.h"
 #include "flxNetwork.h"
 
+#include "flxCoreJobs.h"
 #include "flxFmtJSON.h"
 #include "flxUtils.h"
 #include <HTTPClient.h>
@@ -213,7 +214,7 @@ typedef struct
 } flxIoTArduinoVar_t;
 
 // The following helps manage our loop updates.
-// Define the delta between arduino IoT cloud update calls during setup.
+// Define the delta between Arduino IoT cloud update calls during setup.
 #define kArduinoIoTUpdateDelta 500
 
 ///
@@ -359,8 +360,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
   public:
     flxIoTArduino()
         : _isEnabled{false}, _canConnect{false}, _theNetwork{nullptr}, _wifiClient{nullptr}, _tokenTicks{0},
-          _bInitialized{false}, _lastArduinoUpdate{0}, _startupCounter{0}, _loopTimeLimit{kArduinoIoTUpdateDelta},
-          _thingValid{false}, _hadError{false}, _fallbackID{false}
+          _bInitialized{false}, _startupCounter{0}, _thingValid{false}, _hadError{false}, _fallbackID{false}
     {
         setName("Arduino IoT", "Connection to Arduino IoT Cloud");
 
@@ -380,6 +380,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         flxRegister(deviceID, "Device ID", "The Arduino IoT Device ID");
 
         flux.add(this);
+
+        _theJob.setup("ArduinoIOT", kArduinoIoTUpdateDelta, this, &flxIoTArduino::jobUpdateCB);
     }
 
     //----------------------------------------------------------------------
@@ -427,11 +429,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         return (_isEnabled && _canConnect);
     }
 
-    ///
-    /// @brief  Loop for processing events
-    ///
-    bool loop(void);
-
     // Name of this thing in Arduino IOT - use this if we need to create a thing ...
     flxPropertyRWString<flxIoTArduino, &flxIoTArduino::get_thingName, &flxIoTArduino::set_thingName> thingName;
 
@@ -464,6 +461,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     bool linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, flxDataType_t dataType);
     void freeVariableMap(void);
     bool getThingIDFallback(void);
+
+    void jobUpdateCB(void);
     ///---------------------------------------------------------------------------------------
     ///
     /// @brief  Template to create and register a local cloud variable with a cloud variable on Arduino IoT
@@ -506,20 +505,11 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     bool _bInitialized;
 
-    // Keep track update() calls to arduinoIoT - use this at startup to pump the init process
-    // of the system...
-    //
-    // Delta between updates - last update ticks
-    uint32_t _lastArduinoUpdate;
-
     // Count of our start up updates calls to Arduino IoT
     int _startupCounter;
 
     // Create an instance of our version of the connection handler
     DataLoggerAIOTConnectionHandler _myConnectionHandler;
-
-    // loop time limit
-    uint32_t _loopTimeLimit;
 
     bool _thingValid;
     bool _hadError; // error in config/setup -- needs updating
@@ -527,4 +517,6 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     std::string _thingID;
     std::string _thingName;
+
+    flxJob _theJob;
 };
