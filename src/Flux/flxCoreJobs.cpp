@@ -92,7 +92,6 @@ void _flxJobQueue::dispatchJobs(void)
 
         // save job to our dispatch list
         theJobs.push_back(it->second);
-
         // remove this item from the job queue head,
         // Note - erase returns the iterator to next item in container
         it = _jobQueue.erase(it);
@@ -106,7 +105,7 @@ void _flxJobQueue::dispatchJobs(void)
 
         // re-queue our job in the job task timer list if it's not a one-shot
         if (!theJob->oneShot())
-            _jobQueue[ticks + theJob->period()] = theJob;
+            _jobQueue.insert(std::pair<uint32_t, flxJob *>(ticks + theJob->period(), theJob));
     }
 }
 //------------------------------------------------------------------
@@ -135,7 +134,7 @@ void _flxJobQueue::addJob(flxJob &theJob)
     {
         // Add this job to the job queue (map)
         if (theJob.period() > 0)
-            _jobQueue[millis() + theJob.period()] = &theJob;
+            _jobQueue.insert(std::pair<uint32_t, flxJob *>(millis() + theJob.period(), &theJob));
     }
 }
 //------------------------------------------------------------------

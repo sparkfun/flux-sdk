@@ -140,7 +140,7 @@ class _flxJobQueue
 
     bool _running; // used to flag if the queue is running
 
-    std::map<uint32_t, flxJob *> _jobQueue;
+    std::multimap<uint32_t, flxJob *> _jobQueue;
     auto findJob(flxJob &theJob) -> decltype(_jobQueue.end());
 };
 extern _flxJobQueue &flxJobQueue;
