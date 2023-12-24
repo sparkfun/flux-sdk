@@ -124,10 +124,8 @@ void _flxJobQueue::dispatchJobs(void)
     // The job queue is sorted based on time to call/dispatch a job handler.
     // Loop over the queue and dispatch handlers to all events that time values (keys)
     // are less than ticks + buffer.
-    //
-    // Jobs are reoccurring, so once a job is dispatched, it's placed at the end of the
-    // job list at current tick about + job period
 
+    // storage for jobs to dispatch and then *maybe* re-add to the queue
     std ::vector<flxJob *> theJobs;
 
     // our time cutoff
@@ -141,6 +139,7 @@ void _flxJobQueue::dispatchJobs(void)
 
         // save job to our dispatch list
         theJobs.push_back(it->second);
+
         // remove this item from the job queue head,
         // Note - erase returns the iterator to next item in container
         it = _jobQueue.erase(it);
@@ -177,11 +176,10 @@ auto _flxJobQueue::findJob(flxJob &theJob) -> decltype(_jobQueue.end())
 //
 void _flxJobQueue::addJob(flxJob &theJob)
 {
-
     // Is this job in our queue already
     if (_jobQueue.size() == 0 || findJob(theJob) == _jobQueue.end())
     {
-        // Add this job to the job queue (map)
+        // Add this job to the job queue (map) - make sure it has some sane period
         if (theJob.period() > 0)
             _jobQueue.insert(std::pair<uint32_t, flxJob *>(millis() + theJob.period(), &theJob));
     }
