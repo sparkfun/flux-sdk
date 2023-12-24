@@ -58,7 +58,7 @@ class flxTimer : public flxActionType<flxTimer>
         setName("Timer", "A reoccurring timer");
 
         // setup the job used to trigger the timer (note - we enable "job compression" for this )
-        _timerJob.setup(name(), start, this, &flxTimer::onTimer, true);
+        _timerJob.setup(name(), start, this, &flxTimer::onTimer, false);
     };
 
     bool initialize(void)
