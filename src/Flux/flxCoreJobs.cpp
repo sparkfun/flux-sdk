@@ -10,6 +10,55 @@
  *---------------------------------------------------------------------------------
  */
 
+// What this system does
+//
+// This maintains a list of "jobs" that are ordered based on time when they should
+// execute - soonest to latest.
+//
+// Each job contains a period to wait, a callback handler that should be called
+// when the time for the job has expired.
+//
+// Jobs can be *loops* - re-queue's itself once executed, or one-shot - runs once.
+//
+// A module/subsystem that wants to use the job queue, creates a job object and
+// adds it to the queue. The job-queue adds the job at the correct entry point based
+// on it's period and when it was added (add time + job period).
+//
+// The system loop - framework loop - calls the loop method on the job queue. In
+// the loop the following happens:
+//
+//    - If a job's time has expired, the job's handler method is called
+//    - If the job isn't a one-shot job, it is re-added to the queue using
+//      current time (millis()) + the job period.
+//
+// The original system of providing a timing/update call to a subsystem/device
+// was based on just calling a loop() method on each Activity and Device in the
+// system. This was actually wasteful because:
+//
+//     - A majority of items didn't implement a loop() method, so a no-op
+//       from the base class was called
+//     - Each system loop would call everything, so even if a object was
+//       monitoring for a timed event, most times it wasn't required and
+//       the call was returned.
+//
+// Moving to the job queue, object timed update method are only called when
+// desired. If no updates are need in the system, only one loop() method is called
+// - the loop method on the job queue.
+//
+// Helper Functions
+//
+//    The following functions are provided to simplify use of the job queue
+//
+//        flxAddJobToQueue(flxJob &theJob)
+//           Adds the provided job to the job queue. If the job exists, its not added.
+//
+//        flxUpdateJobInQueue(flxJob &theJob)
+//           Updates the position in the job queue if the period changed. Basically the job is
+//           removed from the queue and re-added. If the job wasn't in the job queue, it's just added.
+//
+//        flxRemoveJobFromQueue(flxJob &theJob)
+//           If the job is in the job queue, it is removed.
+
 #include "flxCoreJobs.h"
 #include <Arduino.h>
 #include <vector>

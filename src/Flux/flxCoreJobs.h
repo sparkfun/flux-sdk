@@ -10,6 +10,8 @@
  *---------------------------------------------------------------------------------
  */
 
+// How this works - SEE the impl/CPP file
+
 #pragma once
 
 #include "flxCoreLog.h"
