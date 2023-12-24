@@ -31,7 +31,7 @@ flxRegisterDevice(flxDevENS160);
 //----------------------------------------------------------------------------------------------------------
 /// @brief Constructor
 ///
-flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}, _rhComp{nullptr}, _lastCompCheck{0}
+flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}, _rhComp{nullptr}
 {
 
     setName(getDeviceName(), "ScioSense ENS160 Indoor Air Quality Sensor");
@@ -50,7 +50,11 @@ flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}
     flxRegister(val_ECO2, "eCO2", "Equivalent CO2");
     flxRegister(val_TempC, "Temp Comp", "The current temperature compensation value (C)");
     flxRegister(val_RH, "Humidity Comp", "The current relative humidity compensation value");
-    ;
+
+    // setup our job -
+    _theJob.setup(name(), _updatePeriod * 1000, this, &flxDevENS160::updateParams);
+    if (_updatePeriod > 0)
+        flxAddJobToQueue(_theJob);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -168,35 +172,46 @@ void flxDevENS160::setHumidityCompParameter(flxParameterOutScalar &compParam)
 ///
 /// @return - always false -- a true value cases the system to update UX/LED
 ///
-bool flxDevENS160::loop(void)
+void flxDevENS160::updateParams(void)
 {
     // Time to update our comp values? - initialized? enabled? have input params?
 
     if (!isInitialized() || !enableCompensation() || (_rhComp == nullptr && _tempCComp == nullptr))
-        return false;
+        return;
 
-    // Has enough time pasted since our last check?
-    if (millis() - _lastCompCheck > updatePeriodSecs() * 1000)
+    float value;
+    if (_rhComp != nullptr)
     {
-        float value;
-        if (_rhComp != nullptr)
-        {
-            // get the Humidity value from the input device and set in our device
-            value = _rhComp->getFloat();
-            SparkFun_ENS160::setRHCompensationFloat(value);
-        }
-
-        if (_tempCComp != nullptr)
-        {
-            // get the Temperature value from the input device and set in our device
-            value = _tempCComp->getFloat();
-            SparkFun_ENS160::setTempCompensationCelsius(value);
-        }
-        // update our time since last check
-        _lastCompCheck = millis();
+        // get the Humidity value from the input device and set in our device
+        value = _rhComp->getFloat();
+        SparkFun_ENS160::setRHCompensationFloat(value);
     }
 
-    return false;
+    if (_tempCComp != nullptr)
+    {
+        // get the Temperature value from the input device and set in our device
+        value = _tempCComp->getFloat();
+        SparkFun_ENS160::setTempCompensationCelsius(value);
+    }
+}
+
+void flxDevENS160::set_update_period(uint val)
+{
+    if (val == _updatePeriod)
+        return;
+
+    _updatePeriod = val;
+
+    if (!val)
+        return;
+
+    _theJob.setPeriod(_updatePeriod * 1000);
+    flxUpdateJobInQueue(_theJob);
+}
+
+uint flxDevENS160::get_update_period(void)
+{
+    return _updatePeriod;
 }
 
 //---------------------------------------------------------------------------

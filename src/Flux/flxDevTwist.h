@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevTwist.h
@@ -24,6 +24,7 @@
 #include "Arduino.h"
 
 #include "SparkFun_Qwiic_Twist_Arduino_Library.h"
+#include "flxCoreJobs.h"
 #include "flxDevice.h"
 
 // What is the name used to ID this device?
@@ -66,9 +67,8 @@ class flxDevTwist : public flxDeviceI2CType<flxDevTwist>, public TWIST
     flxSignalBool on_clicked;
     flxSignalInt on_twist;
 
-    bool loop(void);
-
   private:
+    void checkTwist(void);
     int _last_count = 0;
 
     bool _pressMode = true;
@@ -94,9 +94,11 @@ class flxDevTwist : public flxDeviceI2CType<flxDevTwist>, public TWIST
     uint8_t _ledGreen = 0;
     uint8_t _ledBlue = 128;
 
+    flxJob _theJob;
+
   public:
-    flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_press_mode, &flxDevTwist::set_press_mode> pressMode
-      = { 1, { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } } };
+    flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_press_mode, &flxDevTwist::set_press_mode> pressMode = {
+        1, {{"Click (Toggle) Mode", 0}, {"Press Mode", 1}}};
     flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_led_red, &flxDevTwist::set_led_red> ledRed;
     flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_led_green, &flxDevTwist::set_led_green> ledGreen;
     flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_led_blue, &flxDevTwist::set_led_blue> ledBlue;

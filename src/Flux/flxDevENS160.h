@@ -21,6 +21,7 @@
 
 #include "Arduino.h"
 #include "SparkFun_ENS160.h"
+#include "flxCoreJobs.h"
 #include "flxDevice.h"
 
 #define kENS160DeviceName "ENS160"
@@ -61,9 +62,6 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     // Relative humidity comp
     void setHumidityCompParameter(flxParameterOutScalar &);
 
-    // This device does runtime checks - so add loop method
-    bool loop(void);
-
   private:
     // Parameter methods
     uint8_t read_AQI();
@@ -72,6 +70,8 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     uint16_t read_ECO2();
     float read_TempC();
     float read_RH();
+
+    void updateParams(void);
 
     // Property methods
 
@@ -85,6 +85,8 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     // method to manually set the humidity compensation value - above read method is used as getter
     void set_humid_comp(float);
 
+    void set_update_period(uint);
+    uint get_update_period(void);
     // Instance data
 
     // Operating mode -- used for startup  caching
@@ -95,8 +97,10 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     flxParameterOutScalar *_tempCComp;
     flxParameterOutScalar *_rhComp;
 
-    // last time the compensation values were set -- when a input device is provided
-    uint32_t _lastCompCheck;
+    // update period check
+    uint32_t _updatePeriod;
+
+    flxJob _theJob;
 
   public:
     // properties
@@ -110,7 +114,8 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     flxPropertyBool<flxDevENS160> enableCompensation = true;
 
     // If a device is connected for comp values, update period in secs
-    flxPropertyUint<flxDevENS160> updatePeriodSecs = {kENS160DefaultCompUpdateTimeSecs, 5, 600};
+    flxPropertyRWUint<flxDevENS160, &flxDevENS160::get_update_period, &flxDevENS160::set_update_period>
+        updatePeriodSecs = {kENS160DefaultCompUpdateTimeSecs, 5, 600};
 
     // properties to manually set / get the compensation values
     flxPropertyRWFloat<flxDevENS160, &flxDevENS160::read_TempC, &flxDevENS160::set_temp_comp> tempComp;
