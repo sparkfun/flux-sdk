@@ -135,6 +135,8 @@ class _flxJobQueue
     bool start(void);
     void stop(void);
 
+    void dump(void);
+
   private:
     _flxJobQueue();
 

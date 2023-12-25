@@ -125,8 +125,7 @@ void _flxJobQueue::dispatchJobs(void)
     // Loop over the queue and dispatch handlers to all events that time values (keys)
     // are less than ticks + buffer.
 
-    // storage for jobs to dispatch and then *maybe* re-add to the queue
-    std ::vector<flxJob *> theJobs;
+    flxJob *theJob;
 
     // our time cutoff
     uint32_t ticks = millis() + kJobDispatchMSBuffer;
@@ -137,21 +136,13 @@ void _flxJobQueue::dispatchJobs(void)
         if (it->first > ticks)
             break;
 
-        // save job to our dispatch list
-        theJobs.push_back(it->second);
+        theJob = it->second;
 
         // remove this item from the job queue head,
         // Note - erase returns the iterator to next item in container
         it = _jobQueue.erase(it);
-    }
 
-    // dispatch jobs if needed and then add back to list
-    for (auto theJob : theJobs)
-    {
-        // dispatch the job
         theJob->callHandler();
-
-        // re-queue our job in the job task timer list if it's not a one-shot
         if (!theJob->oneShot())
             _jobQueue.insert(std::pair<uint32_t, flxJob *>(ticks + theJob->period(), theJob));
     }
@@ -207,6 +198,14 @@ void _flxJobQueue::updateJob(flxJob &theJob)
 
     removeJob(theJob);
     addJob(theJob);
+}
+//------------------------------------------------------------------
+// dump out the contents of the queue
+//
+void _flxJobQueue::dump(void)
+{
+    for (auto aJob : _jobQueue)
+        flxLog_I("\t %u\t%s", aJob.first, aJob.second->name());
 }
 //------------------------------------------------------------------
 //  loop()
