@@ -63,7 +63,6 @@
 #include <Arduino.h>
 #include <vector>
 
-const uint32_t kJobDispatchMSBuffer = 2;
 //------------------------------------------------------------------
 // Global object - we only have one queue
 
@@ -123,12 +122,12 @@ void _flxJobQueue::dispatchJobs(void)
     //
     // The job queue is sorted based on time to call/dispatch a job handler.
     // Loop over the queue and dispatch handlers to all events that time values (keys)
-    // are less than ticks + buffer.
+    // are less than ticks.
 
     flxJob *theJob;
 
     // our time cutoff
-    uint32_t ticks = millis() + kJobDispatchMSBuffer;
+    uint32_t ticks = millis();
 
     for (auto it = _jobQueue.begin(); it != _jobQueue.end(); /*nothing*/)
     {
