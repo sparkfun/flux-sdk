@@ -125,7 +125,7 @@ void _flxJobQueue::dispatchJobs(void)
     // are less than ticks.
 
     flxJob *theJob;
-
+    uint32_t tNext;
     // our time cutoff
     uint32_t ticks = millis();
 
@@ -136,14 +136,15 @@ void _flxJobQueue::dispatchJobs(void)
             break;
 
         theJob = it->second;
-
+        tNext = it->first + theJob->period();
         // remove this item from the job queue head,
         // Note - erase returns the iterator to next item in container
         it = _jobQueue.erase(it);
 
         theJob->callHandler();
         if (!theJob->oneShot())
-            _jobQueue.insert(std::pair<uint32_t, flxJob *>(ticks + theJob->period(), theJob));
+            _jobQueue.insert(std::pair<uint32_t, flxJob *>(tNext, theJob));
+        // _jobQueue.insert(std::pair<uint32_t, flxJob *>(ticks + theJob->period(), theJob));
     }
 }
 //------------------------------------------------------------------
