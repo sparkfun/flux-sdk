@@ -71,7 +71,7 @@ class flxJob
             _period = in_period;
     }
 
-    uint32_t period(void)
+    inline uint32_t period(void)
     {
         return _period;
     }
@@ -89,7 +89,7 @@ class flxJob
         _one_shot = bOneShot;
     }
 
-    bool oneShot(void)
+    inline bool oneShot(void)
     {
         return _one_shot;
     }
