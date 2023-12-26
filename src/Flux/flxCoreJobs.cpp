@@ -126,6 +126,7 @@ void _flxJobQueue::dispatchJobs(void)
 
     flxJob *theJob;
     uint32_t tNext;
+
     // our time cutoff
     uint32_t ticks = millis();
 
@@ -136,15 +137,31 @@ void _flxJobQueue::dispatchJobs(void)
             break;
 
         theJob = it->second;
+
+        // normally the base of the next period timeout is the current event timeout - this
+        // keeps timed sequences on a predicable schedule - absorbing small delays
+        // that occur during operation by the event delta.
+        //
+        // However, if the system is paused (menu in use), or the time period between an event is
+        // less than the minimum loop interval timeout (high-speed logging), the next time period
+        // end is less than current ticks. If this is the case, fast forward the base by N * period()
+        //
+        // For a majority of jobs, the next event tick number is this event tick number + job period.
         tNext = it->first + theJob->period();
+
+        // high-speed or timed out system (next is <= current ticks) - re-base the period to next valid time
+        if (tNext <= ticks)
+            tNext = it->first + (((ticks - it->first) / theJob->period()) + 1) * theJob->period();
+
         // remove this item from the job queue head,
         // Note - erase returns the iterator to next item in container
         it = _jobQueue.erase(it);
 
         theJob->callHandler();
+
+        // add back if not one shot job
         if (!theJob->oneShot())
             _jobQueue.insert(std::pair<uint32_t, flxJob *>(tNext, theJob));
-        // _jobQueue.insert(std::pair<uint32_t, flxJob *>(ticks + theJob->period(), theJob));
     }
 }
 //------------------------------------------------------------------
