@@ -874,7 +874,7 @@ uint8_t flxSettingsSerial::getMenuSelectionFunc(uint maxEntry, bool isYN, uint t
 
     // delay from open log Artemis
 
-    delay(500);
+    delay(200);
 
     // clear buffer
     while (Serial.available() > 0)
