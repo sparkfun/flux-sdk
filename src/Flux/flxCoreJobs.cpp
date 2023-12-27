@@ -138,6 +138,9 @@ void _flxJobQueue::dispatchJobs(void)
 
         theJob = it->second;
 
+        // call the job's handler. Doing this here, allows the target to modify job period if needed
+        theJob->callHandler();
+
         // normally the base of the next period timeout is the current event timeout - this
         // keeps timed sequences on a predicable schedule - absorbing small delays
         // that occur during operation by the event delta.
@@ -156,8 +159,6 @@ void _flxJobQueue::dispatchJobs(void)
         // remove this item from the job queue head,
         // Note - erase returns the iterator to next item in container
         it = _jobQueue.erase(it);
-
-        theJob->callHandler();
 
         // add back if not one shot job
         if (!theJob->oneShot())
