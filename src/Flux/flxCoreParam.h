@@ -1249,12 +1249,6 @@ class flxOperation : public flxObject, public _flxParameterContainer
         return (flxTypeID) nullptr;
     }
 
-    // Virtual method called every loop cycle ...
-    virtual bool loop(void)
-    {
-        return false;
-    }
-
     /// @brief Virtual method called to run the operation - called before data is retrieved
     virtual bool execute(void)
     {
@@ -1266,7 +1260,7 @@ class flxOperation : public flxObject, public _flxParameterContainer
         if (!stBlk)
             return false;
 
-        // se need to stash our parameter enable flags.
+        //  need to stash our parameter enable flags.
         flxParameterOutList outParams = getOutputParameters();
 
         for (auto param : outParams)
