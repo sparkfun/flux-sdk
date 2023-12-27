@@ -110,12 +110,12 @@ bool flxFlux::start()
     }
     // start the job queue
     if (!flxJobQueue.start())
-        flxLog_E("Job Q failed to start - unrecoverable error. ");
-    else
-    {
-        flxLog_I(F("Job queue initialized"));
-        flxJobQueue.dump();
-    }
+        flxLog_E("Job queue failed to start - unrecoverable error. ");
+    // else
+    // {
+    //     flxLog_I(F("Job queue initialized"));
+    //     flxJobQueue.dump();
+    // }
 
     return true;
 }
@@ -133,7 +133,13 @@ bool flxFlux::loop(void)
 
     // Just Call loop on the job queue system
     //
-    return flxJobQueue.loop();
+    bool rc = flxJobQueue.loop();
+
+    // and the application loop handler if we have an app
+    if (_theApplication)
+        rc = rc || _theApplication->loop();
+
+    return rc;
 }
 //------------------------------------------------------------------------------
 // add()  -- a device pointer

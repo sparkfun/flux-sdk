@@ -446,6 +446,11 @@ class flxApplication : public flxActionType<flxApplication>
         flux.setAppClassID(ID, prefix);
     }
 
+    virtual bool loop(void)
+    {
+        return false;
+    }
+
   private:
     flxDescriptor appDesc;
 };
