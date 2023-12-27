@@ -131,30 +131,9 @@ bool flxFlux::start()
 bool flxFlux::loop(void)
 {
 
-    // Pump our actions by calling there loop methods
-    bool rc = false;
-
-    // KDB test
-    // call loop on the job queue
+    // Just Call loop on the job queue system
     //
-    rc = flxJobQueue.loop();
-
-    bool rc2;
-    // Actions
-    for (auto pAction : Actions)
-    {
-        rc2 = pAction->loop();
-        rc = rc || rc2;
-    }
-
-    // i2c devices
-    for (auto pDevice : Devices)
-    {
-        rc2 = pDevice->loop();
-        rc = rc || rc2;
-    }
-
-    return rc;
+    return flxJobQueue.loop();
 }
 //------------------------------------------------------------------------------
 // add()  -- a device pointer
