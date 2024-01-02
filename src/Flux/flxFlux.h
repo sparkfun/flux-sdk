@@ -423,7 +423,7 @@ class flxApplication : public flxActionType<flxApplication>
         return true;
     }
 
-    // called after device autoload occurs, but before system state restore is called during
+    // called after device auto-load occurs, but before system state restore is called during
     // startup
     virtual void onDeviceLoad(void)
     {
