@@ -29,11 +29,11 @@
 //
 //    - If a job's time has expired, the job's handler method is called
 //    - If the job isn't a one-shot job, it is re-added to the queue using
-//      current time (millis()) + the job period.
+//      the jobs previous time + the job period.
 //
 // The original system of providing a timing/update call to a subsystem/device
 // was based on just calling a loop() method on each Activity and Device in the
-// system. This was actually wasteful because:
+// system. This was actually wasteful since:
 //
 //     - A majority of items didn't implement a loop() method, so a no-op
 //       from the base class was called
@@ -64,7 +64,7 @@
 #include <vector>
 
 //------------------------------------------------------------------
-// Global object - we only have one queue
+// Global object - we only have one queue - it's a singleton
 
 _flxJobQueue &flxJobQueue = _flxJobQueue::get();
 
