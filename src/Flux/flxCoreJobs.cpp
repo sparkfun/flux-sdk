@@ -32,17 +32,17 @@
 //      the jobs previous time + the job period.
 //
 // The original system of providing a timing/update call to a subsystem/device
-// was based on just calling a loop() method on each Activity and Device in the
+// was based on just calling a loop() method on each Action and Device in the
 // system. This was actually wasteful since:
 //
 //     - A majority of items didn't implement a loop() method, so a no-op
-//       from the base class was called
+//       method from the base class was called
 //     - Each system loop would call everything, so even if a object was
 //       monitoring for a timed event, most times it wasn't required and
 //       the call was returned.
 //
 // Moving to the job queue, object timed update method are only called when
-// desired. If no updates are need in the system, only one loop() method is called
+// desired. If no updates are needed in the system, only one loop() method is called
 // - the loop method on the job queue.
 //
 // Helper Functions
@@ -85,9 +85,13 @@ bool _flxJobQueue::start(void)
 
     // okay, we need to transition from an idle state to a running state
     //
-    // order the jobs based on delta time needs.
+    // Any added jobs were added to the internal queue with no ordering
+    // based on operational timing.
+    //
+    // Now order the jobs based on delta time needs based on *start* time
     std ::vector<flxJob *> theJobs;
 
+    // stash our jobs
     for (auto aJob : _jobQueue)
         theJobs.push_back(aJob.second);
 
@@ -160,7 +164,7 @@ void _flxJobQueue::dispatchJobs(void)
         // Note - erase returns the iterator to next item in container
         it = _jobQueue.erase(it);
 
-        // add back if not one shot job
+        // add back if not a one shot job
         if (!theJob->oneShot())
             _jobQueue.insert(std::pair<uint32_t, flxJob *>(tNext, theJob));
     }
