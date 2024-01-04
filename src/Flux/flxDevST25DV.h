@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevST25DV.h
@@ -24,6 +24,7 @@
 #include "Arduino.h"
 
 #include "SparkFun_ST25DV64KC_Arduino_Library.h"
+#include "flxCoreJobs.h"
 #include "flxDevice.h"
 
 // For WiFi updating of credentials
@@ -46,7 +47,7 @@ class flxDevST25DV : public flxDeviceI2CType<flxDevST25DV>, public SFE_ST25DV64K
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kST25DVDeviceName;
@@ -64,8 +65,6 @@ class flxDevST25DV : public flxDeviceI2CType<flxDevST25DV>, public SFE_ST25DV64K
     // Our output event
     flxSignalVoid new_WiFi_record;
 
-    bool loop(void);
-
     // Methods for the IWiFiCredentialSource interface ...
 
     std::string getSSID(void)
@@ -78,32 +77,27 @@ class flxDevST25DV : public flxDeviceI2CType<flxDevST25DV>, public SFE_ST25DV64K
         return get_password();
     }
 
-    flxSignalVoid & getUpdateEvent(void)
+    flxSignalVoid &getUpdateEvent(void)
     {
         return new_WiFi_record;
     }
 
   private:
-    #define MAX_SSID_PASSWORD_LEN 64
+    static constexpr uint16_t kRecordElementLength = 64;
 
-    char _readSsid[MAX_SSID_PASSWORD_LEN] = {'\0'};
-    char _readPassword[MAX_SSID_PASSWORD_LEN] = {'\0'};
-    char _previousSsid[MAX_SSID_PASSWORD_LEN] = {'\0'};
-    char _previousPassword[MAX_SSID_PASSWORD_LEN] = {'\0'};
-
-    // Flags to prevent readNDEFWiFi being called multiple times
-    bool _ssid = false;
-    bool _password = false;
-
-    // Flags to prevent writeNDEFWiFi being called multiple times
-    bool _ssidW = false;
-    bool _passwordW = false;
+    std::string _sPassword;
+    std::string _sSSID;
 
     // methods for our read-write properties
     std::string get_ssid();
     void set_ssid(std::string);
     std::string get_password();
     void set_password(std::string);
+
+    bool updateWiFiRecord(void);
+    void jobHandlerCB(void);
+
+    flxJob _theJob;
 
   public:
     flxPropertyRWString<flxDevST25DV, &flxDevST25DV::get_ssid, &flxDevST25DV::set_ssid> ssid;

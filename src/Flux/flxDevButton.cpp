@@ -30,6 +30,8 @@
 uint8_t flxDevButton::defaultDeviceAddress[] = {
     0x6F, 0x6E, 0x6D, 0x6C, 0x6B, 0x6A, 0x69, 0x68, kSparkDeviceAddressNull};
 
+#define kButtonUpdateIntervalMS 800
+
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
 // initialization and device discovery.
@@ -54,6 +56,10 @@ flxDevButton::flxDevButton()
 
     // Register parameters
     flxRegister(buttonState, "Button State", "The current state of the button");
+
+    // setup our job -
+    _theJob.setup(name(), kButtonUpdateIntervalMS, this, &flxDevButton::checkButton);
+    flxAddJobToQueue(_theJob);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -62,7 +68,7 @@ bool flxDevButton::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
 
     // possibility this device conflicts with the SEN54 - but confidence value for this device is low (PING), so
-    // is handled by the autoload system
+    // is handled by the auto-load system
     //
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
@@ -128,10 +134,8 @@ void flxDevButton::set_led_brightness(uint8_t brightness)
 //----------------------------------------------------------------------------------------------------------
 // Loop
 
-bool flxDevButton::loop(void)
+void flxDevButton::checkButton(void)
 {
-    bool result = false;
-
     // process events
     _last_button_state = _this_button_state;       // Store the last button state
     _this_button_state = QwiicButton::isPressed(); // Read the current button state
@@ -150,7 +154,6 @@ bool flxDevButton::loop(void)
             }
 
             on_clicked.emit(_this_button_state);
-            result = true;
         }
     }
     else // Click (Toggle) mode
@@ -165,9 +168,6 @@ bool flxDevButton::loop(void)
                 QwiicButton::LEDoff();
 
             on_clicked.emit(_toggle_state);
-            result = true;
         }
     }
-
-    return result;
 }

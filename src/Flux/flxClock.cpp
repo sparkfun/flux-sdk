@@ -28,8 +28,8 @@ flxClockESP32 systemClock;
 _flxClock &flxClock = _flxClock::get();
 
 _flxClock::_flxClock()
-    : _systemClock{nullptr}, _refClock{nullptr}, _lastRefCheck{0}, _lastConnCheck{0}, _bInitialized{false},
-      _nameRefClock{kNoClockName}
+    : _systemClock{nullptr}, _refClock{nullptr}, _refCheck{0}, _connCheck{0}, _bInitialized{false}, _nameRefClock{
+                                                                                                        kNoClockName}
 {
     // Set name and description
     setName("Time Setup", "Manage time configuration and reference sources");
@@ -58,6 +58,14 @@ _flxClock::_flxClock()
 #ifdef DEFAULT_DEFINED
     setSystemClock(&systemClock);
 #endif
+
+    // Setup our clock check jobs
+    _jobRefCheck.setup("clock refchk", _refCheck * 6000, this, &_flxClock::checkRefClock);
+    if (_refCheck > 0)
+        flxAddJobToQueue(_jobRefCheck);
+    _jobConnCheck.setup("clock conchk", _connCheck * 6000, this, &_flxClock::checkConnClock);
+    if (_connCheck > 0)
+        flxAddJobToQueue(_jobConnCheck);
 }
 
 //----------------------------------------------------------------
@@ -93,7 +101,47 @@ std::string _flxClock::get_ref_clock(void)
 {
     return _nameRefClock;
 }
+void _flxClock::set_ref_interval(uint val)
+{
+    if (val == _refCheck)
+        return;
 
+    _refCheck = val;
+
+    if (val == 0)
+        flxRemoveJobFromQueue(_jobRefCheck);
+    else
+    {
+        // val is in minutes, period is MS
+        _jobRefCheck.setPeriod(val * 6000);
+        flxUpdateJobInQueue(_jobRefCheck);
+    }
+}
+uint _flxClock::get_ref_interval(void)
+{
+    return _refCheck;
+}
+
+void _flxClock::set_conn_interval(uint val)
+{
+    if (val == _connCheck)
+        return;
+
+    _connCheck = val;
+
+    if (val == 0)
+        flxRemoveJobFromQueue(_jobConnCheck);
+    else
+    {
+        // val is in minutes, period is MS
+        _jobConnCheck.setPeriod(val * 6000);
+        flxUpdateJobInQueue(_jobConnCheck);
+    }
+}
+uint _flxClock::get_conn_interval(void)
+{
+    return _connCheck;
+}
 //----------------------------------------------------------------
 void _flxClock::set_timezone(std::string tz)
 {
@@ -198,8 +246,6 @@ void _flxClock::updateConnectedClocks(void)
 
     for (flxIClock *aClock : _connectedClocks)
         aClock->set_epoch(epoch);
-
-    _lastConnCheck = epoch;
 }
 //----------------------------------------------------------------
 void _flxClock::updateClock()
@@ -238,9 +284,6 @@ void _flxClock::updateClock()
                 updateConnectedClocks();
         }
     }
-
-    // mark this check time
-    _lastRefCheck = epoch();
 }
 //----------------------------------------------------------------
 bool _flxClock::initialize(void)
@@ -255,27 +298,17 @@ bool _flxClock::initialize(void)
 }
 
 //----------------------------------------------------------------
-// framwork loop
-bool _flxClock::loop(void)
+void _flxClock::checkRefClock(void)
 {
-
-    bool retval = false;
-
     if (!_bInitialized)
-        return false;
+        return;
 
-    // Time to refresh?
-    if (updateClockInterval() > 0 && epoch() - _lastRefCheck > updateClockInterval() * 60)
-    {
-        updateClock();
-        retval = true;
-    }
+    updateClock();
+}
+void _flxClock::checkConnClock(void)
+{
+    if (!_bInitialized)
+        return;
 
-    if (connectedClockInterval() > 0 && epoch() - _lastConnCheck > connectedClockInterval() * 60)
-    {
-        updateConnectedClocks();
-        retval = true;
-    }
-
-    return retval;
+    updateConnectedClocks();
 }

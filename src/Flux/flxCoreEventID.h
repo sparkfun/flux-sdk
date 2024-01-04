@@ -76,3 +76,6 @@ using flxEventID_t = const flxEventIDTypeDef &;
 
 // just one event here -- system activity. Other events defined across the framework
 flxDefineEventID(kOnSystemActivity);
+
+// Low notice system activity;
+flxDefineEventID(kOnSystemActivityLow);

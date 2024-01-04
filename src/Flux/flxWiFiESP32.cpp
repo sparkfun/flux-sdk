@@ -160,6 +160,7 @@ bool flxWiFiESP32::connect(void)
     _wasConnected = true;
     flxSendEvent(flxEvent::kOnConnectionChange, true);
 
+    flxAddJobToQueue(_theJob);
     return true;
 }
 
@@ -178,6 +179,7 @@ void flxWiFiESP32::disconnect(void)
         flxSendEvent(flxEvent::kOnConnectionChange, false);
 
     _wasConnected = false;
+    flxRemoveJobFromQueue(_theJob);
 }
 
 //----------------------------------------------------------------
@@ -204,7 +206,7 @@ String flxWiFiESP32::connectedSSID(void)
 }
 
 //----------------------------------------------------------------
-bool flxWiFiESP32::loop(void)
+void flxWiFiESP32::jobHandlerCB(void)
 {
     // Connection change???
     if (_isEnabled)
@@ -214,10 +216,8 @@ bool flxWiFiESP32::loop(void)
         {
             _wasConnected = wifiConn;
             flxSendEvent(flxEvent::kOnConnectionChange, _wasConnected);
-            return true;
         }
     }
-    return false;
 }
 //----------------------------------------------------------------
 // return an abstract rating of the WiFi

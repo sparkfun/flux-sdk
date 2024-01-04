@@ -6,10 +6,10 @@
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevButton.h
@@ -24,6 +24,7 @@
 #include "Arduino.h"
 
 #include "SparkFun_Qwiic_Button.h"
+#include "flxCoreJobs.h"
 #include "flxDevice.h"
 
 // What is the name used to ID this device?
@@ -62,11 +63,10 @@ class flxDevButton : public flxDeviceI2CType<flxDevButton>, public QwiicButton
     // Our output event
     flxSignalBool on_clicked;
 
-    bool loop(void);
-
   private:
     // methods used to get values for our output parameters
     bool read_button_state();
+    void checkButton(void);
 
     // methods for our read-write properties
     uint8_t get_press_mode();
@@ -79,10 +79,13 @@ class flxDevButton : public flxDeviceI2CType<flxDevButton>, public QwiicButton
     bool _toggle_state = false;
     uint8_t _ledBrightness = 128;
 
+    flxJob _theJob;
+
   public:
-    flxPropertyRWUint8<flxDevButton, &flxDevButton::get_press_mode, &flxDevButton::set_press_mode> pressMode
-      = { 1, { { "Click (Toggle) Mode", 0 }, { "Press Mode", 1 } } }; // 0 = Click (Toggle) mode. 1 = Press mode.
-    flxPropertyRWUint8<flxDevButton, &flxDevButton::get_led_brightness, &flxDevButton::set_led_brightness> ledBrightness;
+    flxPropertyRWUint8<flxDevButton, &flxDevButton::get_press_mode, &flxDevButton::set_press_mode> pressMode = {
+        1, {{"Click (Toggle) Mode", 0}, {"Press Mode", 1}}}; // 0 = Click (Toggle) mode. 1 = Press mode.
+    flxPropertyRWUint8<flxDevButton, &flxDevButton::get_led_brightness, &flxDevButton::set_led_brightness>
+        ledBrightness;
 
     // Define our output parameters - specify the get functions to call.
     flxParameterOutBool<flxDevButton, &flxDevButton::read_button_state> buttonState;

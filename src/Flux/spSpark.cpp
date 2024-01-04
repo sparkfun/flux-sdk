@@ -17,6 +17,8 @@
 #include "flxSettings.h"
 #include "flxStorage.h"
 
+#include "flxCoreJobs.h"
+
 #include "mbedtls/base64.h"
 
 // for logging - define output driver on the stack
@@ -29,7 +31,7 @@ const char *kApplicationHashIDTag = "Application ID";
 flxFlux &flux = flxFlux::get();
 //-------------------------------------------------------
 //
-// Note: Autoload is true by default
+// Note: Auto-load is true by default
 bool flxFlux::start()
 {
 
@@ -106,6 +108,15 @@ bool flxFlux::start()
         if (strlen(_theApplication->name()) > 0)
             this->setName(_theApplication->name());
     }
+    // start the job queue
+    if (!flxJobQueue.start())
+        flxLog_E("Job queue failed to start - unrecoverable error. ");
+    // else
+    // {
+    //     flxLog_I(F("Job queue initialized"));
+    //     flxJobQueue.dump();
+    // }
+
     return true;
 }
 
@@ -120,35 +131,26 @@ bool flxFlux::start()
 bool flxFlux::loop(void)
 {
 
-    // Pump our actions by calling there loop methods
-    bool rc = false;
+    // Just Call loop on the job queue system
+    //
+    bool rc = flxJobQueue.loop();
 
-    bool rc2;
-    // Actions
-    for (auto pAction : Actions)
-    {
-        rc2 = pAction->loop();
-        rc = rc || rc2;
-    }
-
-    // i2c devices
-    for (auto pDevice : Devices)
-    {
-        rc2 = pDevice->loop();
-        rc = rc || rc2;
-    }
+    // and the application loop handler if we have an app
+    if (_theApplication)
+        rc = rc || _theApplication->loop();
 
     return rc;
 }
 //------------------------------------------------------------------------------
 // add()  -- a device pointer
 //
-// If a device is being added by the user, not autoload, there is a chance
-// that autoload picked up the device before the user added it/created it.
+// If a device is being added by the user, not auto-load, there is a chance
+// that auto-load picked up the device before the user added it/created it.
 // This leads to having "dups" in our connected device list.
 //
-// To prevent this, if a device added that is not autoload, we have the
+// To prevent this, if a device added that is not auto-load, we have the
 // device list checked and pruned!
+//
 void flxFlux::add(flxDevice *theDevice)
 {
     if (!theDevice->autoload())

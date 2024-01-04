@@ -423,7 +423,7 @@ class flxApplication : public flxActionType<flxApplication>
         return true;
     }
 
-    // called after device autoload occurs, but before system state restore is called during
+    // called after device auto-load occurs, but before system state restore is called during
     // startup
     virtual void onDeviceLoad(void)
     {
@@ -444,6 +444,11 @@ class flxApplication : public flxActionType<flxApplication>
     void setAppClassID(const char *ID, char prefix[5])
     {
         flux.setAppClassID(ID, prefix);
+    }
+
+    virtual bool loop(void)
+    {
+        return false;
     }
 
   private:

@@ -349,8 +349,8 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             else
                 returnValue = true; // a number was selected.
 
-            Serial.println(selected);
-
+            // Serial.println(selected);
+            Serial.println();
             bool result = pEntity->setValue(limitTags.at(selected - 1).data);
 
             if (result)
