@@ -19,6 +19,7 @@
 
 #include "Arduino.h"
 
+#include "flxCoreEvent.h"
 #include "flxDevENS160.h"
 
 // device addresses for our device interface -- using macros from qwiic/arduino library
@@ -193,6 +194,9 @@ void flxDevENS160::updateParams(void)
         value = _tempCComp->getFloat();
         SparkFun_ENS160::setTempCompensationCelsius(value);
     }
+    // Send an activity event to the system
+    if (_tempCComp != nullptr || _rhComp != nullptr)
+        flxSendEvent(flxEvent::kOnSystemActivity);
 }
 
 void flxDevENS160::set_update_period(uint val)
