@@ -28,7 +28,7 @@
 // We'll limit the supported addresses here to: 0x3F and 0x3E
 uint8_t flxDevTwist::defaultDeviceAddress[] = {0x3F, 0x3E, kSparkDeviceAddressNull};
 
-#define kTwistUpdateIntervalMS 500
+#define kTwistUpdateIntervalMS 170
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -163,12 +163,13 @@ void flxDevTwist::checkTwist(void)
     {
         if (_last_button_state != _this_button_state) // Has the button changed state?
         {
-            if (_this_button_state) // Is the button pressed now?
+            if (_this_button_state)
+            { // Is the button pressed now?
                 TWIST::setColor(_ledRed, _ledGreen, _ledBlue);
+                on_clicked.emit(_this_button_state);
+            }
             else
                 TWIST::setColor(0, 0, 0);
-
-            on_clicked.emit(_this_button_state);
         }
     }
     else // Click (Toggle) mode

@@ -30,7 +30,7 @@
 uint8_t flxDevButton::defaultDeviceAddress[] = {
     0x6F, 0x6E, 0x6D, 0x6C, 0x6B, 0x6A, 0x69, 0x68, kSparkDeviceAddressNull};
 
-#define kButtonUpdateIntervalMS 800
+#define kButtonUpdateIntervalMS 170
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -147,13 +147,12 @@ void flxDevButton::checkButton(void)
             if (_this_button_state) // Is the button pressed now?
             {
                 QwiicButton::LEDon(_ledBrightness);
+
+                // Only send press events when in press mode
+                on_clicked.emit(_this_button_state);
             }
             else
-            {
                 QwiicButton::LEDoff();
-            }
-
-            on_clicked.emit(_this_button_state);
         }
     }
     else // Click (Toggle) mode
