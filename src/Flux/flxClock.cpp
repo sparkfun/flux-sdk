@@ -24,6 +24,8 @@ flxClockESP32 systemClock;
 
 #define kNoClockName "No Clock"
 
+const uint32_t kCLockMinutesToMS = 60000;
+
 // Global object - for quick access to Settings system
 _flxClock &flxClock = _flxClock::get();
 
@@ -60,10 +62,10 @@ _flxClock::_flxClock()
 #endif
 
     // Setup our clock check jobs
-    _jobRefCheck.setup("clock refchk", _refCheck * 6000, this, &_flxClock::checkRefClock);
+    _jobRefCheck.setup("clock refchk", _refCheck * kCLockMinutesToMS, this, &_flxClock::checkRefClock);
     if (_refCheck > 0)
         flxAddJobToQueue(_jobRefCheck);
-    _jobConnCheck.setup("clock conchk", _connCheck * 6000, this, &_flxClock::checkConnClock);
+    _jobConnCheck.setup("clock conchk", _connCheck * kCLockMinutesToMS, this, &_flxClock::checkConnClock);
     if (_connCheck > 0)
         flxAddJobToQueue(_jobConnCheck);
 }
@@ -113,7 +115,7 @@ void _flxClock::set_ref_interval(uint val)
     else
     {
         // val is in minutes, period is MS
-        _jobRefCheck.setPeriod(val * 6000);
+        _jobRefCheck.setPeriod(val * kCLockMinutesToMS);
         flxUpdateJobInQueue(_jobRefCheck);
     }
 }
@@ -134,7 +136,7 @@ void _flxClock::set_conn_interval(uint val)
     else
     {
         // val is in minutes, period is MS
-        _jobConnCheck.setPeriod(val * 6000);
+        _jobConnCheck.setPeriod(val * kCLockMinutesToMS);
         flxUpdateJobInQueue(_jobConnCheck);
     }
 }
