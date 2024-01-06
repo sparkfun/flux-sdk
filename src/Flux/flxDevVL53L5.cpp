@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevVL53L5.h
@@ -65,19 +65,19 @@ bool flxDevVL53L5::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t writePrep[3] = { 0x7f, 0xff, 0x00 };
+    uint8_t writePrep[3] = {0x7f, 0xff, 0x00};
     bool couldBeVL53L = i2cDriver.write(address, writePrep, 3);
-    uint8_t devIdPrep[2] = { 0x00, 0x00 };
+    uint8_t devIdPrep[2] = {0x00, 0x00};
     couldBeVL53L &= i2cDriver.write(address, devIdPrep, 2);
     uint8_t devID = 0;
     couldBeVL53L &= i2cDriver.receiveResponse(address, &devID, 1) == 1;
-    uint8_t revIdPrep[2] = { 0x00, 0x01 };
+    uint8_t revIdPrep[2] = {0x00, 0x01};
     couldBeVL53L &= i2cDriver.write(address, revIdPrep, 2);
     uint8_t revID = 0;
     couldBeVL53L &= i2cDriver.receiveResponse(address, &revID, 1) == 1;
-    uint8_t postPrep[3] = { 0x7f, 0xff, 0x02 };
+    uint8_t postPrep[3] = {0x7f, 0xff, 0x02};
     couldBeVL53L &= i2cDriver.write(address, postPrep, 3);
-    
+
     couldBeVL53L &= ((devID == 0xF0) && (revID == 0x02));
 
     return (couldBeVL53L);
@@ -97,7 +97,7 @@ bool flxDevVL53L5::onInitialize(TwoWire &wirePort)
     bool status = SparkFun_VL53L5CX::begin(flxDevice::address(), wirePort);
     if (status)
     {
-        SparkFun_VL53L5CX::setResolution(8*8);
+        SparkFun_VL53L5CX::setResolution(8 * 8);
         SparkFun_VL53L5CX::startRanging();
     }
     return status;
@@ -119,7 +119,7 @@ bool flxDevVL53L5::read_distance(flxDataArrayInt16 *distances)
         int i = 0;
         for (int y = 0; y < 64; y += 8)
             for (int x = 7; x >= 0; x--)
-                theDistances[i++] = measurementData.distance_mm[x+y];
+                theDistances[i++] = measurementData.distance_mm[x + y];
 
         distances->set(theDistances, 8, 8, true); // don't copy
     }

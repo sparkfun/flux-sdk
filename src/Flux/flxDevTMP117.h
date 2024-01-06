@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevTMP117.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_TMP117.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kTMP117DeviceName "TMP117"
@@ -35,7 +35,7 @@
 class flxDevTMP117 : public flxDeviceI2CType<flxDevTMP117>, public TMP117
 {
 
-public:
+  public:
     flxDevTMP117();
 
     // Static Interface - used by the system to determine if this device is
@@ -45,7 +45,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kTMP117DeviceName;
@@ -61,12 +61,11 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     double read_temperature_C();
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutDouble<flxDevTMP117, &flxDevTMP117::read_temperature_C> temperatureC;    
+    flxParameterOutDouble<flxDevTMP117, &flxDevTMP117::read_temperature_C> temperatureC;
 };

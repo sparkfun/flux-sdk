@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBioHub.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_Bio_Sensor_Hub_Library.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kBioHubDeviceName "BioHub"
@@ -34,7 +34,7 @@
 class flxDevBioHub : public flxDeviceI2CType<flxDevBioHub>, public SparkFun_Bio_Sensor_Hub
 {
 
-public:
+  public:
     flxDevBioHub();
 
     // Static Interface - used by the system to determine if this device is
@@ -45,15 +45,15 @@ public:
     // so auto-detect will fail. We need to manually create an instance of the flxDevBioHub,
     // initialize the pin numbers with `initialize`, check if it is connected, call onInitialize
     // and then add it to the logger.
-    bool initialize( int connectResetPin, int connectMfioPin );
+    bool initialize(int connectResetPin, int connectMfioPin);
 
-    static bool isConnected( flxBusI2C &i2cDriver, uint8_t address);
+    static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
     static flxDeviceConfidence_t connectedConfidence(void)
     {
         return flxDevConfidencePing;
     }
-    
+
     static const char *getDeviceName()
     {
         return kBioHubDeviceName;
@@ -67,10 +67,9 @@ public:
     static uint8_t defaultDeviceAddress[];
 
     // Method called to initialize the class
-    bool onInitialize( TwoWire &);
+    bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     bioData body;
     uint16_t read_heart_rate();
@@ -91,12 +90,12 @@ private:
     bool _eStatus = false;
     bool _o2r = false;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint16<flxDevBioHub, &flxDevBioHub::read_heart_rate> heartRate;    
-    flxParameterOutUint8<flxDevBioHub, &flxDevBioHub::read_confidence> confidence;    
-    flxParameterOutUint16<flxDevBioHub, &flxDevBioHub::read_oxygen> O2;    
-    flxParameterOutUint8<flxDevBioHub, &flxDevBioHub::read_status> status;    
-    flxParameterOutInt8<flxDevBioHub, &flxDevBioHub::read_extended_status> eStatus;    
-    flxParameterOutFloat<flxDevBioHub, &flxDevBioHub::read_r_value> O2R;    
+    flxParameterOutUint16<flxDevBioHub, &flxDevBioHub::read_heart_rate> heartRate;
+    flxParameterOutUint8<flxDevBioHub, &flxDevBioHub::read_confidence> confidence;
+    flxParameterOutUint16<flxDevBioHub, &flxDevBioHub::read_oxygen> O2;
+    flxParameterOutUint8<flxDevBioHub, &flxDevBioHub::read_status> status;
+    flxParameterOutInt8<flxDevBioHub, &flxDevBioHub::read_extended_status> eStatus;
+    flxParameterOutFloat<flxDevBioHub, &flxDevBioHub::read_r_value> O2R;
 };

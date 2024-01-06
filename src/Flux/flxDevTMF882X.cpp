@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevTMF882X.h
@@ -61,7 +61,8 @@ flxDevTMF882X::flxDevTMF882X()
 
     flxRegister(reportPeriod, "Report Period (ms)", "The reporting period in milliseconds)");
 
-    flxRegister(factoryCalibration, "Perform Factory Calibration", "Perform Factory Calibration - requires minimal ambient light and no target within 40 cm");
+    flxRegister(factoryCalibration, "Perform Factory Calibration",
+                "Perform Factory Calibration - requires minimal ambient light and no target within 40 cm");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -90,22 +91,21 @@ bool flxDevTMF882X::onInitialize(TwoWire &wirePort)
 {
 
     return SparkFun_TMF882X::begin(wirePort, address());
-
 }
 
-//methods for our read-write properties
+// methods for our read-write properties
 uint16_t flxDevTMF882X::get_report_period()
 {
     if (isInitialized())
     {
         // First set some config parameters to support the calibration
         struct tmf882x_mode_app_config tofConfig;
-        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
+        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig))
         {
             flxLog_E("TMF882X set_report_period - unable to get device configuration");
             return _reportPeriod;
         }
-        
+
         _reportPeriod = tofConfig.report_period_ms;
     }
     return _reportPeriod;
@@ -116,18 +116,18 @@ void flxDevTMF882X::set_report_period(uint16_t period)
     {
         // First set some config parameters to support the calibration
         struct tmf882x_mode_app_config tofConfig;
-        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
+        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig))
         {
             flxLog_E("TMF882X set_report_period - unable to get device configuration");
             return;
         }
-        
+
         // Change the APP configuration
         //  - set the reporting period
         tofConfig.report_period_ms = period;
         _reportPeriod = period;
 
-        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
+        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig))
         {
             flxLog_E("TMF882X set_report_period- unable to set device configuration");
             return;
@@ -135,19 +135,19 @@ void flxDevTMF882X::set_report_period(uint16_t period)
     }
 }
 
-//methods for write properties
+// methods for write properties
 void flxDevTMF882X::factory_calibration()
 {
     if (isInitialized())
     {
         // First set some config parameters to support the calibration
         struct tmf882x_mode_app_config tofConfig;
-        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig)) 
+        if (!SparkFun_TMF882X::getTMF882XConfig(tofConfig))
         {
             flxLog_E("TMF882X factory_calibration - unable to get device configuration");
             return;
         }
-        
+
         // Change the APP configuration
         //  - set the reporting period to 460 milliseconds
         //  - set the iterations to 4,000,000 (4M) to perform factory calibration
@@ -155,7 +155,7 @@ void flxDevTMF882X::factory_calibration()
         uint16_t originalIterations = tofConfig.kilo_iterations;
         tofConfig.kilo_iterations = 4000;
 
-        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
+        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig))
         {
             flxLog_E("TMF882X factory_calibration - unable to set device configuration");
             return;
@@ -168,7 +168,7 @@ void flxDevTMF882X::factory_calibration()
         tofConfig.report_period_ms = _reportPeriod;
         tofConfig.kilo_iterations = originalIterations;
 
-        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig)) 
+        if (!SparkFun_TMF882X::setTMF882XConfig(tofConfig))
         {
             flxLog_E("TMF882X factory_calibration - unable to restore device configuration");
             return;
@@ -200,7 +200,9 @@ bool flxDevTMF882X::read_confidence(flxDataArrayUint *conf)
         theConfidence[result] = _results.results[result].confidence;
     }
 
-    conf->set(theConfidence, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    conf->set(theConfidence,
+              (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS),
+              true); // don't copy
 
     return true;
 }
@@ -227,7 +229,9 @@ bool flxDevTMF882X::read_distance(flxDataArrayUint *dist)
         theDistance[result] = _results.results[result].distance_mm;
     }
 
-    dist->set(theDistance, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    dist->set(theDistance,
+              (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS),
+              true); // don't copy
 
     return true;
 }
@@ -254,7 +258,9 @@ bool flxDevTMF882X::read_channel(flxDataArrayUint *chan)
         theChannel[result] = _results.results[result].channel;
     }
 
-    chan->set(theChannel, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    chan->set(theChannel,
+              (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS),
+              true); // don't copy
 
     return true;
 }
@@ -281,7 +287,9 @@ bool flxDevTMF882X::read_sub_capture(flxDataArrayUint *sub)
         theSubCapture[result] = _results.results[result].sub_capture;
     }
 
-    sub->set(theSubCapture, (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS), true); // don't copy
+    sub->set(theSubCapture,
+             (_results.num_results < TMF882X_MAX_MEAS_RESULTS ? _results.num_results : TMF882X_MAX_MEAS_RESULTS),
+             true); // don't copy
 
     return true;
 }
@@ -336,4 +344,3 @@ uint flxDevTMF882X::read_ambient_light()
     _ambient_light = false;
     return _results.ambient_light;
 }
-

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBMP581.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_BMP581_Arduino_Library.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kBMP581DeviceName "BMP581"
@@ -34,13 +34,13 @@
 class flxDevBMP581 : public flxDeviceI2CType<flxDevBMP581>, public BMP581
 {
 
-public:
+  public:
     flxDevBMP581();
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
-    
+
     static flxDeviceConfidence_t connectedConfidence(void)
     {
         return flxDevConfidenceExact;
@@ -61,8 +61,8 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-	bmp5_sensor_data bmpData = { 0.0, 0.0 };
+  private:
+    bmp5_sensor_data bmpData = {0.0, 0.0};
 
     // methods used to get values for our output parameters
     float read_TemperatureC();
@@ -78,7 +78,7 @@ private:
     uint8_t get_power_mode();
     void set_power_mode(uint8_t);
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevBMP581, &flxDevBMP581::read_TemperatureC> temperatureC;
     flxParameterOutFloat<flxDevBMP581, &flxDevBMP581::read_Pressure> pressure;
@@ -88,9 +88,11 @@ public:
     // all possible/required changes of mode correctly...
     // From Dryw's notes: the sensor can only enter forced mode from sleep mode.
     //                    Transitions between forced and normal modes are ignored
-    flxPropertyRWUint8<flxDevBMP581, &flxDevBMP581::get_power_mode, &flxDevBMP581::set_power_mode> powerMode
-        = { BMP5_POWERMODE_NORMAL, { { "Standby", BMP5_POWERMODE_STANDBY }, { "Normal", BMP5_POWERMODE_NORMAL },
-                                     { "Forced", BMP5_POWERMODE_FORCED }, { "Continuous", BMP5_POWERMODE_CONTINOUS },
-                                     { "Deep_Standby", BMP5_POWERMODE_DEEP_STANDBY } } };
-
+    flxPropertyRWUint8<flxDevBMP581, &flxDevBMP581::get_power_mode, &flxDevBMP581::set_power_mode> powerMode = {
+        BMP5_POWERMODE_NORMAL,
+        {{"Standby", BMP5_POWERMODE_STANDBY},
+         {"Normal", BMP5_POWERMODE_NORMAL},
+         {"Forced", BMP5_POWERMODE_FORCED},
+         {"Continuous", BMP5_POWERMODE_CONTINOUS},
+         {"Deep_Standby", BMP5_POWERMODE_DEEP_STANDBY}}};
 };

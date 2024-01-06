@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevPASCO2V01.cpp
@@ -40,7 +40,7 @@ flxRegisterDevice(flxDevPASCO2V01);
 //-----------------------------------------------------------------------------
 // Constructor
 //
-// Object constructor. Performs initialization of device values, including 
+// Object constructor. Performs initialization of device values, including
 // device identifiers (name, I2C address) and managed properties.
 flxDevPASCO2V01::flxDevPASCO2V01() : _theSensor(nullptr)
 {
@@ -52,7 +52,8 @@ flxDevPASCO2V01::flxDevPASCO2V01() : _theSensor(nullptr)
 
     // Register Properties
     flxRegister(autoCalibrate, "Automatic Calibration", "Enable / disable automatic calibration");
-    flxRegister(calibrationReference, "Calibration Reference", "Define the calibration ppm. You shouldn't need to change this.");
+    flxRegister(calibrationReference, "Calibration Reference",
+                "Define the calibration ppm. You shouldn't need to change this.");
     flxRegister(pressureReference, "Pressure Reference", "Define the reference pressure in hPa");
     flxRegister(measurementPeriod, "Measurement Period", "Define the measurement period in seconds");
 
@@ -62,7 +63,7 @@ flxDevPASCO2V01::flxDevPASCO2V01() : _theSensor(nullptr)
 
 flxDevPASCO2V01::~flxDevPASCO2V01()
 {
-    if(_theSensor != nullptr)
+    if (_theSensor != nullptr)
         delete _theSensor;
 }
 
@@ -73,14 +74,15 @@ bool flxDevPASCO2V01::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     // For speed, ping the device address first
     if (!i2cDriver.ping(address))
         return false;
-    
+
     uint8_t readProdID;
 
-    if(!i2cDriver.readRegister(address, XENSIV_PASCO2_REG_PROD_ID, &readProdID)) {
+    if (!i2cDriver.readRegister(address, XENSIV_PASCO2_REG_PROD_ID, &readProdID))
+    {
         flxLog_E("PASCO2V01::isConnected: Failed to read prodID.");
         return false;
     }
-    
+
     return (readProdID == kDefaultProdID);
 }
 
@@ -96,15 +98,17 @@ bool flxDevPASCO2V01::onInitialize(TwoWire &wirePort)
 
     // Create instance of arduino object
     _theSensor = new PASCO2Ino(&wirePort);
-    
-    if(_theSensor == nullptr)
+
+    if (_theSensor == nullptr)
         return false;
 
-    while (XENSIV_PASCO2_OK != _theSensor->begin()) {
+    while (XENSIV_PASCO2_OK != _theSensor->begin())
+    {
         delay(200);
         retries--;
-        flxLog_D("PASCO2V01::onInitialize: Begin #%d failed, retrying...", (3-retries));
-        if( retries <= 0) {
+        flxLog_D("PASCO2V01::onInitialize: Begin #%d failed, retrying...", (3 - retries));
+        if (retries <= 0)
+        {
             flxLog_E("PASCO2V01::onInitialize: Sensor failed to respond!");
             return false;
         }
@@ -116,7 +120,8 @@ bool flxDevPASCO2V01::onInitialize(TwoWire &wirePort)
     set_pressure_reference(_pressureReference);
 
     // Lets set it to the default for our startup profile.
-    if(XENSIV_PASCO2_OK != _theSensor->startMeasure(_measurementPeriod)) {
+    if (XENSIV_PASCO2_OK != _theSensor->startMeasure(_measurementPeriod))
+    {
         flxLog_E("PASCO2V01::onInitialize: Sensor failed to begin measuring.");
         return false;
     }
@@ -129,30 +134,35 @@ bool flxDevPASCO2V01::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 uint flxDevPASCO2V01::read_CO2()
 {
-    if(_theSensor == nullptr) {
+    if (_theSensor == nullptr)
+    {
         flxLog_E("PASCO2V01::read_CO2: Failed! Sensor is nullptr.");
-        return ((uint) _co2InPPM);
+        return ((uint)_co2InPPM);
     }
 
-    if(!_sensorIsMeasuring) {
+    if (!_sensorIsMeasuring)
+    {
         flxLog_W("PASCO2V01::read_CO2: Sensor is not measuring, attempting to start.");
-        if(XENSIV_PASCO2_OK != _theSensor->startMeasure(_measurementPeriod)) {
+        if (XENSIV_PASCO2_OK != _theSensor->startMeasure(_measurementPeriod))
+        {
             flxLog_E("PASCO2::read_CO2: Sensor failed to restart. Logging last received value.");
-            return ((uint) _co2InPPM);
+            return ((uint)_co2InPPM);
         }
         _sensorIsMeasuring = true;
     }
-        
+
     uint32_t currentMillis = millis();
 
-    if (currentMillis - _millisSinceLastMeasure >= (_measurementPeriod*1000)) {
+    if (currentMillis - _millisSinceLastMeasure >= (_measurementPeriod * 1000))
+    {
         _millisSinceLastMeasure = currentMillis;
-        if(XENSIV_PASCO2_OK != _theSensor->getCO2(_co2InPPM)) {
+        if (XENSIV_PASCO2_OK != _theSensor->getCO2(_co2InPPM))
+        {
             flxLog_E("PASCO2V01::read_CO2: Failed to read sensor. Logging last received value.");
         }
     }
 
-    return ((uint) _co2InPPM);
+    return ((uint)_co2InPPM);
 }
 
 //-----------------------------------------------------------------------------
@@ -180,8 +190,9 @@ uint flxDevPASCO2V01::get_measurement_period()
 
 void flxDevPASCO2V01::set_auto_calibrate(bool enabled)
 {
-    if(_theSensor == nullptr) {
-        if(_sensorIsInitialized)
+    if (_theSensor == nullptr)
+    {
+        if (_sensorIsInitialized)
             flxLog_E("PASCO2::set_auto_calibrate: Failed! Sensor is nullptr.");
         return;
     }
@@ -189,7 +200,10 @@ void flxDevPASCO2V01::set_auto_calibrate(bool enabled)
     bool prevCalibration = _autoCalibrate;
     _autoCalibrate = enabled;
 
-    if(XENSIV_PASCO2_OK != _theSensor->setABOC((enabled ? XENSIV_PASCO2_BOC_CFG_AUTOMATIC : XENSIV_PASCO2_BOC_CFG_DISABLE), _calibrationReference)) {
+    if (XENSIV_PASCO2_OK !=
+        _theSensor->setABOC((enabled ? XENSIV_PASCO2_BOC_CFG_AUTOMATIC : XENSIV_PASCO2_BOC_CFG_DISABLE),
+                            _calibrationReference))
+    {
         _autoCalibrate = prevCalibration;
         flxLog_W("PASCO2V01::set_auto_calibrate: Could not set calibration.");
     }
@@ -197,16 +211,20 @@ void flxDevPASCO2V01::set_auto_calibrate(bool enabled)
 
 void flxDevPASCO2V01::set_calibration_reference(uint reference)
 {
-    if(_theSensor == nullptr) {
-        if(_sensorIsInitialized)
+    if (_theSensor == nullptr)
+    {
+        if (_sensorIsInitialized)
             flxLog_E("PASCO2V01::set_calibration_reference: Failed! Sensor is nullptr.");
         return;
     }
 
     uint16_t prevCalReference = _calibrationReference;
-    _calibrationReference = ((uint16_t) reference);
+    _calibrationReference = ((uint16_t)reference);
 
-    if(XENSIV_PASCO2_OK != _theSensor->setABOC((_autoCalibrate ? XENSIV_PASCO2_BOC_CFG_AUTOMATIC : XENSIV_PASCO2_BOC_CFG_DISABLE), _calibrationReference)) {
+    if (XENSIV_PASCO2_OK !=
+        _theSensor->setABOC((_autoCalibrate ? XENSIV_PASCO2_BOC_CFG_AUTOMATIC : XENSIV_PASCO2_BOC_CFG_DISABLE),
+                            _calibrationReference))
+    {
         _calibrationReference = prevCalReference;
         flxLog_W("PASCO2V01::set_calibration_reference: Could not set calibration reference value");
     }
@@ -214,16 +232,18 @@ void flxDevPASCO2V01::set_calibration_reference(uint reference)
 
 void flxDevPASCO2V01::set_pressure_reference(uint reference)
 {
-    if(_theSensor == nullptr) {
-        if(_sensorIsInitialized)
+    if (_theSensor == nullptr)
+    {
+        if (_sensorIsInitialized)
             flxLog_E("PASCO2V01::set_pressure_reference: Failed! Sensor is nullptr.");
         return;
     }
 
     uint16_t prevPressure = _pressureReference;
-    _pressureReference = ((uint16_t) reference);
+    _pressureReference = ((uint16_t)reference);
 
-    if(XENSIV_PASCO2_OK != _theSensor->setPressRef(_pressureReference)) {
+    if (XENSIV_PASCO2_OK != _theSensor->setPressRef(_pressureReference))
+    {
         _pressureReference = prevPressure;
         flxLog_W("PASCO2V01::set_pressure_reference: Could not set pressure reference.");
     }
@@ -231,8 +251,9 @@ void flxDevPASCO2V01::set_pressure_reference(uint reference)
 
 void flxDevPASCO2V01::set_measurement_period(uint period)
 {
-    if(_theSensor == nullptr) {
-        if(_sensorIsInitialized)
+    if (_theSensor == nullptr)
+    {
+        if (_sensorIsInitialized)
             flxLog_E("PASCO2V01::set_measurement_period: Failed! Sensor is nullptr.");
         return;
     }
@@ -240,15 +261,18 @@ void flxDevPASCO2V01::set_measurement_period(uint period)
     uint prevPeriod = _measurementPeriod;
     _measurementPeriod = period;
 
-    if(_sensorIsMeasuring) {
-        if(XENSIV_PASCO2_OK != _theSensor->stopMeasure()){
+    if (_sensorIsMeasuring)
+    {
+        if (XENSIV_PASCO2_OK != _theSensor->stopMeasure())
+        {
             flxLog_E("PASCO2V01::set_measurement_period: Could not stop measurements.");
             return;
         }
         _sensorIsMeasuring = false;
     }
 
-    if(XENSIV_PASCO2_OK != _theSensor->startMeasure(_measurementPeriod)){
+    if (XENSIV_PASCO2_OK != _theSensor->startMeasure(_measurementPeriod))
+    {
         _measurementPeriod = prevPeriod;
         flxLog_E("PASCO2V01::set_measurement_period: Could not set measurement period and start measuring.");
     }

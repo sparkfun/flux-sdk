@@ -1,31 +1,30 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
- /*
+
+/*
  *
  *  flxDevADS122C04.cpp
  *
  *  Spark Device object for the ADS122C04 A/D converter device.
- * 
- * 
+ *
+ *
  */
 
 #include "Arduino.h"
 
 #include "flxDevADS122C04.h"
 
-
 // The ADS122C04 supports multiple addresses. The SparkX breakout can be set to 0x45, 0x44, 0x41, 0x40
-uint8_t flxDevADS122C04::defaultDeviceAddress[] = { 0x45, 0x44, 0x41, 0x40, kSparkDeviceAddressNull};
+uint8_t flxDevADS122C04::defaultDeviceAddress[] = {0x45, 0x44, 0x41, 0x40, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevADS122C04);
@@ -42,11 +41,11 @@ flxDevADS122C04::flxDevADS122C04()
     // We need to initialize both _wireMode and _sampleRate before we initialize wireMode.
     // Initializing wireMode (*) will write both _wireMode and _sampleRate to the ADS122C04 over I2C.
 
-    _wireMode = ADS122C04_4WIRE_MODE; // Default to 4-wire mode
+    _wireMode = ADS122C04_4WIRE_MODE;        // Default to 4-wire mode
     _sampleRate = ADS122C04_DATA_RATE_20SPS; // Default to 20 samples per second
 
     flxRegister(wireMode, "Wire mode", "Wire mode");
-    
+
     flxRegister(sampleRate, "Sample rate", "Sample rate");
 
     // Register output params
@@ -54,7 +53,6 @@ flxDevADS122C04::flxDevADS122C04()
     flxRegister(temperatureF, "Probe temperature (F)", "The probe temperature in degrees F");
     flxRegister(internalTemperature, "Internal temperature (C)", "The ADS122C04 internal temperature (C)");
     flxRegister(rawVoltage, "Raw voltage (V)", "The raw ADC voltage (V)");
-
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.
@@ -103,7 +101,8 @@ bool flxDevADS122C04::isConnected(flxBusI2C &i2cDriver, uint8_t address)
         return false;
     uint8_t byte1 = (uint8_t)(configReg2inv & 0xFF);
     uint8_t byte2 = configReg2inv >> 8;
-    if ( 0xFF != (byte1 ^ byte2)) // Check byte1 is the inverse of byte2 by ex-oring them together. Result should be 0xFF.
+    if (0xFF !=
+        (byte1 ^ byte2)) // Check byte1 is the inverse of byte2 by ex-oring them together. Result should be 0xFF.
         return false;
     // Finally, restore Config Register 2
     if (!i2cDriver.writeRegister(address, writeCommand, configReg2))
@@ -122,8 +121,8 @@ bool flxDevADS122C04::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevADS122C04::onInitialize(TwoWire &wirePort)
 {
-	// set the underlying drivers address to the one determined during
-	// device construction
+    // set the underlying drivers address to the one determined during
+    // device construction
     bool result = SFE_ADS122C04::begin(address(), wirePort);
 
     if (!result)

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevMCP9600.h
@@ -23,8 +23,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_MCP9600.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kMCP9600DeviceName "MCP9600"
@@ -44,7 +44,7 @@ class flxDevMCP9600 : public flxDeviceI2CType<flxDevMCP9600>, public MCP9600
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kMCP9600DeviceName;
@@ -80,26 +80,39 @@ class flxDevMCP9600 : public flxDeviceI2CType<flxDevMCP9600>, public MCP9600
 
   public:
     // property objs
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_AmbientResolution, &flxDevMCP9600::set_AmbientResolution> ambient_resolution
-      = { RES_ZERO_POINT_0625, { { "0.0625", RES_ZERO_POINT_0625 }, { "0.25", RES_ZERO_POINT_25 } } };
+    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_AmbientResolution, &flxDevMCP9600::set_AmbientResolution>
+        ambient_resolution = {RES_ZERO_POINT_0625, {{"0.0625", RES_ZERO_POINT_0625}, {"0.25", RES_ZERO_POINT_25}}};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleResolution, &flxDevMCP9600::set_ThermocoupleResolution> thermocouple_resolution
-      = { RES_18_BIT, { { "18-bit", RES_18_BIT }, { "16-bit", RES_16_BIT },
-                        { "14-bit", RES_14_BIT }, { "12-bit", RES_12_BIT } } };
+    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleResolution,
+                       &flxDevMCP9600::set_ThermocoupleResolution>
+        thermocouple_resolution = {
+            RES_18_BIT,
+            {{"18-bit", RES_18_BIT}, {"16-bit", RES_16_BIT}, {"14-bit", RES_14_BIT}, {"12-bit", RES_12_BIT}}};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleType, &flxDevMCP9600::set_ThermocoupleType> thermocouple_type
-      = { TYPE_K, { { "Type K", TYPE_K }, { "Type J", TYPE_J },
-                    { "Type T", TYPE_T }, { "Type N", TYPE_N },
-                    { "Type S", TYPE_S }, { "Type E", TYPE_E },
-                    { "Type B", TYPE_B }, { "Type R", TYPE_R } } };
+    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleType, &flxDevMCP9600::set_ThermocoupleType>
+        thermocouple_type = {TYPE_K,
+                             {{"Type K", TYPE_K},
+                              {"Type J", TYPE_J},
+                              {"Type T", TYPE_T},
+                              {"Type N", TYPE_N},
+                              {"Type S", TYPE_S},
+                              {"Type E", TYPE_E},
+                              {"Type B", TYPE_B},
+                              {"Type R", TYPE_R}}};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_FilterCoefficient, &flxDevMCP9600::set_FilterCoefficient> filter_coefficent = { 0, 0, 7 };
+    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_FilterCoefficient, &flxDevMCP9600::set_FilterCoefficient>
+        filter_coefficent = {0, 0, 7};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_BurstSamples, &flxDevMCP9600::set_BurstSamples> burst_samples
-      = { SAMPLES_1, { { "1", SAMPLES_1 }, { "2", SAMPLES_2 },
-                       { "4", SAMPLES_4 }, { "8", SAMPLES_8 },
-                       { "16", SAMPLES_16 }, { "32", SAMPLES_32 },
-                       { "64", SAMPLES_64 }, { "128", SAMPLES_128 } } };
+    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_BurstSamples, &flxDevMCP9600::set_BurstSamples>
+        burst_samples = {SAMPLES_1,
+                         {{"1", SAMPLES_1},
+                          {"2", SAMPLES_2},
+                          {"4", SAMPLES_4},
+                          {"8", SAMPLES_8},
+                          {"16", SAMPLES_16},
+                          {"32", SAMPLES_32},
+                          {"64", SAMPLES_64},
+                          {"128", SAMPLES_128}}};
 
   private:
     // For the output param call - no args
@@ -119,5 +132,4 @@ class flxDevMCP9600 : public flxDeviceI2CType<flxDevMCP9600>, public MCP9600
     flxParameterOutFloat<flxDevMCP9600, &flxDevMCP9600::read_ThermocoupleTemp> thermocouple_temp;
     flxParameterOutFloat<flxDevMCP9600, &flxDevMCP9600::read_AmbientTemp> ambient_temp;
     flxParameterOutFloat<flxDevMCP9600, &flxDevMCP9600::read_TempDelta> temp_delta;
-    
 };

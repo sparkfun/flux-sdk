@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSEN54.h
@@ -57,10 +57,14 @@ flxDevSEN54::flxDevSEN54()
     // Register parameters
     flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
     flxRegister(humidity, "Humidity (%RH)", "The relative humidity in %");
-    flxRegister(massConcentrationPm1p0, "Particle Mass Concentration (1um)", "The concentration of 0.3-1.0 micron particles in ug/m^3");
-    flxRegister(massConcentrationPm2p5, "Particle Mass Concentration (2.5um)", "The concentration of 0.3-2.5 micron particles in ug/m^3");
-    flxRegister(massConcentrationPm4p0, "Particle Mass Concentration (4um)", "The concentration of 0.3-4.0 micron particles in ug/m^3");
-    flxRegister(massConcentrationPm10p0, "Particle Mass Concentration (10um)", "The concentration of 0.3-10.0 micron particles in ug/m^3");
+    flxRegister(massConcentrationPm1p0, "Particle Mass Concentration (1um)",
+                "The concentration of 0.3-1.0 micron particles in ug/m^3");
+    flxRegister(massConcentrationPm2p5, "Particle Mass Concentration (2.5um)",
+                "The concentration of 0.3-2.5 micron particles in ug/m^3");
+    flxRegister(massConcentrationPm4p0, "Particle Mass Concentration (4um)",
+                "The concentration of 0.3-4.0 micron particles in ug/m^3");
+    flxRegister(massConcentrationPm10p0, "Particle Mass Concentration (10um)",
+                "The concentration of 0.3-10.0 micron particles in ug/m^3");
     flxRegister(vocIndex, "VOC Index", "The VOC Index measured in index points (1-500)");
     flxRegister(noxIndex, "NOx Index", "The NOx Index measured in index points (1-500)");
 }
@@ -71,9 +75,10 @@ bool flxDevSEN54::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     // Don't ping the SEN54. It does not like it...
 
-    uint8_t productName[9]; // Product name is 48 bytes maximum, but we'll only read the first nine here ( Three * Two bytes plus CRC)
+    uint8_t productName[9]; // Product name is 48 bytes maximum, but we'll only read the first nine here ( Three * Two
+                            // bytes plus CRC)
     uint16_t productNameReg = 0xD014;
-    uint8_t productNameRegBytes[2] = { (uint8_t)(productNameReg >> 8), (uint8_t)(productNameReg & 0xFF)}; // MSB first
+    uint8_t productNameRegBytes[2] = {(uint8_t)(productNameReg >> 8), (uint8_t)(productNameReg & 0xFF)}; // MSB first
     if (!i2cDriver.write(address, productNameRegBytes, 2))
         return false;
     delay(20);
@@ -124,8 +129,9 @@ float flxDevSEN54::read_temperature_C()
     if (isInitialized())
         if (!_temperature)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _humidity = true;
                 _vocIndex = true;
@@ -143,8 +149,9 @@ float flxDevSEN54::read_humidity()
     if (isInitialized())
         if (!_humidity)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _temperature = true;
                 _vocIndex = true;
@@ -162,8 +169,9 @@ float flxDevSEN54::read_voc_index()
     if (isInitialized())
         if (!_vocIndex)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _temperature = true;
                 _humidity = true;
@@ -181,8 +189,9 @@ float flxDevSEN54::read_nox_index()
     if (isInitialized())
         if (!_noxIndex)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _temperature = true;
                 _humidity = true;
@@ -200,8 +209,9 @@ float flxDevSEN54::read_mass_concentration_1p0()
     if (isInitialized())
         if (!_massConcentrationPm1p0)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _temperature = true;
                 _humidity = true;
@@ -219,8 +229,9 @@ float flxDevSEN54::read_mass_concentration_2p5()
     if (isInitialized())
         if (!_massConcentrationPm2p5)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _temperature = true;
                 _humidity = true;
@@ -238,8 +249,9 @@ float flxDevSEN54::read_mass_concentration_4p0()
     if (isInitialized())
         if (!_massConcentrationPm4p0)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _temperature = true;
                 _humidity = true;
@@ -257,8 +269,9 @@ float flxDevSEN54::read_mass_concentration_10p0()
     if (isInitialized())
         if (!_massConcentrationPm10p0)
             if (SensirionI2CSen5x::readMeasuredValues(_theMassConcentrationPm1p0, _theMassConcentrationPm2p5,
-                                                        _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
-                                                        _theAmbientHumidity, _theAmbientTemperature, _theVocIndex, _theNoxIndex) == 0)
+                                                      _theMassConcentrationPm4p0, _theMassConcentrationPm10p0,
+                                                      _theAmbientHumidity, _theAmbientTemperature, _theVocIndex,
+                                                      _theNoxIndex) == 0)
             {
                 _temperature = true;
                 _humidity = true;
@@ -288,4 +301,3 @@ void flxDevSEN54::set_temperature_offset(float offset)
     if (isInitialized())
         SensirionI2CSen5x::setTemperatureOffsetSimple(offset);
 }
-

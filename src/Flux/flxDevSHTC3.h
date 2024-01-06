@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSHTC3.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_SHTC3.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kSHTC3DeviceName "SHTC3"
@@ -35,7 +35,7 @@
 class flxDevSHTC3 : public flxDeviceI2CType<flxDevSHTC3>, public SHTC3
 {
 
-public:
+  public:
     flxDevSHTC3();
 
     // Static Interface - used by the system to determine if this device is
@@ -46,7 +46,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kSHTC3DeviceName;
@@ -62,8 +62,7 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     float read_humidity();
     float read_temperature_C();
@@ -74,9 +73,9 @@ private:
     bool _tempC = false;
     bool _tempF = false;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutFloat<flxDevSHTC3, &flxDevSHTC3::read_humidity> humidity;    
-    flxParameterOutFloat<flxDevSHTC3, &flxDevSHTC3::read_temperature_C> temperatureC;    
-    flxParameterOutFloat<flxDevSHTC3, &flxDevSHTC3::read_temperature_F> temperatureF;    
+    flxParameterOutFloat<flxDevSHTC3, &flxDevSHTC3::read_humidity> humidity;
+    flxParameterOutFloat<flxDevSHTC3, &flxDevSHTC3::read_temperature_C> temperatureC;
+    flxParameterOutFloat<flxDevSHTC3, &flxDevSHTC3::read_temperature_F> temperatureF;
 };

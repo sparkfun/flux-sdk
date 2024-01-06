@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevCCS811.cpp
@@ -21,17 +21,14 @@
 
 #include "flxDevCCS811.h"
 
-
 // For Device detection - chip ID things
-#define kCCS811ChipIdReg 0x20 
+#define kCCS811ChipIdReg 0x20
 #define kCCS811ChipIdValue 0x81
 
 #define kCCS811AddressDefault 0x5B
 #define kCCS811AddressAlt1 0x5A
 
-uint8_t flxDevCCS811::defaultDeviceAddress[] = { kCCS811AddressDefault, 
-												kCCS811AddressAlt1, 
-												kSparkDeviceAddressNull};
+uint8_t flxDevCCS811::defaultDeviceAddress[] = {kCCS811AddressDefault, kCCS811AddressAlt1, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevCCS811);
@@ -46,8 +43,7 @@ flxDevCCS811::flxDevCCS811() //: CCS811(kCCS811AddressDefault)
 
     // Register output params
     flxRegister(co2, "CO2", "CO2 reading");
-    flxRegister(tvoc, "VOC", "Volatile Organic Compound reading");    
-
+    flxRegister(tvoc, "VOC", "Volatile Organic Compound reading");
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.
@@ -95,7 +91,7 @@ bool flxDevCCS811::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t chipID = i2cDriver.readRegister(address, kCCS811ChipIdReg); 
+    uint8_t chipID = i2cDriver.readRegister(address, kCCS811ChipIdReg);
 
     return (chipID == kCCS811ChipIdValue);
 }
@@ -112,8 +108,8 @@ bool flxDevCCS811::onInitialize(TwoWire &wirePort)
     _tvoc = false; // Flags to avoid calling readAlgorithmResults twice
     _co2 = false;
 
-	// set the underlying drivers address to the one determined during
-	// device construction
+    // set the underlying drivers address to the one determined during
+    // device construction
     CCS811::setI2CAddress(address());
 
     return CCS811::begin(wirePort);

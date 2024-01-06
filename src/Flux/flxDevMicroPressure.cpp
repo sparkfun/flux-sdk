@@ -1,22 +1,22 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevMicroPressure.cpp
  *
  *  Spark Device object for the MicroPressure device.
- * 
- * 
+ *
+ *
  */
 
 #include "Arduino.h"
@@ -24,7 +24,7 @@
 #include "flxDevMicroPressure.h"
 
 // The default address is named DEFAULT_ADDRESS... Let's not use that...
-uint8_t flxDevMicroPressure::defaultDeviceAddress[] = { 0x18, kSparkDeviceAddressNull};
+uint8_t flxDevMicroPressure::defaultDeviceAddress[] = {0x18, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevMicroPressure);
@@ -99,8 +99,8 @@ bool flxDevMicroPressure::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevMicroPressure::onInitialize(TwoWire &wirePort)
 {
-	// set the underlying drivers address to the one determined during
-	// device construction
+    // set the underlying drivers address to the one determined during
+    // device construction
     bool result = SparkFun_MicroPressure::begin(address(), wirePort);
 
     if (!result)
@@ -108,4 +108,3 @@ bool flxDevMicroPressure::onInitialize(TwoWire &wirePort)
 
     return result;
 }
-

@@ -1,7 +1,7 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
@@ -25,7 +25,6 @@
 
 #include "flxDevSTHS34PF80.h"
 
-
 // Define our class static variables - allocs storage for them
 uint8_t flxDevSTHS34PF80::defaultDeviceAddress[] = {STHS34PF80_I2C_ADDRESS, kSparkDeviceAddressNull};
 
@@ -39,7 +38,7 @@ flxRegisterDevice(flxDevSTHS34PF80);
 //
 // Object constructor. Performs initialization of device values, including
 // device identifiers (name, I2C address) and managed properties.
-flxDevSTHS34PF80::flxDevSTHS34PF80() 
+flxDevSTHS34PF80::flxDevSTHS34PF80()
 {
     // Setup unique identifiers for this device and basic device object systems
     setName(kSTHS34PF80DeviceName, "Human Presence Sensor");
@@ -145,7 +144,6 @@ bool flxDevSTHS34PF80::get_DataReady()
     return dataReady.drdy == 1;
 }
 
-
 int flxDevSTHS34PF80::get_AverageTObjectNumber()
 {
     sths34pf80_avg_tobject_num_t value;
@@ -157,7 +155,6 @@ void flxDevSTHS34PF80::set_AverageTObjectNumber(int avg)
     if (isInitialized())
         setAverageTObjectNumber((sths34pf80_avg_tobject_num_t)avg);
 }
-
 
 int flxDevSTHS34PF80::get_AverageTAmbientNumber()
 {
@@ -172,8 +169,6 @@ void flxDevSTHS34PF80::set_AverageTAmbientNumber(int avg)
         setAverageTAmbientNumber((sths34pf80_avg_tambient_num_t)avg);
 }
 
-
-
 int flxDevSTHS34PF80::get_GainMode()
 {
     sths34pf80_gain_mode_t value;
@@ -186,8 +181,6 @@ void flxDevSTHS34PF80::set_GainMode(int gain)
     if (isInitialized())
         setGainMode((sths34pf80_gain_mode_t)gain);
 }
-
-
 
 float flxDevSTHS34PF80::get_TmosSensitivity()
 {
@@ -202,8 +195,6 @@ void flxDevSTHS34PF80::set_TmosSensitivity(float sense)
         setTmosSensitivity(sense);
 }
 
-
-
 int flxDevSTHS34PF80::get_TmosODR()
 {
     sths34pf80_tmos_odr_t value;
@@ -217,7 +208,6 @@ void flxDevSTHS34PF80::set_TmosODR(int odr)
         setTmosODR((sths34pf80_tmos_odr_t)odr);
 }
 
-
 bool flxDevSTHS34PF80::get_BlockDataUpdate()
 {
     bool update;
@@ -225,13 +215,11 @@ bool flxDevSTHS34PF80::get_BlockDataUpdate()
     return update;
 }
 
-
 void flxDevSTHS34PF80::set_BlockDataUpdate(bool update)
 {
     if (isInitialized())
         setBlockDataUpdate(update);
 }
-
 
 int flxDevSTHS34PF80::get_TmosOneShot()
 {
@@ -247,7 +235,6 @@ void flxDevSTHS34PF80::set_TmosOneShot(int shot)
         setTmosOneShot((sths34pf80_tmos_one_shot_t)shot);
 }
 
-
 int flxDevSTHS34PF80::get_MemoryBank()
 {
     sths34pf80_mem_bank_t value;
@@ -260,8 +247,6 @@ void flxDevSTHS34PF80::set_MemoryBank(int bank)
     if (isInitialized())
         setMemoryBank((sths34pf80_mem_bank_t)bank);
 }
-
-
 
 uint8_t flxDevSTHS34PF80::get_BootOTP()
 {
@@ -296,7 +281,6 @@ void flxDevSTHS34PF80::set_LpfMotionBandwidth(int band)
         setLpfMotionBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
-
 int flxDevSTHS34PF80::get_LpfPresenceMotionBandwidth()
 {
     sths34pf80_lpf_bandwidth_t value;
@@ -309,7 +293,6 @@ void flxDevSTHS34PF80::set_LpfPresenceMotionBandwidth(int band)
         setLpfPresenceMotionBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
-
 int flxDevSTHS34PF80::get_LpfAmbientTempBandwidth()
 {
     sths34pf80_lpf_bandwidth_t value;
@@ -317,13 +300,11 @@ int flxDevSTHS34PF80::get_LpfAmbientTempBandwidth()
     return value;
 }
 
-
 void flxDevSTHS34PF80::set_LpfAmbientTempBandwidth(int band)
 {
     if (isInitialized())
         setLpfAmbientTempBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
-
 
 int flxDevSTHS34PF80::get_LpfPresenceBandwidth()
 {
@@ -337,7 +318,6 @@ void flxDevSTHS34PF80::set_LpfPresenceBandwidth(int band)
         setLpfPresenceBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
-
 int flxDevSTHS34PF80::get_TmosRouteInterrupt()
 {
     sths34pf80_tmos_route_int_t value;
@@ -350,7 +330,6 @@ void flxDevSTHS34PF80::set_TmosRouteInterrupt(int intr)
     if (isInitialized())
         setTmosRouteInterrupt((sths34pf80_tmos_route_int_t)intr);
 }
-
 
 int flxDevSTHS34PF80::get_DataReadyMode()
 {

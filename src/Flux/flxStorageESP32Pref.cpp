@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
 #
  */
@@ -188,7 +188,7 @@ bool flxStorageESP32Block::writeString(const char *tag, const char *value)
 
     // the value length is 0, just return true. Otherwise the esp pref system
     // returns an error.
-    
+
     if (!value || strlen(value) == 0)
         return true;
 
@@ -210,7 +210,7 @@ bool flxStorageESP32Block::writeBytes(const char *tag, const uint8_t *value, siz
 
     // the value length is 0, just return true. Otherwise the esp pref system
     // returns an error.
-    
+
     if (!value || len == 0)
         return true;
 
@@ -219,7 +219,7 @@ bool flxStorageESP32Block::writeBytes(const char *tag, const uint8_t *value, siz
     if (!flx_utils::id_hash_string_to_string(tag, szHash, sizeof(szHash)))
         return false;
 
-    return (_prefs->putBytes(szHash, (void*)value, len) > 0);
+    return (_prefs->putBytes(szHash, (void *)value, len) > 0);
 }
 //------------------------------------------------------------------------
 // Read value section
@@ -260,7 +260,6 @@ bool flxStorageESP32Block::readInt8(const char *tag, int8_t &value)
 
     return true;
 }
-
 
 //------------------------------------------------------------------------
 bool flxStorageESP32Block::readInt16(const char *tag, int16_t &value)
@@ -428,7 +427,6 @@ size_t flxStorageESP32Block::getStringLength(const char *tag)
     String tmp = _prefs->getString(szHash);
 
     return tmp.length();
-
 }
 //------------------------------------------------------------------------
 size_t flxStorageESP32Block::readBytes(const char *tag, uint8_t *data, size_t len)
@@ -463,7 +461,6 @@ size_t flxStorageESP32Block::getBytesLength(const char *tag)
         return 0;
 
     return _prefs->getBytesLength(szHash);
-
 }
 //------------------------------------------------------------------------------
 bool flxStorageESP32Block::valueExists(const char *tag)
@@ -489,9 +486,8 @@ bool flxStorageESP32Pref::setupNVSSecurePartition(void)
 {
     // do we have a secure partition
 
-    const esp_partition_t *partition = esp_partition_find_first(ESP_PARTITION_TYPE_DATA,
-                                                                ESP_PARTITION_SUBTYPE_DATA_NVS_KEYS,
-                                                                "nvs_key");
+    const esp_partition_t *partition =
+        esp_partition_find_first(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_NVS_KEYS, "nvs_key");
     if (partition == NULL)
     {
         flxLog_W_(F("No secure key storage partition found."));
@@ -500,10 +496,10 @@ bool flxStorageESP32Pref::setupNVSSecurePartition(void)
 
     // Okay, we have a nvs key partition, does it contain keys?
     nvs_sec_cfg_t cfg;
-    if (ESP_OK != nvs_flash_read_security_cfg(partition, &cfg)) 
+    if (ESP_OK != nvs_flash_read_security_cfg(partition, &cfg))
     {
         // Okay, no keys in the partiion - generate and store keys
-        if ( ESP_OK != nvs_flash_generate_keys(partition, &cfg))
+        if (ESP_OK != nvs_flash_generate_keys(partition, &cfg))
         {
             // Failed to gen and store keys
             flxLog_W_(F("Unable to generate secure storage keys."));
@@ -512,7 +508,7 @@ bool flxStorageESP32Pref::setupNVSSecurePartition(void)
     }
     // we:
     //  - Have NVS keys
-    //  - The NVS keys are stored in the nvs_key partiion 
+    //  - The NVS keys are stored in the nvs_key partiion
     //
     // Initialize the default nvs partition to be read via encryption
 
@@ -520,9 +516,9 @@ bool flxStorageESP32Pref::setupNVSSecurePartition(void)
     {
         flxLog_W_(F("Error initializing preference storage as encrypted."));
         return false;
-    } 
+    }
     return true;
-}  
+}
 
 #endif
 //

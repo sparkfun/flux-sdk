@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  * QwiicDevACS37800.cpp
@@ -67,8 +67,10 @@ flxDevACS37800::flxDevACS37800()
     flxRegister(positivePowerFactor, "Power Factor Sign", "True: Consumed; False: Generated");
 
     // Register properties
-    flxRegister(numberOfSamples, "Number of samples", "The number of samples used in RMS calculations. For DC measurement: set to 1023");
-    flxRegister(bypassNenable, "Bypass n enable", "Defines how the RMS is calculated. For DC measurement: set to N Samples");
+    flxRegister(numberOfSamples, "Number of samples",
+                "The number of samples used in RMS calculations. For DC measurement: set to 1023");
+    flxRegister(bypassNenable, "Bypass n enable",
+                "Defines how the RMS is calculated. For DC measurement: set to N Samples");
     flxRegister(senseResistance, "Sense resistance", "Define the voltage sense resistance (Ohms)");
     flxRegister(dividerResistance, "Divider resistance", "Define the voltage divider resistance (Ohms)");
     flxRegister(currentRange, "Current range", "Define the sensor current range (Amps)");
@@ -82,14 +84,14 @@ bool flxDevACS37800::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    // NOTE: This device could clash with the MCP9600 or the VEML4040. Get a definitive ID, the 
+    // NOTE: This device could clash with the MCP9600 or the VEML4040. Get a definitive ID, the
     //       confidence value of this device is FUZZY
 
     // ACS37800
     // Read EEPROM address 0x0B and check the two ECC bits are clear. Not a great check, but something...
     uint8_t reg0B[4] = {0xFF, 0xFF, 0xFF, 0xFF};
     bool couldBe37800 = i2cDriver.readRegisterRegion(address, 0x0B, reg0B, 4); // 32-bits, little endian
-    couldBe37800 &= (reg0B[3] & 0x0A) == 0; // Check the two ECC bits are clear
+    couldBe37800 &= (reg0B[3] & 0x0A) == 0;                                    // Check the two ECC bits are clear
     return couldBe37800;
 }
 //----------------------------------------------------------------------------------------------------------
@@ -305,4 +307,3 @@ void flxDevACS37800::set_current_range(float range)
     if (isInitialized())
         ACS37800::setCurrentRange(range);
 }
-

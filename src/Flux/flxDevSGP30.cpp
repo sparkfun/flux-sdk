@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSGP30.h
@@ -106,57 +106,57 @@ bool flxDevSGP30::onInitialize(TwoWire &wirePort)
 // GETTER methods for output params
 uint flxDevSGP30::read_tvoc()
 {
-      if (_tvoc == false)
-      {
+    if (_tvoc == false)
+    {
         SGP30::measureAirQuality();
         SGP30::measureRawSignals();
         _co2 = true;
         _h2 = true;
         _ethanol = true;
-      }
-      _tvoc = false;
+    }
+    _tvoc = false;
     return SGP30::TVOC;
 }
 
 uint flxDevSGP30::read_co2()
 {
-      if (_co2 == false)
-      {
+    if (_co2 == false)
+    {
         SGP30::measureAirQuality();
         SGP30::measureRawSignals();
         _tvoc = true;
         _h2 = true;
         _ethanol = true;
-      }
-      _co2 = false;
+    }
+    _co2 = false;
     return SGP30::CO2;
 }
 
 uint flxDevSGP30::read_h2()
 {
-      if (_h2 == false)
-      {
+    if (_h2 == false)
+    {
         SGP30::measureAirQuality();
         SGP30::measureRawSignals();
         _tvoc = true;
         _co2 = true;
         _ethanol = true;
-      }
-      _h2 = false;
+    }
+    _h2 = false;
     return SGP30::H2;
 }
 
 uint flxDevSGP30::read_ethanol()
 {
-      if (_ethanol == false)
-      {
+    if (_ethanol == false)
+    {
         SGP30::measureAirQuality();
         SGP30::measureRawSignals();
         _tvoc = true;
         _co2 = true;
         _h2 = true;
-      }
-      _ethanol = false;
+    }
+    _ethanol = false;
     return SGP30::ethanol;
 }
 

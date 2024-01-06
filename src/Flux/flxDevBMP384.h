@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBMP384.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFunBMP384.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kBMP384DeviceName "BMP384"
@@ -34,7 +34,7 @@
 class flxDevBMP384 : public flxDeviceI2CType<flxDevBMP384>, public BMP384
 {
 
-public:
+  public:
     flxDevBMP384();
 
     // Static Interface - used by the system to determine if this device is
@@ -45,7 +45,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kBMP384DeviceName;
@@ -61,8 +61,8 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-	bmp3_data bmpData = { 0.0, 0.0 };
+  private:
+    bmp3_data bmpData = {0.0, 0.0};
 
     // methods used to get values for our output parameters
     double read_TemperatureC();
@@ -72,9 +72,8 @@ private:
     bool _temperature = false;
     bool _pressure = false;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutDouble<flxDevBMP384, &flxDevBMP384::read_TemperatureC> temperatureC;
     flxParameterOutDouble<flxDevBMP384, &flxDevBMP384::read_Pressure> pressure;
-
 };

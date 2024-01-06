@@ -1,29 +1,29 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevLPS25HB.cpp
  *
  *  Spark Device object for the LPS25HB device.
- * 
- * 
+ *
+ *
  */
 
 #include "Arduino.h"
 
 #include "flxDevLPS25HB.h"
 
-uint8_t flxDevLPS25HB::defaultDeviceAddress[] = { LPS25HB_I2C_ADDR_DEF, LPS25HB_I2C_ADDR_ALT, kSparkDeviceAddressNull};
+uint8_t flxDevLPS25HB::defaultDeviceAddress[] = {LPS25HB_I2C_ADDR_DEF, LPS25HB_I2C_ADDR_ALT, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevLPS25HB);
@@ -57,7 +57,7 @@ bool flxDevLPS25HB::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t chipID = i2cDriver.readRegister(address, LPS25HB_REG_WHO_AM_I); 
+    uint8_t chipID = i2cDriver.readRegister(address, LPS25HB_REG_WHO_AM_I);
 
     return (chipID == LPS25HB_DEVID);
 }
@@ -71,8 +71,8 @@ bool flxDevLPS25HB::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevLPS25HB::onInitialize(TwoWire &wirePort)
 {
-	// set the underlying drivers address to the one determined during
-	// device construction
+    // set the underlying drivers address to the one determined during
+    // device construction
     bool result = LPS25HB::begin(wirePort, address());
 
     if (!result)
@@ -80,4 +80,3 @@ bool flxDevLPS25HB::onInitialize(TwoWire &wirePort)
 
     return result;
 }
-

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSCD40.h
@@ -74,7 +74,8 @@ bool flxDevSCD40::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     // To be safe, let's stop period measurements before we do anything else
     // Note that the sensor will only respond to other commands after waiting 500 ms after issuing
     // the stop_periodic_measurement command.
-    uint8_t stopPeriodic[2] = { (uint8_t)(SCD4x_COMMAND_STOP_PERIODIC_MEASUREMENT >> 8) , (uint8_t)(SCD4x_COMMAND_STOP_PERIODIC_MEASUREMENT & 0xFF) };
+    uint8_t stopPeriodic[2] = {(uint8_t)(SCD4x_COMMAND_STOP_PERIODIC_MEASUREMENT >> 8),
+                               (uint8_t)(SCD4x_COMMAND_STOP_PERIODIC_MEASUREMENT & 0xFF)};
     if (!i2cDriver.write(address, stopPeriodic, 2))
         return false;
     delay(500);

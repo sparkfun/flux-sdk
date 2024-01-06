@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  * flxStorage.h
  *
@@ -20,8 +20,8 @@
 
 #include "flxCoreTypes.h"
 #include <cstdint>
-#include <stddef.h>
 #include <math.h>
+#include <stddef.h>
 
 // Storage involves two interfaces
 //
@@ -60,8 +60,6 @@ class flxStorageOld
     virtual void resetStorage() = 0;
 };
 
-
-
 class flxStorageBlock;
 //------------------------------------------------------------------------------
 // flxStorage
@@ -72,17 +70,16 @@ class flxStorage : public flxDescriptor
 {
 
   public:
-
     typedef enum
     {
         flxStorageKindInternal,
         flxStorageKindExternal
-    }flxStorageKind_t;
+    } flxStorageKind_t;
 
-    virtual flxStorageKind_t kind(void)=0;
-    
+    virtual flxStorageKind_t kind(void) = 0;
+
     // Methods used to bracket the save/restore transaction
-    virtual bool begin(bool readonly=false) = 0;
+    virtual bool begin(bool readonly = false) = 0;
     virtual void end(void) = 0;
     // public methods to manage a block
     virtual flxStorageBlock *beginBlock(const char *tag) = 0;
@@ -109,25 +106,25 @@ class flxStorage : public flxDescriptor
 // Use tags to ID an item and move to use data types. Model after the
 // ESP32 preference library
 
-class flxStorageBlock 
+class flxStorageBlock
 {
 
   public:
     virtual bool writeBool(const char *tag, bool data) = 0;
     virtual bool writeInt8(const char *tag, int8_t data) = 0;
-    virtual bool writeInt16(const char *tag, int16_t data) = 0;    
+    virtual bool writeInt16(const char *tag, int16_t data) = 0;
     virtual bool writeInt32(const char *tag, int32_t data) = 0;
     virtual bool writeUInt8(const char *tag, uint8_t data) = 0;
-    virtual bool writeUInt16(const char *tag, uint16_t data) = 0;    
+    virtual bool writeUInt16(const char *tag, uint16_t data) = 0;
     virtual bool writeUInt32(const char *tag, uint32_t data) = 0;
     virtual bool writeFloat(const char *tag, float data) = 0;
     virtual bool writeDouble(const char *tag, double data) = 0;
     virtual bool writeString(const char *tag, const char *data) = 0;
-    virtual bool writeBytes(const char * tag, const uint8_t* data, size_t len) = 0;
+    virtual bool writeBytes(const char *tag, const uint8_t *data, size_t len) = 0;
 
-    virtual flxStorage::flxStorageKind_t kind(void)=0;
+    virtual flxStorage::flxStorageKind_t kind(void) = 0;
     virtual void setReadOnly(bool) = 0;
-    
+
     // Overloaded versions
     bool write(const char *tag, bool data)
     {
@@ -165,13 +162,13 @@ class flxStorageBlock
     {
         return writeDouble(tag, data);
     }
-    bool write(const char *tag, const char * data)
+    bool write(const char *tag, const char *data)
     {
         return writeString(tag, data);
     }
 
     virtual bool valueExists(const char *tag) = 0;
-    virtual bool readBool(const char *tag,  bool &value) = 0;
+    virtual bool readBool(const char *tag, bool &value) = 0;
     virtual bool readInt8(const char *tag, int8_t &value) = 0;
     virtual bool readInt16(const char *tag, int16_t &value) = 0;
     virtual bool readInt32(const char *tag, int32_t &value) = 0;
@@ -184,8 +181,6 @@ class flxStorageBlock
     virtual size_t readString(const char *tag, char *data, size_t len) = 0;
     virtual size_t readBytes(const char *tag, uint8_t *data, size_t len) = 0;
     virtual size_t getBytesLength(const char *tag) = 0;
-
-
 
     // overload reads
 
@@ -226,8 +221,6 @@ class flxStorageBlock
         return readDouble(tag, value);
     };
 
-    bool saveSecureString(const char * tag, const char * data);
-    bool restoreSecureString(const char * tag, char * data, size_t len);
-
+    bool saveSecureString(const char *tag, const char *data);
+    bool restoreSecureString(const char *tag, char *data, size_t len);
 };
-

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBMP581.cpp
@@ -66,7 +66,7 @@ bool flxDevBMP581::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 
     uint8_t chipID = 0;
     bool couldBe581 = i2cDriver.readRegister(address, BMP581_CHIP_ID_REG, &chipID); // Should return 0x50 for BMP581
-    couldBe581 &= chipID == 0x50; // Note: BMP390 returns 0x60
+    couldBe581 &= chipID == 0x50;                                                   // Note: BMP390 returns 0x60
 
     return (couldBe581);
 }
@@ -88,7 +88,7 @@ bool flxDevBMP581::onInitialize(TwoWire &wirePort)
         return false;
     }
 
-	_begun = true;
+    _begun = true;
 
     BMP581::setMode((bmp5_powermode)_powerMode);
 
@@ -110,7 +110,7 @@ float flxDevBMP581::read_TemperatureC()
 
         if (err == BMP5_OK)
             _pressure = true;
-	}
+    }
     _temperature = false;
     return bmpData.temperature;
 }
@@ -128,13 +128,16 @@ float flxDevBMP581::read_Pressure()
 
         if (err == BMP5_OK)
             _temperature = true;
-	}
+    }
     _pressure = false;
     return bmpData.pressure;
 }
 
 // Get-Set methods for our read-write properties
-uint8_t flxDevBMP581::get_power_mode() { return _powerMode; }
+uint8_t flxDevBMP581::get_power_mode()
+{
+    return _powerMode;
+}
 void flxDevBMP581::set_power_mode(uint8_t mode)
 {
     _powerMode = mode;

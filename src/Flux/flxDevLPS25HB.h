@@ -1,22 +1,22 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevLPS25HB.h
  *
  *  Spark Device object for the LPS25HB device.
- * 
- * 
+ *
+ *
  */
 
 #pragma once
@@ -55,12 +55,12 @@ class flxDevLPS25HB : public flxDeviceI2CType<flxDevLPS25HB>, public LPS25HB
 
     bool onInitialize(TwoWire &);
 
-private:
+  private:
     float read_temperature_c();
     float read_pressure_hpa();
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevLPS25HB, &flxDevLPS25HB::read_temperature_c> temperatureC;
-    flxParameterOutFloat<flxDevLPS25HB, &flxDevLPS25HB::read_pressure_hpa> pressurehPa;    
+    flxParameterOutFloat<flxDevLPS25HB, &flxDevLPS25HB::read_pressure_hpa> pressurehPa;
 };

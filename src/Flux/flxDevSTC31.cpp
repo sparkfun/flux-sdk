@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSTC31.h
@@ -65,11 +65,13 @@ bool flxDevSTC31::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t readId1[2] = {(uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_1 >> 8), (uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_1 & 0xFF)};
+    uint8_t readId1[2] = {(uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_1 >> 8),
+                          (uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_1 & 0xFF)};
     if (!i2cDriver.write(address, readId1, 2))
         return false;
 
-    uint8_t readId2[2] = {(uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_2 >> 8), (uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_2 & 0xFF)};
+    uint8_t readId2[2] = {(uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_2 >> 8),
+                          (uint8_t)(STC3X_COMMAND_READ_PRODUCT_IDENTIFIER_2 & 0xFF)};
     if (!i2cDriver.write(address, readId2, 2))
         return false;
 

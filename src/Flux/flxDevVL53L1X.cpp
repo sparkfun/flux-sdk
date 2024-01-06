@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevVL53L1X.h
@@ -55,7 +55,8 @@ flxDevVL53L1X::flxDevVL53L1X()
 
     // Register read-write properties
     flxRegister(distanceMode, "Distance Mode", "The selected distance mode: short or long");
-    flxRegister(intermeasurementPeriod, "Inter-Measurement Period (ms)", "The inter-measurement period in milliseconds");
+    flxRegister(intermeasurementPeriod, "Inter-Measurement Period (ms)",
+                "The inter-measurement period in milliseconds");
     flxRegister(crosstalk, "Crosstalk", "The crosstalk compensation in counts-per-second");
     flxRegister(offset, "Offset", "The measurement offset in mm");
 }
@@ -68,7 +69,8 @@ bool flxDevVL53L1X::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t modelId[2] = { (uint8_t)(VL53L1_IDENTIFICATION__MODEL_ID >> 8) , (uint8_t)(VL53L1_IDENTIFICATION__MODEL_ID & 0xFF) };
+    uint8_t modelId[2] = {(uint8_t)(VL53L1_IDENTIFICATION__MODEL_ID >> 8),
+                          (uint8_t)(VL53L1_IDENTIFICATION__MODEL_ID & 0xFF)};
     bool couldBeVL53L = i2cDriver.write(address, modelId, 2);
     uint8_t idReg[3];
     couldBeVL53L &= i2cDriver.receiveResponse(address, idReg, 3) == 3;
@@ -93,7 +95,8 @@ bool flxDevVL53L1X::onInitialize(TwoWire &wirePort)
     {
         (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
         // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
-        (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
+        (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000)
+                            : intermeasurementPeriod.setDataLimitRange(140, 1000));
         uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
         if (!_shortDistanceMode)
             if (imp < 140)
@@ -135,7 +138,8 @@ void flxDevVL53L1X::set_distance_mode(uint8_t mode)
         SFEVL53L1X::stopRanging();
         (_shortDistanceMode ? SFEVL53L1X::setDistanceModeShort() : SFEVL53L1X::setDistanceModeLong());
         // Intermeasurement Period limit for short distance mode is 20:1000. For long distance mode, it is 140:1000.
-        (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000) : intermeasurementPeriod.setDataLimitRange(140, 1000));
+        (_shortDistanceMode ? intermeasurementPeriod.setDataLimitRange(20, 1000)
+                            : intermeasurementPeriod.setDataLimitRange(140, 1000));
         uint16_t imp = SFEVL53L1X::getIntermeasurementPeriod();
         if (!_shortDistanceMode)
             if (imp < 140)

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevMCP9600.cpp
@@ -26,7 +26,8 @@
 // Define our class static variables - allocs storage for them
 
 // The MCP9600 supports multiple addresses (resistor-configurable)
-uint8_t flxDevMCP9600::defaultDeviceAddress[] = {0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, kSparkDeviceAddressNull};
+uint8_t flxDevMCP9600::defaultDeviceAddress[] = {
+    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, kSparkDeviceAddressNull};
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
@@ -49,7 +50,8 @@ flxDevMCP9600::flxDevMCP9600()
 
     // register properties
     flxRegister(ambient_resolution, "Ambient Resolution", "Ambient temperature resolution in fractions of degrees C");
-    flxRegister(thermocouple_resolution, "Thermocouple Resolution", "Thermocouple temperature full-scale resolution in bits");
+    flxRegister(thermocouple_resolution, "Thermocouple Resolution",
+                "Thermocouple temperature full-scale resolution in bits");
     flxRegister(thermocouple_type, "Thermocouple Type", "The thermocouple type");
     flxRegister(filter_coefficent, "Filter Coefficient", "The filter coefficient");
     flxRegister(burst_samples, "Burst Samples", "The number of samples in burst mode");
@@ -57,7 +59,8 @@ flxDevMCP9600::flxDevMCP9600()
     // register parameters
     flxRegister(thermocouple_temp, "Thermocouple temperature", "Thermocouple temperature in degrees C");
     flxRegister(ambient_temp, "Ambient temperature", "Ambient temperature in degrees C");
-    flxRegister(temp_delta, "Temperature delta", "Difference between the thermocouple temperature and ambient in degrees C");
+    flxRegister(temp_delta, "Temperature delta",
+                "Difference between the thermocouple temperature and ambient in degrees C");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -70,7 +73,9 @@ bool flxDevMCP9600::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     //
     // Long story short, we should not call i2cDriver.ping here. We should check the DeviceID instead.
 
-    uint16_t devID = i2cDriver.readRegister16(address, DEVICE_ID, false); // Big Endian. This is here because the first read doesn't seem to work, but the second does. No idea why :/
+    uint16_t devID =
+        i2cDriver.readRegister16(address, DEVICE_ID, false); // Big Endian. This is here because the first read doesn't
+                                                             // seem to work, but the second does. No idea why :/
     if (!i2cDriver.readRegister16(address, DEVICE_ID, &devID, false)) // Big Endian
         return false;
     return (DEV_ID_UPPER == devID >> 8);

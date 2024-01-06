@@ -1,7 +1,7 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
@@ -30,8 +30,8 @@ uint8_t flxDevADS1015::defaultDeviceAddress[] = {0x48, 0x49, 0x4A, 0x4B, kSparkD
 flxRegisterDevice(flxDevADS1015);
 
 flxDevADS1015::flxDevADS1015()
-    : _seType{kADS1015DeviceFloat}, _diffType{kADS1015DeviceFloat}, _sampleRate{ADS1015_CONFIG_RATE_1600HZ},
-      _gain{ADS1015_CONFIG_PGA_2}
+    : _seType{kADS1015DeviceFloat}, _diffType{kADS1015DeviceFloat},
+      _sampleRate{ADS1015_CONFIG_RATE_1600HZ}, _gain{ADS1015_CONFIG_PGA_2}
 {
 
     spSetupDeviceIdent(getDeviceName());

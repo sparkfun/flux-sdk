@@ -1,22 +1,22 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevAMG8833.h
  *
  *  Spark Device object for the AMG8833 device.
- * 
- * 
+ *
+ *
  */
 
 #pragma once
@@ -25,15 +25,13 @@
 #include "SparkFun_GridEYE_Arduino_Library.h"
 #include "flxDevice.h"
 
-
-
 #define kAMG8833DeviceName "AMG8833"
 
 // Define our class
 class flxDevAMG8833 : public flxDeviceI2CType<flxDevAMG8833>, public GridEYE
 {
 
-public:
+  public:
     flxDevAMG8833();
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
@@ -57,7 +55,7 @@ public:
 
     bool onInitialize(TwoWire &);
 
-private:
+  private:
     float read_device_temperature_C();
     bool read_pixel_temperatures(flxDataArrayFloat *);
 
@@ -66,11 +64,11 @@ private:
     uint8_t get_frame_rate();
     void set_frame_rate(uint8_t);
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevAMG8833, &flxDevAMG8833::read_device_temperature_C> deviceTemperatureC;
     flxParameterOutArrayFloat<flxDevAMG8833, &flxDevAMG8833::read_pixel_temperatures> pixelTemperatures;
 
-    flxPropertyRWUint8<flxDevAMG8833, &flxDevAMG8833::get_frame_rate, &flxDevAMG8833::set_frame_rate> frameRate
-         = { 1 , { { "1 Frame Per Second", 0 }, { "10 Frames Per Second", 1 } } };
+    flxPropertyRWUint8<flxDevAMG8833, &flxDevAMG8833::get_frame_rate, &flxDevAMG8833::set_frame_rate> frameRate = {
+        1, {{"1 Frame Per Second", 0}, {"10 Frames Per Second", 1}}};
 };

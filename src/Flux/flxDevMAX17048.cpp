@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevMAX17048.cpp
@@ -71,7 +71,8 @@ bool flxDevMAX17048::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 
     while ((success == false) && (retries > 0))
     {
-        if (i2cDriver.readRegister16(address, MAX17043_VERSION, &version, false)) // Attempt to read the version register
+        if (i2cDriver.readRegister16(address, MAX17043_VERSION, &version,
+                                     false)) // Attempt to read the version register
         {
             success = true;
         }
@@ -120,4 +121,3 @@ bool flxDevMAX17048::onInitialize(TwoWire &wirePort)
 
     return result;
 }
-

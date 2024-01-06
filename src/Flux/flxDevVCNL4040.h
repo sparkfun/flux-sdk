@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevVCNL4040.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_VCNL4040_Arduino_Library.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kVCNL4040DeviceName "VCNL4040"
@@ -34,7 +34,7 @@
 class flxDevVCNL4040 : public flxDeviceI2CType<flxDevVCNL4040>, public VCNL4040
 {
 
-public:
+  public:
     flxDevVCNL4040();
 
     // Static Interface - used by the system to determine if this device is
@@ -45,7 +45,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kVCNL4040DeviceName;
@@ -61,8 +61,7 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     uint16_t read_proximity();
     uint16_t read_lux();
@@ -85,16 +84,23 @@ private:
     uint8_t _proxRes = 16; // Default to 16-bit
     uint16_t _ambIntTime = 80;
 
-public:
+  public:
     // Define our read-write properties
-    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_LED_current, &flxDevVCNL4040::set_LED_current> ledCurrent = { 50, 200 };
-    flxPropertyRWUint16<flxDevVCNL4040, &flxDevVCNL4040::get_IR_duty_cycle, &flxDevVCNL4040::set_IR_duty_cycle> irDutyCycle = { 40, 320 };
-    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_integration_time, &flxDevVCNL4040::set_proximity_integration_time> proximityIntegrationTime = { 1, 8 };
-    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_resolution, &flxDevVCNL4040::set_proximity_resolution> proximityResolution
-        = { 16, { { "12-bit", 12 }, { "16-bit", 16 } } };
-    flxPropertyRWUint16<flxDevVCNL4040, &flxDevVCNL4040::get_ambient_integration_time, &flxDevVCNL4040::set_ambient_integration_time> ambientIntegrationTime = { 80, 640 };
+    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_LED_current, &flxDevVCNL4040::set_LED_current> ledCurrent =
+        {50, 200};
+    flxPropertyRWUint16<flxDevVCNL4040, &flxDevVCNL4040::get_IR_duty_cycle, &flxDevVCNL4040::set_IR_duty_cycle>
+        irDutyCycle = {40, 320};
+    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_integration_time,
+                       &flxDevVCNL4040::set_proximity_integration_time>
+        proximityIntegrationTime = {1, 8};
+    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_resolution,
+                       &flxDevVCNL4040::set_proximity_resolution>
+        proximityResolution = {16, {{"12-bit", 12}, {"16-bit", 16}}};
+    flxPropertyRWUint16<flxDevVCNL4040, &flxDevVCNL4040::get_ambient_integration_time,
+                        &flxDevVCNL4040::set_ambient_integration_time>
+        ambientIntegrationTime = {80, 640};
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint16<flxDevVCNL4040, &flxDevVCNL4040::read_proximity> proximity;    
-    flxParameterOutUint16<flxDevVCNL4040, &flxDevVCNL4040::read_lux> lux;    
+    flxParameterOutUint16<flxDevVCNL4040, &flxDevVCNL4040::read_proximity> proximity;
+    flxParameterOutUint16<flxDevVCNL4040, &flxDevVCNL4040::read_lux> lux;
 };

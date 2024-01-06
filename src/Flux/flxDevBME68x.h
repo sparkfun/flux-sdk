@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBME68x.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "bme68xLibrary.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kBME68xDeviceName "BME68x"
@@ -34,13 +34,13 @@
 class flxDevBME68x : public flxDeviceI2CType<flxDevBME68x>, public Bme68x
 {
 
-public:
+  public:
     flxDevBME68x();
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
-    
+
     static flxDeviceConfidence_t connectedConfidence(void)
     {
         return flxDevConfidenceExact;
@@ -61,8 +61,8 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-	bme68xData bmeData = { 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0 };
+  private:
+    bme68xData bmeData = {0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0};
 
     // methods used to get values for our output parameters
     float read_Humidity();
@@ -78,12 +78,11 @@ private:
     bool _gasResistance = false;
     bool _status = false;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevBME68x, &flxDevBME68x::read_Humidity> humidity;
     flxParameterOutFloat<flxDevBME68x, &flxDevBME68x::read_TemperatureC> temperatureC;
     flxParameterOutFloat<flxDevBME68x, &flxDevBME68x::read_Pressure> pressure;
     flxParameterOutFloat<flxDevBME68x, &flxDevBME68x::read_GasResistance> gasResistance;
     flxParameterOutUint8<flxDevBME68x, &flxDevBME68x::read_Status> status;
-
 };

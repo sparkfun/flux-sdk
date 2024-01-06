@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSCD30.h
@@ -72,7 +72,7 @@ bool flxDevSCD30::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 
     uint8_t version[3]; // Two bytes plus CRC
     uint16_t versionReg = COMMAND_READ_FW_VER;
-    uint8_t versionRegBytes[2] = { (uint8_t)(versionReg >> 8), (uint8_t)(versionReg & 0xFF)}; // MSB first
+    uint8_t versionRegBytes[2] = {(uint8_t)(versionReg >> 8), (uint8_t)(versionReg & 0xFF)}; // MSB first
     if (!i2cDriver.write(address, versionRegBytes, 2))
         return false;
     delay(3);
@@ -157,4 +157,3 @@ void flxDevSCD30::set_temperature_offset(float offset)
 {
     SCD30::setTemperatureOffset(offset);
 }
-

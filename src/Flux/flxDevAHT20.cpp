@@ -1,29 +1,29 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevAHT20.cpp
  *
  *  Spark Device object for the AHT20 device.
- * 
- * 
+ *
+ *
  */
 
 #include "Arduino.h"
 
 #include "flxDevAHT20.h"
 
-uint8_t flxDevAHT20::defaultDeviceAddress[] = { AHT20_DEFAULT_ADDRESS, kSparkDeviceAddressNull};
+uint8_t flxDevAHT20::defaultDeviceAddress[] = {AHT20_DEFAULT_ADDRESS, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevAHT20);
@@ -57,7 +57,7 @@ bool flxDevAHT20::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint8_t triggerMeasurement[3] = { 0xAC, 0x33, 0x00 };
+    uint8_t triggerMeasurement[3] = {0xAC, 0x33, 0x00};
     if (!i2cDriver.write(address, triggerMeasurement, 3))
     {
         flxLog_E("AHT20 isConnected triggerMeasurement failed");
@@ -101,8 +101,8 @@ bool flxDevAHT20::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevAHT20::onInitialize(TwoWire &wirePort)
 {
-	// set the underlying drivers address to the one determined during
-	// device construction
+    // set the underlying drivers address to the one determined during
+    // device construction
     bool result = AHT20::begin(wirePort);
 
     if (!result)
@@ -110,4 +110,3 @@ bool flxDevAHT20::onInitialize(TwoWire &wirePort)
 
     return result;
 }
-

@@ -1,12 +1,12 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
 
@@ -15,7 +15,6 @@
 // Core interfaces for the system....
 
 #include <string>
-
 
 //----------------------------------------------------------------------
 // flxDataEditor()
@@ -29,27 +28,27 @@ class flxDataEditor
 {
 
   public:
-    virtual bool editField(char *value, size_t lenValue, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(std::string &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(bool &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(int8_t &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(int16_t &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(int32_t &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(uint8_t &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(uint16_t &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(uint32_t &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(float &value, bool hidden=false, uint32_t timeout = 60) = 0;
-    virtual bool editField(double &value, bool hidden=false, uint32_t timeout = 60) = 0;
+    virtual bool editField(char *value, size_t lenValue, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(std::string &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(bool &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(int8_t &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(int16_t &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(int32_t &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(uint8_t &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(uint16_t &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(uint32_t &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(float &value, bool hidden = false, uint32_t timeout = 60) = 0;
+    virtual bool editField(double &value, bool hidden = false, uint32_t timeout = 60) = 0;
     virtual void beep() = 0;
 };
 
 // Define an interface for output of log information.
 typedef enum
 {
-    flxLineTypeNone       = 0,
-    flxLineTypeData       = 1,
-    flxLineTypeHeader     = 2,
-    flxLineTypeMime       = 4
+    flxLineTypeNone = 0,
+    flxLineTypeData = 1,
+    flxLineTypeHeader = 2,
+    flxLineTypeMime = 4
 } flxLineType_t;
 
 class flxWriter
@@ -62,8 +61,8 @@ class flxWriter
     };
     virtual void write(int) = 0;
     virtual void write(float) = 0;
-    virtual void write(const char* value, bool newline, flxLineType_t type) = 0;
-    virtual void write(const char* value, bool newline)
+    virtual void write(const char *value, bool newline, flxLineType_t type) = 0;
+    virtual void write(const char *value, bool newline)
     {
         write(value, newline, flxLineTypeData);
     };
@@ -71,7 +70,7 @@ class flxWriter
     {
         write(value.c_str(), newline);
     }
-    virtual void write(const char * value)
+    virtual void write(const char *value)
     {
         write(value, true);
     }
@@ -80,4 +79,3 @@ class flxWriter
         write(value.c_str(), true);
     };
 };
-

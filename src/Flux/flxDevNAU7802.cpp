@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  * QwiicDevNAU7802.cpp
@@ -57,8 +57,10 @@ flxDevNAU7802::flxDevNAU7802()
 
     // Register parameters
     flxRegister(weight, "Weight", "Weight in units - as set by the calibrationFactor");
-    flxRegister(calculateZeroOffset, "Calculate Zero Offset", "Perform a zero offset calibration. Sets the scale weight to zero");
-    flxRegister(calculateCalibrationFactor, "Calculate Calibration Factor", "Perform a scale calibration. Sets the scale weight to this many units");
+    flxRegister(calculateZeroOffset, "Calculate Zero Offset",
+                "Perform a zero offset calibration. Sets the scale weight to zero");
+    flxRegister(calculateCalibrationFactor, "Calculate Calibration Factor",
+                "Perform a scale calibration. Sets the scale weight to this many units");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -75,7 +77,7 @@ bool flxDevNAU7802::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     uint8_t PGA = 0;
     if (!i2cDriver.readRegister(address, NAU7802_PGA, &PGA)) // REG0x1B: PGA Registers
         return false;
-    
+
     return ((PGA & 0x06) == 0); // Datasheet says bits 1 and 2 should be 0
 }
 //----------------------------------------------------------------------------------------------------------
@@ -128,6 +130,7 @@ void flxDevNAU7802::calculate_zero_offset()
 
 void flxDevNAU7802::calculate_calibration_factor(const float &weight_in_units)
 {
-    NAU7802::calculateCalibrationFactor(weight_in_units); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t averageAmount = 8)
+    NAU7802::calculateCalibrationFactor(
+        weight_in_units); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t
+                          // averageAmount = 8)
 }
-

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBME68x.cpp
@@ -97,12 +97,12 @@ bool flxDevBME68x::onInitialize(TwoWire &wirePort)
     {
         flxLog_W("BME68X Sensor warning: %s", Bme68x::statusString());
     }
-	
-	/* Set the default configuration for temperature, pressure and humidity */
-	Bme68x::setTPH();
 
-	/* Set the heater configuration to 300 deg C for 100ms for Forced mode */
-	Bme68x::setHeaterProf(300, 100);
+    /* Set the default configuration for temperature, pressure and humidity */
+    Bme68x::setTPH();
+
+    /* Set the heater configuration to 300 deg C for 100ms for Forced mode */
+    Bme68x::setHeaterProf(300, 100);
 
     return true;
 }
@@ -123,7 +123,7 @@ float flxDevBME68x::read_TemperatureC()
             _gasResistance = true;
             _status = true;
         }
-	}
+    }
     _temperature = false;
     return bmeData.temperature;
 }
@@ -142,7 +142,7 @@ float flxDevBME68x::read_Humidity()
             _gasResistance = true;
             _status = true;
         }
-	}
+    }
     _humidity = false;
     return bmeData.humidity;
 }
@@ -161,7 +161,7 @@ float flxDevBME68x::read_Pressure()
             _gasResistance = true;
             _status = true;
         }
-	}
+    }
     _pressure = false;
     return bmeData.pressure;
 }
@@ -180,7 +180,7 @@ float flxDevBME68x::read_GasResistance()
             _pressure = true;
             _status = true;
         }
-	}
+    }
     _gasResistance = false;
     return bmeData.gas_resistance;
 }
@@ -199,7 +199,7 @@ uint8_t flxDevBME68x::read_Status()
             _pressure = true;
             _gasResistance = true;
         }
-	}
+    }
     _status = false;
     return bmeData.status;
 }

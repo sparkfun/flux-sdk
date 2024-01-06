@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSGP30.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_SGP30_Arduino_Library.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kSGP30DeviceName "SGP30"
@@ -34,7 +34,7 @@
 class flxDevSGP30 : public flxDeviceI2CType<flxDevSGP30>, public SGP30
 {
 
-public:
+  public:
     flxDevSGP30();
 
     // Static Interface - used by the system to determine if this device is
@@ -44,7 +44,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kSGP30DeviceName;
@@ -60,8 +60,7 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     uint read_tvoc();
     uint read_co2();
@@ -74,12 +73,12 @@ private:
     bool _h2 = false;
     bool _ethanol = false;
 
-public:
+  public:
     // TO DO: add baselineCO2 and baseline TVOC as RW properties
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_tvoc> tvoc;    
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_co2> co2;    
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_h2> h2;    
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_ethanol> ethanol;    
+    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_tvoc> tvoc;
+    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_co2> co2;
+    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_h2> h2;
+    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_ethanol> ethanol;
 };

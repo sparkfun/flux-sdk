@@ -1,21 +1,21 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- /*
+/*
  *
  *  flxDevMS5637.h
  *
  *  Spark Device object for the MS5637 device.
- * 
- * 
+ *
+ *
  */
 
 #pragma once
@@ -39,7 +39,6 @@ class flxDevMS5637 : public flxDeviceI2CType<flxDevMS5637>, public MS5637
     {
         return flxDevConfidenceExact;
     }
-    
 
     static const char *getDeviceName()
     {
@@ -55,12 +54,12 @@ class flxDevMS5637 : public flxDeviceI2CType<flxDevMS5637>, public MS5637
 
     bool onInitialize(TwoWire &);
 
-private:
+  private:
     float read_pressure_mbar();
     float read_temperature_C();
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutFloat<flxDevMS5637, &flxDevMS5637::read_pressure_mbar> pressure_mbar;    
-    flxParameterOutFloat<flxDevMS5637, &flxDevMS5637::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<flxDevMS5637, &flxDevMS5637::read_pressure_mbar> pressure_mbar;
+    flxParameterOutFloat<flxDevMS5637, &flxDevMS5637::read_temperature_C> temperatureC;
 };

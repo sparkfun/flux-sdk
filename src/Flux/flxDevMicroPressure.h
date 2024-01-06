@@ -1,22 +1,22 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevMicroPressure.h
  *
  *  Spark Device object for the MicroPressure device.
- * 
- * 
+ *
+ *
  */
 
 #pragma once
@@ -55,7 +55,7 @@ class flxDevMicroPressure : public flxDeviceI2CType<flxDevMicroPressure>, public
 
     bool onInitialize(TwoWire &);
 
-private:
+  private:
     float read_pressure_PSI();
     float read_pressure_Pa();
     float read_pressure_kPa();
@@ -64,13 +64,13 @@ private:
     float read_pressure_atm();
     float read_pressure_bar();
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_PSI> pressure_PSI;    
-    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_Pa> pressure_Pa;    
-    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_kPa> pressure_kPa;    
-    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_torr> pressure_torr;    
-    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_inHg> pressure_inHg;    
-    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_atm> pressure_atm;    
-    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_bar> pressure_bar;    
+    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_PSI> pressure_PSI;
+    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_Pa> pressure_Pa;
+    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_kPa> pressure_kPa;
+    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_torr> pressure_torr;
+    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_inHg> pressure_inHg;
+    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_atm> pressure_atm;
+    flxParameterOutFloat<flxDevMicroPressure, &flxDevMicroPressure::read_pressure_bar> pressure_bar;
 };

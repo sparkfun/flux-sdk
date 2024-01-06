@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevVL53L1X.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_VL53L1X.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kVL53L1XDeviceName "VL53L1x"
@@ -34,7 +34,7 @@
 class flxDevVL53L1X : public flxDeviceI2CType<flxDevVL53L1X>, public SFEVL53L1X
 {
 
-public:
+  public:
     flxDevVL53L1X();
 
     // Static Interface - used by the system to determine if this device is
@@ -45,7 +45,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kVL53L1XDeviceName;
@@ -61,8 +61,7 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     uint read_distance();
     uint read_range_status();
@@ -83,16 +82,20 @@ private:
     uint16_t _crosstalk = 0;
     uint16_t _offset = 0;
 
-public:
+  public:
     // Define our read-write properties
-    flxPropertyRWUint8<flxDevVL53L1X, &flxDevVL53L1X::get_distance_mode, &flxDevVL53L1X::set_distance_mode> distanceMode
-         = { DISTANCE_SHORT, { { "Short", DISTANCE_SHORT }, { "Long", DISTANCE_LONG } } }; // Default to short distance mode
-    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_intermeasurment_period, &flxDevVL53L1X::set_intermeasurment_period> intermeasurementPeriod;
-    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_crosstalk, &flxDevVL53L1X::set_crosstalk> crosstalk = { 0, 0, 4000 };
-    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_offset, &flxDevVL53L1X::set_offset> offset = { 0, 0, 4000 };
+    flxPropertyRWUint8<flxDevVL53L1X, &flxDevVL53L1X::get_distance_mode, &flxDevVL53L1X::set_distance_mode>
+        distanceMode = {DISTANCE_SHORT,
+                        {{"Short", DISTANCE_SHORT}, {"Long", DISTANCE_LONG}}}; // Default to short distance mode
+    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_intermeasurment_period,
+                        &flxDevVL53L1X::set_intermeasurment_period>
+        intermeasurementPeriod;
+    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_crosstalk, &flxDevVL53L1X::set_crosstalk> crosstalk = {0, 0,
+                                                                                                                  4000};
+    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_offset, &flxDevVL53L1X::set_offset> offset = {0, 0, 4000};
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_distance> distance;    
-    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_range_status> rangeStatus;    
-    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_signal_rate> signalRate;    
+    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_distance> distance;
+    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_range_status> rangeStatus;
+    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_signal_rate> signalRate;
 };

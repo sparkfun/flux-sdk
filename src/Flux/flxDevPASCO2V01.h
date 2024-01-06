@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevPASCO2V01.h
@@ -33,7 +33,7 @@
 // Define our class - note we are sub-classing from the original library
 class flxDevPASCO2V01 : public flxDeviceI2CType<flxDevPASCO2V01>
 {
-public:
+  public:
     flxDevPASCO2V01();
     ~flxDevPASCO2V01();
 
@@ -45,7 +45,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kPASCO2V01DeviceName;
@@ -61,15 +61,13 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // Pointer to instance of PASCO2Ino
     PASCO2Ino *_theSensor;
 
     // methods used to get values for our output parameters
     uint read_CO2();
-    
-    
+
     // methods used to get values for our RW properties
     bool get_auto_calibrate();
     uint get_calibration_reference();
@@ -85,7 +83,7 @@ private:
 
     uint _measurementPeriod = XENSIV_PASCO2_MEAS_RATE_MIN;
 
-    uint16_t _pressureReference = 1015; // Default value on reset
+    uint16_t _pressureReference = 1015;   // Default value on reset
     uint16_t _calibrationReference = 400; // Default value on reset
 
     uint32_t _millisSinceLastMeasure = 0;
@@ -94,22 +92,29 @@ private:
     bool _sensorIsInitialized = false;
     bool _sensorIsMeasuring = false;
 
-public:
+  public:
     // Define whether automatic calibration is enabled. Forced calibration mode is not an enumerated option in flux.
     // Default value is Disabled
-    flxPropertyRWBool<flxDevPASCO2V01, &flxDevPASCO2V01::get_auto_calibrate, &flxDevPASCO2V01::set_auto_calibrate> autoCalibrate;
+    flxPropertyRWBool<flxDevPASCO2V01, &flxDevPASCO2V01::get_auto_calibrate, &flxDevPASCO2V01::set_auto_calibrate>
+        autoCalibrate;
 
     // Define the sensor's calibration baseline offset compensation reference. Valid range is 350 ppm to 900 ppm.
     // Default value is 400 ppm
-    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_calibration_reference, &flxDevPASCO2V01::set_calibration_reference> calibrationReference = {_calibrationReference, 350, 900};
+    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_calibration_reference,
+                      &flxDevPASCO2V01::set_calibration_reference>
+        calibrationReference = {_calibrationReference, 350, 900};
 
     // Define the sensor's pressure reference compensation in hPA. Valid range is 750 hPa to 1150 hPa.
     // Default value is 1015 hPa
-    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_pressure_reference, &flxDevPASCO2V01::set_pressure_reference> pressureReference = {_pressureReference, 750, 1150};
+    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_pressure_reference,
+                      &flxDevPASCO2V01::set_pressure_reference>
+        pressureReference = {_pressureReference, 750, 1150};
 
     // Define the measurement period in seconds. Valid range is 5s - 4095s.
     // Default value is 10s
-    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_measurement_period, &flxDevPASCO2V01::set_measurement_period> measurementPeriod = {_measurementPeriod, XENSIV_PASCO2_MEAS_RATE_MIN, XENSIV_PASCO2_MEAS_RATE_MAX};
+    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_measurement_period,
+                      &flxDevPASCO2V01::set_measurement_period>
+        measurementPeriod = {_measurementPeriod, XENSIV_PASCO2_MEAS_RATE_MIN, XENSIV_PASCO2_MEAS_RATE_MAX};
 
     // Define output parameters and specify the function called to get that parameter.
     flxParameterOutUint<flxDevPASCO2V01, &flxDevPASCO2V01::read_CO2> co2PPM;

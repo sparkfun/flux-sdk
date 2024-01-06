@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSEN54.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SensirionI2CSen5x.h" // Also requires Sensirion Core
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kSEN54DeviceName "SEN54"
@@ -34,7 +34,7 @@
 class flxDevSEN54 : public flxDeviceI2CType<flxDevSEN54>, public SensirionI2CSen5x
 {
 
-public:
+  public:
     flxDevSEN54();
 
     // Static Interface - used by the system to determine if this device is
@@ -44,7 +44,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kSEN54DeviceName;
@@ -60,8 +60,7 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our RW properties
     float get_temperature_offset();
     void set_temperature_offset(float);
@@ -101,16 +100,17 @@ private:
 
     float _theTemperatureOffset = 0.0;
 
-public:
-    flxPropertyRWFloat<flxDevSEN54, &flxDevSEN54::get_temperature_offset, &flxDevSEN54::set_temperature_offset> temperatureOffset;
+  public:
+    flxPropertyRWFloat<flxDevSEN54, &flxDevSEN54::get_temperature_offset, &flxDevSEN54::set_temperature_offset>
+        temperatureOffset;
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_temperature_C> temperatureC;    
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_humidity> humidity;    
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_1p0> massConcentrationPm1p0;    
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_2p5> massConcentrationPm2p5;    
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_4p0> massConcentrationPm4p0;    
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_10p0> massConcentrationPm10p0;    
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_voc_index> vocIndex;    
-    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_nox_index> noxIndex;    
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_temperature_C> temperatureC;
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_humidity> humidity;
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_1p0> massConcentrationPm1p0;
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_2p5> massConcentrationPm2p5;
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_4p0> massConcentrationPm4p0;
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_mass_concentration_10p0> massConcentrationPm10p0;
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_voc_index> vocIndex;
+    flxParameterOutFloat<flxDevSEN54, &flxDevSEN54::read_nox_index> noxIndex;
 };

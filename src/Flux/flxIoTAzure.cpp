@@ -1,21 +1,19 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
 
 #include "flxIoTAzure.h"
 
-
-// The implementation of this file/class were copied from the Azure C SDK. 
-// 
+// The implementation of this file/class were copied from the Azure C SDK.
+//
 // The methods and functions support access and auth with Azure IoT
 
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -189,14 +187,14 @@ az_span generate_sas_token(az_iot_hub_client *hub_client, az_span device_key, az
     }
 
     // Get the resulting MQTT password, passing the base64 encoded, HMAC signed bytes.
-    size_t mqtt_password_length=0;
+    size_t mqtt_password_length = 0;
     rc = az_iot_hub_client_sas_get_password(hub_client, sas_duration, sas_base64_encoded_signed_signature,
                                             AZ_SPAN_EMPTY, (char *)az_span_ptr(sas_token), az_span_size(sas_token),
                                             &mqtt_password_length);
 
     if (az_result_failed(rc))
     {
-        flxLog_E("Could not get the password: az_result return code %d",rc);
+        flxLog_E("Could not get the password: az_result return code %d", rc);
         return AZ_SPAN_EMPTY;
     }
     else

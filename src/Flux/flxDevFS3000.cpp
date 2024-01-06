@@ -1,30 +1,29 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevFS3000.cpp
  *
  *  Spark Device object for the FS3000 device.
- * 
- * 
+ *
+ *
  */
 
 #include "Arduino.h"
 
 #include "flxDevFS3000.h"
 
-
-uint8_t flxDevFS3000::defaultDeviceAddress[] = { FS3000_DEVICE_ADDRESS, kSparkDeviceAddressNull};
+uint8_t flxDevFS3000::defaultDeviceAddress[] = {FS3000_DEVICE_ADDRESS, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevFS3000);
@@ -85,8 +84,8 @@ bool flxDevFS3000::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevFS3000::onInitialize(TwoWire &wirePort)
 {
-	// set the underlying drivers address to the one determined during
-	// device construction
+    // set the underlying drivers address to the one determined during
+    // device construction
     bool result = FS3000::begin(wirePort);
 
     if (!result)
@@ -104,7 +103,10 @@ bool flxDevFS3000::onInitialize(TwoWire &wirePort)
 }
 
 // Read-write properties
-uint8_t flxDevFS3000::get_fs3000_version() { return (uint8_t)_fs3000_1005; }
+uint8_t flxDevFS3000::get_fs3000_version()
+{
+    return (uint8_t)_fs3000_1005;
+}
 void flxDevFS3000::set_fs3000_version(uint8_t is1005)
 {
     _fs3000_1005 = (bool)is1005;

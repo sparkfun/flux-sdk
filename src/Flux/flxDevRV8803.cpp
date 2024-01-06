@@ -1,30 +1,29 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevRV8803.cpp
  *
  *  Spark Device object for the RV8803 device.
- * 
- * 
+ *
+ *
  */
 
 #include "Arduino.h"
 
 #include "flxDevRV8803.h"
 
-
-uint8_t flxDevRV8803::defaultDeviceAddress[] = { RV8803_ADDR, kSparkDeviceAddressNull};
+uint8_t flxDevRV8803::defaultDeviceAddress[] = {RV8803_ADDR, kSparkDeviceAddressNull};
 
 // Register this class with the system - this enables the *auto load* of this device
 flxRegisterDevice(flxDevRV8803);
@@ -39,10 +38,12 @@ flxDevRV8803::flxDevRV8803()
     flxRegister(readDate, "Read Date (DD/MM/YY)", "Read the date");
     flxRegister(readTime, "Read Time (HH:MM:SS)", "Read the time");
     flxRegister(readISO8601, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS)", "Read the date and time in ISO8601 format");
-    flxRegister(readISO8601TZ, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS+HH:MM)", "Read the date and time in ISO8601 format with time zone");
+    flxRegister(readISO8601TZ, "Read ISO8601 DateTime (YYYY-MM-DDTHH:MM:SS+HH:MM)",
+                "Read the date and time in ISO8601 format with time zone");
     flxRegister(readDayOfWeek, "Read the day of week", "Read the day of week (Monday, Tuesday, etc)");
     flxRegister(readDayOfWeekShort, "Read the day of week (short)", "Read the day of week (Mon, Tue, etc)");
-    flxRegister(readOrdinal, "Read the day of month (ordinal)", "Read the day of month in ordinal form (1st, 2nd, 3rd etc)");
+    flxRegister(readOrdinal, "Read the day of month (ordinal)",
+                "Read the day of month in ordinal form (1st, 2nd, 3rd etc)");
     flxRegister(readMonth, "Read the month", "Read the name of the month (January, February etc)");
     flxRegister(readMonthShort, "Read the month (short)", "Read the name of the month (Jan, Feb etc)");
     flxRegister(readYear, "Read the year", "Read the year (2022 etc)");
@@ -94,8 +95,8 @@ bool flxDevRV8803::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevRV8803::onInitialize(TwoWire &wirePort)
 {
-	// set the underlying drivers address to the one determined during
-	// device construction
+    // set the underlying drivers address to the one determined during
+    // device construction
     bool result = RV8803::begin(wirePort);
 
     RV8803::set24Hour();
@@ -434,7 +435,7 @@ uint flxDevRV8803::get_epoch()
 
 bool flxDevRV8803::valid_epoch(void)
 {
-    return  isInitialized();
+    return isInitialized();
 }
 // Output parameters
 

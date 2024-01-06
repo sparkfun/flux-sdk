@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  * QwiicDevISM330.h
@@ -116,7 +116,8 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
                           {"6667 Hz", ISM_XL_ODR_6667Hz},
                           {"1.6 Hz", ISM_XL_ODR_1Hz6}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_full_scale, &flxDevISM330Base::set_accel_full_scale>
+    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_full_scale,
+                       &flxDevISM330Base::set_accel_full_scale>
         accelFullScale = {ISM_4g, {{"2 g", ISM_2g}, {"16 g", ISM_16g}, {"4 g", ISM_4g}, {"8 g", ISM_8g}}};
 
     flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_gyro_data_rate, &flxDevISM330Base::set_gyro_data_rate>
@@ -142,14 +143,15 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
                           {"2000 dps", ISM_2000dps},
                           {"4000 dps", ISM_4000dps}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_filter_lp2, &flxDevISM330Base::set_accel_filter_lp2>
+    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_filter_lp2,
+                       &flxDevISM330Base::set_accel_filter_lp2>
         accelFilterLP2 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
 
     flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_gyro_filter_lp1, &flxDevISM330Base::set_gyro_filter_lp1>
         gyroFilterLP1 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
 
     flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_slope_filter,
-                      &flxDevISM330Base::set_accel_slope_filter>
+                       &flxDevISM330Base::set_accel_slope_filter>
         accelSlopeFilter = {ISM_LP_ODR_DIV_100,
                             {{"ODR/4", 0},
                              {"ODR/10", ISM_LP_ODR_DIV_10},
@@ -161,7 +163,7 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
                              {"ODR/800", ISM_LP_ODR_DIV_800}}};
 
     flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_gyro_lp1_bandwidth,
-                      &flxDevISM330Base::set_gyro_lp1_bandwidth>
+                       &flxDevISM330Base::set_gyro_lp1_bandwidth>
         gyroLP1Bandwidth = {ISM_MEDIUM,
                             {{"Ultra Light", ISM_ULTRA_LIGHT},
                              {"Very Light", ISM_VERY_LIGHT},
@@ -196,7 +198,7 @@ class flxDevISM330 : public flxDeviceI2CType<flxDevISM330, flxDevISM330Base>
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kISM330DeviceName;

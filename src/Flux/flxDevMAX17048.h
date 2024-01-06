@@ -1,22 +1,22 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevMAX17048.h
  *
  *  Spark Device object for the MAX17048 device.
- * 
- * 
+ *
+ *
  */
 
 #pragma once
@@ -56,14 +56,14 @@ class flxDevMAX17048 : public flxDeviceI2CType<flxDevMAX17048>, public SFE_MAX17
 
     bool onInitialize(TwoWire &);
 
-private:
+  private:
     float read_voltage();
     float read_state_of_charge();
     float read_change_rate();
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevMAX17048, &flxDevMAX17048::read_voltage> voltageV;
-    flxParameterOutFloat<flxDevMAX17048, &flxDevMAX17048::read_state_of_charge> stateOfCharge;    
-    flxParameterOutFloat<flxDevMAX17048, &flxDevMAX17048::read_change_rate> changeRate;    
+    flxParameterOutFloat<flxDevMAX17048, &flxDevMAX17048::read_state_of_charge> stateOfCharge;
+    flxParameterOutFloat<flxDevMAX17048, &flxDevMAX17048::read_change_rate> changeRate;
 };

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  * QwiicDevMMC5983.h
@@ -74,7 +74,7 @@ class flxDevMMC5983Base : public flxDevice, public SFE_MMC5983MA
 
     // Define our read-write properties
     flxPropertyRWUint16<flxDevMMC5983Base, &flxDevMMC5983Base::get_filter_bandwidth,
-                       &flxDevMMC5983Base::set_filter_bandwidth>
+                        &flxDevMMC5983Base::set_filter_bandwidth>
         filterBandwidth = {100, {{"100 Hz", 100}, {"200 Hz", 200}, {"400 Hz", 400}, {"800 Hz", 800}}};
     flxPropertyRWUint8<flxDevMMC5983Base, &flxDevMMC5983Base::get_auto_reset, &flxDevMMC5983Base::set_auto_reset>
         autoReset = {1, {{"Enabled", 1}, {"Disabled", 0}}};
@@ -96,7 +96,7 @@ class flxDevMMC5983 : public flxDeviceI2CType<flxDevMMC5983, flxDevMMC5983Base>
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kMMC5983DeviceName;

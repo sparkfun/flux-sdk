@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevVL53L5.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_VL53L5CX_Library.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kVL53L5DeviceName "VL53L5"
@@ -35,7 +35,7 @@
 class flxDevVL53L5 : public flxDeviceI2CType<flxDevVL53L5>, public SparkFun_VL53L5CX
 {
 
-public:
+  public:
     flxDevVL53L5();
 
     // Static Interface - used by the system to determine if this device is
@@ -46,8 +46,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
-    
+
     static const char *getDeviceName()
     {
         return kVL53L5DeviceName;
@@ -63,8 +62,7 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     bool read_distance(flxDataArrayInt16 *);
 
@@ -80,15 +78,17 @@ private:
     uint8_t _sharpenerPercent = 5; // Default is 5%
     uint8_t _targetOrder = (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST;
 
-public:
+  public:
     // Define our read-write properties
-    flxPropertyRWUint<flxDevVL53L5, &flxDevVL53L5::get_integration_time, &flxDevVL53L5::set_integration_time> integrationTime
-         = { 5, 2, 1000 };
-    flxPropertyRWUint8<flxDevVL53L5, &flxDevVL53L5::get_sharpener_percent, &flxDevVL53L5::set_sharpener_percent> sharpenerPercent
-        = { 5, 0, 99 };
-    flxPropertyRWUint8<flxDevVL53L5, &flxDevVL53L5::get_target_order, &flxDevVL53L5::set_target_order> targetOrder
-        = { (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST, { { "Strongest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST}, { "Closest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::CLOSEST} } };
+    flxPropertyRWUint<flxDevVL53L5, &flxDevVL53L5::get_integration_time, &flxDevVL53L5::set_integration_time>
+        integrationTime = {5, 2, 1000};
+    flxPropertyRWUint8<flxDevVL53L5, &flxDevVL53L5::get_sharpener_percent, &flxDevVL53L5::set_sharpener_percent>
+        sharpenerPercent = {5, 0, 99};
+    flxPropertyRWUint8<flxDevVL53L5, &flxDevVL53L5::get_target_order, &flxDevVL53L5::set_target_order> targetOrder = {
+        (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST,
+        {{"Strongest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST},
+         {"Closest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::CLOSEST}}};
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutArrayInt16<flxDevVL53L5, &flxDevVL53L5::read_distance> distance;    
+    flxParameterOutArrayInt16<flxDevVL53L5, &flxDevVL53L5::read_distance> distance;
 };

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBioHub.h
@@ -62,11 +62,11 @@ flxDevBioHub::flxDevBioHub()
 // so auto-detect will fail. We need to manually create an instance of the flxDevBioHub,
 // initialize the pin numbers with `initialize`, check if it is connected, call onInitialize
 // and then we can add it to the logger.
-bool flxDevBioHub::initialize( int connectResetPin, int connectMfioPin )
+bool flxDevBioHub::initialize(int connectResetPin, int connectMfioPin)
 {
     _resetPin = connectResetPin;
     _mfioPin = connectMfioPin;
-    
+
     if ((_resetPin < 0) || (_mfioPin < 0))
         return false;
 
@@ -80,7 +80,7 @@ bool flxDevBioHub::initialize( int connectResetPin, int connectMfioPin )
     delay(1000);
     pinMode(_mfioPin, INPUT_PULLUP); // To be used as an interrupt later
 
-    uint8_t identity[2] = { 0xFF, 0x00 };
+    uint8_t identity[2] = {0xFF, 0x00};
     bool couldBeBio = flux.i2cDriver().write(getDefaultAddress(), identity, 2);
     if (couldBeBio)
     {
@@ -96,7 +96,7 @@ bool flxDevBioHub::initialize( int connectResetPin, int connectMfioPin )
         if (onInitialize(*wirePort))
             return true;
     }
-    
+
     return false;
 }
 
@@ -229,4 +229,3 @@ float flxDevBioHub::read_r_value()
     _o2r = false;
     return body.rValue;
 }
-

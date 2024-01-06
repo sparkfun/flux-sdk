@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevVEML7700.h
@@ -77,9 +77,9 @@ bool flxDevVEML7700::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     // Check if this is a VEML6075
     uint16_t veml6075DeviceID = 0;
     bool identify6075 = i2cDriver.readRegister16(address, 0x0C, &veml6075DeviceID, true); // Little Endian
-    identify6075 &= (veml6075DeviceID == 0x0026); // VEML6075_DEVICE_ID
+    identify6075 &= (veml6075DeviceID == 0x0026);                                         // VEML6075_DEVICE_ID
 
-    return ((couldBe7700) && (!identify6075)); 
+    return ((couldBe7700) && (!identify6075));
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -152,4 +152,3 @@ void flxDevVEML7700::set_persistence(uint8_t pers)
     if (isInitialized())
         VEML7700::setPersistenceProtect((VEML7700_persistence_protect_t)pers);
 }
-

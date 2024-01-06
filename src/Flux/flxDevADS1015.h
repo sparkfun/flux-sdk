@@ -1,7 +1,7 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
@@ -104,16 +104,24 @@ class flxDevADS1015 : public flxDeviceI2CType<flxDevADS1015>, public ADS1015
     uint16_t _sampleRate = ADS1015_CONFIG_RATE_1600HZ;
     uint16_t _gain = ADS1015_CONFIG_PGA_2;
 
-public:
-    flxPropertyRWUint16<flxDevADS1015, &flxDevADS1015::get_sample_rate, &flxDevADS1015::set_sample_rate> sampleRate
-     = { ADS1015_CONFIG_RATE_1600HZ, { { "128 Hz", ADS1015_CONFIG_RATE_128HZ }, { "250 Hz", ADS1015_CONFIG_RATE_250HZ },
-                                       { "490 Hz", ADS1015_CONFIG_RATE_490HZ }, { "920 Hz", ADS1015_CONFIG_RATE_920HZ },
-                                       { "1600 Hz", ADS1015_CONFIG_RATE_1600HZ }, { "2400 Hz", ADS1015_CONFIG_RATE_2400HZ },
-                                       { "3300 Hz", ADS1015_CONFIG_RATE_3300HZ } } };
-    flxPropertyRWUint16<flxDevADS1015, &flxDevADS1015::get_pga_gain, &flxDevADS1015::set_pga_gain> gain
-     = { ADS1015_CONFIG_PGA_2, { { "x2/3", ADS1015_CONFIG_PGA_TWOTHIRDS }, { "x1", ADS1015_CONFIG_PGA_1 },
-                                 { "x2", ADS1015_CONFIG_PGA_2 }, { "x4", ADS1015_CONFIG_PGA_4 },
-                                 { "x8", ADS1015_CONFIG_PGA_8 }, { "x16", ADS1015_CONFIG_PGA_16 } } };
+  public:
+    flxPropertyRWUint16<flxDevADS1015, &flxDevADS1015::get_sample_rate, &flxDevADS1015::set_sample_rate> sampleRate = {
+        ADS1015_CONFIG_RATE_1600HZ,
+        {{"128 Hz", ADS1015_CONFIG_RATE_128HZ},
+         {"250 Hz", ADS1015_CONFIG_RATE_250HZ},
+         {"490 Hz", ADS1015_CONFIG_RATE_490HZ},
+         {"920 Hz", ADS1015_CONFIG_RATE_920HZ},
+         {"1600 Hz", ADS1015_CONFIG_RATE_1600HZ},
+         {"2400 Hz", ADS1015_CONFIG_RATE_2400HZ},
+         {"3300 Hz", ADS1015_CONFIG_RATE_3300HZ}}};
+    flxPropertyRWUint16<flxDevADS1015, &flxDevADS1015::get_pga_gain, &flxDevADS1015::set_pga_gain> gain = {
+        ADS1015_CONFIG_PGA_2,
+        {{"x2/3", ADS1015_CONFIG_PGA_TWOTHIRDS},
+         {"x1", ADS1015_CONFIG_PGA_1},
+         {"x2", ADS1015_CONFIG_PGA_2},
+         {"x4", ADS1015_CONFIG_PGA_4},
+         {"x8", ADS1015_CONFIG_PGA_8},
+         {"x16", ADS1015_CONFIG_PGA_16}}};
 
     flxPropertyRWUint8<flxDevADS1015, &flxDevADS1015::get_se_type, &flxDevADS1015::set_se_type> singleEndedType = {
         kADS1015DeviceFloat,

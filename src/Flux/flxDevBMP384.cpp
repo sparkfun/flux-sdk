@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBMP384.cpp
@@ -66,7 +66,7 @@ bool flxDevBMP384::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 
     uint8_t chipID = 0;
     bool couldBe384 = i2cDriver.readRegister(address, BMP384_CHIP_ID_REG, &chipID); // Should return 0x50 for BMP384
-    couldBe384 &= chipID == 0x50; // Note: BMP390 returns 0x60
+    couldBe384 &= chipID == 0x50;                                                   // Note: BMP390 returns 0x60
 
     return (couldBe384);
 }
@@ -87,7 +87,7 @@ bool flxDevBMP384::onInitialize(TwoWire &wirePort)
         flxLog_E("BMP384 Sensor error: %d", result);
         return false;
     }
-	
+
     return true;
 }
 
@@ -100,7 +100,7 @@ double flxDevBMP384::read_TemperatureC()
 
         if (err == BMP3_OK)
             _pressure = true;
-	}
+    }
     _temperature = false;
     return bmpData.temperature;
 }
@@ -112,7 +112,7 @@ double flxDevBMP384::read_Pressure()
 
         if (err == BMP3_OK)
             _temperature = true;
-	}
+    }
     _pressure = false;
     return bmpData.pressure;
 }

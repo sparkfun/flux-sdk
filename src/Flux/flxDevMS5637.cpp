@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevMS5637.cpp
@@ -60,8 +60,7 @@ bool flxDevMS5637::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     // Read the P&T PROM memory
     uint16_t n_prom[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     uint16_t *ptr = n_prom;
-    for (uint8_t offset = MS5637_PROM_ADDRESS_READ_ADDRESS_0;
-         offset < MS5637_PROM_ADDRESS_READ_ADDRESS_7; offset += 2)
+    for (uint8_t offset = MS5637_PROM_ADDRESS_READ_ADDRESS_0; offset < MS5637_PROM_ADDRESS_READ_ADDRESS_7; offset += 2)
     {
         if (!i2cDriver.readRegister16(address, offset, ptr++, false)) // Big Endian
             return false;
@@ -112,7 +111,8 @@ bool flxDevMS5637::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     uint32_t polynom = 0x988000; // x^8 + x^5 + x^4 + 1
     uint32_t msb = 0x800000;
     uint32_t mask = 0xFF8000;
-    uint32_t result = (((uint32_t)humidityWithCRC[0]) << 16) | (((uint32_t)humidityWithCRC[1]) << 8); // Pad with zeros as specified in spec
+    uint32_t result = (((uint32_t)humidityWithCRC[0]) << 16) |
+                      (((uint32_t)humidityWithCRC[1]) << 8); // Pad with zeros as specified in spec
 
     while (msb != 0x80)
     {
@@ -151,4 +151,3 @@ bool flxDevMS5637::onInitialize(TwoWire &wirePort)
 
     return result;
 }
-

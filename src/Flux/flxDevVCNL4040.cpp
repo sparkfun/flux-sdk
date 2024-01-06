@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevVCNL4040.h
@@ -57,7 +57,8 @@ flxDevVCNL4040::flxDevVCNL4040()
     flxRegister(irDutyCycle, "IR Duty Cycle", "The InfraRed duty cycle");
     flxRegister(proximityIntegrationTime, "Proximity Integration Time", "The proximity measurement integration time");
     flxRegister(proximityResolution, "Proximity Resolution", "The proximity measurement resolution");
-    flxRegister(ambientIntegrationTime, "Ambient Integration Time (ms)", "The ambient light level integration time in milliseconds");
+    flxRegister(ambientIntegrationTime, "Ambient Integration Time (ms)",
+                "The ambient light level integration time in milliseconds");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -68,11 +69,11 @@ bool flxDevVCNL4040::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint16_t idReg; // VCNL4040_ID
+    uint16_t idReg;                                                           // VCNL4040_ID
     bool couldBe4040 = i2cDriver.readRegister16(address, 0x0C, &idReg, true); // Little Endian
     couldBe4040 &= (idReg == 0x0186);
 
-    return (couldBe4040); 
+    return (couldBe4040);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -88,7 +89,7 @@ bool flxDevVCNL4040::onInitialize(TwoWire &wirePort)
     bool status = VCNL4040::begin(wirePort);
     if (status)
     {
-        VCNL4040::powerOnAmbient(); //Turn on ambient sensing
+        VCNL4040::powerOnAmbient(); // Turn on ambient sensing
         VCNL4040::setLEDCurrent(_ledCurrent);
         VCNL4040::setIRDutyCycle(_irDutyCycle);
         VCNL4040::setProxIntegrationTime(_proxIntTime);
@@ -136,7 +137,7 @@ void flxDevVCNL4040::set_IR_duty_cycle(uint16_t duty)
 
 uint8_t flxDevVCNL4040::get_proximity_integration_time()
 {
-    return  _proxIntTime;
+    return _proxIntTime;
 }
 
 void flxDevVCNL4040::set_proximity_integration_time(uint8_t intTime)
@@ -160,7 +161,7 @@ void flxDevVCNL4040::set_proximity_resolution(uint8_t res)
 
 uint16_t flxDevVCNL4040::get_ambient_integration_time()
 {
-    return  _ambIntTime;
+    return _ambIntTime;
 }
 
 void flxDevVCNL4040::set_ambient_integration_time(uint16_t intTime)
@@ -169,4 +170,3 @@ void flxDevVCNL4040::set_ambient_integration_time(uint16_t intTime)
     if (isInitialized())
         VCNL4040::setAmbientIntegrationTime(intTime);
 }
-

@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevCCS811.h
@@ -22,8 +22,6 @@
 #include "Arduino.h"
 #include "SparkFunCCS811.h"
 #include "flxDevice.h"
-
-
 
 #define kCCS811DeviceName "CCS811"
 
@@ -40,7 +38,6 @@ class flxDevCCS811 : public flxDeviceI2CType<flxDevCCS811>, public CCS811
     {
         return flxDevConfidenceExact;
     }
-    
 
     static const char *getDeviceName()
     {
@@ -56,15 +53,14 @@ class flxDevCCS811 : public flxDeviceI2CType<flxDevCCS811>, public CCS811
 
     bool onInitialize(TwoWire &);
 
-private:
+  private:
     float read_CO2();
     float read_TVOC();
     bool _tvoc = false; // Flags to avoid calling readAlgorithmResults twice
     bool _co2 = false;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevCCS811, &flxDevCCS811::read_CO2> co2;
-    flxParameterOutFloat<flxDevCCS811, &flxDevCCS811::read_TVOC> tvoc;    
-
+    flxParameterOutFloat<flxDevCCS811, &flxDevCCS811::read_TVOC> tvoc;
 };

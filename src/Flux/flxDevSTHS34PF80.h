@@ -1,7 +1,7 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
@@ -43,7 +43,7 @@ class flxDevSTHS34PF80 : public flxDeviceI2CType<flxDevSTHS34PF80>, public STHS3
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kSTHS34PF80DeviceName;
@@ -140,7 +140,6 @@ class flxDevSTHS34PF80 : public flxDeviceI2CType<flxDevSTHS34PF80>, public STHS3
     uint8_t get_PresenceAbsoluteValue();
     void set_PresenceAbsoluteValue(uint8_t);
 
-
   public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutInt16<flxDevSTHS34PF80, &flxDevSTHS34PF80::read_Presence> presence;
@@ -168,31 +167,28 @@ class flxDevSTHS34PF80 : public flxDeviceI2CType<flxDevSTHS34PF80>, public STHS3
                            {"2x", STHS34PF80_AVG_T_2},
                            {"1x", STHS34PF80_AVG_T_1}}};
 
-    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_GainMode, &flxDevSTHS34PF80::set_GainMode>
-        gainMode = {STHS34PF80_GAIN_DEFAULT_MODE,
-                    {{"Wide", STHS34PF80_GAIN_WIDE_MODE}, {"Default", STHS34PF80_GAIN_DEFAULT_MODE}}};
+    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_GainMode, &flxDevSTHS34PF80::set_GainMode> gainMode = {
+        STHS34PF80_GAIN_DEFAULT_MODE, {{"Wide", STHS34PF80_GAIN_WIDE_MODE}, {"Default", STHS34PF80_GAIN_DEFAULT_MODE}}};
 
-    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_TmosODR, &flxDevSTHS34PF80::set_TmosODR>
-        tmosODR = {STHS34PF80_TMOS_ODR_AT_1Hz,
-                   {{"Off", STHS34PF80_TMOS_ODR_OFF},
-                    {"0.25Hz", STHS34PF80_TMOS_ODR_AT_0Hz25},
-                    {"0.50Hz", STHS34PF80_TMOS_ODR_AT_0Hz50},
-                    {"1Hz", STHS34PF80_TMOS_ODR_AT_1Hz},
-                    {"2Hz", STHS34PF80_TMOS_ODR_AT_2Hz},
-                    {"4Hz", STHS34PF80_TMOS_ODR_AT_4Hz},
-                    {"8Hz", STHS34PF80_TMOS_ODR_AT_8Hz},
-                    {"15Hz", STHS34PF80_TMOS_ODR_AT_15Hz},
-                    {"30Hz", STHS34PF80_TMOS_ODR_AT_30Hz}}};
+    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_TmosODR, &flxDevSTHS34PF80::set_TmosODR> tmosODR = {
+        STHS34PF80_TMOS_ODR_AT_1Hz,
+        {{"Off", STHS34PF80_TMOS_ODR_OFF},
+         {"0.25Hz", STHS34PF80_TMOS_ODR_AT_0Hz25},
+         {"0.50Hz", STHS34PF80_TMOS_ODR_AT_0Hz50},
+         {"1Hz", STHS34PF80_TMOS_ODR_AT_1Hz},
+         {"2Hz", STHS34PF80_TMOS_ODR_AT_2Hz},
+         {"4Hz", STHS34PF80_TMOS_ODR_AT_4Hz},
+         {"8Hz", STHS34PF80_TMOS_ODR_AT_8Hz},
+         {"15Hz", STHS34PF80_TMOS_ODR_AT_15Hz},
+         {"30Hz", STHS34PF80_TMOS_ODR_AT_30Hz}}};
 
-    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_TmosOneShot,
-                     &flxDevSTHS34PF80::set_TmosOneShot>
+    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_TmosOneShot, &flxDevSTHS34PF80::set_TmosOneShot>
         tmosOneShot = {STHS34PF80_TMOS_IDLE_MODE,
                        {{"Idle", STHS34PF80_TMOS_IDLE_MODE}, {"One Shot", STHS34PF80_TMOS_ONE_SHOT}}};
 
-    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_MemoryBank, &flxDevSTHS34PF80::set_MemoryBank>
-        memBank = {
-            STHS34PF80_MAIN_MEM_BANK,
-            {{"Main Memory", STHS34PF80_MAIN_MEM_BANK}, {"Embedded Function Memory", STHS34PF80_EMBED_FUNC_MEM_BANK}}};
+    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_MemoryBank, &flxDevSTHS34PF80::set_MemoryBank> memBank = {
+        STHS34PF80_MAIN_MEM_BANK,
+        {{"Main Memory", STHS34PF80_MAIN_MEM_BANK}, {"Embedded Function Memory", STHS34PF80_EMBED_FUNC_MEM_BANK}}};
 
     flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_LpfMotionBandwidth,
                      &flxDevSTHS34PF80::set_LpfMotionBandwidth>
@@ -245,9 +241,7 @@ class flxDevSTHS34PF80 : public flxDeviceI2CType<flxDevSTHS34PF80>, public STHS3
                                {"Data Ready", STHS34PF80_TMOS_INT_DRDY},
                                {"Interrupt OR", STHS34PF80_TMOS_INT_OR}}};
 
-    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_DataReadyMode,
-                     &flxDevSTHS34PF80::set_DataReadyMode>
+    flxPropertyRWInt<flxDevSTHS34PF80, &flxDevSTHS34PF80::get_DataReadyMode, &flxDevSTHS34PF80::set_DataReadyMode>
         dataReady = {STHS34PF80_DRDY_PULSED,
                      {{"OR", STHS34PF80_DRDY_PULSED}, {"Interrupt OR", STHS34PF80_DRDY_LATCHED}}};
-
 };

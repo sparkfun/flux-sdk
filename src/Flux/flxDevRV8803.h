@@ -1,32 +1,30 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevRV8803.h
  *
  *  Spark Device object for the RV8803 device.
- * 
- * 
+ *
+ *
  */
 
 #pragma once
 
 #include "Arduino.h"
 #include "SparkFun_RV8803.h"
-#include "flxDevice.h"
 #include "flxClock.h"
-
-
+#include "flxDevice.h"
 
 #define kRV8803DeviceName "RV8803"
 
@@ -34,7 +32,7 @@
 class flxDevRV8803 : public flxDeviceI2CType<flxDevRV8803>, public flxIClock, public RV8803
 {
 
-public:
+  public:
     flxDevRV8803();
     // Interface
     static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
@@ -43,7 +41,6 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
 
     static const char *getDeviceName()
     {
@@ -65,7 +62,7 @@ public:
     void set_epoch(const uint &);
     bool valid_epoch(void);
 
-private:
+  private:
     std::string read_date_USA();
     std::string read_date();
     std::string read_time();
@@ -100,7 +97,7 @@ private:
     bool _month_short = false;
     bool _year = false;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
     flxParameterOutString<flxDevRV8803, &flxDevRV8803::read_date_USA> readDateUSA;
     flxParameterOutString<flxDevRV8803, &flxDevRV8803::read_date> readDate;
@@ -117,12 +114,13 @@ public:
 
     // Define our input parameters
     flxParameterInUint<flxDevRV8803, &flxDevRV8803::set_epoch> setEpoch;
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_seconds> setSeconds = { 0, 59 };
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_minutes> setMinutes = { 0, 59 };
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_hours> setHours = { 0, 23 };
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_date> setDate = { 1, 31 };
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_weekday> setWeekday
-        { {"Sunday",0}, {"Monday",1}, {"Tuesday",2}, {"Wednesday",3}, {"Thursday",4}, {"Friday",5}, {"Saturday",6}};
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_month> setMonth = { 1, 12 };
-    flxParameterInUint16<flxDevRV8803, &flxDevRV8803::set_year> setYear = { 1970, 2200 };
+    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_seconds> setSeconds = {0, 59};
+    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_minutes> setMinutes = {0, 59};
+    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_hours> setHours = {0, 23};
+    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_date> setDate = {1, 31};
+    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_weekday> setWeekday{
+        {"Sunday", 0},   {"Monday", 1}, {"Tuesday", 2}, {"Wednesday", 3},
+        {"Thursday", 4}, {"Friday", 5}, {"Saturday", 6}};
+    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_month> setMonth = {1, 12};
+    flxParameterInUint16<flxDevRV8803, &flxDevRV8803::set_year> setYear = {1970, 2200};
 };

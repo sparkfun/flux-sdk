@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSTC31.h
@@ -24,8 +24,8 @@
 
 #include "Arduino.h"
 
-#include "flxDevice.h"
 #include "SparkFun_STC3x_Arduino_Library.h"
+#include "flxDevice.h"
 
 // What is the name used to ID this device?
 #define kSTC31DeviceName "STC31"
@@ -35,7 +35,7 @@
 class flxDevSTC31 : public flxDeviceI2CType<flxDevSTC31>, public STC3x
 {
 
-public:
+  public:
     flxDevSTC31();
 
     // Static Interface - used by the system to determine if this device is
@@ -45,7 +45,7 @@ public:
     {
         return flxDevConfidenceExact;
     }
-    
+
     static const char *getDeviceName()
     {
         return kSTC31DeviceName;
@@ -61,8 +61,7 @@ public:
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-private:
-
+  private:
     // methods used to get values for our output parameters
     float read_co2();
     float read_temperature_C();
@@ -81,10 +80,10 @@ private:
     void set_binary_gas(uint8_t gas);
     uint8_t _binaryGas = (uint8_t)STC3X_BINARY_GAS_CO2_AIR_25;
 
-public:
+  public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutFloat<flxDevSTC31, &flxDevSTC31::read_co2> co2;    
-    flxParameterOutFloat<flxDevSTC31, &flxDevSTC31::read_temperature_C> temperatureC;    
+    flxParameterOutFloat<flxDevSTC31, &flxDevSTC31::read_co2> co2;
+    flxParameterOutFloat<flxDevSTC31, &flxDevSTC31::read_temperature_C> temperatureC;
 
     // Define our input parameters
     flxParameterInFloat<flxDevSTC31, &flxDevSTC31::write_rh> rh;
@@ -93,9 +92,10 @@ public:
 
     // Define our read-write properties
     // binaryGas is STC3X_binary_gas_type_e. Default is STC3X_BINARY_GAS_CO2_AIR_25
-    flxPropertyRWUint8<flxDevSTC31, &flxDevSTC31::get_binary_gas, &flxDevSTC31::set_binary_gas> binaryGas
-        = { STC3X_BINARY_GAS_CO2_AIR_25, { { "CO2 in N2 (100% max)", STC3X_BINARY_GAS_CO2_N2_100 },
-                                           { "CO2 in Air (100% max)", STC3X_BINARY_GAS_CO2_AIR_100 },
-                                           { "CO2 in N2 (25% max)", STC3X_BINARY_GAS_CO2_N2_25 },
-                                           { "CO2 in Air (25% max)", STC3X_BINARY_GAS_CO2_AIR_25 } } };
+    flxPropertyRWUint8<flxDevSTC31, &flxDevSTC31::get_binary_gas, &flxDevSTC31::set_binary_gas> binaryGas = {
+        STC3X_BINARY_GAS_CO2_AIR_25,
+        {{"CO2 in N2 (100% max)", STC3X_BINARY_GAS_CO2_N2_100},
+         {"CO2 in Air (100% max)", STC3X_BINARY_GAS_CO2_AIR_100},
+         {"CO2 in N2 (25% max)", STC3X_BINARY_GAS_CO2_N2_25},
+         {"CO2 in Air (25% max)", STC3X_BINARY_GAS_CO2_AIR_25}}};
 };

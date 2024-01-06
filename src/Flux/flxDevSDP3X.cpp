@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevSDP3X.h
@@ -114,7 +114,8 @@ bool flxDevSDP3X::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevSDP3X::onInitialize(TwoWire &wirePort)
 {
 
-    SDP3X::stopContinuousMeasurement(address(), wirePort); // Make sure continuous measurements are stopped or .begin will fail
+    SDP3X::stopContinuousMeasurement(address(),
+                                     wirePort); // Make sure continuous measurements are stopped or .begin will fail
     bool status = SDP3X::begin(address(), wirePort);
     status &= (SDP3X::startContinuousMeasurement((bool)_tempComp, _measAvg) == SDP3X_SUCCESS);
     return status;
