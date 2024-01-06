@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  * SparkFun Data Logger
  *
@@ -18,18 +18,18 @@
 #include "sfeDataLogger.h"
 #include "esp_sleep.h"
 
-//TESTING
+// TESTING
 //#include <Flux/flxUtils.h>
 
 RTC_DATA_ATTR int boot_count = 0;
-
 
 // Application keys
 // NOTE: Gen a base 64 key  % openssl rand -base64 32
 //       Convert into ascii ints in python %    data = [ord(c) for c in ss]
 //       Jam into the below array
-static uint8_t _app_jump[] = {104,72,67,51,74,67,108,99,104,112,77,100,55,106,56,78,68,69,108,98,118,
-                                51,65,90,48,51,82,111,120,56,52,49,70,76,103,77,84,49,85,99,117,66,111,61};
+static uint8_t _app_jump[] = {104, 72, 67, 51,  74,  67,  108, 99, 104, 112, 77,  100, 55,  106, 56,
+                              78,  68, 69, 108, 98,  118, 51,  65, 90,  48,  51,  82,  111, 120, 56,
+                              52,  49, 70, 76,  103, 77,  84,  49, 85,  99,  117, 66,  111, 61};
 //---------------------------------------------------------------------------
 // Constructor
 //
@@ -45,8 +45,8 @@ sfeDataLogger::sfeDataLogger() : _logTypeSD{kAppLogTypeNone}, _logTypeSer{kAppLo
 
     // sleep properties
     flxRegister(sleepEnabled, "Enable System Sleep", "If enabled, sleep the system ");
-    flxRegister(sleepInterval,"Sleep Interval (S)", "The interval the system will sleep for");
-    flxRegister(wakeInterval, "Wake Interval (S)", "The interval the system will operate between sleep period");    
+    flxRegister(sleepInterval, "Sleep Interval (S)", "The interval the system will sleep for");
+    flxRegister(wakeInterval, "Wake Interval (S)", "The interval the system will operate between sleep period");
 
     // set some simple defaults
     sleepInterval = 20;
@@ -326,7 +326,6 @@ void sfeDataLogger::set_logTypeSer(uint8_t logType)
 
 //     flxLog_I_("Decoded data: %s", input_buffer);
 
-
 // }
 //---------------------------------------------------------------------------
 // start()
@@ -338,19 +337,32 @@ bool sfeDataLogger::start()
     // Waking up from a sleep (boot count isn't zero)
     if (boot_count != 0)
     {
-        flxLog_I(F("Starting system from deep sleep - boot_count %d - wake period is %d seconds"), boot_count, wakeInterval());
+        flxLog_I(F("Starting system from deep sleep - boot_count %d - wake period is %d seconds"), boot_count,
+                 wakeInterval());
 
         // Print the wakeup reason
         esp_sleep_wakeup_cause_t wakeup_reason;
         wakeup_reason = esp_sleep_get_wakeup_cause();
-        switch(wakeup_reason)
+        switch (wakeup_reason)
         {
-          case ESP_SLEEP_WAKEUP_EXT0 : flxLog_I(F("Wakeup caused by external signal using RTC_IO")); break;
-          case ESP_SLEEP_WAKEUP_EXT1 : flxLog_I(F("Wakeup caused by external signal using RTC_CNTL")); break;
-          case ESP_SLEEP_WAKEUP_TIMER : flxLog_I(F("Wakeup caused by timer")); break;
-          case ESP_SLEEP_WAKEUP_TOUCHPAD : flxLog_I(F("Wakeup caused by touchpad")); break;
-          case ESP_SLEEP_WAKEUP_ULP : flxLog_I(F("Wakeup caused by ULP program")); break;
-          default : flxLog_I(F("Wakeup was not caused by deep sleep: %d"), (int)wakeup_reason); break;
+        case ESP_SLEEP_WAKEUP_EXT0:
+            flxLog_I(F("Wakeup caused by external signal using RTC_IO"));
+            break;
+        case ESP_SLEEP_WAKEUP_EXT1:
+            flxLog_I(F("Wakeup caused by external signal using RTC_CNTL"));
+            break;
+        case ESP_SLEEP_WAKEUP_TIMER:
+            flxLog_I(F("Wakeup caused by timer"));
+            break;
+        case ESP_SLEEP_WAKEUP_TOUCHPAD:
+            flxLog_I(F("Wakeup caused by touchpad"));
+            break;
+        case ESP_SLEEP_WAKEUP_ULP:
+            flxLog_I(F("Wakeup caused by ULP program"));
+            break;
+        default:
+            flxLog_I(F("Wakeup was not caused by deep sleep: %d"), (int)wakeup_reason);
+            break;
         }
     }
 
@@ -433,10 +445,12 @@ void sfeDataLogger::enterSleepMode()
 
     flxLog_I(F("Starting device deep sleep for %d secs"), sleepInterval());
 
-    //esp_sleep_config_gpio_isolate(); // Don't. This causes: E (33643) gpio: gpio_sleep_set_pull_mode(827): GPIO number error
+    // esp_sleep_config_gpio_isolate(); // Don't. This causes: E (33643) gpio: gpio_sleep_set_pull_mode(827): GPIO
+    // number error
 
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_OFF);
-    //esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF); // Don't disable RTC SLOW MEM - otherwise boot_count (RTC_DATA_ATTR) becomes garbage
+    // esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_SLOW_MEM, ESP_PD_OPTION_OFF); // Don't disable RTC SLOW MEM - otherwise
+    // boot_count (RTC_DATA_ATTR) becomes garbage
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_FAST_MEM, ESP_PD_OPTION_OFF);
     esp_sleep_pd_config(ESP_PD_DOMAIN_XTAL, ESP_PD_OPTION_OFF);
     esp_sleep_pd_config(ESP_PD_DOMAIN_RTC8M, ESP_PD_OPTION_OFF);
@@ -446,10 +460,9 @@ void sfeDataLogger::enterSleepMode()
 
     unsigned long long period = sleepInterval() * 1000000ULL;
 
-    esp_sleep_enable_timer_wakeup(period); 
+    esp_sleep_enable_timer_wakeup(period);
 
-    esp_deep_sleep_start(); // see you on the otherside 
-
+    esp_deep_sleep_start(); // see you on the otherside
 }
 //---------------------------------------------------------------------------
 // loop()
@@ -459,7 +472,7 @@ void sfeDataLogger::enterSleepMode()
 bool sfeDataLogger::loop()
 {
     // Is sleep enabled and if so, is it time to sleep the system
-    if (sleepEnabled() && millis() - _startTime > wakeInterval()*1000)
+    if (sleepEnabled() && millis() - _startTime > wakeInterval() * 1000)
     {
         enterSleepMode();
     }

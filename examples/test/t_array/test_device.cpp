@@ -1,15 +1,15 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  *
  *  flxDevBME280.cpp
@@ -44,10 +44,10 @@ test_device::test_device()
     flxRegister(array_uint8, "uint8.array", "Array Parameter Test");
     flxRegister(array_uint16, "uint16.array", "Array Parameter Test");
     flxRegister(array_uint, "uint.array", "Array Parameter Test");
-    
+
     flxRegister(array_float, "float.array", "Array Parameter Test");
     array_float.setPrecision(4);
-    
+
     flxRegister(array_double, "double.array", "Array Parameter Test");
     array_double.setPrecision(6);
 
@@ -72,24 +72,23 @@ bool test_device::onInitialize(TwoWire &wirePort)
 {
     // the test device always initializes
     return true;
-
 }
 
 // The array Getter methods ...
 
 // our "getter" methods for the array output parameters
-bool  test_device::get_bool(flxDataArrayBool *theArray)
+bool test_device::get_bool(flxDataArrayBool *theArray)
 {
     bool mydata[] = {true, true, true, false, true, false};
 
     // set the value, single dimension, a copy is made
-    theArray->set(mydata, sizeof(mydata)/sizeof(bool));
+    theArray->set(mydata, sizeof(mydata) / sizeof(bool));
 
     return true;
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_int8(flxDataArrayInt8 *theArray)
+bool test_device::get_int8(flxDataArrayInt8 *theArray)
 {
     static int8_t mydata[] = {-10, -12, 0, 3, 11, 13};
 
@@ -100,18 +99,18 @@ bool  test_device::get_int8(flxDataArrayInt8 *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_int16(flxDataArrayInt16 *theArray)
+bool test_device::get_int16(flxDataArrayInt16 *theArray)
 {
     int16_t mydata[] = {300, 201, 102, 3, -10, -20, -30, 1000};
 
     // set the value, single dimension, a copy is made
-    theArray->set(mydata, sizeof(mydata)/sizeof(int16_t));
+    theArray->set(mydata, sizeof(mydata) / sizeof(int16_t));
 
     return true;
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_int(flxDataArrayInt *theArray)
+bool test_device::get_int(flxDataArrayInt *theArray)
 {
     static int mydata[] = {-1000, -800, -400, -200, 200, 400, 800, 1000};
 
@@ -122,40 +121,40 @@ bool  test_device::get_int(flxDataArrayInt *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_uint8(flxDataArrayUint8 *theArray)
+bool test_device::get_uint8(flxDataArrayUint8 *theArray)
 {
     uint8_t mydata[] = {0, 12, 24, 254};
 
     // set the value, single dimension, a copy is made
-    theArray->set(mydata, sizeof(mydata)/sizeof(uint8_t));
+    theArray->set(mydata, sizeof(mydata) / sizeof(uint8_t));
 
     return true;
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_uint16(flxDataArrayUint16 *theArray)
+bool test_device::get_uint16(flxDataArrayUint16 *theArray)
 {
     static uint16_t mydata[] = {1000, 2000, 3000, 4000, 5000, 6000, 7000};
 
     // set the value, single dimension, no copy
-    theArray->set(mydata, sizeof(mydata)/sizeof(uint16_t), true);
+    theArray->set(mydata, sizeof(mydata) / sizeof(uint16_t), true);
 
     return true;
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_uint(flxDataArrayUint *theArray)
+bool test_device::get_uint(flxDataArrayUint *theArray)
 {
     uint mydata[] = {1, 10, 100, 1000, 10000, 2, 20, 200, 2000, 20000};
 
     // set the value, single dimension, a copy is made
-    theArray->set(mydata, sizeof(mydata)/sizeof(uint));
+    theArray->set(mydata, sizeof(mydata) / sizeof(uint));
 
     return true;
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_float(flxDataArrayFloat *theArray)
+bool test_device::get_float(flxDataArrayFloat *theArray)
 {
     static float mydata[] = {1.1111111, 2.222222, 3.33333, 4.444444, 53.55555, 6.666666};
 
@@ -166,7 +165,7 @@ bool  test_device::get_float(flxDataArrayFloat *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_double(flxDataArrayDouble *theArray)
+bool test_device::get_double(flxDataArrayDouble *theArray)
 {
     static double mydata[] = {-1.1111199, -2.22222299, -3.3333399, 4.44444499, -53.5555599, 6.66666699};
 
@@ -177,11 +176,11 @@ bool  test_device::get_double(flxDataArrayDouble *theArray)
 }
 
 //-------------------------------------------------------------------
-bool  test_device::get_string(flxDataArrayString *theArray)
+bool test_device::get_string(flxDataArrayString *theArray)
 {
-    static const char * myData[] = {"one", "two", "three", "four"};
+    static const char *myData[] = {"one", "two", "three", "four"};
 
-    theArray->set((char**)myData, 4, true);
+    theArray->set((char **)myData, 4, true);
 
     return true;
 }

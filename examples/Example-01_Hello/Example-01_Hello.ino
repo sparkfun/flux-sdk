@@ -1,23 +1,23 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  * Spark Framework demo - simple output
- *   
+ *
  */
 
 #include "Arduino.h"
 
-// Spark framework 
+// Spark framework
 #include <Flux.h>
 #include <Flux/flxDevBME280.h>
 #include <Flux/flxDevCCS811.h>
@@ -31,81 +31,92 @@
 flxDevBME280 myBME;
 flxDevCCS811 myCCS;
 
-bool BMEIsConnected=false;
-bool CCSIsConnected=false;
+bool BMEIsConnected = false;
+bool CCSIsConnected = false;
 //---------------------------------------------------------------------
 // Arduino Setup
 //
-void setup() {
+void setup()
+{
 
     // Begin setup - turn on board LED during setup.
     pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH); 
+    digitalWrite(LED_BUILTIN, HIGH);
 
-    Serial.begin(115200);  
-    while (!Serial);
+    Serial.begin(115200);
+    while (!Serial)
+        ;
     Serial.println("\n---- Startup ----");
-    
+
     // Wire startup
     Wire.begin();
 
     // Setup Spark, but don't have the framework autoload devices
     flux.start(false);
 
-    
     // init devices
-    if (!myBME.initialize() )
+    if (!myBME.initialize())
     {
         Serial.println("[Error] - Startup of BME280 failed. Halting");
-        while(1);
-    }else {
+        while (1)
+            ;
+    }
+    else
+    {
         Serial.println("BME280 initialized");
-        BMEIsConnected=true;
+        BMEIsConnected = true;
     }
 
-
-
-    if (!myCCS.initialize() )
+    if (!myCCS.initialize())
     {
         Serial.println("[Error] - Startup of CCS811 failed. Halting");
-        while(1);
-
-    }else {
-        Serial.println("CCS811 initialized");    
+        while (1)
+            ;
+    }
+    else
+    {
+        Serial.println("CCS811 initialized");
         CCSIsConnected = true;
     }
 
-    digitalWrite(LED_BUILTIN, LOW);  // board LED off
+    digitalWrite(LED_BUILTIN, LOW); // board LED off
 }
 
 //---------------------------------------------------------------------
-// Arduino loop - 
-void loop() {
+// Arduino loop -
+void loop()
+{
 
     // Retrieve the data from the devices.
-    digitalWrite(LED_BUILTIN, HIGH);   // turn on the log led    
+    digitalWrite(LED_BUILTIN, HIGH); // turn on the log led
 
-    Serial.print("Device: "); Serial.println(myBME.name());
+    Serial.print("Device: ");
+    Serial.println(myBME.name());
     if (BMEIsConnected)
     {
-        Serial.print("   Temp F   : "); Serial.println(myBME.temperatureF()); 
-        Serial.print("   Humidity : "); Serial.println(myBME.humidity());     
-    } 
-    else 
+        Serial.print("   Temp F   : ");
+        Serial.println(myBME.temperatureF());
+        Serial.print("   Humidity : ");
+        Serial.println(myBME.humidity());
+    }
+    else
         Serial.println("Not Connected.");
-    
 
-    Serial.print("\nDevice: "); Serial.println(myCCS.name());
+    Serial.print("\nDevice: ");
+    Serial.println(myCCS.name());
 
     if (CCSIsConnected)
     {
-        Serial.print("   CO2   : "); Serial.println(myCCS.co2()); 
-        Serial.print("   TVOC  : "); Serial.println(myCCS.tvoc());  
-    } else
+        Serial.print("   CO2   : ");
+        Serial.println(myCCS.co2());
+        Serial.print("   TVOC  : ");
+        Serial.println(myCCS.tvoc());
+    }
+    else
         Serial.println("Not Connected.");
 
-    // Our loop delay 
-    delay(1000);                       
-    digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
+    // Our loop delay
+    delay(1000);
+    digitalWrite(LED_BUILTIN, LOW); // turn off the log led
     delay(1000);
 }

@@ -1,33 +1,32 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2023, SparkFun Electronics Inc.  All rights reserved.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
  * This software includes information which is proprietary to and a
  * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
  * to anyone outside of this organization. Reproduction by any means
  * whatsoever is  prohibited without express written permission.
- * 
+ *
  *---------------------------------------------------------------------------------
  */
- 
+
 /*
  * Spark Framework demo - logging
- *   
+ *
  */
 
-// Spark framework 
+// Spark framework
 #include <Flux.h>
-#include <Flux/flxLogger.h>
-#include <Flux/flxFmtJSON.h>
 #include <Flux/flxFmtCSV.h>
-#include <Flux/flxTimer.h>
+#include <Flux/flxFmtJSON.h>
+#include <Flux/flxLogger.h>
 #include <Flux/flxSerial.h>
-
+#include <Flux/flxTimer.h>
 
 // settings storage
-#include <Flux/flxStorageESP32Pref.h>
 #include <Flux/flxSettings.h>
 #include <Flux/flxSettingsSerial.h>
+#include <Flux/flxStorageESP32Pref.h>
 
 // Testing for device calls
 #include <Flux/flxDevButton.h>
@@ -39,7 +38,7 @@
 // WiFi Testing
 #include <Flux/flxWiFiESP32.h>
 
-//NTP
+// NTP
 #include <Flux/flxNTPESP32.h>
 
 //#define OPENLOG_ESP32
@@ -47,7 +46,6 @@
 #define EN_3V3_SW 32
 #define LED_BUILTIN 25
 #endif
-
 
 //------------------------------------------
 // Default log interval in milli secs
@@ -58,59 +56,61 @@
 /////////////////////////////////////////////////////////////////////////
 // Spark Structure and Object Definition
 //
-// This app implements a "logger", which grabs data from 
-// connected devices and writes it to the Serial Console 
+// This app implements a "logger", which grabs data from
+// connected devices and writes it to the Serial Console
 
-// Create a logger action and add: 
-//   - Output devices: Serial 
+// Create a logger action and add:
+//   - Output devices: Serial
 
 // Note - these could be added later using the add() method on logger
 
-// Create a JSON and CSV output formatters. 
-// Note: setting internal buffer sizes using template to minimize alloc calls. 
+// Create a JSON and CSV output formatters.
+// Note: setting internal buffer sizes using template to minimize alloc calls.
 flxFormatJSON<1000> fmtJSON;
 flxFormatCSV fmtCSV;
 
-flxLogger  logger;
+flxLogger logger;
 
 // Enable a timer with a default timer value - this is the log interval
-flxTimer   timer(kDefaultLogInterval);    // Timer 
+flxTimer timer(kDefaultLogInterval); // Timer
 
 // SD Card Filesystem object
 flxFSSDMMCard theSDCard;
 
-// A writer interface for the SD Card that also rotates files 
-flxFileRotate  theOutputFile;
+// A writer interface for the SD Card that also rotates files
+flxFileRotate theOutputFile;
 
 // settings things
-flxStorageESP32Pref  myStorage;
-flxSettingsSerial    serialSettings;
+flxStorageESP32Pref myStorage;
+flxSettingsSerial serialSettings;
 
 flxWiFiESP32 wifiConnection;
-flxNTPESP32  ntpClient;
+flxNTPESP32 ntpClient;
 
 //---------------------------------------------------------------------
 // Arduino Setup
 //
-void setup() {
+void setup()
+{
 
     // Begin setup - turn on board LED during setup.
     pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH); 
+    digitalWrite(LED_BUILTIN, HIGH);
 
-    Serial.begin(115200);  
-    while (!Serial);
+    Serial.begin(115200);
+    while (!Serial)
+        ;
     Serial.println("\n---- Startup ----");
 
-#ifdef OPENLOG_ESP32    
+#ifdef OPENLOG_ESP32
     pinMode(EN_3V3_SW, OUTPUT); // Enable Qwiic power and I2C
     digitalWrite(EN_3V3_SW, HIGH);
 #endif
 
     // If not using settings, can use the following lines to test WiFi manually
     // Try WiFi
-    //wifiConnection.SSID = "";
-    //wifiConnection.password = "";
+    // wifiConnection.SSID = "";
+    // wifiConnection.password = "";
 
     // set the settings storage system for spark
     flxSettings.setStorage(&myStorage);
@@ -122,37 +122,37 @@ void setup() {
     // of everything else.
     flux.add(serialSettings);
 
-    // wire up the NTP to the wifi network object. When the connection status changes, 
+    // wire up the NTP to the wifi network object. When the connection status changes,
     // the NTP client will start and stop.
     ntpClient.setNetwork(&wifiConnection);
-    ntpClient.setStartupDelay(5);  // Give the NTP server some time to start
+    ntpClient.setStartupDelay(5); // Give the NTP server some time to start
 
     // Start Spark - Init system: auto detects devices and restores settings from EEPROM
     //               This should be done after all devices are added..for now...
-    flux.start();  
+    flux.start();
 
     if (wifiConnection.isConnected())
         Serial.println("Connected to Wifi!");
     else
         Serial.println("Unable to connect to WiFi!");
 
-    // Logging is done at an interval - using an interval timer. 
+    // Logging is done at an interval - using an interval timer.
     // Connect logger to the timer event
-    logger.listen(timer.on_interval);  
+    logger.listen(timer.on_interval);
 
     // We want to output JSON and CSV to the serial consol.
     //  - Add Serial to our  formatters
     fmtJSON.add(flxSerial());
-    fmtCSV.add(flxSerial());    
+    fmtCSV.add(flxSerial());
 
     //  - Add the JSON and CVS format to the logger
     logger.add(fmtJSON);
-    logger.add(fmtCSV);    
+    logger.add(fmtCSV);
 
-    // setup output to the SD card 
+    // setup output to the SD card
     if (theSDCard.initialize())
     {
-        
+
         theOutputFile.setName("Data File", "Output file rotation manager");
 
         // SD card is available - lets setup output for it
@@ -161,12 +161,12 @@ void setup() {
 
         // setup our file rotation parameters
         theOutputFile.filePrefix = "sfe";
-        theOutputFile.startNumber=1;
-        theOutputFile.rotatePeriod(24); // one day 
+        theOutputFile.startNumber = 1;
+        theOutputFile.rotatePeriod(24); // one day
 
         // add the file output to the CSV output.
         fmtCSV.add(theOutputFile);
-        // have the CSV formatter listen to the new file event. This 
+        // have the CSV formatter listen to the new file event. This
         // will cause a header to be written next cycle.
         fmtCSV.listenNewFile(theOutputFile.on_newFile);
 
@@ -175,30 +175,27 @@ void setup() {
     else
         Serial.println("SD card output not available");
 
-
-    
-
     // What devices has the system detected?
     // List them and add them to the logger
 
-    flxDeviceContainer  myDevices = flux.connectedDevices();
+    flxDeviceContainer myDevices = flux.connectedDevices();
 
-    // The device list can be added directly to the logger object using an 
-    // add() method call. This will only add devices with output parameters. 
+    // The device list can be added directly to the logger object using an
+    // add() method call. This will only add devices with output parameters.
     //
     // Example:
-    //      logger.add(myDevices);   
+    //      logger.add(myDevices);
     //
     // But for this example, let's loop over our devices and show how use the
     // device parameters.
 
-    Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size() );
+    Serial.printf("Number of Devices Detected: %d\r\n", myDevices.size());
 
-    // Loop over the device list - note that it is iterable. 
-    for (auto device: myDevices )
+    // Loop over the device list - note that it is iterable.
+    for (auto device : myDevices)
     {
         Serial.printf("\tDevice: %s, Output Number: %d", device->name(), device->nOutputParameters());
-        if ( device->nOutputParameters() > 0)
+        if (device->nOutputParameters() > 0)
         {
             Serial.printf("  - Adding to logger\r\n");
             logger.add(device);
@@ -212,38 +209,39 @@ void setup() {
     auto allButtons = flux.get<flxDevButton>();
 
     Serial.printf("Number of buttons: %d \n\r", allButtons->size());
-    for( auto button: *allButtons)
+    for (auto button : *allButtons)
     {
         Serial.printf("Button Name: %s", button->name());
 
         // Have the button trigger a log entry
         logger.listen(button->on_clicked);
-        
+
         // Lets long the value of the button event
-        logger.listenLogEvent(button->on_clicked, button);        
+        logger.listenLogEvent(button->on_clicked, button);
     }
 
     /// END TESTING
-    digitalWrite(LED_BUILTIN, LOW);  // board LED off
+    digitalWrite(LED_BUILTIN, LOW); // board LED off
 
     Serial.printf("\n\rLog Output:\n\r");
 }
 
 //---------------------------------------------------------------------
-// Arduino loop - 
-void loop() {
+// Arduino loop -
+void loop()
+{
 
     ///////////////////////////////////////////////////////////////////
     // Spark
     //
     // Just call the spark framework loop() method. Spark will manage
-    // the dispatch of processing to the components that were added 
+    // the dispatch of processing to the components that were added
     // to the system during setup.
-    if(flux.loop())        // will return true if an action did something
-        digitalWrite(LED_BUILTIN, HIGH); 
+    if (flux.loop()) // will return true if an action did something
+        digitalWrite(LED_BUILTIN, HIGH);
 
-    // Our loop delay 
-    delay(1000); 
-    digitalWrite(LED_BUILTIN, LOW);   // turn off the log led
+    // Our loop delay
+    delay(1000);
+    digitalWrite(LED_BUILTIN, LOW); // turn off the log led
     delay(1000);
 }
