@@ -62,32 +62,3 @@ void formatByteString(uint64_t nBytes, uint prec, char *szBuffer, size_t len);
 bool createVariableName(const char *szInVariable, char *szOutVariable);
 
 } // namespace flx_utils
-
-/*
- * Example of how to use the stack based allocator with a string:
- *
- * Declaration
-/-------------------------------------------------------------------------------------
-// Use a stack based string allocator ... it basically replaces the allocator
-// used with std::string with one that uses a stack memory area, and if that
-// size is exceeded, uses a heap allocation scheme.
-//
-// See spUtil.h for more info.
-#define kCSVStackMemoryBufferSize 500
-
-template <class T, std::size_t buffSize = kCSVStackMemoryBufferSize>
-using stackString = std::basic_string<T, std::char_traits<T>, short_alloc<T, buffSize, alignof(T)>>;
-
-*
-* Use/implementation
-*
-// For the stack based allocator  - First you create a area on the stack
-    stackString<char>::allocator_type::arena_type static_allocator;
-
-    // Create strings that use this stack areas
-    stackString<char> _header_buffer{static_allocator};
-    stackString<char> _data_buffer{static_allocator};
-
-*/
-// include the stack based allocator for std::
-#include "utils/short_alloc.h"
