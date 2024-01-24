@@ -29,8 +29,11 @@
 
 uint8_t flxDevGNSS::defaultDeviceAddress[] = {kGNSSAddressDefault, kSparkDeviceAddressNull};
 
-// update period for the device
-#define kflxDevGNSSUpdateDelta 300
+// update period for the device.
+// 1/24 note - from discussion with Paul, the fastest interval in the underlying driver is 25ms.
+//             So setting this to that - give some breathing room for the rest of the system ...
+
+#define kflxDevGNSSUpdateDelta 25
 
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
