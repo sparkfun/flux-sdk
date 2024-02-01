@@ -89,7 +89,7 @@ bool _flxJobQueue::start(void)
     // based on operational timing.
     //
     // Now order the jobs based on delta time needs based on *start* time
-    std ::vector<flxJob *> theJobs;
+    std::vector<flxJob *> theJobs;
 
     // stash our jobs
     for (auto aJob : _jobQueue)
