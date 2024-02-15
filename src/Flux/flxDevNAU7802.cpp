@@ -126,6 +126,10 @@ void flxDevNAU7802::set_calibration_factor(float factor)
 void flxDevNAU7802::calculate_zero_offset()
 {
     NAU7802::calculateZeroOffset(); // Zero the scale - calculateZeroOffset(uint8_t averageAmount = 8)
+
+    // This has changed the value of the zero offset property in the underlying driver.
+    // Set the dirty flag so that system knows the property changed.
+    this->setIsDirty();
 }
 
 void flxDevNAU7802::calculate_calibration_factor(const float &weight_in_units)
@@ -133,4 +137,8 @@ void flxDevNAU7802::calculate_calibration_factor(const float &weight_in_units)
     NAU7802::calculateCalibrationFactor(
         weight_in_units); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t
                           // averageAmount = 8)
+                          //
+    // This has changed the value of the cal factor property in the underlying driver.
+    // Set the dirty flag so that system knows the property changed.
+    this->setIsDirty();
 }
