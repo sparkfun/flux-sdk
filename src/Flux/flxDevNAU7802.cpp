@@ -90,13 +90,37 @@ bool flxDevNAU7802::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 bool flxDevNAU7802::onInitialize(TwoWire &wirePort)
 {
 
-    return NAU7802::begin(wirePort);
+    // false - skips startup calibrateAFE
+    bool status = NAU7802::begin(wirePort, false);
+
+    // success? Set the LDO voltage
+    if (status)
+    {
+        status &= reset(); // Reset all registers
+
+        status &= powerUp(); // Power on analog and digital sections of the scale
+
+        status &= setLDO(NAU7802_LDO_3V0); // Set LDO to 3.3V
+
+        status &= setGain(NAU7802_GAIN_128); // Set gain to 128
+
+        status &= setSampleRate(NAU7802_SPS_320); // Set samples per second to 10
+
+        status &= setRegister(NAU7802_ADC, 0x30); // Turn off CLK_CHP. From 9.1 power on sequencing.
+
+        status &= setBit(NAU7802_PGA_PWR_PGA_CAP_EN,
+                         NAU7802_PGA_PWR); // Enable 330pF decoupling cap on chan 2. From 9.14 application circuit note.
+
+        // status &= NAU7802::calibrateAFE();
+    }
+
+    return status;
 }
 
 // GETTER methods for output params
 float flxDevNAU7802::read_weight()
 {
-    return NAU7802::getWeight(true); // Allow negative weights
+    return NAU7802::getWeight(true, 16); // Allow negative weights
 }
 
 // methods used to get values for our RW properties
@@ -125,7 +149,7 @@ void flxDevNAU7802::set_calibration_factor(float factor)
 
 void flxDevNAU7802::calculate_zero_offset()
 {
-    NAU7802::calculateZeroOffset(); // Zero the scale - calculateZeroOffset(uint8_t averageAmount = 8)
+    NAU7802::calculateZeroOffset(64); // Zero the scale - calculateZeroOffset(uint8_t averageAmount = 8)
 
     // This has changed the value of the zero offset property in the underlying driver.
     // Set the dirty flag so that system knows the property changed.
@@ -134,10 +158,10 @@ void flxDevNAU7802::calculate_zero_offset()
 
 void flxDevNAU7802::calculate_calibration_factor(const float &weight_in_units)
 {
-    NAU7802::calculateCalibrationFactor(
-        weight_in_units); // Set the calibration factor - calculateCalibrationFactor(float weightOnScale, uint8_t
-                          // averageAmount = 8)
-                          //
+    NAU7802::calculateCalibrationFactor(weight_in_units,
+                                        64); // Set the calibration factor - calculateCalibrationFactor(float
+                                             // weightOnScale, uint8_t averageAmount = 8)
+                                             //
     // This has changed the value of the cal factor property in the underlying driver.
     // Set the dirty flag so that system knows the property changed.
     this->setIsDirty();
