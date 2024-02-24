@@ -1318,7 +1318,7 @@ template <typename T> class flxActionType : public flxAction
     // of an instance.
     //
     // The typeID is determined by hashing the name of the class.
-    // This way the type ID is consistant across invocations
+    // This way the type ID is consistent across invocations
 
     static flxTypeID type(void)
     {
@@ -1341,7 +1341,7 @@ template <typename T> class flxSystemType : public flxActionType<T>
 {
 
   public:
-    // setup and lifecycle of the file system interface
+    // setup and life-cycle of the file system interface
     virtual bool initialize() = 0;
 
     // Power interface

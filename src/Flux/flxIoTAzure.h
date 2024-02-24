@@ -93,7 +93,7 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
     }
 
     //---------------------------------------------------------------------
-    // Method mostly copyied this method from examples in the Azure SDK for C.
+    // Method mostly copied from examples in the Azure SDK for C.
     bool initializeIoTHubClient()
     {
 

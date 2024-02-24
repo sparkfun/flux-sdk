@@ -56,7 +56,7 @@ bool flxFileRotate::openLogFile(bool bAppend)
     return true;
 }
 //------------------------------------------------------------------------------------------------
-// called when we dont' have a file open to see if an existing file meets our needs
+// called when we don't have a file open to see if an existing file meets our needs
 //
 
 bool flxFileRotate::openCurrentFile(void)
