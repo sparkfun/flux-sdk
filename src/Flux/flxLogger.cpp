@@ -256,6 +256,21 @@ void flxLogger::logSection(const char *section_name, flxParameterOutList &paramL
     if (paramList.size() == 0)
         return;
 
+    // if we don't have any enabled parameters, exit.
+    bool hasValid = false;
+    for (auto param : paramList)
+    {
+        if (param->enabled())
+        {
+            hasValid = true;
+            break;
+        }
+    }
+
+    // no valid params -- no dice
+    if (!hasValid)
+        return;
+
     for (auto theFormatter : _Formatters)
         theFormatter->beginSection(section_name);
 
@@ -278,7 +293,6 @@ void flxLogger::logSection(const char *section_name, flxParameterOutList &paramL
 //----------------------------------------------------------------------------
 void flxLogger::logObservation(void)
 {
-
     // Begin the observation with all our formatters
     for (auto theFormatter : _Formatters)
         theFormatter->beginObservation();
