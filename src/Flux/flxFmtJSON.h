@@ -188,10 +188,10 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     //-----------------------------------------------------------------
     void endSection()
     {
-        // if  there are no elements in the section (all params are disabled for example)
-        // just delete the object
-        if (_spDoc && _jSection.size() == 0 && _pSectionName != nullptr)
-            _spDoc->remove(_pSectionName);
+        // Note: Used to delete an empty object here (caused when all params are disabled),
+        // but  the delete would cause issues at times - something with how the library
+        // was deleting the object -- and maybe the memory related to the key... So now
+        // not doing the delete -- and checking for valid params at the logger/higher level
 
         _pSectionName = nullptr;
     }
