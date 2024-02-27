@@ -520,6 +520,46 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
 
     Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
 }
+
+//-----------------------------------------------------------------------------
+// drawMenuEntry()
+//
+// Draw the entry in the menu for the give item - property version
+//
+// Will output the value of the property (if it's not secure)
+//
+void flxSettingsSerial::drawMenuEntry(uint item, flxProperty *pProp)
+{
+
+    if (!pProp)
+        return;
+
+    if (pProp->title())
+    {
+        flxSerial.textToWhite();
+        Serial.printf("\n\r    %s\n\r", pProp->title());
+        flxSerial.textToNormal();
+    }
+
+    Serial.printf("\t%2d)  %s - %s  : ", item, pProp->name(), pProp->description());
+
+    // write out the value of the property - but not secure properties
+    std::string sTmp = pProp->to_string();
+
+    flxSerial.textToWhite();
+
+    if (pProp->secure())
+    {
+        for (int i = 0; i < sTmp.length(); i++)
+            Serial.printf("*");
+    }
+    else
+        Serial.printf("%s", pProp->to_string().c_str());
+
+    flxSerial.textToNormal();
+
+    Serial.printf("\n\r");
+}
 //-----------------------------------------------------------------------------
 // drawMenuEntry()
 //
