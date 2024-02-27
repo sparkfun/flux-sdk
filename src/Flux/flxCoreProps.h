@@ -75,7 +75,7 @@ class flxProperty : public flxDescriptor
         return s;
     }
     //---------------------------------------------------------------------------------
-    // continue to cascade down persistance interface (maybe do this later??)
+    // continue to cascade down persistence interface (maybe do this later??)
     virtual bool save(flxStorageBlock *) = 0;
     virtual bool restore(flxStorageBlock *) = 0;
 };
