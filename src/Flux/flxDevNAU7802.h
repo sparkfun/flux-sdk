@@ -74,6 +74,13 @@ class flxDevNAU7802 : public flxDeviceI2CType<flxDevNAU7802>, public NAU7802
     void set_zero_offset(uint);
     void set_calibration_factor(float);
 
+    // methods for the external calibration offset and gain hidden properties
+    int get_ext_offset(void);
+    void set_ext_offset(int);
+
+    uint get_ext_gain(void);
+    void set_ext_gain(uint);
+
     // methods used to set our input parameters
     void calculate_zero_offset();
     void calculate_calibration_factor(const float &weight_in_units);
@@ -82,6 +89,11 @@ class flxDevNAU7802 : public flxDeviceI2CType<flxDevNAU7802>, public NAU7802
     flxPropertyRWUint<flxDevNAU7802, &flxDevNAU7802::get_zero_offset, &flxDevNAU7802::set_zero_offset> zeroOffset;
     flxPropertyRWFloat<flxDevNAU7802, &flxDevNAU7802::get_calibration_factor, &flxDevNAU7802::set_calibration_factor>
         calibrationFactor;
+
+    // External calibration - hidden properties for cal data.
+    flxPropertyRWHiddenInt<flxDevNAU7802, &flxDevNAU7802::get_ext_offset, &flxDevNAU7802::set_ext_offset>
+        _externalCalOffset;
+    flxPropertyRWHiddenUint<flxDevNAU7802, &flxDevNAU7802::get_ext_gain, &flxDevNAU7802::set_ext_gain> _externalCalGain;
 
     // Define our input parameters - specify the get functions to call.
     flxParameterInVoid<flxDevNAU7802, &flxDevNAU7802::calculate_zero_offset> calculateZeroOffset;
