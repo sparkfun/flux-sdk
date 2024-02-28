@@ -23,7 +23,7 @@ flxLogging &flxLog = flxLogging::get();
 #define kOutputPrefixLen 4
 
 // prefix codes - index by log level value
-const char OutputPrefixCodes[] = "NEWIDV"; // NONE, Error , Warning, Info, Debug, Verbose
+const char OutputPrefixCodes[] = "EWNIDV"; // Error , Warning, NONE, Info, Debug, Verbose
 
 //-------------------------------------------------------------------------
 // Implement the output for the default driver
@@ -67,7 +67,7 @@ int flxLoggingDrvDefault::logPrintf(const flxLogLevel_t level, bool newline, con
     }
     uint8_t offset = 0;
     // set our prefix if we have a level
-    if (level > flxLogNone)
+    if (level != flxLogNone)
     {
         snprintf(pBuffer, lenBuffer, kOutputPrefixFMT, OutputPrefixCodes[level]);
         offset = kOutputPrefixLen;

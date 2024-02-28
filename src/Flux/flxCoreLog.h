@@ -32,9 +32,9 @@ flxDefineEventID(kLogErrWarn);
 // Define logging levels
 typedef enum
 {
-    flxLogNone,
-    flxLogError,
+    flxLogError = 0,
     flxLogWarning,
+    flxLogNone,
     flxLogInfo,
     flxLogDebug,
     flxLogVerbose
