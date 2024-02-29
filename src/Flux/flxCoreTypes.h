@@ -1008,6 +1008,13 @@ class flxDataLimit
         _dataLimits.clear();
     };
 
+    // method to get the name of a limit based on value -
+    // sub-classes specialize this
+    virtual std::string getName(flxDataVariable &var)
+    {
+        return std::string("");
+    }
+
     typedef enum
     {
         dataLimitNone = 0,
@@ -1125,6 +1132,22 @@ template <typename T> class flxDataLimitSetType : public flxDataLimitType<T>
                 return true;
         }
         return false;
+    }
+
+    // method to get the name of the limit based on a passed in value
+    std::string getName(flxDataVariable &var)
+    {
+        // get the typed value
+        T value;
+        value = var.get(value);
+
+        // do we have a match - if so return name value
+        for (auto item : flxDataLimit::limits())
+        {
+            if (item.data.isEqual(value))
+                return item.name;
+        }
+        return std::string("");
     }
 
     void addItem(std::string name, T value)
