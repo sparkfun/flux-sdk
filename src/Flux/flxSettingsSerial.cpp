@@ -544,17 +544,35 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxProperty *pProp)
     Serial.printf("\t%2d)  %s - %s  : ", item, pProp->name(), pProp->description());
 
     // write out the value of the property - but not secure properties
-    std::string sTmp = pProp->to_string();
 
     flxSerial.textToWhite();
 
+    // Secure string?
     if (pProp->secure())
     {
-        for (int i = 0; i < sTmp.length(); i++)
+        int sLen = pProp->to_string().length();
+        for (int i = 0; i < sLen; i++)
             Serial.printf("*");
     }
     else
-        Serial.printf("%s", pProp->to_string().c_str());
+    {
+        std::string sTmp;
+
+        // if we have a data limit of type set on the property, print out the
+        // limit name, not the value
+        flxDataLimit *propLimit = pProp->dataLimit();
+        if (propLimit && propLimit->type() == flxDataLimitTypeSet)
+        {
+            // Get the current value - then get the limit name based on the value.
+            // Note: Using "variable" to capture all types
+            flxDataVariable var = pProp->getValue();
+            sTmp = propLimit->getName(var);
+        }
+        else
+            sTmp = pProp->to_string(); // just get the value as a string.
+
+        Serial.printf("%s", sTmp.c_str());
+    }
 
     flxSerial.textToNormal();
 
