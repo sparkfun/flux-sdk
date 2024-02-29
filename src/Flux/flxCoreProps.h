@@ -53,6 +53,7 @@ class flxProperty : public flxDescriptor
     virtual flxEditResult_t editValue(flxDataEditor &) = 0;
     virtual flxDataLimit *dataLimit(void) = 0;
     virtual bool setValue(flxDataVariable &) = 0;
+    virtual flxDataVariable getValue(void) = 0;
 
     virtual bool hidden(void) = 0;
     virtual bool secure(void) = 0;
@@ -315,6 +316,7 @@ class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDa
 
         return bSuccess ? flxEditSuccess : flxEditFailure;
     }
+
     //---------------------------------------------------------------------------------
     bool setValue(flxDataVariable &value)
     {
@@ -326,6 +328,17 @@ class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDa
             return true;
         }
         return false;
+    };
+
+    //---------------------------------------------------------------------------------
+    // method to get the value of a prop - as a variable
+    flxDataVariable getValue(void)
+    {
+        flxDataVariable value;
+        value.type = type();
+        T c = get();
+        value.set(c);
+        return value;
     };
 
     flxDataLimit *dataLimit(void)
@@ -499,6 +512,16 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
             return true;
         }
         return false;
+    };
+    //---------------------------------------------------------------------------------
+    // method to get the value of a prop - as a variable
+    flxDataVariable getValue(void)
+    {
+        flxDataVariable value;
+        value.type = type();
+        std::string c = get();
+        value.set(c);
+        return value;
     };
 
   private:
