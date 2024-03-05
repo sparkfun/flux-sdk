@@ -145,7 +145,7 @@ int flxLogging::logPrintf(const flxLogLevel_t level, bool newline, const int idF
 
     // pull out var arg list to pass down
     va_list ap;
-    va_start(ap, fmt);
+    va_start(ap, idFmt);
 
     retval = logPrintfInternal(level, newline, fmt, ap);
 
