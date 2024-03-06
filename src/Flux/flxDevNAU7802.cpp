@@ -120,11 +120,11 @@ bool flxDevNAU7802::onInitialize(TwoWire &wirePort)
 
         status &= powerUp(); // Power on analog and digital sections of the scale
 
-        status &= setLDO(NAU7802_LDO_3V0); // Set LDO to 3.3V
+        status &= setLDO(NAU7802_LDO_3V0); // Set LDO to 3.0V
 
         status &= setGain(NAU7802_GAIN_128); // Set gain to 128
 
-        status &= setSampleRate(NAU7802_SPS_320); // Set samples per second to 10
+        status &= setSampleRate(NAU7802_SPS_320); // Set samples per second to 320
 
         uint8_t adc = NAU7802::getRegister(NAU7802_ADC);
         status &= setRegister(NAU7802_ADC, (adc | 0x30)); // Turn off CLK_CHP. From 9.1 power on sequencing.
@@ -152,7 +152,7 @@ float flxDevNAU7802::read_weight()
 //----------------------------------------------------------------------------------------------------------
 // methods used to get values for our RW properties
 
-uint flxDevNAU7802::get_zero_offset()
+int flxDevNAU7802::get_zero_offset()
 {
     return NAU7802::getZeroOffset();
 }
@@ -164,7 +164,7 @@ float flxDevNAU7802::get_calibration_factor()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void flxDevNAU7802::set_zero_offset(uint offset)
+void flxDevNAU7802::set_zero_offset(int offset)
 {
     NAU7802::setZeroOffset(offset);
 }

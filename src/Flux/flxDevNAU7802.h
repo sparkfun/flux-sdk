@@ -69,9 +69,10 @@ class flxDevNAU7802 : public flxDeviceI2CType<flxDevNAU7802>, public NAU7802
     float read_weight();
 
     // methods used to get values for our RW properties
-    uint get_zero_offset();
+    int get_zero_offset();
+    void set_zero_offset(int);
     float get_calibration_factor();
-    void set_zero_offset(uint);
+
     void set_calibration_factor(float);
 
     // methods for the external calibration offset and gain hidden properties
@@ -86,7 +87,7 @@ class flxDevNAU7802 : public flxDeviceI2CType<flxDevNAU7802>, public NAU7802
     void calculate_calibration_factor(const float &weight_in_units);
 
   public:
-    flxPropertyRWUint<flxDevNAU7802, &flxDevNAU7802::get_zero_offset, &flxDevNAU7802::set_zero_offset> zeroOffset;
+    flxPropertyRWInt<flxDevNAU7802, &flxDevNAU7802::get_zero_offset, &flxDevNAU7802::set_zero_offset> zeroOffset;
     flxPropertyRWFloat<flxDevNAU7802, &flxDevNAU7802::get_calibration_factor, &flxDevNAU7802::set_calibration_factor>
         calibrationFactor;
 
