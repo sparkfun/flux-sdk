@@ -24,14 +24,14 @@ flxClockESP32 systemClock;
 
 #define kNoClockName "No Clock"
 
-const uint32_t kCLockMinutesToMS = 60000;
+const uint32_t kClockMinutesToMS = 60000;
 
 // Global object - for quick access to Settings system
 _flxClock &flxClock = _flxClock::get();
 
 _flxClock::_flxClock()
-    : _systemClock{nullptr}, _refClock{nullptr}, _refCheck{0}, _connCheck{0}, _bInitialized{false}, _nameRefClock{
-                                                                                                        kNoClockName}
+    : _systemClock{nullptr}, _refClock{nullptr}, _refCheck{0}, _connCheck{0}, _bInitialized{false}, _bSysTimeSet{false},
+      _nameRefClock{kNoClockName}
 {
     // Set name and description
     setName("Time Setup", "Manage time configuration and reference sources");
@@ -55,17 +55,17 @@ _flxClock::_flxClock()
 
     //
     referenceClock.setDataLimit(_refClockLimitSet);
-    _refClockLimitSet.addItem("", kNoClockName);
+    _refClockLimitSet.addItem(kNoClockName, kNoClockName);
 
 #ifdef DEFAULT_DEFINED
     setSystemClock(&systemClock);
 #endif
 
     // Setup our clock check jobs
-    _jobRefCheck.setup("clock refchk", _refCheck * kCLockMinutesToMS, this, &_flxClock::checkRefClock);
+    _jobRefCheck.setup("clock refchk", _refCheck * kClockMinutesToMS, this, &_flxClock::checkRefClock);
     if (_refCheck > 0)
         flxAddJobToQueue(_jobRefCheck);
-    _jobConnCheck.setup("clock conchk", _connCheck * kCLockMinutesToMS, this, &_flxClock::checkConnClock);
+    _jobConnCheck.setup("clock conchk", _connCheck * kClockMinutesToMS, this, &_flxClock::checkConnClock);
     if (_connCheck > 0)
         flxAddJobToQueue(_jobConnCheck);
 }
@@ -112,10 +112,15 @@ void _flxClock::set_ref_interval(uint val)
 
     if (val == 0)
         flxRemoveJobFromQueue(_jobRefCheck);
-    else
+    else if (_bSysTimeSet)
     {
+        // We only update the update job value if the system clock has been set. Otherwise
+        // leave the job as is -- rapid check intervals
+        //
+        // Once the system time is synced, the update period of the job is reset to the user value
+
         // val is in minutes, period is MS
-        _jobRefCheck.setPeriod(val * kCLockMinutesToMS);
+        _jobRefCheck.setPeriod(val * kClockMinutesToMS);
         flxUpdateJobInQueue(_jobRefCheck);
     }
 }
@@ -136,7 +141,7 @@ void _flxClock::set_conn_interval(uint val)
     else
     {
         // val is in minutes, period is MS
-        _jobConnCheck.setPeriod(val * kCLockMinutesToMS);
+        _jobConnCheck.setPeriod(val * kClockMinutesToMS);
         flxUpdateJobInQueue(_jobConnCheck);
     }
 }
@@ -182,7 +187,7 @@ void _flxClock::addReferenceClock(flxIClock *clock, const char *name)
     _refNametoClock[stmp] = clock;
 
     // Add this to the current clock limit -- this creates a "list of available ref clocks
-    _refClockLimitSet.addItem("", name);
+    _refClockLimitSet.addItem(name, name);
 }
 
 //----------------------------------------------------------------
@@ -250,6 +255,27 @@ void _flxClock::updateConnectedClocks(void)
         aClock->set_epoch(epoch);
 }
 //----------------------------------------------------------------
+// Method called to make sure reference update job timeout is correct
+//
+// At startup, if a ref clock is not valid, a rapid time check period takes place,
+// Once we have a valid reference clock, the update value is then reset to the pref value
+//
+void _flxClock::resetReferenceUpdate(void)
+{
+
+    if (_refCheck * kClockMinutesToMS != _jobRefCheck.period())
+    {
+        // get the current preference value
+        uint32_t val = get_ref_interval();
+
+        // set value to 0 - to get past the value equal check at beginning of set method.
+        set_ref_interval(0);
+
+        // now set values.
+        set_ref_interval(val);
+    }
+}
+//----------------------------------------------------------------
 void _flxClock::updateClock()
 {
 
@@ -281,6 +307,16 @@ void _flxClock::updateClock()
         {
             _systemClock->set_epoch(epoch);
 
+            // if first time setting the system time value:
+            //   - flag that is has been set
+            //   - make sure update interval is correct
+            if (!_bSysTimeSet)
+            {
+                _bSysTimeSet = true;
+                resetReferenceUpdate();
+            }
+
+            // we have successfully set system time.
             // update our connected clocks?
             if (updateConnectedOnUpdate())
                 updateConnectedClocks();
@@ -296,6 +332,18 @@ bool _flxClock::initialize(void)
 
     _bInitialized = true;
     updateClock();
+
+    // if the system time wasn't set at initialize - reset the update timer to one
+    // minute.
+    //
+    // Only do this if we are updating our clock from reference
+
+    if (!_bSysTimeSet && _refCheck > 0)
+    {
+        // Set the check to 1 minute - the value of our min to ms conversion constant
+        _jobRefCheck.setPeriod(kClockMinutesToMS);
+        flxUpdateJobInQueue(_jobRefCheck);
+    }
     return true;
 }
 
@@ -307,6 +355,7 @@ void _flxClock::checkRefClock(void)
 
     updateClock();
 }
+
 void _flxClock::checkConnClock(void)
 {
     if (!_bInitialized)

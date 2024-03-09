@@ -168,6 +168,7 @@ class _flxClock : public flxActionType<_flxClock>
     flxIClock *findRefClockByName(const char *name);
     void checkConnClock(void);
     void checkRefClock(void);
+    void resetReferenceUpdate(void);
 
     // our system / runtime clock
     flxISystemClock *_systemClock;
@@ -180,6 +181,8 @@ class _flxClock : public flxActionType<_flxClock>
     uint32_t _connCheck;
 
     bool _bInitialized;
+
+    bool _bSysTimeSet; // has the system time been set?
 
     // Reference clocks
     std::map<std::string, flxIClock *> _refNametoClock; // map name for UX to index in
