@@ -230,6 +230,18 @@ class flxLogger : public flxActionType<flxLogger>
         va_add(a1, args...);
     }
 
+    // small set of removes - for operations
+
+    template <typename... Args> void remove(flxOperation &a1, Args &&...args)
+    {
+        va_remove(a1, args...);
+    }
+
+    template <typename... Args> void remove(flxOperation *a1, Args &&...args)
+    {
+        va_remove(a1, args...);
+    }
+
     //------------------------------------------------------------
     // for metrics
     void setEnableLogRate(bool enable);
@@ -385,6 +397,21 @@ class flxLogger : public flxActionType<flxLogger>
         va_add(args...);
     }
 
+    // removes
+    void va_remove()
+    {
+    }
+
+    template <typename T, typename... Args> void va_remove(T *a1, Args &&...args)
+    {
+        _remove(a1);
+        va_remove(args...);
+    }
+    template <typename T, typename... Args> void va_remove(T &a1, Args &&...args)
+    {
+        _remove(a1);
+        va_remove(args...);
+    }
     //----------------------------------------------------------------------------
     // Internal Adds for final object placement add output writers to the logger.
     void _add(flxOutputFormat &writer)
@@ -449,5 +476,17 @@ class flxLogger : public flxActionType<flxLogger>
         {
             _add(prop);
         }
+    }
+
+    // removes
+
+    void _remove(flxOperation &op)
+    {
+        _remove(&op);
+    }
+    void _remove(flxOperation *op)
+    {
+        if (op != nullptr)
+            _opsToLog.remove(op);
     }
 };
