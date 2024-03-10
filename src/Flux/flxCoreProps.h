@@ -1594,6 +1594,18 @@ template <class T> class flxContainer : public flxObject
         return _vector.erase(pos);
     }
 
+    // simple remove based on value
+    void remove(T value)
+    {
+        // in the vector?
+        iterator it = std::find(_vector.begin(), _vector.end(), value);
+
+        if (it == _vector.end())
+            return;
+
+        _vector.erase(it);
+    }
+
     // Defines a type specific static method - so can be called outside
     // of an instance.
     //
