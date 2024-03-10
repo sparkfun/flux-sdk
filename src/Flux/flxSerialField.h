@@ -109,7 +109,7 @@ class flxSerialField : public flxDataEditor
     void processBackspaceKey(FieldContext_t &ctxEdit);
     void processEndOfLineKey(FieldContext_t &ctxEdit);
     void processStartOfLineKey(FieldContext_t &ctxEdit);
-    void processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length);
+    uint16_t processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length);
     bool editLoop(FieldContext_t &ctxEdit, uint32_t timeout = 10);
     void fulltext(FieldContext_t &ctxEdit, char *buffer, size_t length = kEditBufferMax);
 };

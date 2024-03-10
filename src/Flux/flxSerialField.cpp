@@ -480,17 +480,20 @@ void flxSerialField::fulltext(FieldContext_t &ctxEdit, char *buffer, size_t leng
 //
 // Process text entered
 //
-// TODO:
-//    Add validator concept, to enable restricted fields
+// Loops over input text and processes standard ascii/no-control chars
 //
-void flxSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length)
+// Returns the number of characters processed
+//
+uint16_t flxSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length)
 {
+
+    uint16_t nProcessed = 0;
 
     for (int i = 0; i < length; i++)
     {
         // sensible char?
-        if (!isascii(inputBuffer[i]))
-            continue;
+        if (!isascii(inputBuffer[i]) || iscntrl(inputBuffer[i]))
+            return nProcessed; // continue;
 
         // Are we at the end of the buffer?
         if (ctxEdit.cursor + kBCursorZero - ctxEdit.bcursor >= kBCursorZero)
@@ -519,13 +522,16 @@ void flxSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer, uin
         Serial.write(inputBuffer[i]);
         if (ctxEdit.hidden)
         {
-            delay(100);
+            delay(10);
             Serial.write(kCodeBS);
             Serial.write(kCodeAsterisk);
         }
+        nProcessed++;
     }
     // And text after the insertion point?
     drawTrailing(ctxEdit, false);
+
+    return nProcessed;
 }
 //--------------------------------------------------------------------------
 // editLoop()
@@ -564,6 +570,9 @@ bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
             Serial.write(ctxEdit.head, ctxEdit.cursor);
     }
 
+    uint16_t iInput;
+    bool bBreakOut;
+
     while (true)
     {
         // input?
@@ -595,48 +604,70 @@ bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
         // if we are here, there was some activity. start timeout again
         startTime = millis();
 
-        // Serial.printf("{%d}", inputBuffer[0]);
+        // Serial.printf("%d{%d}", nRead, inputBuffer[0]); // for debugging
 
-        // Escape key detected?
-        if (inputBuffer[0] == kCodeESC)
+        // update 3/24 - input can be multiple chars from an escape command, or just fast entry (a
+        //       fast CR entry after text was commonly missed in old method).
+        //
+        //       Added logic to loop over the input buffer for input processing - to handle fast command entry
+
+        for (iInput = 0, bBreakOut = false; !bBreakOut && iInput < nRead; iInput++)
         {
-            if (nRead == 1) // normal escape - abort entry
-                break;      // end loop
-
-            // An "Escaped Key"
-            if (inputBuffer[1] == kCodeESCExtend)
+            // Escape key detected?
+            if (inputBuffer[iInput] == kCodeESC)
             {
-                // Arrow Keys?
-                if (nRead == 3)
-                    processArrowKeys(ctxEdit, inputBuffer[2]);
+                if (nRead == 1) // normal escape - abort entry
+                {
+                    bBreakOut = true; // end loop
+                    break;
+                }
 
-                else if (nRead == 4 && inputBuffer[3] == kCodeKPDel) // Keypad delete
-                    processDELKey(ctxEdit);
+                // An "Escaped Key"
+                if (inputBuffer[iInput + 1] == kCodeESCExtend)
+                {
+                    // Arrow Keys?
+                    if (nRead == 3)
+                    {
+                        processArrowKeys(ctxEdit, inputBuffer[iInput + 2]);
+                        iInput += 2;
+                    }
+                    else if (nRead == 4 && inputBuffer[iInput + 3] == kCodeKPDel) // Keypad delete
+                    {
+                        processDELKey(ctxEdit);
+                        iInput += 3;
+                    }
+                }
+            }
+            else if (inputBuffer[iInput] == kCodeDEL || inputBuffer[iInput] == kCodeBS)
+            {
+                // backspace
+                processBackspaceKey(ctxEdit);
+            }
+            else if (inputBuffer[iInput] == kCodeCR) // CR was entered?
+            {
+                // move text to all
+                fulltext(ctxEdit, ctxEdit.all);
+                returnValue = true;
+                bBreakOut = true; // end loop
+            }
+            else if (inputBuffer[iInput] == kCodeEOL) // Move to end of line.
+                processEndOfLineKey(ctxEdit);
+
+            else if (inputBuffer[iInput] == kCodeBOL) // Move to start of line
+                processStartOfLineKey(ctxEdit);
+
+            else if (inputBuffer[iInput] == kCodeKillEOL) // Kill to EOL
+                processKillToEOL(ctxEdit);
+
+            else
+            {
+                // enter text. Returns the number of chars processed - note -1 since loops incs count
+                iInput = iInput + (processText(ctxEdit, inputBuffer, nRead) - 1);
             }
         }
-        else if (inputBuffer[0] == kCodeDEL || inputBuffer[0] == kCodeBS)
-        { // backspace
-
-            processBackspaceKey(ctxEdit);
-        }
-        else if (inputBuffer[0] == kCodeCR) // CR was entered?
-        {
-            // move text to all
-            fulltext(ctxEdit, ctxEdit.all);
-            returnValue = true;
-            break; // end looop
-        }
-        else if (inputBuffer[0] == kCodeEOL) // Move to end of line.
-            processEndOfLineKey(ctxEdit);
-
-        else if (inputBuffer[0] == kCodeBOL) // Move to start of line
-            processStartOfLineKey(ctxEdit);
-
-        else if (inputBuffer[0] == kCodeKillEOL) // Kill to eol
-            processKillToEOL(ctxEdit);
-
-        else // enter text
-            processText(ctxEdit, inputBuffer, nRead);
+        // Done?
+        if (bBreakOut)
+            break;
 
         Serial.flush();
         delay(10);
