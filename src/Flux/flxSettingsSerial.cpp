@@ -150,7 +150,12 @@ bool flxSettingsSerial::drawPage(flxObject *pCurrent, flxProperty *pProp)
     drawPageHeader(pCurrent, pProp->name());
 
     // Editing Intro
-    Serial.printf("\tEdit the value of `%s` - data type <%s>\n\r\n\r", pProp->name(), flxGetTypeName(pProp->type()));
+
+    Serial.printf("\tEdit the value of ");
+    flxSerial.textToWhite();
+    Serial.printf("%s", pProp->name());
+    flxSerial.textToNormal();
+    Serial.printf(" - data type <%s>\n\r\n\r", flxGetTypeName(pProp->type()));
 
     Serial.printf("\tWhen complete, press <Return> to accept, <ESC> to discard\n\r\n\r");
 

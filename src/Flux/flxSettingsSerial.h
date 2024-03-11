@@ -302,7 +302,17 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             drawPageHeader(pCurrent, pEntity->name());
 
             if (showValue)
-                Serial.printf("Current Value of `%s` =  %s\n\r\n\r", pEntity->name(), pEntity->to_string().c_str());
+            {
+                // Serial.printf("Current Value of `%s` =  %s\n\r\n\r", pEntity->name(), pEntity->to_string().c_str());
+                Serial.printf("Current Value of ");
+                flxSerial.textToYellow();
+                Serial.printf("%s", pEntity->name());
+                flxSerial.textToNormal();
+                Serial.printf(" =  ");
+                flxSerial.textToWhite();
+                Serial.printf("%s\n\r\n\r", pEntity->to_string().c_str());
+                flxSerial.textToNormal();
+            }
             Serial.printf("Select from the following values:\n\r\n\r");
 
             nMenuItems = 0;
@@ -311,7 +321,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             {
                 nMenuItems++;
                 if (item.name.length() > 0)
-                    drawMenuEntry(nMenuItems, (item.name + " = " + item.data.to_string()).c_str());
+                    drawMenuEntry(nMenuItems, (item.name + " (" + item.data.to_string() + ")").c_str());
                 else
                     drawMenuEntry(nMenuItems, item.data.to_string().c_str());
             }
