@@ -593,7 +593,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     // properties.
     //
     // Also the containing object is needed to call the getter/setter methods on that object
-    void operator()(Object *obj)
+    void operator()(Object *obj, bool skipAdd = false)
     {
         // my_object must be derived from _flxPropertyContainer
         static_assert(std::is_base_of<_flxPropertyContainer, Object>::value, "TypedRW: invalid object");
@@ -601,7 +601,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
         my_object = obj;
         assert(my_object);
 
-        if (my_object)
+        if (my_object && !skipAdd)
             my_object->addProperty(this);
 
         // This is basically the "registration" & init step of this object.
@@ -879,7 +879,7 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     // properties.
     //
     // Also the containing object is needed to call the getter/setter methods on that object
-    void operator()(Object *obj)
+    void operator()(Object *obj, bool skipAdd = false)
     {
         // Make sure the container type has spPropContainer as it's base class or it's a flxObject
         // Compile-time check
@@ -887,7 +887,8 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
 
         my_object = obj;
         assert(my_object);
-        if (my_object)
+
+        if (my_object && !skipAdd)
             my_object->addProperty(this);
 
         // This is basically the "registration" & init step of this object.
