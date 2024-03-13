@@ -65,9 +65,14 @@ bool flxFlux::start()
 
     writeBanner();
 
+    // Init the I2c bus - 3/2024 - found that the bus wasn't initialized and
+    // auto-load wasn't called, wifi wouldn't connect -- related to i2c bus being *on*?
+
+    flxBusI2C thei2cBus = i2cDriver();
+
     // Build drivers for the registered devices connected to the system
     if (_deviceAutoload)
-        flxDeviceFactory::get().buildDevices(i2cDriver());
+        flxDeviceFactory::get().buildDevices(thei2cBus);
 
     if (_theApplication)
         _theApplication->onDeviceLoad();
