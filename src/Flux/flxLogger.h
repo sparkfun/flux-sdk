@@ -42,8 +42,8 @@ class flxLogger : public flxActionType<flxLogger>
 
   private:
     // Timestamp type property get/set
-    uint get_ts_type(void);
-    void set_ts_type(uint);
+    uint32_t get_ts_type(void);
+    void set_ts_type(uint32_t);
 
     std::string get_timestamp(void);
 
@@ -60,9 +60,9 @@ class flxLogger : public flxActionType<flxLogger>
     bool get_num_mode(void);
     void set_num_mode(bool);
 
-    uint get_sample_number(void);
+    uint32_t get_sample_number(void);
 
-    void reset_sample_number(const uint &number = 0);
+    void reset_sample_number(const uint32_t &number = 0);
 
   public:
     flxLogger();
@@ -266,7 +266,7 @@ class flxLogger : public flxActionType<flxLogger>
 
     // Timestamp property
 
-    flxPropertyRWUint<flxLogger, &flxLogger::get_ts_type, &flxLogger::set_ts_type> timestampMode = {
+    flxPropertyRWUInt32<flxLogger, &flxLogger::get_ts_type, &flxLogger::set_ts_type> timestampMode = {
         TimeStampNone,
         {{"No Timestamp", TimeStampNone},
          {"Milliseconds since program start", TimeStampMillis},
@@ -290,11 +290,11 @@ class flxLogger : public flxActionType<flxLogger>
     // Sample number - this increments and outputs a number for each sample taken.
     flxPropertyRWBool<flxLogger, &flxLogger::get_num_mode, &flxLogger::set_num_mode> numberMode = {false};
 
-    flxParameterOutUint<flxLogger, &flxLogger::get_sample_number> sampleNumber;
+    flxParameterOutUInt32<flxLogger, &flxLogger::get_sample_number> sampleNumber;
 
-    flxPropertyUint<flxLogger> numberIncrement = {1, 1, 10000};
+    flxPropertyUInt32<flxLogger> numberIncrement = {1, 1, 10000};
 
-    flxParameterInUint<flxLogger, &flxLogger::reset_sample_number> resetSampleNumber = {0, 10000};
+    flxParameterInUInt32<flxLogger, &flxLogger::reset_sample_number> resetSampleNumber = {0, 10000};
 
     // Logger run rate metric collection?
     flxPropertyRWBool<flxLogger, &flxLogger::enabledLogRate, &flxLogger::setEnableLogRate> logRateMetric = {false};

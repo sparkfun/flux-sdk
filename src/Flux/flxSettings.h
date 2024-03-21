@@ -36,13 +36,13 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     void restore_fallback(void);
     void save_fallback(void);
 
-    void set_fallbackSize(uint sz)
+    void set_fallbackSize(uint32_t sz)
     {
         if (_fallbackStorage)
             _fallbackStorage->setBufferSize(sz);
     }
 
-    uint get_fallBackSize(void)
+    uint32_t get_fallBackSize(void)
     {
         return _fallbackStorage ? _fallbackStorage->bufferSize() : 0;
     }
@@ -113,7 +113,7 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
     flxPropertyBool<flxSettingsSave> fallbackSave = {false};
     flxPropertyBool<flxSettingsSave> fallbackRestore = {true};
 
-    flxPropertyRWUint<flxSettingsSave, &flxSettingsSave::get_fallBackSize, &flxSettingsSave::set_fallbackSize>
+    flxPropertyRWUInt32<flxSettingsSave, &flxSettingsSave::get_fallBackSize, &flxSettingsSave::set_fallbackSize>
         fallbackBuffer;
 
     // Our input parameters

@@ -206,10 +206,10 @@ typedef enum
     flxTypeBool,
     flxTypeInt8,
     flxTypeInt16,
-    flxTypeInt,
+    flxTypeInt32,
     flxTypeUInt8,
     flxTypeUInt16,
-    flxTypeUInt,
+    flxTypeUInt32,
     flxTypeFloat,
     flxTypeDouble,
     flxTypeString
@@ -259,7 +259,7 @@ class flxDataVariable
     };
     void set(int32_t v)
     {
-        type = flxTypeInt;
+        type = flxTypeInt32;
         value.i32 = v;
     };
     void set(uint8_t v)
@@ -274,7 +274,7 @@ class flxDataVariable
     };
     void set(uint32_t v)
     {
-        type = flxTypeUInt;
+        type = flxTypeUInt32;
         value.ui32 = v;
     };
     void set(float v)
@@ -310,7 +310,7 @@ class flxDataVariable
     {
         return value.i16;
     }
-    int get(int v)
+    int32_t get(int32_t v)
     {
         return value.i32;
     }
@@ -322,7 +322,7 @@ class flxDataVariable
     {
         return value.ui16;
     }
-    uint get(uint v)
+    uint32_t get(uint32_t v)
     {
         return value.ui32;
     }
@@ -358,7 +358,7 @@ class flxDataVariable
     }
     bool isEqual(int32_t v)
     {
-        return (type == flxTypeInt && value.i32 == v);
+        return (type == flxTypeInt32 && value.i32 == v);
     }
     bool isEqual(uint8_t v)
     {
@@ -370,7 +370,7 @@ class flxDataVariable
     }
     bool isEqual(uint32_t v)
     {
-        return (type == flxTypeUInt && value.ui32 == v);
+        return (type == flxTypeUInt32 && value.ui32 == v);
     }
     bool isEqual(float v)
     {
@@ -400,13 +400,13 @@ class flxDataVariable
             return flx_utils::to_string(value.i8);
         case flxTypeInt16:
             return flx_utils::to_string(value.i16);
-        case flxTypeInt:
+        case flxTypeInt32:
             return flx_utils::to_string(value.i32);
         case flxTypeUInt8:
             return flx_utils::to_string(value.ui8);
         case flxTypeUInt16:
             return flx_utils::to_string(value.ui16);
-        case flxTypeUInt:
+        case flxTypeUInt32:
             return flx_utils::to_string(value.ui32);
         case flxTypeFloat:
             return flx_utils::to_string(value.f);
@@ -441,9 +441,9 @@ class flxDataTyper
     {
         return flxTypeInt16;
     };
-    static flxDataType_t type(int *t)
+    static flxDataType_t type(int32_t *t)
     {
-        return flxTypeInt;
+        return flxTypeInt32;
     };
     static flxDataType_t type(uint8_t *t)
     {
@@ -453,9 +453,9 @@ class flxDataTyper
     {
         return flxTypeUInt16;
     };
-    static flxDataType_t type(uint *t)
+    static flxDataType_t type(uint32_t *t)
     {
-        return flxTypeUInt;
+        return flxTypeUInt32;
     };
     static flxDataType_t type(float *t)
     {
@@ -487,7 +487,7 @@ class flxDataTyper
     {
         return type(&t);
     };
-    static flxDataType_t type(int &t)
+    static flxDataType_t type(int32_t &t)
     {
         return type(&t);
     };
@@ -499,7 +499,7 @@ class flxDataTyper
     {
         return type(&t);
     };
-    static flxDataType_t type(uint &t)
+    static flxDataType_t type(uint32_t &t)
     {
         return type(&t);
     };
@@ -670,7 +670,7 @@ template <typename T> class flxDataArrayType : public flxDataArray
         // free any alloc first - this might require array dims ...
         freeAlloc();
 
-        flxDataArray::reset(); // call superclass
+        flxDataArray::reset(); // call super class
     }
 
     virtual void freeAlloc(void)
@@ -717,10 +717,10 @@ template <typename T> class flxDataArrayType : public flxDataArray
 using flxDataArrayBool = flxDataArrayType<bool>;
 using flxDataArrayInt8 = flxDataArrayType<int8_t>;
 using flxDataArrayInt16 = flxDataArrayType<int16_t>;
-using flxDataArrayInt = flxDataArrayType<int>;
-using flxDataArrayUint8 = flxDataArrayType<uint8_t>;
-using flxDataArrayUint16 = flxDataArrayType<uint16_t>;
-using flxDataArrayUint = flxDataArrayType<uint>;
+using flxDataArrayInt32 = flxDataArrayType<int32_t>;
+using flxDataArrayUInt8 = flxDataArrayType<uint8_t>;
+using flxDataArrayUInt16 = flxDataArrayType<uint16_t>;
+using flxDataArrayUInt32 = flxDataArrayType<uint32_t>;
 using flxDataArrayFloat = flxDataArrayType<float>;
 using flxDataArrayDouble = flxDataArrayType<double>;
 
@@ -800,10 +800,10 @@ class flxDataOut
     virtual bool getBool() = 0;
     virtual int8_t getInt8() = 0;
     virtual int16_t getInt16() = 0;
-    virtual int getInt() = 0;
-    virtual uint8_t getUint8() = 0;
-    virtual uint16_t getUint16() = 0;
-    virtual uint getUint() = 0;
+    virtual int32_t getInt32() = 0;
+    virtual uint8_t getUInt8() = 0;
+    virtual uint16_t getUInt16() = 0;
+    virtual uint32_t getUInt32() = 0;
     virtual float getFloat() = 0;
     virtual double getDouble() = 0;
     virtual std::string getString() = 0;
@@ -820,21 +820,21 @@ class flxDataOut
     {
         return getInt16();
     }
-    int get_value(int)
+    int32_t get_value(int32_t)
     {
-        return getInt();
+        return getInt32();
     }
     uint8_t get_value(uint8_t)
     {
-        return getUint8();
+        return getUInt8();
     }
     uint16_t get_value(uint16_t)
     {
-        return getUint16();
+        return getUInt16();
     }
-    uint get_value(uint)
+    uint32_t get_value(uint32_t)
     {
-        return getUint();
+        return getUInt32();
     }
     float get_value(float)
     {
@@ -875,21 +875,21 @@ template <typename T> class _flxDataOut : public flxDataOut
     {
         return (int16_t)get();
     }
-    int getInt()
+    int32_t getInt32()
     {
-        return (int)get();
+        return (int32_t)get();
     }
-    uint8_t getUint8()
+    uint8_t getUInt8()
     {
         return (uint8_t)get();
     }
-    uint16_t getUint16()
+    uint16_t getUInt16()
     {
         return (uint16_t)get();
     }
-    uint getUint()
+    uint32_t getUInt32()
     {
-        return (uint)get();
+        return (uint32_t)get();
     }
     float getFloat()
     {
@@ -932,19 +932,19 @@ class _flxDataOutString : public flxDataOut
     {
         return (int16_t)std::stoi(get());
     };
-    int getInt()
+    int32_t getInt32()
     {
         return std::stoi(get());
     };
-    uint8_t getUint8()
+    uint8_t getUInt8()
     {
         return (uint8_t)std::stoul(get());
     };
-    uint16_t getUint16()
+    uint16_t getUInt16()
     {
         return (uint16_t)std::stoul(get());
     };
-    uint getUint()
+    uint32_t getUInt32()
     {
         return std::stoul(get());
     };
@@ -1087,10 +1087,10 @@ template <typename T> class flxDataLimitRange : public flxDataLimitType<T>
 
 using flxDataLimitRangeInt8 = flxDataLimitRange<int8_t>;
 using flxDataLimitRangeInt16 = flxDataLimitRange<int16_t>;
-using flxDataLimitRangeInt = flxDataLimitRange<int>;
-using flxDataLimitRangeUint8 = flxDataLimitRange<uint8_t>;
-using flxDataLimitRangeUint16 = flxDataLimitRange<uint16_t>;
-using flxDataLimitRangeUnt = flxDataLimitRange<uint>;
+using flxDataLimitRangeInt32 = flxDataLimitRange<int32_t>;
+using flxDataLimitRangeUInt8 = flxDataLimitRange<uint8_t>;
+using flxDataLimitRangeUInt16 = flxDataLimitRange<uint16_t>;
+using flxDataLimitRangeUInt32 = flxDataLimitRange<uint32_t>;
 using flxDataLimitRangeFloat = flxDataLimitRange<float>;
 using flxDataLimitRangeDouble = flxDataLimitRange<double>;
 
@@ -1170,10 +1170,10 @@ template <typename T> class flxDataLimitSetType : public flxDataLimitType<T>
 
 using flxDataLimitSetInt8 = flxDataLimitSetType<int8_t>;
 using flxDataLimitSetInt16 = flxDataLimitSetType<int16_t>;
-using flxDataLimitSetInt = flxDataLimitSetType<int>;
-using flxDataLimitSetUint8 = flxDataLimitSetType<uint8_t>;
-using flxDataLimitSetUint16 = flxDataLimitSetType<uint16_t>;
-using flxDataLimitSetUint = flxDataLimitSetType<uint>;
+using flxDataLimitSetInt32 = flxDataLimitSetType<int32_t>;
+using flxDataLimitSetUInt8 = flxDataLimitSetType<uint8_t>;
+using flxDataLimitSetUInt16 = flxDataLimitSetType<uint16_t>;
+using flxDataLimitSetUInt32 = flxDataLimitSetType<uint32_t>;
 using flxDataLimitSetFloat = flxDataLimitSetType<float>;
 using flxDataLimitSetDouble = flxDataLimitSetType<double>;
 using flxDataLimitSetString = flxDataLimitSetType<std::string>;
@@ -1187,10 +1187,10 @@ class flxDataIn
     virtual void setBool(bool) = 0;
     virtual void setInt8(int8_t) = 0;
     virtual void setInt16(int16_t) = 0;
-    virtual void setInt(int) = 0;
-    virtual void setUint8(uint8_t) = 0;
-    virtual void setUint16(uint16_t) = 0;
-    virtual void setUint(uint) = 0;
+    virtual void setInt32(int32_t) = 0;
+    virtual void setUInt8(uint8_t) = 0;
+    virtual void setUInt16(uint16_t) = 0;
+    virtual void setUInt32(uint32_t) = 0;
     virtual void setFloat(float) = 0;
     virtual void setDouble(double) = 0;
     virtual void setString(std::string &) = 0;
@@ -1207,21 +1207,21 @@ class flxDataIn
     {
         setInt16(v);
     }
-    void set_value(int v)
+    void set_value(int32_t v)
     {
-        setInt(v);
+        setInt32(v);
     }
     void set_value(uint8_t v)
     {
-        setUint8(v);
+        setUInt8(v);
     }
     void set_value(uint16_t v)
     {
-        setUint16(v);
+        setUInt16(v);
     }
-    void set_value(uint v)
+    void set_value(uint32_t v)
     {
-        setUint(v);
+        setUInt32(v);
     }
     void set_value(float v)
     {
@@ -1262,19 +1262,19 @@ template <typename T> class _flxDataIn : public flxDataIn
     {
         set((T)value);
     }
-    void setInt(int value)
+    void setInt32(int32_t value)
     {
         set((T)value);
     }
-    void setUint8(uint8_t value)
+    void setUInt8(uint8_t value)
     {
         set((T)value);
     }
-    void setUint16(uint16_t value)
+    void setUInt16(uint16_t value)
     {
         set((T)value);
     }
-    void setUint(uint value)
+    void setUInt32(uint32_t value)
     {
         set((T)value);
     }
@@ -1294,7 +1294,7 @@ template <typename T> class _flxDataIn : public flxDataIn
         case flxTypeBool:
             set(value.length() > 0 ? (value != "false") : false);
             break;
-        case flxTypeInt:
+        case flxTypeInt32:
             set(std::stoi(value));
             break;
         case flxTypeInt8:
@@ -1303,7 +1303,7 @@ template <typename T> class _flxDataIn : public flxDataIn
         case flxTypeInt16:
             set((int16_t)std::stoi(value));
             break;
-        case flxTypeUInt:
+        case flxTypeUInt32:
             set(std::stoul(value));
             break;
         case flxTypeUInt8:
@@ -1440,19 +1440,19 @@ class _flxDataInString : public flxDataIn
     {
         set(flx_utils::to_string(value));
     }
-    void setInt(int value)
+    void setInt32(int32_t value)
     {
         set(flx_utils::to_string(value));
     }
-    void setUint8(uint8_t value)
+    void setUInt8(uint8_t value)
     {
         set(flx_utils::to_string(value));
     }
-    void setUint16(uint16_t value)
+    void setUInt16(uint16_t value)
     {
         set(flx_utils::to_string(value));
     }
-    void setUint(uint value)
+    void setUInt32(uint32_t value)
     {
         set(flx_utils::to_string(value));
     }

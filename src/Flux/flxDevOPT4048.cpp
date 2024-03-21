@@ -137,12 +137,12 @@ uint32_t flxDevOPT4048::get_lux()
     return QwOpt4048::getLux();
 }
 
-uint flxDevOPT4048::get_range()
+uint32_t flxDevOPT4048::get_range()
 {
     return static_cast<uint>(QwOpt4048::getRange());
 }
 
-void flxDevOPT4048::set_range(uint inRange)
+void flxDevOPT4048::set_range(uint32_t inRange)
 {
     if (isInitialized())
         QwOpt4048::setRange(static_cast<opt4048_range_t>(inRange));
@@ -150,12 +150,12 @@ void flxDevOPT4048::set_range(uint inRange)
         _cacheRange = inRange;
 }
 
-uint flxDevOPT4048::get_conversion_time()
+uint32_t flxDevOPT4048::get_conversion_time()
 {
     return static_cast<uint>(QwOpt4048::getConversionTime());
 }
 
-void flxDevOPT4048::set_conversion_time(uint inTime)
+void flxDevOPT4048::set_conversion_time(uint32_t inTime)
 {
     if (isInitialized())
         QwOpt4048::setConversionTime(static_cast<opt4048_conversion_time_t>(inTime));
@@ -163,12 +163,12 @@ void flxDevOPT4048::set_conversion_time(uint inTime)
         _cacheTime = inTime;
 }
 
-uint flxDevOPT4048::get_operation_mode()
+uint32_t flxDevOPT4048::get_operation_mode()
 {
     return static_cast<uint>(QwOpt4048::getOperationMode());
 }
 
-void flxDevOPT4048::set_operation_mode(uint inMode)
+void flxDevOPT4048::set_operation_mode(uint32_t inMode)
 {
     if (isInitialized())
         QwOpt4048::setOperationMode(static_cast<opt4048_operation_mode_t>(inMode));

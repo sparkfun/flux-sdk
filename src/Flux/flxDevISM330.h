@@ -101,7 +101,7 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
     flxParameterOutFloat<flxDevISM330Base, &flxDevISM330Base::read_temperature> temperature;
 
     // Define our read-write properties
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_data_rate, &flxDevISM330Base::set_accel_data_rate>
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_accel_data_rate, &flxDevISM330Base::set_accel_data_rate>
         accelDataRate = {ISM_XL_ODR_104Hz,
                          {{"Off", ISM_XL_ODR_OFF},
                           {"12.5 Hz", ISM_XL_ODR_12Hz5},
@@ -116,11 +116,11 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
                           {"6667 Hz", ISM_XL_ODR_6667Hz},
                           {"1.6 Hz", ISM_XL_ODR_1Hz6}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_full_scale,
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_accel_full_scale,
                        &flxDevISM330Base::set_accel_full_scale>
         accelFullScale = {ISM_4g, {{"2 g", ISM_2g}, {"16 g", ISM_16g}, {"4 g", ISM_4g}, {"8 g", ISM_8g}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_gyro_data_rate, &flxDevISM330Base::set_gyro_data_rate>
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_gyro_data_rate, &flxDevISM330Base::set_gyro_data_rate>
         gyroDataRate = {ISM_GY_ODR_104Hz,
                         {{"Off", ISM_GY_ODR_OFF},
                          {"12 Hz", ISM_GY_ODR_12Hz},
@@ -134,7 +134,7 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
                          {"3332 Hz", ISM_GY_ODR_3332Hz},
                          {"6667 Hz", ISM_GY_ODR_6667Hz}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_gyro_full_scale, &flxDevISM330Base::set_gyro_full_scale>
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_gyro_full_scale, &flxDevISM330Base::set_gyro_full_scale>
         gyroFullScale = {ISM_500dps,
                          {{"125 dps", ISM_125dps},
                           {"250 dps", ISM_250dps},
@@ -143,14 +143,14 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
                           {"2000 dps", ISM_2000dps},
                           {"4000 dps", ISM_4000dps}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_filter_lp2,
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_accel_filter_lp2,
                        &flxDevISM330Base::set_accel_filter_lp2>
         accelFilterLP2 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_gyro_filter_lp1, &flxDevISM330Base::set_gyro_filter_lp1>
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_gyro_filter_lp1, &flxDevISM330Base::set_gyro_filter_lp1>
         gyroFilterLP1 = {1, {{"Enabled", 1}, {"Disabled", 0}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_accel_slope_filter,
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_accel_slope_filter,
                        &flxDevISM330Base::set_accel_slope_filter>
         accelSlopeFilter = {ISM_LP_ODR_DIV_100,
                             {{"ODR/4", 0},
@@ -162,7 +162,7 @@ class flxDevISM330Base : public flxDevice, public QwDevISM330DHCX
                              {"ODR/400", ISM_LP_ODR_DIV_400},
                              {"ODR/800", ISM_LP_ODR_DIV_800}}};
 
-    flxPropertyRWUint8<flxDevISM330Base, &flxDevISM330Base::get_gyro_lp1_bandwidth,
+    flxPropertyRWUInt8<flxDevISM330Base, &flxDevISM330Base::get_gyro_lp1_bandwidth,
                        &flxDevISM330Base::set_gyro_lp1_bandwidth>
         gyroLP1Bandwidth = {ISM_MEDIUM,
                             {{"Ultra Light", ISM_ULTRA_LIGHT},

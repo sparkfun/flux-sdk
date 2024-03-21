@@ -65,7 +65,7 @@ class flxDevTwist : public flxDeviceI2CType<flxDevTwist>, public TWIST
     // Events
     // Our output event
     flxSignalBool on_clicked;
-    flxSignalInt on_twist;
+    flxSignalInt32 on_twist;
 
   private:
     void checkTwist(void);
@@ -78,7 +78,7 @@ class flxDevTwist : public flxDeviceI2CType<flxDevTwist>, public TWIST
 
     // methods used to get values for our output parameters
     bool read_button_state();
-    int get_twist_count();
+    int32_t get_twist_count();
 
     // methods for our read-write properties
     uint8_t get_press_mode();
@@ -97,13 +97,13 @@ class flxDevTwist : public flxDeviceI2CType<flxDevTwist>, public TWIST
     flxJob _theJob;
 
   public:
-    flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_press_mode, &flxDevTwist::set_press_mode> pressMode = {
+    flxPropertyRWUInt8<flxDevTwist, &flxDevTwist::get_press_mode, &flxDevTwist::set_press_mode> pressMode = {
         1, {{"Click (Toggle) Mode", 0}, {"Press Mode", 1}}};
-    flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_led_red, &flxDevTwist::set_led_red> ledRed;
-    flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_led_green, &flxDevTwist::set_led_green> ledGreen;
-    flxPropertyRWUint8<flxDevTwist, &flxDevTwist::get_led_blue, &flxDevTwist::set_led_blue> ledBlue;
+    flxPropertyRWUInt8<flxDevTwist, &flxDevTwist::get_led_red, &flxDevTwist::set_led_red> ledRed;
+    flxPropertyRWUInt8<flxDevTwist, &flxDevTwist::get_led_green, &flxDevTwist::set_led_green> ledGreen;
+    flxPropertyRWUInt8<flxDevTwist, &flxDevTwist::get_led_blue, &flxDevTwist::set_led_blue> ledBlue;
 
     // Define our output parameters - specify the get functions to call.
     flxParameterOutBool<flxDevTwist, &flxDevTwist::read_button_state> buttonState;
-    flxParameterOutInt<flxDevTwist, &flxDevTwist::get_twist_count> twistCount;
+    flxParameterOutInt32<flxDevTwist, &flxDevTwist::get_twist_count> twistCount;
 };

@@ -164,17 +164,17 @@ void flxLogger::logScalar(flxParameterOutScalar *pScalar)
     case flxTypeInt16:
         writeValue(pScalar->name(), pScalar->getInt16());
         break;
-    case flxTypeInt:
-        writeValue(pScalar->name(), pScalar->getInt());
+    case flxTypeInt32:
+        writeValue(pScalar->name(), pScalar->getInt32());
         break;
     case flxTypeUInt8:
-        writeValue(pScalar->name(), pScalar->getUint8());
+        writeValue(pScalar->name(), pScalar->getUInt8());
         break;
     case flxTypeUInt16:
-        writeValue(pScalar->name(), pScalar->getUint16());
+        writeValue(pScalar->name(), pScalar->getUInt16());
         break;
-    case flxTypeUInt:
-        writeValue(pScalar->name(), pScalar->getUint());
+    case flxTypeUInt32:
+        writeValue(pScalar->name(), pScalar->getUInt32());
         break;
     case flxTypeFloat:
         writeValue(pScalar->name(), pScalar->getFloat(), pScalar->precision());
@@ -215,20 +215,20 @@ void flxLogger::logArray(flxParameterOutArray *pParam)
         logArrayType<flxDataArrayInt16>(pParam);
         break;
 
-    case flxTypeInt:
-        logArrayType<flxDataArrayInt>(pParam);
+    case flxTypeInt32:
+        logArrayType<flxDataArrayInt32>(pParam);
         break;
 
     case flxTypeUInt8:
-        logArrayType<flxDataArrayUint8>(pParam);
+        logArrayType<flxDataArrayUInt8>(pParam);
         break;
 
     case flxTypeUInt16:
-        logArrayType<flxDataArrayUint16>(pParam);
+        logArrayType<flxDataArrayUInt16>(pParam);
         break;
 
-    case flxTypeUInt:
-        logArrayType<flxDataArrayUint>(pParam);
+    case flxTypeUInt32:
+        logArrayType<flxDataArrayUInt32>(pParam);
         break;
 
     case flxTypeFloat:
@@ -378,12 +378,12 @@ void flxLogger::updateTimeParameterName(void)
 //----------------------------------------------------------------------------
 // Timestamp type property get/set
 //----------------------------------------------------------------------------
-uint flxLogger::get_ts_type(void)
+uint32_t flxLogger::get_ts_type(void)
 {
     return _timestampType;
 }
 //----------------------------------------------------------------------------
-void flxLogger::set_ts_type(uint newType)
+void flxLogger::set_ts_type(uint32_t newType)
 {
     if ((Timestamp_t)newType == _timestampType)
         return;
@@ -594,13 +594,13 @@ void flxLogger::set_num_mode(bool newMode)
 //
 // Reset the sample number to the provided number. Note, the parameter is optional with a
 // default value of 0
-void flxLogger::reset_sample_number(const uint &number)
+void flxLogger::reset_sample_number(const uint32_t &number)
 {
     _currentSampleNumber = number;
 }
 //----------------------------------------------------------------------------
 // Increment and return the current number
-uint flxLogger::get_sample_number(void)
+uint32_t flxLogger::get_sample_number(void)
 {
     _currentSampleNumber = _currentSampleNumber + numberIncrement();
 

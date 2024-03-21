@@ -113,7 +113,7 @@ double flxDevMMC5983Base::read_z()
     _magZ = false;
     return ((double)_rawZ - 131072.0) * 8.0 / 131072.0; // Convert to Gauss
 }
-int flxDevMMC5983Base::read_temperature()
+int32_t flxDevMMC5983Base::read_temperature()
 {
     return SFE_MMC5983MA::getTemperature();
 }

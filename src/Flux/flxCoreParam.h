@@ -335,21 +335,21 @@ class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
     {
         return _flxDataOut<T>::getInt16();
     };
-    int getInt()
+    int32_t getInt32()
     {
-        return _flxDataOut<T>::getInt();
+        return _flxDataOut<T>::getInt32();
     };
-    uint8_t getUint8()
+    uint8_t getUInt8()
     {
-        return _flxDataOut<T>::getUint8();
+        return _flxDataOut<T>::getUInt8();
     };
-    uint16_t getUint16()
+    uint16_t getUInt16()
     {
-        return _flxDataOut<T>::getUint16();
+        return _flxDataOut<T>::getUInt16();
     };
-    uint getUint()
+    uint32_t getUInt32()
     {
-        return _flxDataOut<T>::getUint();
+        return _flxDataOut<T>::getUInt32();
     };
     float getFloat()
     {
@@ -374,15 +374,17 @@ using flxParameterOutInt8 = _flxParameterOut<int8_t, Object, _getter>;
 template <class Object, int16_t (Object::*_getter)()>
 using flxParameterOutInt16 = _flxParameterOut<int16_t, Object, _getter>;
 
-template <class Object, int (Object::*_getter)()> using flxParameterOutInt = _flxParameterOut<int, Object, _getter>;
+template <class Object, int32_t (Object::*_getter)()>
+using flxParameterOutInt32 = _flxParameterOut<int32_t, Object, _getter>;
 
 template <class Object, uint8_t (Object::*_getter)()>
-using flxParameterOutUint8 = _flxParameterOut<uint8_t, Object, _getter>;
+using flxParameterOutUInt8 = _flxParameterOut<uint8_t, Object, _getter>;
 
 template <class Object, uint16_t (Object::*_getter)()>
-using flxParameterOutUint16 = _flxParameterOut<uint16_t, Object, _getter>;
+using flxParameterOutUInt16 = _flxParameterOut<uint16_t, Object, _getter>;
 
-template <class Object, uint (Object::*_getter)()> using flxParameterOutUint = _flxParameterOut<uint, Object, _getter>;
+template <class Object, uint32_t (Object::*_getter)()>
+using flxParameterOutUInt32 = _flxParameterOut<uint32_t, Object, _getter>;
 
 template <class Object, float (Object::*_getter)()>
 class flxParameterOutFloat : public _flxParameterOut<float, Object, _getter>
@@ -530,21 +532,21 @@ class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutSt
     {
         return _flxDataOutString::getInt16();
     };
-    int getInt()
+    int32_t getInt32()
     {
-        return _flxDataOutString::getInt();
+        return _flxDataOutString::getInt32();
     };
-    uint8_t getUint8()
+    uint8_t getUInt8()
     {
-        return _flxDataOutString::getUint8();
+        return _flxDataOutString::getUInt8();
     };
-    uint16_t getUint16()
+    uint16_t getUInt16()
     {
-        return _flxDataOutString::getUint16();
+        return _flxDataOutString::getUInt16();
     };
-    uint getUint()
+    uint32_t getUInt32()
     {
-        return _flxDataOutString::getUint();
+        return _flxDataOutString::getUInt32();
     };
     float getFloat()
     {
@@ -694,17 +696,17 @@ using flxParameterOutArrayInt8 = flxParameterOutArrayType<int8_t, Object, _gette
 template <class Object, bool (Object::*_getter)(flxDataArrayType<int16_t> *)>
 using flxParameterOutArrayInt16 = flxParameterOutArrayType<int16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(flxDataArrayType<int> *)>
-using flxParameterOutArrayInt = flxParameterOutArrayType<int, Object, _getter>;
+template <class Object, bool (Object::*_getter)(flxDataArrayType<int32_t> *)>
+using flxParameterOutArrayInt32 = flxParameterOutArrayType<int32_t, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<uint8_t> *)>
-using flxParameterOutArrayUint8 = flxParameterOutArrayType<uint8_t, Object, _getter>;
+using flxParameterOutArrayUInt8 = flxParameterOutArrayType<uint8_t, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<uint16_t> *)>
-using flxParameterOutArrayUint16 = flxParameterOutArrayType<uint16_t, Object, _getter>;
+using flxParameterOutArrayUInt16 = flxParameterOutArrayType<uint16_t, Object, _getter>;
 
-template <class Object, bool (Object::*_getter)(flxDataArrayType<uint> *)>
-using flxParameterOutArrayUint = flxParameterOutArrayType<uint, Object, _getter>;
+template <class Object, bool (Object::*_getter)(flxDataArrayType<uint32_t> *)>
+using flxParameterOutArrayUInt32 = flxParameterOutArrayType<uint32_t, Object, _getter>;
 
 template <class Object, bool (Object::*_getter)(flxDataArrayType<float> *)>
 class flxParameterOutArrayFloat : public flxParameterOutArrayType<float, Object, _getter>
@@ -983,17 +985,17 @@ using flxParameterInInt8 = _flxParameterIn<int8_t, Object, _setter>;
 template <class Object, void (Object::*_setter)(int16_t const &)>
 using flxParameterInInt16 = _flxParameterIn<int16_t, Object, _setter>;
 
-template <class Object, void (Object::*_setter)(int const &)>
-using flxParameterInInt = _flxParameterIn<int, Object, _setter>;
+template <class Object, void (Object::*_setter)(int32_t const &)>
+using flxParameterInInt32 = _flxParameterIn<int32_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint8_t const &)>
-using flxParameterInUint8 = _flxParameterIn<uint8_t, Object, _setter>;
+using flxParameterInUInt8 = _flxParameterIn<uint8_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(uint16_t const &)>
-using flxParameterInUint16 = _flxParameterIn<uint16_t, Object, _setter>;
+using flxParameterInUInt16 = _flxParameterIn<uint16_t, Object, _setter>;
 
-template <class Object, void (Object::*_setter)(uint const &)>
-using flxParameterInUint = _flxParameterIn<uint, Object, _setter>;
+template <class Object, void (Object::*_setter)(uint32_t const &)>
+using flxParameterInUInt32 = _flxParameterIn<uint32_t, Object, _setter>;
 
 template <class Object, void (Object::*_setter)(float const &)>
 using flxParameterInFloat = _flxParameterIn<float, Object, _setter>;

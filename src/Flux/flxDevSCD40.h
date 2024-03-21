@@ -63,16 +63,16 @@ class flxDevSCD40 : public flxDeviceI2CType<flxDevSCD40>, public SCD4x
 
   private:
     // methods used to get values for our output parameters
-    uint read_CO2();
+    uint32_t read_CO2();
     float read_temperature_C();
     float read_humidity();
 
     // methods used to get values for our RW properties
     bool get_auto_calibrate();
-    uint get_altitude_compensation();
+    uint32_t get_altitude_compensation();
     float get_temperature_offset();
     void set_auto_calibrate(bool);
-    void set_altitude_compensation(uint);
+    void set_altitude_compensation(uint32_t);
     void set_temperature_offset(float);
 
     // flags to avoid calling readM<easurement multiple times
@@ -84,7 +84,7 @@ class flxDevSCD40 : public flxDeviceI2CType<flxDevSCD40>, public SCD4x
     flxPropertyRWBool<flxDevSCD40, &flxDevSCD40::get_auto_calibrate, &flxDevSCD40::set_auto_calibrate> autoCalibrate;
     // Define the sensor altitude in metres above sea level, so RH and CO2 are compensated for atmospheric pressure
     // Default altitude is 0m
-    flxPropertyRWUint<flxDevSCD40, &flxDevSCD40::get_altitude_compensation, &flxDevSCD40::set_altitude_compensation>
+    flxPropertyRWUInt32<flxDevSCD40, &flxDevSCD40::get_altitude_compensation, &flxDevSCD40::set_altitude_compensation>
         altitudeCompensation;
     // Define how warm the sensor is compared to ambient, so RH and T are temperature compensated. Has no effect on the
     // CO2 reading Default offset is 4C
@@ -92,7 +92,7 @@ class flxDevSCD40 : public flxDeviceI2CType<flxDevSCD40>, public SCD4x
         temperatureOffset;
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint<flxDevSCD40, &flxDevSCD40::read_CO2> co2PPM;
+    flxParameterOutUInt32<flxDevSCD40, &flxDevSCD40::read_CO2> co2PPM;
     flxParameterOutFloat<flxDevSCD40, &flxDevSCD40::read_temperature_C> temperatureC;
     flxParameterOutFloat<flxDevSCD40, &flxDevSCD40::read_humidity> humidity;
 };

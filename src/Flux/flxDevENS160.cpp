@@ -199,7 +199,7 @@ void flxDevENS160::updateParams(void)
         flxSendEvent(flxEvent::kOnSystemActivity);
 }
 
-void flxDevENS160::set_update_period(uint val)
+void flxDevENS160::set_update_period(uint32_t val)
 {
     if (val == _updatePeriod)
         return;
@@ -213,7 +213,7 @@ void flxDevENS160::set_update_period(uint val)
     flxUpdateJobInQueue(_theJob);
 }
 
-uint flxDevENS160::get_update_period(void)
+uint32_t flxDevENS160::get_update_period(void)
 {
     return _updatePeriod;
 }

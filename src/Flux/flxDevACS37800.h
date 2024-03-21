@@ -79,8 +79,8 @@ class flxDevACS37800 : public flxDeviceI2CType<flxDevACS37800>, public ACS37800
     bool read_pos_power_factor();
 
     // methods used to get values for our RW properties
-    uint get_number_of_samples();
-    void set_number_of_samples(uint);
+    uint32_t get_number_of_samples();
+    void set_number_of_samples(uint32_t);
     uint8_t get_bypass_n_enable();
     void set_bypass_n_enable(uint8_t);
     void set_sense_resistance(float);
@@ -142,14 +142,18 @@ class flxDevACS37800 : public flxDeviceI2CType<flxDevACS37800>, public ACS37800
     flxParameterOutBool<flxDevACS37800, &flxDevACS37800::read_pos_power_factor> positivePowerFactor;
 
     // Define our read-write properties
-    flxPropertyRWUint<flxDevACS37800, &flxDevACS37800::get_number_of_samples, &flxDevACS37800::set_number_of_samples>
+    flxPropertyRWUInt32<flxDevACS37800, &flxDevACS37800::get_number_of_samples, &flxDevACS37800::set_number_of_samples>
         numberOfSamples = {0, 0, 1023};
-    flxPropertyRWUint8<flxDevACS37800, &flxDevACS37800::get_bypass_n_enable, &flxDevACS37800::set_bypass_n_enable>
+
+    flxPropertyRWUInt8<flxDevACS37800, &flxDevACS37800::get_bypass_n_enable, &flxDevACS37800::set_bypass_n_enable>
         bypassNenable = {0, {{"RMS calculated using zero crossings", 0}, {"RMS calculated using n samples", 1}}};
+
     flxPropertyRWFloat<flxDevACS37800, &flxDevACS37800::get_sense_resistance, &flxDevACS37800::set_sense_resistance>
         senseResistance;
+
     flxPropertyRWFloat<flxDevACS37800, &flxDevACS37800::get_divider_resistance, &flxDevACS37800::set_divider_resistance>
         dividerResistance;
+
     flxPropertyRWFloat<flxDevACS37800, &flxDevACS37800::get_current_range, &flxDevACS37800::set_current_range>
         currentRange;
 };

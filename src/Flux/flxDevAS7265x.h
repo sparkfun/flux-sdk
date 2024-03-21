@@ -131,12 +131,12 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
     flxPropertyBool<flxDevAS7265X> outputCal = {true};
 
     // Gain prop
-    flxPropertyRWUint8<flxDevAS7265X, &flxDevAS7265X::get_gain, &flxDevAS7265X::set_gain> sensorGain = {
+    flxPropertyRWUInt8<flxDevAS7265X, &flxDevAS7265X::get_gain, &flxDevAS7265X::set_gain> sensorGain = {
         AS7265X_GAIN_16X,
         {{"1X", AS7265X_GAIN_1X}, {"3.7X", AS7265X_GAIN_37X}, {"16X", AS7265X_GAIN_16X}, {"64X", AS7265X_GAIN_64X}}};
 
     // Measurement mode prop
-    flxPropertyRWUint8<flxDevAS7265X, &flxDevAS7265X::get_mmode, &flxDevAS7265X::set_mmode> measureMode = {
+    flxPropertyRWUInt8<flxDevAS7265X, &flxDevAS7265X::get_mmode, &flxDevAS7265X::set_mmode> measureMode = {
         AS7265X_MEASUREMENT_MODE_6CHAN_ONE_SHOT,
         {{"STUV Channels", AS7265X_MEASUREMENT_MODE_4CHAN},
          {"RTUW Channels", AS7265X_MEASUREMENT_MODE_4CHAN_2},
@@ -144,11 +144,11 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
          {"6 Channel 1 Shot", AS7265X_MEASUREMENT_MODE_6CHAN_ONE_SHOT}}};
 
     // Integration Cycles
-    flxPropertyRWUint8<flxDevAS7265X, &flxDevAS7265X::get_icycles, &flxDevAS7265X::set_icycles> intCycles = {
+    flxPropertyRWUInt8<flxDevAS7265X, &flxDevAS7265X::get_icycles, &flxDevAS7265X::set_icycles> intCycles = {
         kAS7265xDefaultIntCycles, 0, 255};
 
     // Indicator Current prop
-    flxPropertyRWUint8<flxDevAS7265X, &flxDevAS7265X::get_ind_current, &flxDevAS7265X::set_ind_current>
+    flxPropertyRWUInt8<flxDevAS7265X, &flxDevAS7265X::get_ind_current, &flxDevAS7265X::set_ind_current>
         indicatorCurrent = {AS7265X_INDICATOR_CURRENT_LIMIT_8MA,
                             {{"1 ma", AS7265X_INDICATOR_CURRENT_LIMIT_1MA},
                              {"2 ma", AS7265X_INDICATOR_CURRENT_LIMIT_2MA},
@@ -156,7 +156,7 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
                              {"8 ma", AS7265X_INDICATOR_CURRENT_LIMIT_8MA}}};
 
     // White LED Current prop
-    flxPropertyRWUint8<flxDevAS7265X, &flxDevAS7265X::get_white_current, &flxDevAS7265X::set_white_current>
+    flxPropertyRWUInt8<flxDevAS7265X, &flxDevAS7265X::get_white_current, &flxDevAS7265X::set_white_current>
         whiteCurrent = {AS7265X_LED_CURRENT_LIMIT_12_5MA,
                         {{"12.5 ma", AS7265X_LED_CURRENT_LIMIT_12_5MA},
                          {"25 ma", AS7265X_LED_CURRENT_LIMIT_25MA},
@@ -164,14 +164,14 @@ class flxDevAS7265X : public flxDeviceI2CType<flxDevAS7265X>, public AS7265X
                          {"100 ma", AS7265X_LED_CURRENT_LIMIT_100MA}}};
 
     // IR LED Current prop
-    flxPropertyRWUint8<flxDevAS7265X, &flxDevAS7265X::get_ir_current, &flxDevAS7265X::set_ir_current> irCurrent = {
+    flxPropertyRWUInt8<flxDevAS7265X, &flxDevAS7265X::get_ir_current, &flxDevAS7265X::set_ir_current> irCurrent = {
         AS7265X_LED_CURRENT_LIMIT_12_5MA,
         {{"12.5 ma", AS7265X_LED_CURRENT_LIMIT_12_5MA},
          {"25 ma", AS7265X_LED_CURRENT_LIMIT_25MA},
          {"50 ma", AS7265X_LED_CURRENT_LIMIT_50MA}}};
 
     // Outputs
-    // define parameters for calibrarted outputs
+    // define parameters for calibrated outputs
     flxParameterOutBool<flxDevAS7265X, &flxDevAS7265X::read_output_type> outputType;
 
     flxParameterOutFloat<flxDevAS7265X, &flxDevAS7265X::read_A> outA;

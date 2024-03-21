@@ -26,8 +26,8 @@
 class flxIClock
 {
   public:
-    virtual uint get_epoch(void) = 0;
-    virtual void set_epoch(const uint &) = 0;
+    virtual uint32_t get_epoch(void) = 0;
+    virtual void set_epoch(const uint32_t &) = 0;
     virtual bool valid_epoch(void) = 0;
 };
 
@@ -46,14 +46,14 @@ class flxISystemClock : public flxIClock
 class flxClockESP32 : public flxISystemClock
 {
   public:
-    uint get_epoch(void)
+    uint32_t get_epoch(void)
     {
         time_t now;
         time(&now);
         return now;
     }
 
-    void set_epoch(const uint &refEpoch)
+    void set_epoch(const uint32_t &refEpoch)
     {
         timeval epoch = {(time_t)refEpoch, 0};
         const timeval *tv = &epoch;
@@ -111,11 +111,11 @@ class _flxClock : public flxActionType<_flxClock>
     void set_timezone(std::string tz);
     std::string get_timezone(void);
 
-    void set_ref_interval(uint);
-    uint get_ref_interval(void);
+    void set_ref_interval(uint32_t);
+    uint32_t get_ref_interval(void);
 
-    void set_conn_interval(uint);
-    uint get_conn_interval(void);
+    void set_conn_interval(uint32_t);
+    uint32_t get_conn_interval(void);
 
   public:
     // flxClock is a singleton
@@ -150,13 +150,14 @@ class _flxClock : public flxActionType<_flxClock>
 
     flxPropertyRWString<_flxClock, &_flxClock::get_ref_clock, &_flxClock::set_ref_clock> referenceClock;
 
-    flxPropertyRWUint<_flxClock, &_flxClock::get_ref_interval, &_flxClock::set_ref_interval> updateClockInterval = {60};
+    flxPropertyRWUInt32<_flxClock, &_flxClock::get_ref_interval, &_flxClock::set_ref_interval> updateClockInterval = {
+        60};
 
     // Use alternative clock if primary isn't available?
     flxPropertyBool<_flxClock> useAlternativeClock = {true};
 
-    flxPropertyRWUint<_flxClock, &_flxClock::get_conn_interval, &_flxClock::set_conn_interval> connectedClockInterval =
-        {60};
+    flxPropertyRWUInt32<_flxClock, &_flxClock::get_conn_interval, &_flxClock::set_conn_interval>
+        connectedClockInterval = {60};
     flxPropertyBool<_flxClock> updateConnectedOnUpdate = {true};
 
     // TimeZone string

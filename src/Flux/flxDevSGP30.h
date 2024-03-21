@@ -62,10 +62,10 @@ class flxDevSGP30 : public flxDeviceI2CType<flxDevSGP30>, public SGP30
 
   private:
     // methods used to get values for our output parameters
-    uint read_tvoc();
-    uint read_co2();
-    uint read_h2();
-    uint read_ethanol();
+    uint32_t read_tvoc();
+    uint32_t read_co2();
+    uint32_t read_h2();
+    uint32_t read_ethanol();
 
     // flags to avoid calling readM<easurement multiple times
     bool _tvoc = false;
@@ -77,8 +77,8 @@ class flxDevSGP30 : public flxDeviceI2CType<flxDevSGP30>, public SGP30
     // TO DO: add baselineCO2 and baseline TVOC as RW properties
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_tvoc> tvoc;
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_co2> co2;
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_h2> h2;
-    flxParameterOutUint<flxDevSGP30, &flxDevSGP30::read_ethanol> ethanol;
+    flxParameterOutUInt32<flxDevSGP30, &flxDevSGP30::read_tvoc> tvoc;
+    flxParameterOutUInt32<flxDevSGP30, &flxDevSGP30::read_co2> co2;
+    flxParameterOutUInt32<flxDevSGP30, &flxDevSGP30::read_h2> h2;
+    flxParameterOutUInt32<flxDevSGP30, &flxDevSGP30::read_ethanol> ethanol;
 };

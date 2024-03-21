@@ -58,8 +58,8 @@ class flxDevRV8803 : public flxDeviceI2CType<flxDevRV8803>, public flxIClock, pu
 
     // for the IClock interface
 
-    uint get_epoch(void);
-    void set_epoch(const uint &);
+    uint32_t get_epoch(void);
+    void set_epoch(const uint32_t &);
     bool valid_epoch(void);
 
   private:
@@ -109,18 +109,18 @@ class flxDevRV8803 : public flxDeviceI2CType<flxDevRV8803>, public flxIClock, pu
     flxParameterOutString<flxDevRV8803, &flxDevRV8803::read_ordinal> readOrdinal;
     flxParameterOutString<flxDevRV8803, &flxDevRV8803::read_month> readMonth;
     flxParameterOutString<flxDevRV8803, &flxDevRV8803::read_month_short> readMonthShort;
-    flxParameterOutUint16<flxDevRV8803, &flxDevRV8803::read_year> readYear;
-    flxParameterOutUint<flxDevRV8803, &flxDevRV8803::get_epoch> getEpoch;
+    flxParameterOutUInt16<flxDevRV8803, &flxDevRV8803::read_year> readYear;
+    flxParameterOutUInt32<flxDevRV8803, &flxDevRV8803::get_epoch> getEpoch;
 
     // Define our input parameters
-    flxParameterInUint<flxDevRV8803, &flxDevRV8803::set_epoch> setEpoch;
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_seconds> setSeconds = {0, 59};
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_minutes> setMinutes = {0, 59};
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_hours> setHours = {0, 23};
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_date> setDate = {1, 31};
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_weekday> setWeekday{
+    flxParameterInUInt32<flxDevRV8803, &flxDevRV8803::set_epoch> setEpoch;
+    flxParameterInUInt8<flxDevRV8803, &flxDevRV8803::set_seconds> setSeconds = {0, 59};
+    flxParameterInUInt8<flxDevRV8803, &flxDevRV8803::set_minutes> setMinutes = {0, 59};
+    flxParameterInUInt8<flxDevRV8803, &flxDevRV8803::set_hours> setHours = {0, 23};
+    flxParameterInUInt8<flxDevRV8803, &flxDevRV8803::set_date> setDate = {1, 31};
+    flxParameterInUInt8<flxDevRV8803, &flxDevRV8803::set_weekday> setWeekday{
         {"Sunday", 0},   {"Monday", 1}, {"Tuesday", 2}, {"Wednesday", 3},
         {"Thursday", 4}, {"Friday", 5}, {"Saturday", 6}};
-    flxParameterInUint8<flxDevRV8803, &flxDevRV8803::set_month> setMonth = {1, 12};
-    flxParameterInUint16<flxDevRV8803, &flxDevRV8803::set_year> setYear = {1970, 2200};
+    flxParameterInUInt8<flxDevRV8803, &flxDevRV8803::set_month> setMonth = {1, 12};
+    flxParameterInUInt16<flxDevRV8803, &flxDevRV8803::set_year> setYear = {1970, 2200};
 };

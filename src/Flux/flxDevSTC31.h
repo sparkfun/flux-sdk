@@ -73,7 +73,7 @@ class flxDevSTC31 : public flxDeviceI2CType<flxDevSTC31>, public STC3x
     // methods used to set our input parameters
     void write_rh(const float &rh);
     void write_temperature(const float &temperature);
-    void write_pressure(const uint &pressure);
+    void write_pressure(const uint32_t &pressure);
 
     // read-write properties
     uint8_t get_binary_gas();
@@ -88,11 +88,11 @@ class flxDevSTC31 : public flxDeviceI2CType<flxDevSTC31>, public STC3x
     // Define our input parameters
     flxParameterInFloat<flxDevSTC31, &flxDevSTC31::write_rh> rh;
     flxParameterInFloat<flxDevSTC31, &flxDevSTC31::write_temperature> temperatureC_In;
-    flxParameterInUint<flxDevSTC31, &flxDevSTC31::write_pressure> pressure;
+    flxParameterInUInt32<flxDevSTC31, &flxDevSTC31::write_pressure> pressure;
 
     // Define our read-write properties
     // binaryGas is STC3X_binary_gas_type_e. Default is STC3X_BINARY_GAS_CO2_AIR_25
-    flxPropertyRWUint8<flxDevSTC31, &flxDevSTC31::get_binary_gas, &flxDevSTC31::set_binary_gas> binaryGas = {
+    flxPropertyRWUInt8<flxDevSTC31, &flxDevSTC31::get_binary_gas, &flxDevSTC31::set_binary_gas> binaryGas = {
         STC3X_BINARY_GAS_CO2_AIR_25,
         {{"CO2 in N2 (100% max)", STC3X_BINARY_GAS_CO2_N2_100},
          {"CO2 in Air (100% max)", STC3X_BINARY_GAS_CO2_AIR_100},

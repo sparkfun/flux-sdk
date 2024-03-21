@@ -70,7 +70,7 @@ class flxDevADS122C04 : public flxDeviceI2CType<flxDevADS122C04>, public SFE_ADS
     uint8_t _sampleRate;
 
   public:
-    flxPropertyRWUint8<flxDevADS122C04, &flxDevADS122C04::get_wire_mode, &flxDevADS122C04::set_wire_mode> wireMode = {
+    flxPropertyRWUInt8<flxDevADS122C04, &flxDevADS122C04::get_wire_mode, &flxDevADS122C04::set_wire_mode> wireMode = {
         ADS122C04_4WIRE_MODE,
         {{"4-Wire Mode", ADS122C04_4WIRE_MODE},
          {"3-Wire Mode", ADS122C04_3WIRE_MODE},
@@ -80,7 +80,7 @@ class flxDevADS122C04 : public flxDeviceI2CType<flxDevADS122C04>, public SFE_ADS
          {"4-Wire Mode High Temperature", ADS122C04_4WIRE_HI_TEMP},
          {"3-Wire Mode High Temperature", ADS122C04_3WIRE_HI_TEMP},
          {"2-Wire Mode High Temperature", ADS122C04_2WIRE_HI_TEMP}}};
-    flxPropertyRWUint8<flxDevADS122C04, &flxDevADS122C04::get_sample_rate, &flxDevADS122C04::set_sample_rate>
+    flxPropertyRWUInt8<flxDevADS122C04, &flxDevADS122C04::get_sample_rate, &flxDevADS122C04::set_sample_rate>
         sampleRate = {ADS122C04_DATA_RATE_20SPS,
                       {{"20 Samples Per Sec", ADS122C04_DATA_RATE_20SPS},
                        {"45 Samples Per Sec", ADS122C04_DATA_RATE_45SPS},
