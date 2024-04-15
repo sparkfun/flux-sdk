@@ -63,9 +63,9 @@ class flxDevVL53L1X : public flxDeviceI2CType<flxDevVL53L1X>, public SFEVL53L1X
 
   private:
     // methods used to get values for our output parameters
-    uint read_distance();
-    uint read_range_status();
-    uint read_signal_rate();
+    uint32_t read_distance();
+    uint32_t read_range_status();
+    uint32_t read_signal_rate();
 
     // methods to get/set our read-write properties
     uint8_t get_distance_mode();
@@ -84,18 +84,18 @@ class flxDevVL53L1X : public flxDeviceI2CType<flxDevVL53L1X>, public SFEVL53L1X
 
   public:
     // Define our read-write properties
-    flxPropertyRWUint8<flxDevVL53L1X, &flxDevVL53L1X::get_distance_mode, &flxDevVL53L1X::set_distance_mode>
+    flxPropertyRWUInt8<flxDevVL53L1X, &flxDevVL53L1X::get_distance_mode, &flxDevVL53L1X::set_distance_mode>
         distanceMode = {DISTANCE_SHORT,
                         {{"Short", DISTANCE_SHORT}, {"Long", DISTANCE_LONG}}}; // Default to short distance mode
-    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_intermeasurment_period,
+    flxPropertyRWUInt16<flxDevVL53L1X, &flxDevVL53L1X::get_intermeasurment_period,
                         &flxDevVL53L1X::set_intermeasurment_period>
         intermeasurementPeriod;
-    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_crosstalk, &flxDevVL53L1X::set_crosstalk> crosstalk = {0, 0,
+    flxPropertyRWUInt16<flxDevVL53L1X, &flxDevVL53L1X::get_crosstalk, &flxDevVL53L1X::set_crosstalk> crosstalk = {0, 0,
                                                                                                                   4000};
-    flxPropertyRWUint16<flxDevVL53L1X, &flxDevVL53L1X::get_offset, &flxDevVL53L1X::set_offset> offset = {0, 0, 4000};
+    flxPropertyRWUInt16<flxDevVL53L1X, &flxDevVL53L1X::get_offset, &flxDevVL53L1X::set_offset> offset = {0, 0, 4000};
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_distance> distance;
-    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_range_status> rangeStatus;
-    flxParameterOutUint<flxDevVL53L1X, &flxDevVL53L1X::read_signal_rate> signalRate;
+    flxParameterOutUInt32<flxDevVL53L1X, &flxDevVL53L1X::read_distance> distance;
+    flxParameterOutUInt32<flxDevVL53L1X, &flxDevVL53L1X::read_range_status> rangeStatus;
+    flxParameterOutUInt32<flxDevVL53L1X, &flxDevVL53L1X::read_signal_rate> signalRate;
 };

@@ -105,7 +105,7 @@ class flxDevADS1015 : public flxDeviceI2CType<flxDevADS1015>, public ADS1015
     uint16_t _gain = ADS1015_CONFIG_PGA_2;
 
   public:
-    flxPropertyRWUint16<flxDevADS1015, &flxDevADS1015::get_sample_rate, &flxDevADS1015::set_sample_rate> sampleRate = {
+    flxPropertyRWUInt16<flxDevADS1015, &flxDevADS1015::get_sample_rate, &flxDevADS1015::set_sample_rate> sampleRate = {
         ADS1015_CONFIG_RATE_1600HZ,
         {{"128 Hz", ADS1015_CONFIG_RATE_128HZ},
          {"250 Hz", ADS1015_CONFIG_RATE_250HZ},
@@ -114,7 +114,7 @@ class flxDevADS1015 : public flxDeviceI2CType<flxDevADS1015>, public ADS1015
          {"1600 Hz", ADS1015_CONFIG_RATE_1600HZ},
          {"2400 Hz", ADS1015_CONFIG_RATE_2400HZ},
          {"3300 Hz", ADS1015_CONFIG_RATE_3300HZ}}};
-    flxPropertyRWUint16<flxDevADS1015, &flxDevADS1015::get_pga_gain, &flxDevADS1015::set_pga_gain> gain = {
+    flxPropertyRWUInt16<flxDevADS1015, &flxDevADS1015::get_pga_gain, &flxDevADS1015::set_pga_gain> gain = {
         ADS1015_CONFIG_PGA_2,
         {{"x2/3", ADS1015_CONFIG_PGA_TWOTHIRDS},
          {"x1", ADS1015_CONFIG_PGA_1},
@@ -123,11 +123,11 @@ class flxDevADS1015 : public flxDeviceI2CType<flxDevADS1015>, public ADS1015
          {"x8", ADS1015_CONFIG_PGA_8},
          {"x16", ADS1015_CONFIG_PGA_16}}};
 
-    flxPropertyRWUint8<flxDevADS1015, &flxDevADS1015::get_se_type, &flxDevADS1015::set_se_type> singleEndedType = {
+    flxPropertyRWUInt8<flxDevADS1015, &flxDevADS1015::get_se_type, &flxDevADS1015::set_se_type> singleEndedType = {
         kADS1015DeviceFloat,
         {{"Float", kADS1015DeviceFloat}, {"Integer", kADS1015DeviceInt}, {"Unsigned", kADS1015DeviceUnsigned}}};
 
-    flxPropertyRWUint8<flxDevADS1015, &flxDevADS1015::get_diff_type, &flxDevADS1015::set_diff_type> differentialType = {
+    flxPropertyRWUInt8<flxDevADS1015, &flxDevADS1015::get_diff_type, &flxDevADS1015::set_diff_type> differentialType = {
         kADS1015DeviceFloat, {{"Float", kADS1015DeviceFloat}, {"Integer", kADS1015DeviceInt}}};
 
     // Define our output parameters - specify the get functions to call.
@@ -153,8 +153,8 @@ class flxDevADS1015 : public flxDeviceI2CType<flxDevADS1015>, public ADS1015
     flxParameterOutInt16<flxDevADS1015, &flxDevADS1015::readi_differential_P2_N3> differential_2_minus_3_i;
 
     // unsigned ints!
-    flxParameterOutUint16<flxDevADS1015, &flxDevADS1015::readu_single_0> channel0_u;
-    flxParameterOutUint16<flxDevADS1015, &flxDevADS1015::readu_single_1> channel1_u;
-    flxParameterOutUint16<flxDevADS1015, &flxDevADS1015::readu_single_2> channel2_u;
-    flxParameterOutUint16<flxDevADS1015, &flxDevADS1015::readu_single_3> channel3_u;
+    flxParameterOutUInt16<flxDevADS1015, &flxDevADS1015::readu_single_0> channel0_u;
+    flxParameterOutUInt16<flxDevADS1015, &flxDevADS1015::readu_single_1> channel1_u;
+    flxParameterOutUInt16<flxDevADS1015, &flxDevADS1015::readu_single_2> channel2_u;
+    flxParameterOutUInt16<flxDevADS1015, &flxDevADS1015::readu_single_3> channel3_u;
 };

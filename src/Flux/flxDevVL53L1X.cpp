@@ -107,17 +107,17 @@ bool flxDevVL53L1X::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint flxDevVL53L1X::read_distance()
+uint32_t flxDevVL53L1X::read_distance()
 {
     return SFEVL53L1X::getDistance();
 }
 
-uint flxDevVL53L1X::read_range_status()
+uint32_t flxDevVL53L1X::read_range_status()
 {
     return SFEVL53L1X::getRangeStatus();
 }
 
-uint flxDevVL53L1X::read_signal_rate()
+uint32_t flxDevVL53L1X::read_signal_rate()
 {
     return SFEVL53L1X::getSignalRate();
 }

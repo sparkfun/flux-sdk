@@ -42,7 +42,7 @@ class flxDevMMC5983Base : public flxDevice, public SFE_MMC5983MA
     double read_x();
     double read_y();
     double read_z();
-    int read_temperature();
+    int32_t read_temperature();
 
     // methods used to get values for our RW properties
     uint16_t get_filter_bandwidth();
@@ -70,13 +70,13 @@ class flxDevMMC5983Base : public flxDevice, public SFE_MMC5983MA
     flxParameterOutDouble<flxDevMMC5983Base, &flxDevMMC5983Base::read_x> magX;
     flxParameterOutDouble<flxDevMMC5983Base, &flxDevMMC5983Base::read_y> magY;
     flxParameterOutDouble<flxDevMMC5983Base, &flxDevMMC5983Base::read_z> magZ;
-    flxParameterOutInt<flxDevMMC5983Base, &flxDevMMC5983Base::read_temperature> temperature;
+    flxParameterOutInt32<flxDevMMC5983Base, &flxDevMMC5983Base::read_temperature> temperature;
 
     // Define our read-write properties
-    flxPropertyRWUint16<flxDevMMC5983Base, &flxDevMMC5983Base::get_filter_bandwidth,
+    flxPropertyRWUInt16<flxDevMMC5983Base, &flxDevMMC5983Base::get_filter_bandwidth,
                         &flxDevMMC5983Base::set_filter_bandwidth>
         filterBandwidth = {100, {{"100 Hz", 100}, {"200 Hz", 200}, {"400 Hz", 400}, {"800 Hz", 800}}};
-    flxPropertyRWUint8<flxDevMMC5983Base, &flxDevMMC5983Base::get_auto_reset, &flxDevMMC5983Base::set_auto_reset>
+    flxPropertyRWUInt8<flxDevMMC5983Base, &flxDevMMC5983Base::get_auto_reset, &flxDevMMC5983Base::set_auto_reset>
         autoReset = {1, {{"Enabled", 1}, {"Disabled", 0}}};
 };
 

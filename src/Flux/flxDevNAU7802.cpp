@@ -152,7 +152,7 @@ float flxDevNAU7802::read_weight()
 //----------------------------------------------------------------------------------------------------------
 // methods used to get values for our RW properties
 
-int flxDevNAU7802::get_zero_offset()
+int32_t flxDevNAU7802::get_zero_offset()
 {
     return NAU7802::getZeroOffset();
 }
@@ -164,7 +164,7 @@ float flxDevNAU7802::get_calibration_factor()
 }
 
 //----------------------------------------------------------------------------------------------------------
-void flxDevNAU7802::set_zero_offset(int offset)
+void flxDevNAU7802::set_zero_offset(int32_t offset)
 {
     NAU7802::setZeroOffset(offset);
 }
@@ -176,25 +176,25 @@ void flxDevNAU7802::set_calibration_factor(float factor)
 }
 
 //----------------------------------------------------------------------------------------------------------
-int flxDevNAU7802::get_ext_offset(void)
+int32_t flxDevNAU7802::get_ext_offset(void)
 {
     return NAU7802::get24BitRegister(NAU7802_OCAL1_B2); // Save new offset
 }
 //----------------------------------------------------------------------------------------------------------
-void flxDevNAU7802::set_ext_offset(int offset)
+void flxDevNAU7802::set_ext_offset(int32_t offset)
 {
     NAU7802::set24BitRegister(NAU7802_OCAL1_B2, offset);
     NAU7802::getWeight(true, 10); // flush
 }
 
 //----------------------------------------------------------------------------------------------------------
-uint flxDevNAU7802::get_ext_gain(void)
+uint32_t flxDevNAU7802::get_ext_gain(void)
 {
     return NAU7802::get32BitRegister(NAU7802_GCAL1_B3); // This should not have changed, but read it anyway
 }
 
 //----------------------------------------------------------------------------------------------------------
-void flxDevNAU7802::set_ext_gain(uint gain)
+void flxDevNAU7802::set_ext_gain(uint32_t gain)
 {
     set32BitRegister(NAU7802_GCAL1_B3, gain);
     NAU7802::getWeight(true, 10); // flush

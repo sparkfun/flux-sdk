@@ -54,7 +54,7 @@ class flxSerial_ : public flxWriter
     // Overload listen, so we can type the events, and use the template-based
     // write() method above.
 
-    void listen(flxSignalInt &theEvent)
+    void listen(flxSignalInt32 &theEvent)
     {
         theEvent.call(this, &flxSerial_::write);
     }

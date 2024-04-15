@@ -34,10 +34,10 @@ class flxOutputFormat
     virtual void logValue(const std::string &tag, bool value) = 0;
     virtual void logValue(const std::string &tag, int8_t value) = 0;
     virtual void logValue(const std::string &tag, int16_t value) = 0;
-    virtual void logValue(const std::string &tag, int value) = 0;
+    virtual void logValue(const std::string &tag, int32_t value) = 0;
     virtual void logValue(const std::string &tag, uint8_t value) = 0;
     virtual void logValue(const std::string &tag, uint16_t value) = 0;
-    virtual void logValue(const std::string &tag, uint value) = 0;
+    virtual void logValue(const std::string &tag, uint32_t value) = 0;
     virtual void logValue(const std::string &tag, float value, uint16_t precision = 3) = 0;
     virtual void logValue(const std::string &tag, double value, uint16_t precision = 3) = 0;
     virtual void logValue(const std::string &tag, const char *value) = 0;
@@ -50,10 +50,10 @@ class flxOutputFormat
     virtual void logValue(const std::string &tag, flxDataArrayBool *value) = 0;
     virtual void logValue(const std::string &tag, flxDataArrayInt8 *value) = 0;
     virtual void logValue(const std::string &tag, flxDataArrayInt16 *value) = 0;
-    virtual void logValue(const std::string &tag, flxDataArrayInt *value) = 0;
-    virtual void logValue(const std::string &tag, flxDataArrayUint8 *value) = 0;
-    virtual void logValue(const std::string &tag, flxDataArrayUint16 *value) = 0;
-    virtual void logValue(const std::string &tag, flxDataArrayUint *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayInt32 *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayUInt8 *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayUInt16 *value) = 0;
+    virtual void logValue(const std::string &tag, flxDataArrayUInt32 *value) = 0;
     virtual void logValue(const std::string &tag, flxDataArrayFloat *value, uint16_t precision = 3) = 0;
     virtual void logValue(const std::string &tag, flxDataArrayDouble *value, uint16_t precision = 3) = 0;
     virtual void logValue(const std::string &tag, flxDataArrayString *value) = 0;

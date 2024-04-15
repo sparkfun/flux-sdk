@@ -32,11 +32,11 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
 
   private:
     // rotation period setter/getter
-    uint get_RotatePeriod(void)
+    uint32_t get_RotatePeriod(void)
     {
         return _secsRotPeriod / kSecsPerHour;
     }
-    void set_RotatePeriod(uint hours)
+    void set_RotatePeriod(uint32_t hours)
     {
         _secsRotPeriod = hours * kSecsPerHour;
     }
@@ -81,10 +81,10 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     }
 
     // Rotation Period in Days
-    flxPropertyRWUint<flxFileRotate, &flxFileRotate::get_RotatePeriod, &flxFileRotate::set_RotatePeriod> rotatePeriod =
-        {24, {{"6 Hours", 6}, {"12 Hours", 12}, {"1 Day", 24}, {"2 Days", 48}, {"1 Week", 168}}};
+    flxPropertyRWUInt32<flxFileRotate, &flxFileRotate::get_RotatePeriod, &flxFileRotate::set_RotatePeriod>
+        rotatePeriod = {24, {{"6 Hours", 6}, {"12 Hours", 12}, {"1 Day", 24}, {"2 Days", 48}, {"1 Week", 168}}};
 
-    flxPropertyUint<flxFileRotate> startNumber = {1};
+    flxPropertyUInt32<flxFileRotate> startNumber = {1};
 
     flxPropertyString<flxFileRotate> filePrefix = {"sfe"};
 
@@ -92,8 +92,8 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
 
   private:
     // Hidden property - epoch when file was opened...
-    flxPropertyHiddenUint<flxFileRotate> _secsFileOpen = {0};
-    flxPropertyHiddenUint<flxFileRotate> _currentFileNumber = {0};
+    flxPropertyHiddenUInt32<flxFileRotate> _secsFileOpen = {0};
+    flxPropertyHiddenUInt32<flxFileRotate> _currentFileNumber = {0};
 
     static constexpr uint kSecsPerHour = 3600;
     static constexpr char *kFileNameTemplate = "%s%04d.%s";

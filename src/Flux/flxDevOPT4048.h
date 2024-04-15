@@ -71,22 +71,22 @@ class flxDevOPT4048 : public flxDeviceI2CType<flxDevOPT4048>, public SparkFun_OP
     double get_CCT();
     uint32_t get_lux();
 
-    void set_range(uint);
-    uint get_range();
-    void set_conversion_time(uint);
-    uint get_conversion_time();
-    void set_operation_mode(uint);
-    uint get_operation_mode();
+    void set_range(uint32_t);
+    uint32_t get_range();
+    void set_conversion_time(uint32_t);
+    uint32_t get_conversion_time();
+    void set_operation_mode(uint32_t);
+    uint32_t get_operation_mode();
 
     // cache our pre-startup properties
 
-    uint _cacheRange;
-    uint _cacheTime;
-    uint _cacheMode;
+    uint32_t _cacheRange;
+    uint32_t _cacheTime;
+    uint32_t _cacheMode;
 
   public:
     // Define our output parameters - specify the get functions to call.
-    flxPropertyRWUint<flxDevOPT4048, &flxDevOPT4048::get_range, &flxDevOPT4048::set_range> range = {
+    flxPropertyRWUInt32<flxDevOPT4048, &flxDevOPT4048::get_range, &flxDevOPT4048::set_range> range = {
         RANGE_2KLUX2,
         {{"2254 Lux", RANGE_2KLUX2},
          {"4509 Lux", RANGE_4KLUX5},
@@ -97,22 +97,22 @@ class flxDevOPT4048 : public flxDeviceI2CType<flxDevOPT4048>, public SparkFun_OP
          {"144284 Lux", RANGE_144LUX},
          {"Auto Range", RANGE_AUTO}}};
 
-    flxPropertyRWUint<flxDevOPT4048, &flxDevOPT4048::get_conversion_time, &flxDevOPT4048::set_conversion_time> time = {
-        CONVERSION_TIME_1MS,
-        {{"600us", CONVERSION_TIME_600US},
-         {"1ms", CONVERSION_TIME_1MS},
-         {"1.8ms", CONVERSION_TIME_1MS8},
-         {"3.4ms", CONVERSION_TIME_3MS4},
-         {"6.5ms", CONVERSION_TIME_6MS5},
-         {"12.7ms", CONVERSION_TIME_12MS7},
-         {"25ms", CONVERSION_TIME_25MS},
-         {"50ms", CONVERSION_TIME_50MS},
-         {"100ms", CONVERSION_TIME_100MS},
-         {"200ms", CONVERSION_TIME_200MS},
-         {"400ms", CONVERSION_TIME_400MS},
-         {"800ms", CONVERSION_TIME_800MS}}};
+    flxPropertyRWUInt32<flxDevOPT4048, &flxDevOPT4048::get_conversion_time, &flxDevOPT4048::set_conversion_time> time =
+        {CONVERSION_TIME_1MS,
+         {{"600us", CONVERSION_TIME_600US},
+          {"1ms", CONVERSION_TIME_1MS},
+          {"1.8ms", CONVERSION_TIME_1MS8},
+          {"3.4ms", CONVERSION_TIME_3MS4},
+          {"6.5ms", CONVERSION_TIME_6MS5},
+          {"12.7ms", CONVERSION_TIME_12MS7},
+          {"25ms", CONVERSION_TIME_25MS},
+          {"50ms", CONVERSION_TIME_50MS},
+          {"100ms", CONVERSION_TIME_100MS},
+          {"200ms", CONVERSION_TIME_200MS},
+          {"400ms", CONVERSION_TIME_400MS},
+          {"800ms", CONVERSION_TIME_800MS}}};
 
-    flxPropertyRWUint<flxDevOPT4048, &flxDevOPT4048::get_operation_mode, &flxDevOPT4048::set_operation_mode> mode = {
+    flxPropertyRWUInt32<flxDevOPT4048, &flxDevOPT4048::get_operation_mode, &flxDevOPT4048::set_operation_mode> mode = {
         OPERATION_MODE_POWER_DOWN,
         {{"Power Down", OPERATION_MODE_POWER_DOWN},
          {"Auto One Shot", OPERATION_MODE_AUTO_ONE_SHOT},
@@ -122,5 +122,5 @@ class flxDevOPT4048 : public flxDeviceI2CType<flxDevOPT4048>, public SparkFun_OP
     flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CIEx> CIEx;
     flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CIEy> CIEy;
     flxParameterOutDouble<flxDevOPT4048, &flxDevOPT4048::get_CCT> CCT;
-    flxParameterOutUint<flxDevOPT4048, &flxDevOPT4048::get_lux> Lux;
+    flxParameterOutUInt32<flxDevOPT4048, &flxDevOPT4048::get_lux> Lux;
 };

@@ -63,7 +63,7 @@ class flxDevSGP40 : public flxDeviceI2CType<flxDevSGP40>, public SGP40
 
   private:
     // methods used to get values for our output parameters
-    int read_voc();
+    int32_t read_voc();
 
     void write_rh(const float &rh);
     void write_temperature(const float &temperature);
@@ -76,5 +76,5 @@ class flxDevSGP40 : public flxDeviceI2CType<flxDevSGP40>, public SGP40
     flxParameterInFloat<flxDevSGP40, &flxDevSGP40::write_temperature> temperature;
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutInt<flxDevSGP40, &flxDevSGP40::read_voc> vocIndex;
+    flxParameterOutInt32<flxDevSGP40, &flxDevSGP40::read_voc> vocIndex;
 };

@@ -95,12 +95,12 @@ bool flxDevVEML7700::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint flxDevVEML7700::read_ambient_light()
+uint32_t flxDevVEML7700::read_ambient_light()
 {
     return VEML7700::getAmbientLight();
 }
 
-uint flxDevVEML7700::read_white_level()
+uint32_t flxDevVEML7700::read_white_level()
 {
     return VEML7700::getWhiteLevel();
 }

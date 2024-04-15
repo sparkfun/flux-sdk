@@ -70,14 +70,14 @@ class flxDevPASCO2V01 : public flxDeviceI2CType<flxDevPASCO2V01>
 
     // methods used to get values for our RW properties
     bool get_auto_calibrate();
-    uint get_calibration_reference();
-    uint get_pressure_reference();
-    uint get_measurement_period();
+    uint32_t get_calibration_reference();
+    uint32_t get_pressure_reference();
+    uint32_t get_measurement_period();
 
     void set_auto_calibrate(bool);
-    void set_calibration_reference(uint);
-    void set_pressure_reference(uint);
-    void set_measurement_period(uint);
+    void set_calibration_reference(uint32_t);
+    void set_pressure_reference(uint32_t);
+    void set_measurement_period(uint32_t);
 
     bool _autoCalibrate = false;
 
@@ -100,22 +100,22 @@ class flxDevPASCO2V01 : public flxDeviceI2CType<flxDevPASCO2V01>
 
     // Define the sensor's calibration baseline offset compensation reference. Valid range is 350 ppm to 900 ppm.
     // Default value is 400 ppm
-    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_calibration_reference,
-                      &flxDevPASCO2V01::set_calibration_reference>
+    flxPropertyRWUInt32<flxDevPASCO2V01, &flxDevPASCO2V01::get_calibration_reference,
+                        &flxDevPASCO2V01::set_calibration_reference>
         calibrationReference = {_calibrationReference, 350, 900};
 
     // Define the sensor's pressure reference compensation in hPA. Valid range is 750 hPa to 1150 hPa.
     // Default value is 1015 hPa
-    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_pressure_reference,
-                      &flxDevPASCO2V01::set_pressure_reference>
+    flxPropertyRWUInt32<flxDevPASCO2V01, &flxDevPASCO2V01::get_pressure_reference,
+                        &flxDevPASCO2V01::set_pressure_reference>
         pressureReference = {_pressureReference, 750, 1150};
 
     // Define the measurement period in seconds. Valid range is 5s - 4095s.
     // Default value is 10s
-    flxPropertyRWUint<flxDevPASCO2V01, &flxDevPASCO2V01::get_measurement_period,
-                      &flxDevPASCO2V01::set_measurement_period>
+    flxPropertyRWUInt32<flxDevPASCO2V01, &flxDevPASCO2V01::get_measurement_period,
+                        &flxDevPASCO2V01::set_measurement_period>
         measurementPeriod = {_measurementPeriod, XENSIV_PASCO2_MEAS_RATE_MIN, XENSIV_PASCO2_MEAS_RATE_MAX};
 
     // Define output parameters and specify the function called to get that parameter.
-    flxParameterOutUint<flxDevPASCO2V01, &flxDevPASCO2V01::read_CO2> co2PPM;
+    flxParameterOutUInt32<flxDevPASCO2V01, &flxDevPASCO2V01::read_CO2> co2PPM;
 };

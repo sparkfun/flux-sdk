@@ -710,20 +710,20 @@ template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(in
 using flxPropertyRWInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter>;
 
 // int
-template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using flxPropertyRWInt = _flxPropertyTypedRW<int, Object, _getter, _setter>;
+template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
+using flxPropertyRWInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using flxPropertyRWUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter>;
+using flxPropertyRWUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using flxPropertyRWUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter>;
+using flxPropertyRWUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter>;
 
 // unsigned int
-template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using flxPropertyRWUint = _flxPropertyTypedRW<uint, Object, _getter, _setter>;
+template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
+using flxPropertyRWUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
@@ -747,20 +747,20 @@ template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(in
 using flxPropertyRWHiddenInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, true>;
 
 // int
-template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using flxPropertyRWHiddenInt = _flxPropertyTypedRW<int, Object, _getter, _setter, true>;
+template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
+using flxPropertyRWHiddenInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter, true>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using flxPropertyRWHiddenUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using flxPropertyRWHiddenUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true>;
+using flxPropertyRWHiddenUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true>;
 
 // unsigned int
-template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using flxPropertyRWHiddenUint = _flxPropertyTypedRW<uint, Object, _getter, _setter, true>;
+template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
+using flxPropertyRWHiddenUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter, true>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
@@ -784,20 +784,20 @@ template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(in
 using flxPropertyRWSecureInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, false, true>;
 
 // int
-template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using flxPropertyRWSecureInt = _flxPropertyTypedRW<int, Object, _getter, _setter, false, true>;
+template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
+using flxPropertyRWSecureInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter, false, true>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using flxPropertyRWSecureUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, false, true>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using flxPropertyRWSecureUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, false, true>;
+using flxPropertyRWSecureUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, false, true>;
 
 // unsigned int
-template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using flxPropertyRWSecureUint = _flxPropertyTypedRW<uint, Object, _getter, _setter, false, true>;
+template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
+using flxPropertyRWSecureUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter, false, true>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
@@ -821,20 +821,20 @@ template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(in
 using flxPropertyRWSecretInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, true, true>;
 
 // int
-template <class Object, int (Object::*_getter)(), void (Object::*_setter)(int)>
-using flxPropertyRWSecretInt = _flxPropertyTypedRW<int, Object, _getter, _setter, true, true>;
+template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
+using flxPropertyRWSecretInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter, true, true>;
 
 // unsigned int 8
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
-using flxPropertyRWSecretUint8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true, true>;
 
 // unsigned int 16
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
-using flxPropertyRWSecretUint16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true, true>;
+using flxPropertyRWSecretUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true, true>;
 
 // unsigned int
-template <class Object, uint (Object::*_getter)(), void (Object::*_setter)(uint)>
-using flxPropertyRWSecretUint = _flxPropertyTypedRW<uint, Object, _getter, _setter, true, true>;
+template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
+using flxPropertyRWSecretUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter, true, true>;
 
 // float
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
@@ -1155,10 +1155,10 @@ class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
 template <class Object> using flxPropertyBool = _flxPropertyTyped<Object, bool>;
 template <class Object> using flxPropertyInt8 = _flxPropertyTyped<Object, int8_t>;
 template <class Object> using flxPropertyInt16 = _flxPropertyTyped<Object, int16_t>;
-template <class Object> using flxPropertyInt = _flxPropertyTyped<Object, int>;
-template <class Object> using flxPropertyUint8 = _flxPropertyTyped<Object, uint8_t>;
-template <class Object> using flxPropertyUint16 = _flxPropertyTyped<Object, uint16_t>;
-template <class Object> using flxPropertyUint = _flxPropertyTyped<Object, uint>;
+template <class Object> using flxPropertyInt32 = _flxPropertyTyped<Object, int32_t>;
+template <class Object> using flxPropertyUInt8 = _flxPropertyTyped<Object, uint8_t>;
+template <class Object> using flxPropertyUInt16 = _flxPropertyTyped<Object, uint16_t>;
+template <class Object> using flxPropertyUInt32 = _flxPropertyTyped<Object, uint32_t>;
 template <class Object> using flxPropertyFloat = _flxPropertyTyped<Object, float>;
 template <class Object> using flxPropertyDouble = _flxPropertyTyped<Object, double>;
 
@@ -1166,10 +1166,10 @@ template <class Object> using flxPropertyDouble = _flxPropertyTyped<Object, doub
 template <class Object> using flxPropertyHiddenBool = _flxPropertyTyped<Object, bool, true>;
 template <class Object> using flxPropertyHiddenInt8 = _flxPropertyTyped<Object, int8_t, true>;
 template <class Object> using flxPropertyHiddenInt16 = _flxPropertyTyped<Object, int16_t, true>;
-template <class Object> using flxPropertyHiddenInt = _flxPropertyTyped<Object, int, true>;
-template <class Object> using flxPropertyHiddenUint8 = _flxPropertyTyped<Object, uint8_t, true>;
-template <class Object> using flxPropertyHiddenUint16 = _flxPropertyTyped<Object, uint16_t, true>;
-template <class Object> using flxPropertyHiddenUint = _flxPropertyTyped<Object, uint, true>;
+template <class Object> using flxPropertyHiddenInt32 = _flxPropertyTyped<Object, int32_t, true>;
+template <class Object> using flxPropertyHiddenUInt8 = _flxPropertyTyped<Object, uint8_t, true>;
+template <class Object> using flxPropertyHiddenUInt16 = _flxPropertyTyped<Object, uint16_t, true>;
+template <class Object> using flxPropertyHiddenUInt32 = _flxPropertyTyped<Object, uint32_t, true>;
 template <class Object> using flxPropertyHiddenFloat = _flxPropertyTyped<Object, float, true>;
 template <class Object> using flxPropertyHiddenDouble = _flxPropertyTyped<Object, double, true>;
 
@@ -1177,10 +1177,10 @@ template <class Object> using flxPropertyHiddenDouble = _flxPropertyTyped<Object
 template <class Object> using flxPropertySecureBool = _flxPropertyTyped<Object, bool, false, true>;
 template <class Object> using flxPropertySecureInt8 = _flxPropertyTyped<Object, int8_t, false, true>;
 template <class Object> using flxPropertySecureInt16 = _flxPropertyTyped<Object, int16_t, false, true>;
-template <class Object> using flxPropertySecureInt = _flxPropertyTyped<Object, int, false, true>;
-template <class Object> using flxPropertySecureUint8 = _flxPropertyTyped<Object, uint8_t, false, true>;
-template <class Object> using flxPropertySecureUint16 = _flxPropertyTyped<Object, uint16_t, false, true>;
-template <class Object> using flxPropertySecureUint = _flxPropertyTyped<Object, uint, false, true>;
+template <class Object> using flxPropertySecureInt32 = _flxPropertyTyped<Object, int32_t, false, true>;
+template <class Object> using flxPropertySecureUInt8 = _flxPropertyTyped<Object, uint8_t, false, true>;
+template <class Object> using flxPropertySecureUInt16 = _flxPropertyTyped<Object, uint16_t, false, true>;
+template <class Object> using flxPropertySecureUInt32 = _flxPropertyTyped<Object, uint32_t, false, true>;
 template <class Object> using flxPropertySecureFloat = _flxPropertyTyped<Object, float, false, true>;
 template <class Object> using flxPropertySecureDouble = _flxPropertyTyped<Object, double, false, true>;
 
@@ -1188,10 +1188,10 @@ template <class Object> using flxPropertySecureDouble = _flxPropertyTyped<Object
 template <class Object> using flxPropertySecretBool = _flxPropertyTyped<Object, bool, true, true>;
 template <class Object> using flxPropertySecretInt8 = _flxPropertyTyped<Object, int8_t, true, true>;
 template <class Object> using flxPropertySecretInt16 = _flxPropertyTyped<Object, int16_t, true, true>;
-template <class Object> using flxPropertySecretInt = _flxPropertyTyped<Object, int, true, true>;
-template <class Object> using flxPropertySecretUint8 = _flxPropertyTyped<Object, uint8_t, true, true>;
-template <class Object> using flxPropertySecretUint16 = _flxPropertyTyped<Object, uint16_t, true, true>;
-template <class Object> using flxPropertySecretUint = _flxPropertyTyped<Object, uint, true, true>;
+template <class Object> using flxPropertySecretInt32 = _flxPropertyTyped<Object, int32_t, true, true>;
+template <class Object> using flxPropertySecretUInt8 = _flxPropertyTyped<Object, uint8_t, true, true>;
+template <class Object> using flxPropertySecretUInt16 = _flxPropertyTyped<Object, uint16_t, true, true>;
+template <class Object> using flxPropertySecretUInt32 = _flxPropertyTyped<Object, uint32_t, true, true>;
 template <class Object> using flxPropertySecretFloat = _flxPropertyTyped<Object, float, true, true>;
 template <class Object> using flxPropertySecretDouble = _flxPropertyTyped<Object, double, true, true>;
 //----------------------------------------------------------------------------------------------------

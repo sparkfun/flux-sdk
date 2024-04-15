@@ -82,9 +82,9 @@ class flxDevButton : public flxDeviceI2CType<flxDevButton>, public QwiicButton
     flxJob _theJob;
 
   public:
-    flxPropertyRWUint8<flxDevButton, &flxDevButton::get_press_mode, &flxDevButton::set_press_mode> pressMode = {
+    flxPropertyRWUInt8<flxDevButton, &flxDevButton::get_press_mode, &flxDevButton::set_press_mode> pressMode = {
         1, {{"Click (Toggle) Mode", 0}, {"Press Mode", 1}}}; // 0 = Click (Toggle) mode. 1 = Press mode.
-    flxPropertyRWUint8<flxDevButton, &flxDevButton::get_led_brightness, &flxDevButton::set_led_brightness>
+    flxPropertyRWUInt8<flxDevButton, &flxDevButton::get_led_brightness, &flxDevButton::set_led_brightness>
         ledBrightness;
 
     // Define our output parameters - specify the get functions to call.

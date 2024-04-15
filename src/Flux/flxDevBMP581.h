@@ -88,7 +88,7 @@ class flxDevBMP581 : public flxDeviceI2CType<flxDevBMP581>, public BMP581
     // all possible/required changes of mode correctly...
     // From Dryw's notes: the sensor can only enter forced mode from sleep mode.
     //                    Transitions between forced and normal modes are ignored
-    flxPropertyRWUint8<flxDevBMP581, &flxDevBMP581::get_power_mode, &flxDevBMP581::set_power_mode> powerMode = {
+    flxPropertyRWUInt8<flxDevBMP581, &flxDevBMP581::get_power_mode, &flxDevBMP581::set_power_mode> powerMode = {
         BMP5_POWERMODE_NORMAL,
         {{"Standby", BMP5_POWERMODE_STANDBY},
          {"Normal", BMP5_POWERMODE_NORMAL},
