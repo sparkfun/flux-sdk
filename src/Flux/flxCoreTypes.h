@@ -200,21 +200,73 @@ class flxDescriptor
     bool _titleAlloc;
 };
 
-typedef enum
-{
-    flxTypeNone = 0,
-    flxTypeBool,
-    flxTypeInt8,
-    flxTypeInt16,
-    flxTypeInt32,
-    flxTypeUInt8,
-    flxTypeUInt16,
-    flxTypeUInt32,
-    flxTypeFloat,
-    flxTypeDouble,
-    flxTypeString
-} flxDataType_t;
+// typedef enum
+// {
+//     flxTypeNone = 0,
+//     flxTypeBool,
+//     flxTypeInt8,
+//     flxTypeInt16,
+//     flxTypeInt32,
+//     flxTypeUInt8,
+//     flxTypeUInt16,
+//     flxTypeUInt32,
+//     flxTypeFloat,
+//     flxTypeDouble,
+//     flxTypeString
+// } flxDataType_t;
 
+// The number used for the datatype codes is based on the sizeof() value and other attributes determined at compile
+// time. This is something picked up from the NVS system of esp32 - solid hack.
+enum flxDataType_t : std::uint8_t
+{
+    flxTypeNone = 0x00,
+    flxTypeBool = 0x0A,
+    flxTypeInt8 = 0x11,
+    flxTypeUInt8 = 0x01,
+    flxTypeInt16 = 0x12,
+    flxTypeUInt16 = 0x02,
+    flxTypeInt32 = 0x14,
+    flxTypeUInt32 = 0x04,
+    flxTypeFloat = 0x24,
+    flxTypeDouble = 0x28,
+    flxTypeString = 0x21
+};
+
+template <typename T, typename std::enable_if<std::is_integral<T>::value, void *>::type = nullptr>
+constexpr flxDataType_t flxGetTypeOf()
+{
+    return std::is_same<T, bool>::value
+               ? flxTypeBool
+               : (static_cast<flxDataType_t>(((std::is_signed<T>::value) ? 0x10 : 0x00) | sizeof(T)));
+}
+
+template <typename T, typename std::enable_if<std::is_floating_point<T>::value, void *>::type = nullptr>
+constexpr flxDataType_t flxGetTypeOf()
+{
+    return static_cast<flxDataType_t>(0x20 | sizeof(T));
+}
+template <typename T, typename std::enable_if<std::is_same<char *, T>::value, void *>::type = nullptr>
+constexpr flxDataType_t flxGetTypeOf()
+{
+    return flxTypeString;
+}
+
+template <typename T, typename std::enable_if<std::is_same<const char *, T>::value, void *>::type = nullptr>
+constexpr flxDataType_t flxGetTypeOf()
+{
+    return flxTypeString;
+}
+
+template <typename T, typename std::enable_if<std::is_same<std::string, T>::value, void *>::type = nullptr>
+constexpr flxDataType_t flxGetTypeOf()
+{
+    return flxTypeString;
+}
+
+template <typename T> constexpr flxDataType_t flxGetTypeOf(const T &)
+{
+    return flxGetTypeOf<T>();
+}
 // helpful data types
 typedef union {
     bool b;
