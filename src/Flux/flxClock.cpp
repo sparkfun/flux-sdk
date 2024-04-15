@@ -103,7 +103,7 @@ std::string _flxClock::get_ref_clock(void)
 {
     return _nameRefClock;
 }
-void _flxClock::set_ref_interval(uint val)
+void _flxClock::set_ref_interval(uint32_t val)
 {
     if (val == _refCheck)
         return;
@@ -124,12 +124,12 @@ void _flxClock::set_ref_interval(uint val)
         flxUpdateJobInQueue(_jobRefCheck);
     }
 }
-uint _flxClock::get_ref_interval(void)
+uint32_t _flxClock::get_ref_interval(void)
 {
     return _refCheck;
 }
 
-void _flxClock::set_conn_interval(uint val)
+void _flxClock::set_conn_interval(uint32_t val)
 {
     if (val == _connCheck)
         return;
@@ -145,7 +145,7 @@ void _flxClock::set_conn_interval(uint val)
         flxUpdateJobInQueue(_jobConnCheck);
     }
 }
-uint _flxClock::get_conn_interval(void)
+uint32_t _flxClock::get_conn_interval(void)
 {
     return _connCheck;
 }

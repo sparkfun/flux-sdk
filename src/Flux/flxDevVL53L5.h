@@ -80,11 +80,13 @@ class flxDevVL53L5 : public flxDeviceI2CType<flxDevVL53L5>, public SparkFun_VL53
 
   public:
     // Define our read-write properties
-    flxPropertyRWUint<flxDevVL53L5, &flxDevVL53L5::get_integration_time, &flxDevVL53L5::set_integration_time>
+    flxPropertyRWUInt32<flxDevVL53L5, &flxDevVL53L5::get_integration_time, &flxDevVL53L5::set_integration_time>
         integrationTime = {5, 2, 1000};
-    flxPropertyRWUint8<flxDevVL53L5, &flxDevVL53L5::get_sharpener_percent, &flxDevVL53L5::set_sharpener_percent>
+
+    flxPropertyRWUInt8<flxDevVL53L5, &flxDevVL53L5::get_sharpener_percent, &flxDevVL53L5::set_sharpener_percent>
         sharpenerPercent = {5, 0, 99};
-    flxPropertyRWUint8<flxDevVL53L5, &flxDevVL53L5::get_target_order, &flxDevVL53L5::set_target_order> targetOrder = {
+
+    flxPropertyRWUInt8<flxDevVL53L5, &flxDevVL53L5::get_target_order, &flxDevVL53L5::set_target_order> targetOrder = {
         (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST,
         {{"Strongest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::STRONGEST},
          {"Closest", (uint8_t)SF_VL53L5CX_TARGET_ORDER::CLOSEST}}};

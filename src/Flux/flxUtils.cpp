@@ -172,7 +172,7 @@ std::string flx_utils::to_string(char *const data)
 }
 
 //-------------------------------------------------------------------
-std::string flx_utils::to_string(int const data)
+std::string flx_utils::to_string(int32_t const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%d", data);
@@ -196,7 +196,7 @@ std::string flx_utils::to_string(int16_t const data)
     return stmp;
 }
 //-------------------------------------------------------------------
-std::string flx_utils::to_string(uint const data)
+std::string flx_utils::to_string(uint32_t const data)
 {
     char szBuffer[20];
     snprintf(szBuffer, sizeof(szBuffer), "%u", data);

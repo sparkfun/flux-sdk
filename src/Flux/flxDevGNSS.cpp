@@ -199,27 +199,27 @@ bool flxDevGNSS::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint flxDevGNSS::read_year()
+uint32_t flxDevGNSS::read_year()
 {
     return SFE_UBLOX_GNSS::getYear();
 }
-uint flxDevGNSS::read_month()
+uint32_t flxDevGNSS::read_month()
 {
     return SFE_UBLOX_GNSS::getMonth();
 }
-uint flxDevGNSS::read_day()
+uint32_t flxDevGNSS::read_day()
 {
     return SFE_UBLOX_GNSS::getDay();
 }
-uint flxDevGNSS::read_hour()
+uint32_t flxDevGNSS::read_hour()
 {
     return SFE_UBLOX_GNSS::getHour();
 }
-uint flxDevGNSS::read_min()
+uint32_t flxDevGNSS::read_min()
 {
     return SFE_UBLOX_GNSS::getMinute();
 }
-uint flxDevGNSS::read_sec()
+uint32_t flxDevGNSS::read_sec()
 {
     return SFE_UBLOX_GNSS::getSecond();
 }
@@ -239,15 +239,15 @@ double flxDevGNSS::read_altitude_msl()
 {
     return (((double)SFE_UBLOX_GNSS::getAltitudeMSL()) / 1000);
 }
-uint flxDevGNSS::read_siv()
+uint32_t flxDevGNSS::read_siv()
 {
     return SFE_UBLOX_GNSS::getSIV();
 }
-uint flxDevGNSS::read_fix()
+uint32_t flxDevGNSS::read_fix()
 {
     return SFE_UBLOX_GNSS::getFixType();
 }
-uint flxDevGNSS::read_carrier_soln()
+uint32_t flxDevGNSS::read_carrier_soln()
 {
     return SFE_UBLOX_GNSS::getCarrierSolutionType();
 }
@@ -271,7 +271,7 @@ float flxDevGNSS::read_pdop()
 {
     return (((float)SFE_UBLOX_GNSS::getPDOP()) / 100);
 }
-uint flxDevGNSS::read_tow()
+uint32_t flxDevGNSS::read_tow()
 {
     return SFE_UBLOX_GNSS::getTimeOfWeek();
 }
@@ -378,11 +378,11 @@ std::string flxDevGNSS::read_carrier_soln_string()
 }
 
 // methods for read-write properties
-uint flxDevGNSS::get_measurement_rate()
+uint32_t flxDevGNSS::get_measurement_rate()
 {
     return SFE_UBLOX_GNSS::getMeasurementRate();
 }
-void flxDevGNSS::set_measurement_rate(uint rate)
+void flxDevGNSS::set_measurement_rate(uint32_t rate)
 {
     SFE_UBLOX_GNSS::setMeasurementRate(rate);
 }

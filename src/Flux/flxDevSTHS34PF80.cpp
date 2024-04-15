@@ -144,39 +144,39 @@ bool flxDevSTHS34PF80::get_DataReady()
     return dataReady.drdy == 1;
 }
 
-int flxDevSTHS34PF80::get_AverageTObjectNumber()
+int32_t flxDevSTHS34PF80::get_AverageTObjectNumber()
 {
     sths34pf80_avg_tobject_num_t value;
     getAverageTObjectNumber(&value);
     return (int)value;
 }
-void flxDevSTHS34PF80::set_AverageTObjectNumber(int avg)
+void flxDevSTHS34PF80::set_AverageTObjectNumber(int32_t avg)
 {
     if (isInitialized())
         setAverageTObjectNumber((sths34pf80_avg_tobject_num_t)avg);
 }
 
-int flxDevSTHS34PF80::get_AverageTAmbientNumber()
+int32_t flxDevSTHS34PF80::get_AverageTAmbientNumber()
 {
     sths34pf80_avg_tambient_num_t value;
     getAverageTAmbientNumber(&value);
     return (int)value;
 }
 
-void flxDevSTHS34PF80::set_AverageTAmbientNumber(int avg)
+void flxDevSTHS34PF80::set_AverageTAmbientNumber(int32_t avg)
 {
     if (isInitialized())
         setAverageTAmbientNumber((sths34pf80_avg_tambient_num_t)avg);
 }
 
-int flxDevSTHS34PF80::get_GainMode()
+int32_t flxDevSTHS34PF80::get_GainMode()
 {
     sths34pf80_gain_mode_t value;
     getGainMode(&value);
     return (int)value;
 }
 
-void flxDevSTHS34PF80::set_GainMode(int gain)
+void flxDevSTHS34PF80::set_GainMode(int32_t gain)
 {
     if (isInitialized())
         setGainMode((sths34pf80_gain_mode_t)gain);
@@ -195,14 +195,14 @@ void flxDevSTHS34PF80::set_TmosSensitivity(float sense)
         setTmosSensitivity(sense);
 }
 
-int flxDevSTHS34PF80::get_TmosODR()
+int32_t flxDevSTHS34PF80::get_TmosODR()
 {
     sths34pf80_tmos_odr_t value;
     getTmosODR(&value);
     return (int)value;
 }
 
-void flxDevSTHS34PF80::set_TmosODR(int odr)
+void flxDevSTHS34PF80::set_TmosODR(int32_t odr)
 {
     if (isInitialized())
         setTmosODR((sths34pf80_tmos_odr_t)odr);
@@ -221,7 +221,7 @@ void flxDevSTHS34PF80::set_BlockDataUpdate(bool update)
         setBlockDataUpdate(update);
 }
 
-int flxDevSTHS34PF80::get_TmosOneShot()
+int32_t flxDevSTHS34PF80::get_TmosOneShot()
 {
     sths34pf80_tmos_one_shot_t value;
 
@@ -229,20 +229,20 @@ int flxDevSTHS34PF80::get_TmosOneShot()
     return value;
 }
 
-void flxDevSTHS34PF80::set_TmosOneShot(int shot)
+void flxDevSTHS34PF80::set_TmosOneShot(int32_t shot)
 {
     if (isInitialized())
         setTmosOneShot((sths34pf80_tmos_one_shot_t)shot);
 }
 
-int flxDevSTHS34PF80::get_MemoryBank()
+int32_t flxDevSTHS34PF80::get_MemoryBank()
 {
     sths34pf80_mem_bank_t value;
     getMemoryBank(&value);
     return value;
 }
 
-void flxDevSTHS34PF80::set_MemoryBank(int bank)
+void flxDevSTHS34PF80::set_MemoryBank(int32_t bank)
 {
     if (isInitialized())
         setMemoryBank((sths34pf80_mem_bank_t)bank);
@@ -268,77 +268,77 @@ void flxDevSTHS34PF80::set_BootOTP(uint8_t boot)
 //     return (int)status;
 // }
 
-int flxDevSTHS34PF80::get_LpfMotionBandwidth()
+int32_t flxDevSTHS34PF80::get_LpfMotionBandwidth()
 {
     sths34pf80_lpf_bandwidth_t value;
     getLpfMotionBandwidth(&value);
     return (int)value;
 }
 
-void flxDevSTHS34PF80::set_LpfMotionBandwidth(int band)
+void flxDevSTHS34PF80::set_LpfMotionBandwidth(int32_t band)
 {
     if (isInitialized())
         setLpfMotionBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
-int flxDevSTHS34PF80::get_LpfPresenceMotionBandwidth()
+int32_t flxDevSTHS34PF80::get_LpfPresenceMotionBandwidth()
 {
     sths34pf80_lpf_bandwidth_t value;
     getLpfPresenceMotionBandwidth(&value);
     return (int)value;
 }
-void flxDevSTHS34PF80::set_LpfPresenceMotionBandwidth(int band)
+void flxDevSTHS34PF80::set_LpfPresenceMotionBandwidth(int32_t band)
 {
     if (isInitialized())
         setLpfPresenceMotionBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
-int flxDevSTHS34PF80::get_LpfAmbientTempBandwidth()
+int32_t flxDevSTHS34PF80::get_LpfAmbientTempBandwidth()
 {
     sths34pf80_lpf_bandwidth_t value;
     getLpfAmbientTempBandwidth(&value);
     return value;
 }
 
-void flxDevSTHS34PF80::set_LpfAmbientTempBandwidth(int band)
+void flxDevSTHS34PF80::set_LpfAmbientTempBandwidth(int32_t band)
 {
     if (isInitialized())
         setLpfAmbientTempBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
-int flxDevSTHS34PF80::get_LpfPresenceBandwidth()
+int32_t flxDevSTHS34PF80::get_LpfPresenceBandwidth()
 {
     sths34pf80_lpf_bandwidth_t value;
     getLpfPresenceBandwidth(&value);
     return (int)value;
 }
-void flxDevSTHS34PF80::set_LpfPresenceBandwidth(int band)
+void flxDevSTHS34PF80::set_LpfPresenceBandwidth(int32_t band)
 {
     if (isInitialized())
         setLpfPresenceBandwidth((sths34pf80_lpf_bandwidth_t)band);
 }
 
-int flxDevSTHS34PF80::get_TmosRouteInterrupt()
+int32_t flxDevSTHS34PF80::get_TmosRouteInterrupt()
 {
     sths34pf80_tmos_route_int_t value;
     getTmosRouteInterrupt(&value);
     return value;
 }
 
-void flxDevSTHS34PF80::set_TmosRouteInterrupt(int intr)
+void flxDevSTHS34PF80::set_TmosRouteInterrupt(int32_t intr)
 {
     if (isInitialized())
         setTmosRouteInterrupt((sths34pf80_tmos_route_int_t)intr);
 }
 
-int flxDevSTHS34PF80::get_DataReadyMode()
+int32_t flxDevSTHS34PF80::get_DataReadyMode()
 {
     sths34pf80_drdy_mode_t value;
     getDataReadyMode(&value);
     return value;
 }
 
-void flxDevSTHS34PF80::set_DataReadyMode(int mode)
+void flxDevSTHS34PF80::set_DataReadyMode(int32_t mode)
 {
     if (isInitialized())
         setDataReadyMode((sths34pf80_drdy_mode_t)mode);

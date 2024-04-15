@@ -236,13 +236,13 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     // Enabled/Disabled
     flxPropertyRWBool<flxMQTTESP32Base, &flxMQTTESP32Base::get_isEnabled, &flxMQTTESP32Base::set_isEnabled> enabled;
 
-    flxPropertyUint<flxMQTTESP32Base> port = {1883}; // default mqtt port
+    flxPropertyUInt32<flxMQTTESP32Base> port = {1883}; // default mqtt port
     flxPropertyString<flxMQTTESP32Base> server;
     flxPropertyString<flxMQTTESP32Base> topic;
     flxPropertyString<flxMQTTESP32Base> clientName;
 
     // Buffer size property
-    flxPropertyRWUint16<flxMQTTESP32Base, &flxMQTTESP32Base::get_bufferSize, &flxMQTTESP32Base::set_bufferSize>
+    flxPropertyRWUInt16<flxMQTTESP32Base, &flxMQTTESP32Base::get_bufferSize, &flxMQTTESP32Base::set_bufferSize>
         bufferSize = {0};
 
     // username and password properties - some brokers requires this

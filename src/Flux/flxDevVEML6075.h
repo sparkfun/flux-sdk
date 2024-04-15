@@ -78,14 +78,14 @@ class flxDevVEML6075 : public flxDeviceI2CType<flxDevVEML6075>, public VEML6075
 
   public:
     // Define our read-write properties
-    flxPropertyRWUint8<flxDevVEML6075, &flxDevVEML6075::get_integration_time, &flxDevVEML6075::set_integration_time>
+    flxPropertyRWUInt8<flxDevVEML6075, &flxDevVEML6075::get_integration_time, &flxDevVEML6075::set_integration_time>
         integrationTime = {VEML6075::IT_100MS,
                            {{"50ms", VEML6075::IT_50MS},
                             {"100ms", VEML6075::IT_100MS},
                             {"200ms", VEML6075::IT_200MS},
                             {"400ms", VEML6075::IT_400MS},
                             {"800ms", VEML6075::IT_800MS}}};
-    flxPropertyRWUint8<flxDevVEML6075, &flxDevVEML6075::get_high_dynamic, &flxDevVEML6075::set_high_dynamic>
+    flxPropertyRWUInt8<flxDevVEML6075, &flxDevVEML6075::get_high_dynamic, &flxDevVEML6075::set_high_dynamic>
         highDynamic = {VEML6075::DYNAMIC_NORMAL,
                        {{"Normal Dynamic", VEML6075::DYNAMIC_NORMAL}, {"High Dynamic", VEML6075::DYNAMIC_HIGH}}};
 

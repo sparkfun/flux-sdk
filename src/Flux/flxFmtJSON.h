@@ -64,7 +64,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
             (_jSection)[tag] = value;
     }
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, int value)
+    void logValue(const std::string &tag, int32_t value)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
@@ -84,7 +84,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     }
 
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, uint value)
+    void logValue(const std::string &tag, uint32_t value)
     {
         if (!_jSection.isNull())
             (_jSection)[tag] = value;
@@ -131,19 +131,19 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, flxDataArrayInt *value)
+    void logValue(const std::string &tag, flxDataArrayInt32 *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, flxDataArrayUint8 *value)
+    void logValue(const std::string &tag, flxDataArrayUInt8 *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, flxDataArrayUint16 *value)
+    void logValue(const std::string &tag, flxDataArrayUInt16 *value)
     {
         writeOutArray(tag, value);
     }
-    void logValue(const std::string &tag, flxDataArrayUint *value)
+    void logValue(const std::string &tag, flxDataArrayUInt32 *value)
     {
         writeOutArray(tag, value);
     }

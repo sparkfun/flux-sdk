@@ -104,7 +104,7 @@ bool flxDevSGP30::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint flxDevSGP30::read_tvoc()
+uint32_t flxDevSGP30::read_tvoc()
 {
     if (_tvoc == false)
     {
@@ -118,7 +118,7 @@ uint flxDevSGP30::read_tvoc()
     return SGP30::TVOC;
 }
 
-uint flxDevSGP30::read_co2()
+uint32_t flxDevSGP30::read_co2()
 {
     if (_co2 == false)
     {
@@ -132,7 +132,7 @@ uint flxDevSGP30::read_co2()
     return SGP30::CO2;
 }
 
-uint flxDevSGP30::read_h2()
+uint32_t flxDevSGP30::read_h2()
 {
     if (_h2 == false)
     {
@@ -146,7 +146,7 @@ uint flxDevSGP30::read_h2()
     return SGP30::H2;
 }
 
-uint flxDevSGP30::read_ethanol()
+uint32_t flxDevSGP30::read_ethanol()
 {
     if (_ethanol == false)
     {

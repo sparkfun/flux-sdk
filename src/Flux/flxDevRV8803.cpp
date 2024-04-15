@@ -411,7 +411,7 @@ uint16_t flxDevRV8803::read_year()
 
     return RV8803::getYear();
 }
-uint flxDevRV8803::get_epoch()
+uint32_t flxDevRV8803::get_epoch()
 {
     if (!_epoch)
     {
@@ -440,7 +440,7 @@ bool flxDevRV8803::valid_epoch(void)
 // Output parameters
 
 // Note, this also fulfills the clock inteface needs.
-void flxDevRV8803::set_epoch(const uint &epoch)
+void flxDevRV8803::set_epoch(const uint32_t &epoch)
 {
     if (!RV8803::setEpoch(epoch))
         flxLog_E("RV8803 - set_epoch failed");
