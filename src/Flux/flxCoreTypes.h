@@ -200,21 +200,6 @@ class flxDescriptor
     bool _titleAlloc;
 };
 
-// typedef enum
-// {
-//     flxTypeNone = 0,
-//     flxTypeBool,
-//     flxTypeInt8,
-//     flxTypeInt16,
-//     flxTypeInt32,
-//     flxTypeUInt8,
-//     flxTypeUInt16,
-//     flxTypeUInt32,
-//     flxTypeFloat,
-//     flxTypeDouble,
-//     flxTypeString
-// } flxDataType_t;
-
 // The number used for the datatype codes is based on the sizeof() value and other attributes determined at compile
 // time. This is something picked up from the NVS system of esp32 - solid hack.
 enum flxDataType_t : std::uint8_t
@@ -473,101 +458,6 @@ class flxDataVariable
     };
 };
 
-class flxDataTyper
-{
-  public:
-    // some method overloading to determine types
-    static flxDataType_t type(std::nullptr_t *t)
-    {
-        return flxTypeNone;
-    };
-    static flxDataType_t type(bool *t)
-    {
-        return flxTypeBool;
-    };
-    static flxDataType_t type(int8_t *t)
-    {
-        return flxTypeInt8;
-    };
-    static flxDataType_t type(int16_t *t)
-    {
-        return flxTypeInt16;
-    };
-    static flxDataType_t type(int32_t *t)
-    {
-        return flxTypeInt32;
-    };
-    static flxDataType_t type(uint8_t *t)
-    {
-        return flxTypeUInt8;
-    };
-    static flxDataType_t type(uint16_t *t)
-    {
-        return flxTypeUInt16;
-    };
-    static flxDataType_t type(uint32_t *t)
-    {
-        return flxTypeUInt32;
-    };
-    static flxDataType_t type(float *t)
-    {
-        return flxTypeFloat;
-    };
-    static flxDataType_t type(double *t)
-    {
-        return flxTypeDouble;
-    };
-    static flxDataType_t type(std::string *t)
-    {
-        return flxTypeString;
-    };
-    static flxDataType_t type(char *t)
-    {
-        return flxTypeString;
-    };
-
-    // non pointer
-    static flxDataType_t type(bool &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(int8_t &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(int16_t &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(int32_t &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(uint8_t &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(uint16_t &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(uint32_t &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(float &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(double &t)
-    {
-        return type(&t);
-    };
-    static flxDataType_t type(std::string &t)
-    {
-        return type(&t);
-    };
-};
 const char *flxGetTypeName(flxDataType_t type);
 
 //----------------------------------------------------------------------------------------
@@ -666,8 +556,7 @@ template <typename T> class flxDataArrayType : public flxDataArray
 
     flxDataType_t type(void)
     {
-        T c = {0};
-        return flxDataTyper::type(c); // use the typer object - leverage overloading
+        return flxGetTypeOf<T>();
     }
 
     //--------------------------------------------------------------------
@@ -909,8 +798,7 @@ template <typename T> class _flxDataOut : public flxDataOut
     // Type of property
     flxDataType_t type(void)
     {
-        T c;
-        return flxDataTyper::type(c);
+        return flxGetTypeOf<T>();
     };
 
     virtual T get(void) const = 0;
@@ -1297,8 +1185,7 @@ template <typename T> class _flxDataIn : public flxDataIn
 
     flxDataType_t type(void)
     {
-        T c;
-        return flxDataTyper::type(c);
+        return flxGetTypeOf<T>();
     };
     virtual void set(T const &value) = 0;
 

@@ -597,8 +597,7 @@ class flxParameterOutArrayType : public flxParameterOutArray
     // return our data type
     flxDataType_t type()
     {
-        T c;
-        return flxDataTyper::type(c);
+        return flxGetTypeOf<T>();
     };
 
     //---------------------------------------------------------------------------------
