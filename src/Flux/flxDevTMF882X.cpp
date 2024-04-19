@@ -177,7 +177,7 @@ void flxDevTMF882X::factory_calibration()
 }
 
 // GETTER methods for output params
-bool flxDevTMF882X::read_confidence(flxDataArrayUint *conf)
+bool flxDevTMF882X::read_confidence(flxDataArrayUInt32 *conf)
 {
     static uint32_t theConfidence[TMF882X_MAX_MEAS_RESULTS] = {0};
 
@@ -206,7 +206,7 @@ bool flxDevTMF882X::read_confidence(flxDataArrayUint *conf)
 
     return true;
 }
-bool flxDevTMF882X::read_distance(flxDataArrayUint *dist)
+bool flxDevTMF882X::read_distance(flxDataArrayUInt32 *dist)
 {
     static uint32_t theDistance[TMF882X_MAX_MEAS_RESULTS] = {0};
 
@@ -235,7 +235,7 @@ bool flxDevTMF882X::read_distance(flxDataArrayUint *dist)
 
     return true;
 }
-bool flxDevTMF882X::read_channel(flxDataArrayUint *chan)
+bool flxDevTMF882X::read_channel(flxDataArrayUInt32 *chan)
 {
     static uint32_t theChannel[TMF882X_MAX_MEAS_RESULTS] = {0};
 
@@ -264,7 +264,7 @@ bool flxDevTMF882X::read_channel(flxDataArrayUint *chan)
 
     return true;
 }
-bool flxDevTMF882X::read_sub_capture(flxDataArrayUint *sub)
+bool flxDevTMF882X::read_sub_capture(flxDataArrayUInt32 *sub)
 {
     static uint32_t theSubCapture[TMF882X_MAX_MEAS_RESULTS] = {0};
 
@@ -293,7 +293,7 @@ bool flxDevTMF882X::read_sub_capture(flxDataArrayUint *sub)
 
     return true;
 }
-uint flxDevTMF882X::read_photon_count()
+uint32_t flxDevTMF882X::read_photon_count()
 {
     if (!_photon_count)
     {
@@ -310,7 +310,7 @@ uint flxDevTMF882X::read_photon_count()
     _photon_count = false;
     return _results.photon_count;
 }
-uint flxDevTMF882X::read_ref_photon_count()
+uint32_t flxDevTMF882X::read_ref_photon_count()
 {
     if (!_ref_photon_count)
     {
@@ -327,7 +327,7 @@ uint flxDevTMF882X::read_ref_photon_count()
     _ref_photon_count = false;
     return _results.ref_photon_count;
 }
-uint flxDevTMF882X::read_ambient_light()
+uint32_t flxDevTMF882X::read_ambient_light()
 {
     if (!_ambient_light)
     {

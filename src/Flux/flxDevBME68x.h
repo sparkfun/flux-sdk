@@ -84,5 +84,5 @@ class flxDevBME68x : public flxDeviceI2CType<flxDevBME68x>, public Bme68x
     flxParameterOutFloat<flxDevBME68x, &flxDevBME68x::read_TemperatureC> temperatureC;
     flxParameterOutFloat<flxDevBME68x, &flxDevBME68x::read_Pressure> pressure;
     flxParameterOutFloat<flxDevBME68x, &flxDevBME68x::read_GasResistance> gasResistance;
-    flxParameterOutUint8<flxDevBME68x, &flxDevBME68x::read_Status> status;
+    flxParameterOutUInt8<flxDevBME68x, &flxDevBME68x::read_Status> status;
 };

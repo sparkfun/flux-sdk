@@ -69,6 +69,6 @@ class flxDevAMG8833 : public flxDeviceI2CType<flxDevAMG8833>, public GridEYE
     flxParameterOutFloat<flxDevAMG8833, &flxDevAMG8833::read_device_temperature_C> deviceTemperatureC;
     flxParameterOutArrayFloat<flxDevAMG8833, &flxDevAMG8833::read_pixel_temperatures> pixelTemperatures;
 
-    flxPropertyRWUint8<flxDevAMG8833, &flxDevAMG8833::get_frame_rate, &flxDevAMG8833::set_frame_rate> frameRate = {
+    flxPropertyRWUInt8<flxDevAMG8833, &flxDevAMG8833::get_frame_rate, &flxDevAMG8833::set_frame_rate> frameRate = {
         1, {{"1 Frame Per Second", 0}, {"10 Frames Per Second", 1}}};
 };

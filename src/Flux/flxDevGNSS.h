@@ -65,19 +65,19 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
 
   private:
     // methods used to get values for our output parameters
-    uint read_year();
-    uint read_month();
-    uint read_day();
-    uint read_hour();
-    uint read_min();
-    uint read_sec();
+    uint32_t read_year();
+    uint32_t read_month();
+    uint32_t read_day();
+    uint32_t read_hour();
+    uint32_t read_min();
+    uint32_t read_sec();
     double read_latitude();
     double read_longitude();
     double read_altitude();
     double read_altitude_msl();
-    uint read_siv();
-    uint read_fix();
-    uint read_carrier_soln();
+    uint32_t read_siv();
+    uint32_t read_fix();
+    uint32_t read_carrier_soln();
     float read_ground_speed();
     float read_heading();
     float read_pdop();
@@ -96,39 +96,40 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
     void factory_default();
 
     // methods to get/set our read-write properties
-    uint get_measurement_rate();
-    void set_measurement_rate(uint);
+    uint32_t get_measurement_rate();
+    void set_measurement_rate(uint32_t);
 
     void jobHandlerCB(void);
     flxJob _theJob;
 
   public:
     // Define our read-write properties
-    flxPropertyRWUint<flxDevGNSS, &flxDevGNSS::get_measurement_rate, &flxDevGNSS::set_measurement_rate> measurementRate;
+    flxPropertyRWUInt32<flxDevGNSS, &flxDevGNSS::get_measurement_rate, &flxDevGNSS::set_measurement_rate>
+        measurementRate;
 
     // Define our input parameters - specify the write functions to call.
     flxParameterInVoid<flxDevGNSS, &flxDevGNSS::factory_default> factoryDefault;
 
     // Define our output parameters - specify the read functions to call.
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_year> year;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_month> month;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_day> day;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_hour> hour;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_min> min;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_sec> sec;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_year> year;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_month> month;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_day> day;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_hour> hour;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_min> min;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_sec> sec;
     flxParameterOutDouble<flxDevGNSS, &flxDevGNSS::read_latitude> latitude;
     flxParameterOutDouble<flxDevGNSS, &flxDevGNSS::read_longitude> longitude;
     flxParameterOutDouble<flxDevGNSS, &flxDevGNSS::read_altitude> altitude;
     flxParameterOutDouble<flxDevGNSS, &flxDevGNSS::read_altitude_msl> altitudeMSL;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_siv> SIV;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_fix> fixType;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_carrier_soln> carrierSolution;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_siv> SIV;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_fix> fixType;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_carrier_soln> carrierSolution;
     flxParameterOutFloat<flxDevGNSS, &flxDevGNSS::read_ground_speed> groundSpeed;
     flxParameterOutFloat<flxDevGNSS, &flxDevGNSS::read_heading> heading;
     flxParameterOutFloat<flxDevGNSS, &flxDevGNSS::read_pdop> PDOP;
     flxParameterOutFloat<flxDevGNSS, &flxDevGNSS::read_horiz_acc> horizontalAccEst;
     flxParameterOutFloat<flxDevGNSS, &flxDevGNSS::read_vert_acc> verticalAccEst;
-    flxParameterOutUint<flxDevGNSS, &flxDevGNSS::read_tow> TOW;
+    flxParameterOutUInt32<flxDevGNSS, &flxDevGNSS::read_tow> TOW;
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_iso8601> iso8601;
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_yyyy_mm_dd> YYYYMMDD;
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_yyyy_dd_mm> YYYYDDMM;
@@ -139,14 +140,14 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
 
     //-----------------------------------------------------
     // Clock interface methods -- so the GNSS reciever can be used as a time reference.
-    uint get_epoch(void)
+    uint32_t get_epoch(void)
     {
         uint32_t usec_t;
 
         return SFE_UBLOX_GNSS::getUnixEpoch(usec_t, 1);
     }
 
-    void set_epoch(const uint &refEpoch)
+    void set_epoch(const uint32_t &refEpoch)
     {
         // noop
     }

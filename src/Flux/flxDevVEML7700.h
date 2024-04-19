@@ -63,8 +63,8 @@ class flxDevVEML7700 : public flxDeviceI2CType<flxDevVEML7700>, public VEML7700
 
   private:
     // methods used to get values for our output parameters
-    uint read_ambient_light();
-    uint read_white_level();
+    uint32_t read_ambient_light();
+    uint32_t read_white_level();
     float read_lux();
 
     // methods to get/set our read-write properties
@@ -81,7 +81,7 @@ class flxDevVEML7700 : public flxDeviceI2CType<flxDevVEML7700>, public VEML7700
 
   public:
     // Define our read-write properties
-    flxPropertyRWUint8<flxDevVEML7700, &flxDevVEML7700::get_integration_time, &flxDevVEML7700::set_integration_time>
+    flxPropertyRWUInt8<flxDevVEML7700, &flxDevVEML7700::get_integration_time, &flxDevVEML7700::set_integration_time>
         integrationTime = {VEML7700_INTEGRATION_100ms,
                            {{"25ms", VEML7700_INTEGRATION_25ms},
                             {"50ms", VEML7700_INTEGRATION_50ms},
@@ -89,13 +89,13 @@ class flxDevVEML7700 : public flxDeviceI2CType<flxDevVEML7700>, public VEML7700
                             {"200ms", VEML7700_INTEGRATION_200ms},
                             {"400ms", VEML7700_INTEGRATION_400ms},
                             {"800ms", VEML7700_INTEGRATION_800ms}}};
-    flxPropertyRWUint8<flxDevVEML7700, &flxDevVEML7700::get_sensitivity, &flxDevVEML7700::set_sensitivity> sensitivity =
+    flxPropertyRWUInt8<flxDevVEML7700, &flxDevVEML7700::get_sensitivity, &flxDevVEML7700::set_sensitivity> sensitivity =
         {VEML7700_SENSITIVITY_x1,
          {{"x1", VEML7700_SENSITIVITY_x1},
           {"x2", VEML7700_SENSITIVITY_x2},
           {"x1/8", VEML7700_SENSITIVITY_x1_8},
           {"x1/4", VEML7700_SENSITIVITY_x1_4}}};
-    flxPropertyRWUint8<flxDevVEML7700, &flxDevVEML7700::get_persistence, &flxDevVEML7700::set_persistence> persistence =
+    flxPropertyRWUInt8<flxDevVEML7700, &flxDevVEML7700::get_persistence, &flxDevVEML7700::set_persistence> persistence =
         {VEML7700_PERSISTENCE_1,
          {{"x1", VEML7700_PERSISTENCE_1},
           {"x2", VEML7700_PERSISTENCE_2},
@@ -103,7 +103,7 @@ class flxDevVEML7700 : public flxDeviceI2CType<flxDevVEML7700>, public VEML7700
           {"x8", VEML7700_PERSISTENCE_8}}};
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint<flxDevVEML7700, &flxDevVEML7700::read_ambient_light> ambientLight;
-    flxParameterOutUint<flxDevVEML7700, &flxDevVEML7700::read_white_level> whiteLevel;
+    flxParameterOutUInt32<flxDevVEML7700, &flxDevVEML7700::read_ambient_light> ambientLight;
+    flxParameterOutUInt32<flxDevVEML7700, &flxDevVEML7700::read_white_level> whiteLevel;
     flxParameterOutFloat<flxDevVEML7700, &flxDevVEML7700::read_lux> lux;
 };

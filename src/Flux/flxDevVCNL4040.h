@@ -86,21 +86,25 @@ class flxDevVCNL4040 : public flxDeviceI2CType<flxDevVCNL4040>, public VCNL4040
 
   public:
     // Define our read-write properties
-    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_LED_current, &flxDevVCNL4040::set_LED_current> ledCurrent =
+    flxPropertyRWUInt8<flxDevVCNL4040, &flxDevVCNL4040::get_LED_current, &flxDevVCNL4040::set_LED_current> ledCurrent =
         {50, 200};
-    flxPropertyRWUint16<flxDevVCNL4040, &flxDevVCNL4040::get_IR_duty_cycle, &flxDevVCNL4040::set_IR_duty_cycle>
+
+    flxPropertyRWUInt16<flxDevVCNL4040, &flxDevVCNL4040::get_IR_duty_cycle, &flxDevVCNL4040::set_IR_duty_cycle>
         irDutyCycle = {40, 320};
-    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_integration_time,
+
+    flxPropertyRWUInt8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_integration_time,
                        &flxDevVCNL4040::set_proximity_integration_time>
         proximityIntegrationTime = {1, 8};
-    flxPropertyRWUint8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_resolution,
+
+    flxPropertyRWUInt8<flxDevVCNL4040, &flxDevVCNL4040::get_proximity_resolution,
                        &flxDevVCNL4040::set_proximity_resolution>
         proximityResolution = {16, {{"12-bit", 12}, {"16-bit", 16}}};
-    flxPropertyRWUint16<flxDevVCNL4040, &flxDevVCNL4040::get_ambient_integration_time,
+
+    flxPropertyRWUInt16<flxDevVCNL4040, &flxDevVCNL4040::get_ambient_integration_time,
                         &flxDevVCNL4040::set_ambient_integration_time>
         ambientIntegrationTime = {80, 640};
 
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint16<flxDevVCNL4040, &flxDevVCNL4040::read_proximity> proximity;
-    flxParameterOutUint16<flxDevVCNL4040, &flxDevVCNL4040::read_lux> lux;
+    flxParameterOutUInt16<flxDevVCNL4040, &flxDevVCNL4040::read_proximity> proximity;
+    flxParameterOutUInt16<flxDevVCNL4040, &flxDevVCNL4040::read_lux> lux;
 };

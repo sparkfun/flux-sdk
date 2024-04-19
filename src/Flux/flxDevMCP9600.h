@@ -80,16 +80,16 @@ class flxDevMCP9600 : public flxDeviceI2CType<flxDevMCP9600>, public MCP9600
 
   public:
     // property objs
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_AmbientResolution, &flxDevMCP9600::set_AmbientResolution>
+    flxPropertyRWUInt8<flxDevMCP9600, &flxDevMCP9600::get_AmbientResolution, &flxDevMCP9600::set_AmbientResolution>
         ambient_resolution = {RES_ZERO_POINT_0625, {{"0.0625", RES_ZERO_POINT_0625}, {"0.25", RES_ZERO_POINT_25}}};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleResolution,
+    flxPropertyRWUInt8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleResolution,
                        &flxDevMCP9600::set_ThermocoupleResolution>
         thermocouple_resolution = {
             RES_18_BIT,
             {{"18-bit", RES_18_BIT}, {"16-bit", RES_16_BIT}, {"14-bit", RES_14_BIT}, {"12-bit", RES_12_BIT}}};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleType, &flxDevMCP9600::set_ThermocoupleType>
+    flxPropertyRWUInt8<flxDevMCP9600, &flxDevMCP9600::get_ThermocoupleType, &flxDevMCP9600::set_ThermocoupleType>
         thermocouple_type = {TYPE_K,
                              {{"Type K", TYPE_K},
                               {"Type J", TYPE_J},
@@ -100,10 +100,10 @@ class flxDevMCP9600 : public flxDeviceI2CType<flxDevMCP9600>, public MCP9600
                               {"Type B", TYPE_B},
                               {"Type R", TYPE_R}}};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_FilterCoefficient, &flxDevMCP9600::set_FilterCoefficient>
+    flxPropertyRWUInt8<flxDevMCP9600, &flxDevMCP9600::get_FilterCoefficient, &flxDevMCP9600::set_FilterCoefficient>
         filter_coefficent = {0, 0, 7};
 
-    flxPropertyRWUint8<flxDevMCP9600, &flxDevMCP9600::get_BurstSamples, &flxDevMCP9600::set_BurstSamples>
+    flxPropertyRWUInt8<flxDevMCP9600, &flxDevMCP9600::get_BurstSamples, &flxDevMCP9600::set_BurstSamples>
         burst_samples = {SAMPLES_1,
                          {{"1", SAMPLES_1},
                           {"2", SAMPLES_2},

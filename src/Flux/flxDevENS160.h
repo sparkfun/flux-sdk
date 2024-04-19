@@ -85,8 +85,8 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     // method to manually set the humidity compensation value - above read method is used as getter
     void set_humid_comp(float);
 
-    void set_update_period(uint);
-    uint get_update_period(void);
+    void set_update_period(uint32_t);
+    uint32_t get_update_period(void);
     // Instance data
 
     // Operating mode -- used for startup  caching
@@ -105,7 +105,7 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
   public:
     // properties
     // Operating mode prop
-    flxPropertyRWUint8<flxDevENS160, &flxDevENS160::get_operating_mode, &flxDevENS160::set_operating_mode>
+    flxPropertyRWUInt8<flxDevENS160, &flxDevENS160::get_operating_mode, &flxDevENS160::set_operating_mode>
         operatingMode = {
             SFE_ENS160_STANDARD,
             {{"Standard", SFE_ENS160_STANDARD}, {"Idle", SFE_ENS160_IDLE}, {"Deep Sleep", SFE_ENS160_DEEP_SLEEP}}};
@@ -114,7 +114,7 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
     flxPropertyBool<flxDevENS160> enableCompensation = true;
 
     // If a device is connected for comp values, update period in secs
-    flxPropertyRWUint<flxDevENS160, &flxDevENS160::get_update_period, &flxDevENS160::set_update_period>
+    flxPropertyRWUInt32<flxDevENS160, &flxDevENS160::get_update_period, &flxDevENS160::set_update_period>
         updatePeriodSecs = {kENS160DefaultCompUpdateTimeSecs, 5, 600};
 
     // properties to manually set / get the compensation values
@@ -123,10 +123,10 @@ class flxDevENS160 : public flxDeviceI2CType<flxDevENS160>, public SparkFun_ENS1
 
     // Define our output parameters - specify the get functions to call.
 
-    flxParameterOutUint8<flxDevENS160, &flxDevENS160::read_AQI> val_AQI;
-    flxParameterOutUint16<flxDevENS160, &flxDevENS160::read_TVOC> val_TVOC;
-    flxParameterOutUint16<flxDevENS160, &flxDevENS160::read_ETOH> val_ETOH;
-    flxParameterOutUint16<flxDevENS160, &flxDevENS160::read_ECO2> val_ECO2;
+    flxParameterOutUInt8<flxDevENS160, &flxDevENS160::read_AQI> val_AQI;
+    flxParameterOutUInt16<flxDevENS160, &flxDevENS160::read_TVOC> val_TVOC;
+    flxParameterOutUInt16<flxDevENS160, &flxDevENS160::read_ETOH> val_ETOH;
+    flxParameterOutUInt16<flxDevENS160, &flxDevENS160::read_ECO2> val_ECO2;
     flxParameterOutFloat<flxDevENS160, &flxDevENS160::read_TempC> val_TempC;
     flxParameterOutFloat<flxDevENS160, &flxDevENS160::read_RH> val_RH;
 };

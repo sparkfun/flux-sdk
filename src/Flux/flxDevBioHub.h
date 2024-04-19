@@ -92,10 +92,10 @@ class flxDevBioHub : public flxDeviceI2CType<flxDevBioHub>, public SparkFun_Bio_
 
   public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutUint16<flxDevBioHub, &flxDevBioHub::read_heart_rate> heartRate;
-    flxParameterOutUint8<flxDevBioHub, &flxDevBioHub::read_confidence> confidence;
-    flxParameterOutUint16<flxDevBioHub, &flxDevBioHub::read_oxygen> O2;
-    flxParameterOutUint8<flxDevBioHub, &flxDevBioHub::read_status> status;
+    flxParameterOutUInt16<flxDevBioHub, &flxDevBioHub::read_heart_rate> heartRate;
+    flxParameterOutUInt8<flxDevBioHub, &flxDevBioHub::read_confidence> confidence;
+    flxParameterOutUInt16<flxDevBioHub, &flxDevBioHub::read_oxygen> O2;
+    flxParameterOutUInt8<flxDevBioHub, &flxDevBioHub::read_status> status;
     flxParameterOutInt8<flxDevBioHub, &flxDevBioHub::read_extended_status> eStatus;
     flxParameterOutFloat<flxDevBioHub, &flxDevBioHub::read_r_value> O2R;
 };

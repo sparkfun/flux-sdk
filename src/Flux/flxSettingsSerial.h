@@ -69,7 +69,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
     // Property for the timeout value in the menu system.
 
-    flxPropertyUint<flxSettingsSerial> menuTimeout = {
+    flxPropertyUInt32<flxSettingsSerial> menuTimeout = {
         kPromptTimeoutValueSec,
         {{"30 Seconds", 30}, {"60 Seconds", 60}, {"2 Minutes", 120}, {"5 Minutes", 300}, {"10 Minutes", 600}}};
 

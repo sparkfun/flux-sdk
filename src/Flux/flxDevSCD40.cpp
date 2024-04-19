@@ -119,7 +119,7 @@ bool flxDevSCD40::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint flxDevSCD40::read_CO2()
+uint32_t flxDevSCD40::read_CO2()
 {
     if (_co2 == false)
     {
@@ -166,7 +166,7 @@ bool flxDevSCD40::get_auto_calibrate()
     return enable;
 }
 
-uint flxDevSCD40::get_altitude_compensation()
+uint32_t flxDevSCD40::get_altitude_compensation()
 {
     SCD4x::stopPeriodicMeasurement();
     uint altitude = SCD4x::getSensorAltitude();
@@ -189,7 +189,7 @@ void flxDevSCD40::set_auto_calibrate(bool enable)
     SCD4x::startPeriodicMeasurement();
 }
 
-void flxDevSCD40::set_altitude_compensation(uint compensation)
+void flxDevSCD40::set_altitude_compensation(uint32_t compensation)
 {
     SCD4x::stopPeriodicMeasurement();
     SCD4x::setSensorAltitude(compensation);

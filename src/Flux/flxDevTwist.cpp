@@ -111,7 +111,7 @@ bool flxDevTwist::read_button_state()
         return _toggle_state;
 }
 
-int flxDevTwist::get_twist_count()
+int32_t flxDevTwist::get_twist_count()
 {
     return _last_count;
 }

@@ -61,7 +61,7 @@ class flxFormatCSV : public flxOutputFormat
     }
 
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, int value)
+    void logValue(const std::string &tag, int32_t value)
     {
         // header?
         writeHeaderEntry(tag);
@@ -94,7 +94,7 @@ class flxFormatCSV : public flxOutputFormat
     }
 
     //-----------------------------------------------------------------
-    void logValue(const std::string &tag, uint value)
+    void logValue(const std::string &tag, uint32_t value)
     {
         // header?
         writeHeaderEntry(tag);
@@ -181,25 +181,25 @@ class flxFormatCSV : public flxOutputFormat
         writeOutArray(value);
     }
 
-    void logValue(const std::string &tag, flxDataArrayInt *value)
+    void logValue(const std::string &tag, flxDataArrayInt32 *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, flxDataArrayUint8 *value)
+    void logValue(const std::string &tag, flxDataArrayUInt8 *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, flxDataArrayUint16 *value)
+    void logValue(const std::string &tag, flxDataArrayUInt16 *value)
     {
         // header
         writeHeaderEntry(tag);
         writeOutArray(value);
     }
-    void logValue(const std::string &tag, flxDataArrayUint *value)
+    void logValue(const std::string &tag, flxDataArrayUInt32 *value)
     {
         // header
         writeHeaderEntry(tag);

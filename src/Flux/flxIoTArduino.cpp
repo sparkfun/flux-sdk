@@ -442,10 +442,10 @@ void flxIoTArduino::freeVariableMap(void)
         {
             switch (it.second->type)
             {
-            case flxTypeUInt:
+            case flxTypeUInt32:
                 delete (CloudUnsignedInt *)it.second->variable;
                 break;
-            case flxTypeInt:
+            case flxTypeInt32:
                 delete (CloudInt *)it.second->variable;
                 break;
             case flxTypeBool:
@@ -488,9 +488,9 @@ bool flxIoTArduino::linkToCloudVariable(char *szNameBuffer, uint32_t hash_id, fl
 
     bool status = false;
 
-    if (dataType == flxTypeUInt)
+    if (dataType == flxTypeUInt32)
         status = registerArduinoVariable<CloudUnsignedInt>(szNameBuffer, pValue);
-    else if (dataType == flxTypeInt)
+    else if (dataType == flxTypeInt32)
         status = registerArduinoVariable<CloudInt>(szNameBuffer, pValue);
     else if (dataType == flxTypeBool)
         status = registerArduinoVariable<CloudBool>(szNameBuffer, pValue);
@@ -552,8 +552,8 @@ bool flxIoTArduino::createArduinoIoTVariable(char *szNameBuffer, uint32_t hash_i
         // note - low level types seem limited in the IoT cloud space
         switch (dataType)
         {
-        case flxTypeUInt:
-        case flxTypeInt:
+        case flxTypeUInt32:
+        case flxTypeInt32:
         case flxTypeBool:
             jDoc["type"] = "INT";
             break;
@@ -624,18 +624,18 @@ flxDataType_t flxIoTArduino::getValueType(JsonPair &kv)
         return flxTypeString;
 
     else if (kv.value().is<signed int>())
-        return flxTypeInt;
+        return flxTypeInt32;
     else if (kv.value().is<signed short>())
-        return flxTypeInt;
+        return flxTypeInt32;
     else if (kv.value().is<signed long>())
-        return flxTypeInt;
+        return flxTypeInt32;
 
     else if (kv.value().is<unsigned int>())
-        return flxTypeUInt;
+        return flxTypeUInt32;
     else if (kv.value().is<unsigned short>())
-        return flxTypeUInt;
+        return flxTypeUInt32;
     else if (kv.value().is<unsigned long>())
-        return flxTypeUInt;
+        return flxTypeUInt32;
 
     else if (kv.value().is<bool>())
         return flxTypeBool;
@@ -665,11 +665,11 @@ void flxIoTArduino::updateArduinoIoTVariable(flxIoTArduinoVar_t *value, JsonPair
         *((CloudBool *)value->variable) = kv.value().as<bool>();
         break;
 
-    case flxTypeInt:
+    case flxTypeInt32:
         *((CloudInt *)value->variable) = kv.value().as<signed int>();
         break;
 
-    case flxTypeUInt:
+    case flxTypeUInt32:
         *((CloudUnsignedInt *)value->variable) = kv.value().as<unsigned int>();
         break;
 

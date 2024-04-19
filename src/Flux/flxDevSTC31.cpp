@@ -153,7 +153,7 @@ void flxDevSTC31::write_temperature(const float &temperature)
 {
     STC3x::setTemperature(temperature);
 }
-void flxDevSTC31::write_pressure(const uint &pressure)
+void flxDevSTC31::write_pressure(const uint32_t &pressure)
 {
     STC3x::setPressure(pressure);
 }

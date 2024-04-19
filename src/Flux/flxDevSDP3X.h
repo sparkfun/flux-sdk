@@ -79,10 +79,10 @@ class flxDevSDP3X : public flxDeviceI2CType<flxDevSDP3X>, public SDP3X
     bool _measAvg = false;
 
   public:
-    flxPropertyRWUint8<flxDevSDP3X, &flxDevSDP3X::get_temperature_compensation,
+    flxPropertyRWUInt8<flxDevSDP3X, &flxDevSDP3X::get_temperature_compensation,
                        &flxDevSDP3X::set_temperature_compensation>
         temperatureCompensation = {1, {{"Differential Pressure", 0}, {"Mass Flow", 1}}};
-    flxPropertyRWUint8<flxDevSDP3X, &flxDevSDP3X::get_measurement_averaging, &flxDevSDP3X::set_measurement_averaging>
+    flxPropertyRWUInt8<flxDevSDP3X, &flxDevSDP3X::get_measurement_averaging, &flxDevSDP3X::set_measurement_averaging>
         measurementAveraging = {0, {{"Disabled", 0}, {"Enabled", 1}}};
 
     // Define our output parameters - specify the get functions to call.

@@ -20,12 +20,12 @@
 class flxTimer : public flxActionType<flxTimer>
 {
 
-    uint get_interval(void)
+    uint32_t get_interval(void)
     {
         return _timerJob.period();
     }
 
-    void set_interval(uint in_interval)
+    void set_interval(uint32_t in_interval)
     {
         if (_timerJob.period() == in_interval)
             return;
@@ -73,5 +73,5 @@ class flxTimer : public flxActionType<flxTimer>
     flxSignalVoid on_interval;
 
     // Property  - interval for the timer -- and set a default value of 10 seconds
-    flxPropertyRWUint<flxTimer, &flxTimer::get_interval, &flxTimer::set_interval> interval = {10000};
+    flxPropertyRWUInt32<flxTimer, &flxTimer::get_interval, &flxTimer::set_interval> interval = {10000};
 };

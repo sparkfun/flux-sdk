@@ -253,13 +253,13 @@ bool flxDevACS37800::read_pos_power_factor()
 
 // methods used to get values for our RW properties
 
-uint flxDevACS37800::get_number_of_samples()
+uint32_t flxDevACS37800::get_number_of_samples()
 {
     if (isInitialized())
         ACS37800::getNumberOfSamples(&_n);
     return _n;
 }
-void flxDevACS37800::set_number_of_samples(uint numSamples)
+void flxDevACS37800::set_number_of_samples(uint32_t numSamples)
 {
     _n = numSamples;
     if (isInitialized())

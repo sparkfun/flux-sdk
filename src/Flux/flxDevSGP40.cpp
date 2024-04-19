@@ -103,7 +103,7 @@ bool flxDevSGP40::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-int flxDevSGP40::read_voc()
+int32_t flxDevSGP40::read_voc()
 {
     return SGP40::getVOCindex(_RH, _temperature);
 }

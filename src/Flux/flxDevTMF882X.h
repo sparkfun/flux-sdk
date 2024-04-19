@@ -64,13 +64,13 @@ class flxDevTMF882X : public flxDeviceI2CType<flxDevTMF882X>, public SparkFun_TM
   private:
     // methods used to get values for our output parameters
     // Strictly, these should be uint32_t
-    bool read_confidence(flxDataArrayUint *);
-    bool read_distance(flxDataArrayUint *);
-    bool read_channel(flxDataArrayUint *);
-    bool read_sub_capture(flxDataArrayUint *);
-    uint read_photon_count();
-    uint read_ref_photon_count();
-    uint read_ambient_light();
+    bool read_confidence(flxDataArrayUInt32 *);
+    bool read_distance(flxDataArrayUInt32 *);
+    bool read_channel(flxDataArrayUInt32 *);
+    bool read_sub_capture(flxDataArrayUInt32 *);
+    uint32_t read_photon_count();
+    uint32_t read_ref_photon_count();
+    uint32_t read_ambient_light();
 
     // methods for our read-write properties
     uint16_t get_report_period();
@@ -95,15 +95,15 @@ class flxDevTMF882X : public flxDeviceI2CType<flxDevTMF882X>, public SparkFun_TM
   public:
     // Define our output parameters - specify the get functions to call.
     // Strictly, these should be uint32_t
-    flxParameterOutArrayUint<flxDevTMF882X, &flxDevTMF882X::read_confidence> confidence;
-    flxParameterOutArrayUint<flxDevTMF882X, &flxDevTMF882X::read_distance> distance;
-    flxParameterOutArrayUint<flxDevTMF882X, &flxDevTMF882X::read_channel> channel;
-    flxParameterOutArrayUint<flxDevTMF882X, &flxDevTMF882X::read_sub_capture> subCapture;
-    flxParameterOutUint<flxDevTMF882X, &flxDevTMF882X::read_photon_count> photonCount;
-    flxParameterOutUint<flxDevTMF882X, &flxDevTMF882X::read_ref_photon_count> refPhotonCount;
-    flxParameterOutUint<flxDevTMF882X, &flxDevTMF882X::read_ambient_light> ambientLight;
+    flxParameterOutArrayUInt32<flxDevTMF882X, &flxDevTMF882X::read_confidence> confidence;
+    flxParameterOutArrayUInt32<flxDevTMF882X, &flxDevTMF882X::read_distance> distance;
+    flxParameterOutArrayUInt32<flxDevTMF882X, &flxDevTMF882X::read_channel> channel;
+    flxParameterOutArrayUInt32<flxDevTMF882X, &flxDevTMF882X::read_sub_capture> subCapture;
+    flxParameterOutUInt32<flxDevTMF882X, &flxDevTMF882X::read_photon_count> photonCount;
+    flxParameterOutUInt32<flxDevTMF882X, &flxDevTMF882X::read_ref_photon_count> refPhotonCount;
+    flxParameterOutUInt32<flxDevTMF882X, &flxDevTMF882X::read_ambient_light> ambientLight;
 
-    flxPropertyRWUint16<flxDevTMF882X, &flxDevTMF882X::get_report_period, &flxDevTMF882X::set_report_period>
+    flxPropertyRWUInt16<flxDevTMF882X, &flxDevTMF882X::get_report_period, &flxDevTMF882X::set_report_period>
         reportPeriod = {460, 6, 460};
 
     flxParameterInVoid<flxDevTMF882X, &flxDevTMF882X::factory_calibration> factoryCalibration;

@@ -132,7 +132,7 @@ bool flxDevPASCO2V01::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint flxDevPASCO2V01::read_CO2()
+uint32_t flxDevPASCO2V01::read_CO2()
 {
     if (_theSensor == nullptr)
     {
@@ -173,17 +173,17 @@ bool flxDevPASCO2V01::get_auto_calibrate()
     return _autoCalibrate;
 }
 
-uint flxDevPASCO2V01::get_calibration_reference()
+uint32_t flxDevPASCO2V01::get_calibration_reference()
 {
     return _calibrationReference;
 }
 
-uint flxDevPASCO2V01::get_pressure_reference()
+uint32_t flxDevPASCO2V01::get_pressure_reference()
 {
     return _pressureReference;
 }
 
-uint flxDevPASCO2V01::get_measurement_period()
+uint32_t flxDevPASCO2V01::get_measurement_period()
 {
     return _measurementPeriod;
 }
@@ -209,7 +209,7 @@ void flxDevPASCO2V01::set_auto_calibrate(bool enabled)
     }
 }
 
-void flxDevPASCO2V01::set_calibration_reference(uint reference)
+void flxDevPASCO2V01::set_calibration_reference(uint32_t reference)
 {
     if (_theSensor == nullptr)
     {
@@ -230,7 +230,7 @@ void flxDevPASCO2V01::set_calibration_reference(uint reference)
     }
 }
 
-void flxDevPASCO2V01::set_pressure_reference(uint reference)
+void flxDevPASCO2V01::set_pressure_reference(uint32_t reference)
 {
     if (_theSensor == nullptr)
     {
@@ -249,7 +249,7 @@ void flxDevPASCO2V01::set_pressure_reference(uint reference)
     }
 }
 
-void flxDevPASCO2V01::set_measurement_period(uint period)
+void flxDevPASCO2V01::set_measurement_period(uint32_t period)
 {
     if (_theSensor == nullptr)
     {

@@ -96,10 +96,10 @@ template <typename TB, typename... ArgT> class flxSignal : public flxSignalBase
 typedef flxSignal<bool, bool> flxSignalBool;
 typedef flxSignal<int8_t, int8_t> flxSignalInt8;
 typedef flxSignal<int16_t, int16_t> flxSignalInt16;
-typedef flxSignal<int, int> flxSignalInt;
+typedef flxSignal<int32_t, int32_t> flxSignalInt32;
 typedef flxSignal<uint8_t, uint8_t> flxSignalUInt8;
 typedef flxSignal<uint16_t, uint16_t> flxSignalUInt16;
-typedef flxSignal<uint, uint> flxSignalUInt;
+typedef flxSignal<uint32_t, uint32_t> flxSignalUInt32;
 typedef flxSignal<float, float> flxSignalFloat;
 typedef flxSignal<double, double> flxSignalDouble;
 typedef flxSignal<const char *, const char *> flxSignalString;

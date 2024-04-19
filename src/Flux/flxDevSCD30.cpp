@@ -110,7 +110,7 @@ bool flxDevSCD30::onInitialize(TwoWire &wirePort)
 }
 
 // GETTER methods for output params
-uint flxDevSCD30::read_CO2()
+uint32_t flxDevSCD30::read_CO2()
 {
     return SCD30::getCO2();
 }
@@ -128,12 +128,12 @@ float flxDevSCD30::read_humidity()
 //----------------------------------------------------------------------------------------------------------
 // RW Properties
 
-uint flxDevSCD30::get_measurement_interval()
+uint32_t flxDevSCD30::get_measurement_interval()
 {
     return SCD30::getMeasurementInterval();
 }
 
-uint flxDevSCD30::get_altitude_compensation()
+uint32_t flxDevSCD30::get_altitude_compensation()
 {
     return SCD30::getAltitudeCompensation();
 }
@@ -143,12 +143,12 @@ float flxDevSCD30::get_temperature_offset()
     return SCD30::getTemperatureOffset();
 }
 
-void flxDevSCD30::set_measurement_interval(uint interval)
+void flxDevSCD30::set_measurement_interval(uint32_t interval)
 {
     SCD30::setMeasurementInterval(interval);
 }
 
-void flxDevSCD30::set_altitude_compensation(uint compensation)
+void flxDevSCD30::set_altitude_compensation(uint32_t compensation)
 {
     SCD30::setAltitudeCompensation(compensation);
 }

@@ -69,6 +69,6 @@ class flxDevFS3000 : public flxDeviceI2CType<flxDevFS3000>, public FS3000
     flxParameterOutFloat<flxDevFS3000, &flxDevFS3000::read_mps> flow_mps;
     flxParameterOutFloat<flxDevFS3000, &flxDevFS3000::read_mph> flow_mph;
 
-    flxPropertyRWUint8<flxDevFS3000, &flxDevFS3000::get_fs3000_version, &flxDevFS3000::set_fs3000_version>
+    flxPropertyRWUInt8<flxDevFS3000, &flxDevFS3000::get_fs3000_version, &flxDevFS3000::set_fs3000_version>
         fs3000version = {1, {{"FS3000_1005", 1}, {"FS3000_1015", 0}}};
 };
