@@ -5,13 +5,21 @@
 # flux_sdk_version()
 include(${CMAKE_CURRENT_LIST_DIR}/flux_sdk_version.cmake)
 
-
+# set language to NONE- disables compiler checks - too
+# project(${CMAKE_PROJECT_NAME} NONE)
 
 ############################################################################
 # flux_sdk_set_project_directory()
 #
 macro(flux_sdk_set_project_directory project_directory)
+
     set(PROJECT_FLUX_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${project_directory}/Flux)
+
+    if ( NOT EXISTS ${PROJECT_FLUX_DIRECTORY} )
+        message(STATUS "Creating directory: ${PROJECT_FLUX_DIRECTORY}")
+        file(MAKE_DIRECTORY ${PROJECT_FLUX_DIRECTORY})
+    endif()
+
 endmacro()
 ############################################################################
 # flux_sdk_add_module()

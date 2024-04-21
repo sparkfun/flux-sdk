@@ -20,11 +20,5 @@ if (NOT FLUX_SDK_PATH)
     endif()
 endif()
 
-
-if ( NOT EXISTS ${PROJECT_FLUX_DIRECTORY} )
-    message(STATUS "Creating directory: ${PROJECT_FLUX_DIRECTORY}")
-    file(MAKE_DIRECTORY ${PROJECT_FLUX_DIRECTORY})
-endif()
-
 # crawl the flux-sdk directory and add all the subdirectories
 include(${FLUX_SDK_PATH}/flux_sdk_init.cmake)
