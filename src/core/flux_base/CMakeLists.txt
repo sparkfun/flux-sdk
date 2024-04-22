@@ -1,6 +1,5 @@
 # Add the source files for this directory
 flux_sdk_add_source_files(
-    Flux.h
     flxBusI2C.cpp
     flxBusI2C.h
     flxBusSPI.cpp
@@ -30,3 +29,6 @@ flux_sdk_add_source_files(
     flxUtils.cpp
     flxUtils.h
     spSpark.cpp)
+
+# the flux include file is special - its our hook for the Arduino "library" being created
+configure_file(Flux.h ${PROJECT_FLUX_DIRECTORY}/src COPYONLY)

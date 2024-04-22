@@ -19,11 +19,17 @@ endmacro ()
 #
 macro (flux_sdk_set_project_directory project_directory)
 
-    set(PROJECT_FLUX_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${project_directory}/Flux)
+    set(PROJECT_FLUX_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${project_directory}/SparkFun_Flux)
 
     if (NOT EXISTS ${PROJECT_FLUX_DIRECTORY})
         message(STATUS "Creating directory: ${PROJECT_FLUX_DIRECTORY}")
         file(MAKE_DIRECTORY ${PROJECT_FLUX_DIRECTORY})
+    endif ()
+    if (NOT EXISTS ${PROJECT_FLUX_DIRECTORY}/src)
+        file(MAKE_DIRECTORY ${PROJECT_FLUX_DIRECTORY}/src)
+    endif ()
+    if (NOT EXISTS ${PROJECT_FLUX_DIRECTORY}/src/Flux)
+        file(MAKE_DIRECTORY ${PROJECT_FLUX_DIRECTORY}/src/Flux)
     endif ()
 
 endmacro ()
@@ -52,7 +58,7 @@ endfunction ()
 macro (flux_sdk_add_source_files)
     set(list_var "${ARGN}")
     foreach (arg IN LISTS list_var)
-        configure_file(${arg} ${PROJECT_FLUX_DIRECTORY} COPYONLY)
+        configure_file(${arg} ${PROJECT_FLUX_DIRECTORY}/src/Flux COPYONLY)
     endforeach ()
 endmacro ()
 
