@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "Flux/flxCore.h"
-#include "Flux/flxDevice.h"
-
-#include "Flux/flxFlux.h"
+#include "flxCore.h"
+#include "flxDevice.h"
+#include "flxFlux.h"
