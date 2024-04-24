@@ -1,13 +1,13 @@
 
-# SparkFun Flux Framework
+# SparkFun flux-sdk
 
-Framework to simplify the development of embedded applications
+SDK and Framework to simplify the development of embedded applications
 
 ## Status -  In Development
 
-## Using Flux Framework
+## Using Flux SDK
 
-SparkFun Flux is a development framework/SDK intended for use as a component within other Firmware applications. As such, it's incorporated into other projects as an Arduino library. 
+The flux-sdk is a development framework/SDK intended for use as a component within other Firmware applications. As such, it's incorporated into other projects as an Arduino library. 
 
 To build firmware using Flux, see [Building with Flux](docs/build_with_flux.md)
 
