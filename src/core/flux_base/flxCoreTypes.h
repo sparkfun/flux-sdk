@@ -32,6 +32,13 @@
 // Simple class that can be mixed-in to add a common name and description string
 // to user "exposed" objects in the framework..
 
+/**
+ * @class flxDescriptor
+ * @brief Represents a descriptor object with name, description, and title.
+ *
+ * The `flxDescriptor` class provides methods to set and retrieve the name, description, and title of a descriptor
+ * object. It also supports allocating memory for the name, description, and title strings.
+ */
 class flxDescriptor
 {
   public:
@@ -40,7 +47,13 @@ class flxDescriptor
     {
     }
 
-    //-----------------------------------------------------------
+    /**
+     * @brief Set the Name object  - storing the pointer to the provided string No allocation is
+     * performed. If the previous name was allocated, it is freed.
+     *
+     * @param new_name[in] The new name for the object
+     */
+
     void setName(const char *new_name)
     {
 
@@ -54,15 +67,24 @@ class flxDescriptor
         _name = new_name;
     }
 
-    //-----------------------------------------------------------
+    /**
+     * @brief Set the Name object and the Description for the object. Both strings are constants
+     *
+     * @param[in] new_name The new name for the object - passed to the setName() method
+     * @param[in] new_desc The new description for the object - passed to the setDescription() method
+     */
     void setName(const char *new_name, const char *new_desc)
     {
         setName(new_name);
         setDescription(new_desc);
     }
 
-    //-----------------------------------------------------------
-    // Set name, but make a copy of the input name
+    /**
+     * @brief Set the Name object, but makes a copy of the input string since the input is not const.
+     * If the previous name was allocated, it is freed.
+     *
+     * @param[in] new_name The new name for the object
+     */
     void setName(char *new_name)
     {
         // clear out anything we currently have
@@ -85,19 +107,32 @@ class flxDescriptor
         _nameAlloc = true;
     }
 
-    //-----------------------------------------------------------
+    /**
+     * @brief Return a const char pointer to the name of the object.
+     *
+     * @return const char*
+     */
     const char *name()
     {
         return _name == nullptr ? "" : _name;
     }
 
-    //-----------------------------------------------------------
+    /**
+     * @brief Returns a std::string of the name of the object.
+     *
+     * @return std::string
+     */
     std::string name_(void)
     {
         return std::string(_name);
     }
 
-    //-----------------------------------------------------------
+    /**
+     * @brief Set the Description object - the input value is constant and not copied. If the previous
+     * description was allocated, it is freed.
+     *
+     * @param[in] new_desc A C string constant for the description
+     */
     void setDescription(const char *new_desc)
     {
         if (_descAlloc)
@@ -109,10 +144,12 @@ class flxDescriptor
         }
         _desc = new_desc;
     }
-    //-----------------------------------------------------------
-    // non const version - needs to allocate space for the value.
-    // Note - non-const => allocate
-    //
+    /**
+     * @brief Set the Description object - the input value is not constant and is copied.
+     * If the previous description was allocated, it is freed.
+     *
+     * @param[in] new_desc
+     */
     void setDescription(char *new_desc)
     {
         // clear out anything we currently have
@@ -135,20 +172,32 @@ class flxDescriptor
         _descAlloc = true;
     }
 
-    //-----------------------------------------------------------
+    /**
+     * @brief Return the constant C string pointer to the description of the object.
+     *
+     * @return const char*
+     */
     const char *description()
     {
         return _desc == nullptr ? "" : _desc;
     }
 
-    //-----------------------------------------------------------
+    /**
+     * @brief Return the description of the object as a std::string.
+     *
+     * @return std::string
+     */
     std::string description_(void)
     {
         return std::string(_desc);
     }
 
-    //-----------------------------------------------------------
-    // Title - mostly used for UX/Org structure
+    /**
+     * @brief Set the Title object - the title is optional and is used mostly for UX or organizational purposes.
+     * The input value is constant and not copied. If the previous title was allocated, it is freed.
+     *
+     * @param[in] title  - A C string constant for the title
+     */
     void setTitle(const char *title)
     {
         if (_titleAlloc)
@@ -162,6 +211,11 @@ class flxDescriptor
     }
     //-----------------------------------------------------------
     // Set description, but make a copy of the input title
+    /**
+     * @brief Set the Title of the object , but make an explict copy of the provided string
+     *
+     * @param[in] new_title
+     */
     void setTitleAlloc(char *new_title)
     {
         // clear out anything we currently have
@@ -183,7 +237,12 @@ class flxDescriptor
         _title = (const char *)pTmp;
         _titleAlloc = true;
     }
-    //-----------------------------------------------------------
+
+    /**
+     * @brief Return the C constant string pointer to the title of the object.
+     *
+     * @return const char*
+     */
     const char *title(void)
     {
         return _title;
@@ -200,8 +259,15 @@ class flxDescriptor
     bool _titleAlloc;
 };
 
-// The number used for the datatype codes is based on the sizeof() value and other attributes determined at compile
-// time. This is something picked up from the NVS system of esp32 - solid hack.
+/**
+ * @brief Enumeration of data types - used throughout the framework.
+ *
+ * @note: The number used for the datatype codes is based on the sizeof() value and other attributes determined at
+compile
+// time.
+ *
+ * This is something picked up from the NVS system of esp32 - solid hack.
+ */
 enum flxDataType_t : std::uint8_t
 {
     flxTypeNone = 0x00,
@@ -217,6 +283,17 @@ enum flxDataType_t : std::uint8_t
     flxTypeString = 0x21
 };
 
+/*******************************************************************************
+ * @brief A constexpr function that returns the flxDataType_t value for a given type.
+ * This version focuses on integral types (non floating point).
+ *
+ * As a constexpr function, this function can be used at compile time to determine the flxDataType_t
+ * value for a given type.
+ *
+ * @tparam T
+ * @tparam std::enable_if<std::is_integral<T>::value, void *>::type
+ * @return constexpr flxDataType_t
+ */
 template <typename T, typename std::enable_if<std::is_integral<T>::value, void *>::type = nullptr>
 constexpr flxDataType_t flxGetTypeOf()
 {
@@ -225,34 +302,94 @@ constexpr flxDataType_t flxGetTypeOf()
                : (static_cast<flxDataType_t>(((std::is_signed<T>::value) ? 0x10 : 0x00) | sizeof(T)));
 }
 
+/*******************************************************************************
+ * @brief A constexpr function that returns the flxDataType_t value for a given type.
+ * This version focuses on floating types.
+ *
+ * As a constexpr function, this function can be used at compile time to determine the flxDataType_t
+ * value for a given type.
+ *
+ * @tparam T
+ * @tparam std::enable_if<std::is_floating_point<T>::value, void *>::type
+ * @return constexpr flxDataType_t
+ */
+
 template <typename T, typename std::enable_if<std::is_floating_point<T>::value, void *>::type = nullptr>
 constexpr flxDataType_t flxGetTypeOf()
 {
     return static_cast<flxDataType_t>(0x20 | sizeof(T));
 }
+
+/*******************************************************************************
+ * @brief A constexpr function that returns the flxDataType_t value for a given type.
+ * This version focuses on string types.
+ *
+ * As a constexpr function, this function can be used at compile time to determine the flxDataType_t
+ * value for a given type.
+ *
+ * @tparam T
+ * @tparam std::enable_if<std::is_same<char *, T>::value, void *>::type
+ * @return constexpr flxDataType_t
+ */
 template <typename T, typename std::enable_if<std::is_same<char *, T>::value, void *>::type = nullptr>
 constexpr flxDataType_t flxGetTypeOf()
 {
     return flxTypeString;
 }
 
+/*******************************************************************************
+ * @brief A constexpr function that returns the flxDataType_t value for a given type.
+ * This version focuses on const string types.
+ *
+ * As a constexpr function, this function can be used at compile time to determine the flxDataType_t
+ * value for a given type.
+ *
+ * @tparam T
+ * @tparam std::enable_if<std::is_same<const char *, T>::value, void *>::type
+ * @return constexpr flxDataType_t
+ */
 template <typename T, typename std::enable_if<std::is_same<const char *, T>::value, void *>::type = nullptr>
 constexpr flxDataType_t flxGetTypeOf()
 {
     return flxTypeString;
 }
 
+/*******************************************************************************
+ * @brief A constexpr function that returns the flxDataType_t value for a given type.
+ * This version focuses on std::string types.
+ *
+ * As a constexpr function, this function can be used at compile time to determine the flxDataType_t
+ * value for a given type.
+ *
+ * @tparam T
+ * @tparam std::enable_if<std::is_same<std::string, T>::value, void *>::type
+ * @return constexpr flxDataType_t
+ */
 template <typename T, typename std::enable_if<std::is_same<std::string, T>::value, void *>::type = nullptr>
 constexpr flxDataType_t flxGetTypeOf()
 {
     return flxTypeString;
 }
 
+/*******************************************************************************
+ * @brief A constexpr function that returns the flxDataType_t value for a given type.
+ * This version handles all types, calling a templated version of the function based on the input type.
+ *
+ * As a constexpr function, this function can be used at compile time to determine the flxDataType_t
+ * value for a given type.
+ *
+ * @tparam T
+ * @tparam std::enable_if<std::is_same<const std::string, T>::value, void *>::type
+ * @return constexpr flxDataType_t
+ */
 template <typename T> constexpr flxDataType_t flxGetTypeOf(const T &)
 {
     return flxGetTypeOf<T>();
 }
-// helpful data types
+/**
+ * @brief A union that can hold any of the basic data types used in the framework.
+ *
+ */
 typedef union {
     bool b;
     int8_t i8;
@@ -265,7 +402,13 @@ typedef union {
     double d;
     const char *str;
 } flxDataAllType_t;
-
+/**
+ * @brief A class that can hold any of the basic data types used in the framework. It supports the
+ * getting and setting of values based on type. Additionally it can check quality (based on type and value) and
+ * convert the value to a string.
+ *
+ * @note This class does not provide any type of type conversion.
+ */
 class flxDataVariable
 {
   public:
@@ -458,12 +601,20 @@ class flxDataVariable
     };
 };
 
+/**
+ * @brief Return the name of the data type as a constant string.
+ *
+ * @param type The datatype to get the name of.
+ * @return const char*
+ */
 const char *flxGetTypeName(flxDataType_t type);
 
-//----------------------------------------------------------------------------------------
-// Array variable/data type.
-
 // Basic interface
+/**
+ * @brief This class is used as a base class for the templated array classes.
+ *
+ * @note Currently the interface only supports up to 3 dimensions.
+ */
 class flxDataArray
 {
 
@@ -476,25 +627,31 @@ class flxDataArray
 
     virtual flxDataType_t type() = 0;
 
-    //--------------------------------------------------------------------
-    // number of dimensions
-
+    /**
+     * @brief Return the number of dimensions in the array.
+     *
+     * @return uint8_t
+     */
     uint8_t n_dimensions()
     {
         return _n_dims;
     };
-    //--------------------------------------------------------------------
-    // dimensions()
-    //
-    // Returns a pointer to the array's dimension array.
+
+    /**
+     * @brief Return a pointer to the array's dimensions array .
+     *
+     * @return uint16_t*
+     */
     uint16_t *dimensions()
     {
         return (uint16_t *)&_dimensions;
     }
-    //--------------------------------------------------------------------
-    // size()
-    //
-    // Total number of elements in the array
+
+    /**
+     * @brief Return the total number of elements in the array.
+     *
+     * @return size_t
+     */
     size_t size(void)
     {
         uint sum = 0;
@@ -535,9 +692,10 @@ class flxDataArray
     uint8_t _n_dims;
     uint16_t _dimensions[kMaxArrayDims];
 };
-// ----------------------------------------------------------------------
-// Type templated array class...
-//
+
+/**
+ * @brief A templated class to define an array class of a specific type.
+ */
 template <typename T> class flxDataArrayType : public flxDataArray
 {
 
@@ -551,19 +709,23 @@ template <typename T> class flxDataArrayType : public flxDataArray
         reset();
     }
 
-    //--------------------------------------------------------------------
-    // return the type of this array
-
+    /**
+     * @brief Return the data type of the array.
+     *
+     * @return flxDataType_t
+     */
     flxDataType_t type(void)
     {
         return flxGetTypeOf<T>();
     }
 
-    //--------------------------------------------------------------------
-    // set the array data and pass in dimensions - several variations of this method
-    //
-    // note - by default the no_copy flag is false, so a copy of the set data is made.
-
+    /**
+     * @brief Set the array data and pass in dimensions for the array
+     *
+     * @param data The array data pointer
+     * @param d0 The first dimension of the array
+     * @param no_copy If set, the data is not copied.
+     */
     void set(T *data, uint16_t d0, bool no_copy = false)
     {
         setDimensions(d0);
@@ -573,8 +735,14 @@ template <typename T> class flxDataArrayType : public flxDataArray
         }
     };
 
-    //--------------------------------------------------------------------
-
+    /**
+     * @brief Set the array data and pass in dimensions for the array
+     *
+     * @param data The array data pointer
+     * @param d0 The first dimension of the array
+     * @param d1 The second dimension of the array
+     * @param no_copy If set, the data is not copied.
+     */
     void set(T *data, uint16_t d0, uint16_t d1, bool no_copy = false)
     {
         setDimensions(d0, d1);
@@ -583,8 +751,16 @@ template <typename T> class flxDataArrayType : public flxDataArray
             reset();
         }
     };
-    //--------------------------------------------------------------------
 
+    /**
+     * @brief Set the array data and pass in dimensions for the array
+     *
+     * @param data The array data pointer
+     * @param d0 The first dimension of the array
+     * @param d1 The second dimension of the array
+     * @param d2 The third dimension of the array
+     * @param no_copy If set, the data is not copied.
+     */
     void set(T *data, uint16_t d0, uint16_t d1, uint16_t d2, bool no_copy = false)
     {
         setDimensions(d0, d1, d2);
@@ -594,9 +770,11 @@ template <typename T> class flxDataArrayType : public flxDataArray
         }
     };
 
-    //--------------------------------------------------------------------
-    // Return a pointer to the array data
-
+    /**
+     * @brief Return a pointer to the array data.
+     *
+     * @return T* Templated type pointer
+     */
     T *get()
     {
         return _data;
@@ -655,17 +833,47 @@ template <typename T> class flxDataArrayType : public flxDataArray
     T *_data;
 };
 
+/**
+ * @brief A boolean array class.
+ */
 using flxDataArrayBool = flxDataArrayType<bool>;
+/**
+ * @brief An int8_t array class.
+ */
 using flxDataArrayInt8 = flxDataArrayType<int8_t>;
+/**
+ * @brief An int16_t array class.
+ */
 using flxDataArrayInt16 = flxDataArrayType<int16_t>;
+/**
+ * @brief An int32_t array class.
+ */
 using flxDataArrayInt32 = flxDataArrayType<int32_t>;
+/**
+ * @brief A uint8_t array class.
+ */
 using flxDataArrayUInt8 = flxDataArrayType<uint8_t>;
+/**
+ * @brief A uint16_t array class.
+ */
 using flxDataArrayUInt16 = flxDataArrayType<uint16_t>;
+/**
+ * @brief A uint32_t array class.
+ */
 using flxDataArrayUInt32 = flxDataArrayType<uint32_t>;
+/**
+ * @brief A float array class.
+ */
 using flxDataArrayFloat = flxDataArrayType<float>;
+/**
+ * @brief A double array class.
+ */
 using flxDataArrayDouble = flxDataArrayType<double>;
 
 // strings are special ..
+/**
+ * @brief A string array class.
+ */
 class flxDataArrayString : public flxDataArrayType<char *>
 {
     //--------------------------------------------------------------------
@@ -722,129 +930,316 @@ class flxDataArrayString : public flxDataArrayType<char *>
 //----------------------------------------------------------------------------------------
 class flxStorage;
 //----------------------------------------------------------------------------------------
+/**
+ * @brief Defines a basic persistance interface for the framework.
+ *
+ */
 struct flxPersist
 {
 
     virtual bool save(flxStorage *) = 0;
     virtual bool restore(flxStorage *) = 0;
 };
-//----------------------------------------------------------------------------------------
-// flxDataOut
-//
-// Interface to get outputs from an object.
+
+/**
+ * @brief Defines the interface for getting data from an object.
+ *
+ */
 class flxDataOut
 {
 
   public:
+    /**
+     * @brief Return the type of the data.
+     *
+     * @return flxDataType_t
+     */
     virtual flxDataType_t type(void) = 0;
 
+    /**
+     * @brief Get the data as a boolean.
+     *
+     * @return bool
+     */
     virtual bool getBool() = 0;
+    /**
+     * @brief Get the data as an int8_t.
+     *
+     * @return int8_t
+     */
     virtual int8_t getInt8() = 0;
+    /**
+     * @brief Get the data as an int16_t.
+     *
+     * @return int16_t
+     */
     virtual int16_t getInt16() = 0;
+    /**
+     * @brief Get the data as an int32_t.
+     *
+     * @return int32_t
+     */
     virtual int32_t getInt32() = 0;
+    /**
+     * @brief Get the data as a uint8_t.
+     *
+     * @return uint8_t
+     */
     virtual uint8_t getUInt8() = 0;
+    /**
+     * @brief Get the data as a uint16_t.
+     *
+     * @return uint16_t
+     */
     virtual uint16_t getUInt16() = 0;
+    /**
+     * @brief Get the data as a uint32_t.
+     *
+     * @return uint32_t
+     */
     virtual uint32_t getUInt32() = 0;
+    /**
+     * @brief Get the data as a float.
+     *
+     * @return float
+     */
     virtual float getFloat() = 0;
+    /**
+     * @brief Get the data as a double.
+     *
+     * @return double
+     */
     virtual double getDouble() = 0;
+    /**
+     * @brief Get the data as a string.
+     *
+     * @return std::string
+     */
     virtual std::string getString() = 0;
 
+    /**
+     * @brief Get the value object as a bool
+     *
+     * @param bool value
+     * @return value as a bool
+     */
     bool get_value(bool)
     {
         return getBool();
     }
+    /**
+     * @brief Get the value object as an int8_t
+     *
+     * @param int8_t value
+     * @return value as an int8_t
+     */
     int8_t get_value(int8_t)
     {
         return getInt8();
     }
+    /**
+     * @brief Get the value object as an int16_t
+     *
+     * @param int16_t value
+     * @return value as an int16_t
+     */
     int16_t get_value(int16_t)
     {
         return getInt16();
     }
+    /**
+     * @brief Get the value object as an int32_t
+     *
+     * @param int32_t value
+     * @return value as an int32_t
+     */
     int32_t get_value(int32_t)
     {
         return getInt32();
     }
+    /**
+     * @brief Get the value object as a uint8_t
+     *
+     * @param uint8_t value
+     * @return value as a uint8_t
+     */
     uint8_t get_value(uint8_t)
     {
         return getUInt8();
     }
+    /**
+     * @brief Get the value object as a uint16_t
+     *
+     * @param uint16_t value
+     * @return value as a uint16_t
+     */
     uint16_t get_value(uint16_t)
     {
         return getUInt16();
     }
+    /**
+     * @brief Get the value object as a uint32_t
+     *
+     * @param uint32_t value
+     * @return value as a uint32_t
+     */
     uint32_t get_value(uint32_t)
     {
         return getUInt32();
     }
+    /**
+     * @brief Get the value object as a float
+     *
+     * @param float value
+     * @return value as a float
+     */
     float get_value(float)
     {
         return getFloat();
     }
+    /**
+     * @brief Get the value object as a double
+     *
+     * @param double value
+     * @return value as a double
+     */
     double get_value(double)
     {
         return getDouble();
     }
+    /**
+     * @brief Get the value object as a string
+     *
+     * @param std::string value
+     * @return value as a std::string
+     */
     std::string get_value(std::string)
     {
         return getString();
     }
 };
 
+/**
+ * @brief A template DataOut class that returns values of the templated type.
+ *
+ * @tparam T
+ */
 template <typename T> class _flxDataOut : public flxDataOut
 {
 
   public:
-    // Type of property
+    /**
+     * @brief Returns the data type of the object - based on the templated type.
+     *
+     * @return flxDataType_t
+     */
     flxDataType_t type(void)
     {
         return flxGetTypeOf<T>();
     };
 
+    /**
+     * @brief Get the value of the object as a templated type. A pure virtual method.
+     *
+     * @return T
+     */
     virtual T get(void) const = 0;
 
+    /**
+     * @brief Get the Bool value of the object
+     *
+     * @return the value of the object as a bool
+     */
     bool getBool()
     {
         return (bool)get();
     }
+    /**
+     * @brief Get the int8 value of the object
+     *
+     * @return the value of the object as an int8_t
+     */
     int8_t getInt8()
     {
         return (int8_t)get();
     }
+    /**
+     * @brief Get the int16 value of the object
+     *
+     * @return the value of the object as an int16_t
+     */
     int16_t getInt16()
     {
         return (int16_t)get();
     }
+    /**
+     * @brief Get the int32 value of the object
+     *
+     * @return the value of the object as an int32_t
+     */
     int32_t getInt32()
     {
         return (int32_t)get();
     }
+    /**
+     * @brief Get the uint8 value of the object
+     *
+     * @return the value of the object as a uint8_t
+     */
     uint8_t getUInt8()
     {
         return (uint8_t)get();
     }
+    /**
+     * @brief Get the uint16 value of the object
+     *
+     * @return the value of the object as a uint16_t
+     */
     uint16_t getUInt16()
     {
         return (uint16_t)get();
     }
+    /**
+     * @brief Get the uint32 value of the object
+     *
+     * @return the value of the object as a uint32_t
+     */
     uint32_t getUInt32()
     {
         return (uint32_t)get();
     }
+    /**
+     * @brief Get the float value of the object
+     *
+     * @return the value of the object as a float
+     */
     float getFloat()
     {
         return (float)get();
     }
+    /**
+     * @brief Get the double value of the object
+     *
+     * @return the value of the object as a double
+     */
     double getDouble()
     {
         return (double)get();
     }
+    /**
+     * @brief Get the string value of the object
+     *
+     * @return the value of the object as a std::string
+     */
     std::string getString()
     {
         T c = get();
         return flx_utils::to_string(c);
     }
-
+    /**
+     * @brief A public member that is of the type of this object. Handy for templated code.
+     *
+     */
     typedef T value_type; // might be handy in future
 };
 
