@@ -204,7 +204,7 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// @typedef flxIoTArduinoVar_t
+/// @struct flxIoTArduinoVar_t
 /// @brief Struct to hold a dynamically created Arduino Cloud variable
 ///
 typedef struct

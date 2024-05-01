@@ -51,7 +51,7 @@ class flxDescriptor
      * @brief Set the Name object  - storing the pointer to the provided string No allocation is
      * performed. If the previous name was allocated, it is freed.
      *
-     * @param new_name[in] The new name for the object
+     * @param[in] new_name The new name for the object
      */
 
     void setName(const char *new_name)
@@ -1023,7 +1023,7 @@ class flxDataOut
      * @param bool value
      * @return value as a bool
      */
-    bool get_value(bool)
+    bool get_value(bool b)
     {
         return getBool();
     }

@@ -1,4 +1,4 @@
-\defgroup module_properties Properties
+\addtogroup module_properties
 @{
 
 # Properties
@@ -7,7 +7,7 @@ Properties represent the "_settings_" for a particular object within the system.
 
 It's worth noting that properties don't reflect the input or output data from an object within the framework - this managed by _parameter_ objects.
 
-### Property Attributes
+## Property Attributes
 
 The following are key attributes of properties within the framework
 
@@ -17,7 +17,7 @@ The following are key attributes of properties within the framework
 * Property objects can act like a variable
 * Property objects allow introspection - they can be discovered and manipulated at runtime via software
 
-#### Property Types
+### Property Types
 
 The following types are available for properties
 
@@ -178,7 +178,7 @@ Where:
 * flxPropertyRWBool - bool property
 * flxPropertyRWInt8  - integer 8 property
 * flxPropertyRWInt16  - integer 16 property
-* flxPropertyRWInt32  - integer 32 property
+* flxPropertyRWInt32  - integer3 property
 * flxPropertyRWUInt8 - unsigned 8 integer
 * flxPropertyRWUInt16 - unsigned 16 integer
 * flxPropertyRWUInt32 - unsigned 32 integer

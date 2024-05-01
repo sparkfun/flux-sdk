@@ -716,10 +716,8 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
 
 // Create typed read/writer property objects - type and RW objects as super classes
 /**
- * @defgroup property_rw_classes Read/Write Property Classes
- *
+ * @addtogroup property_rw_classes
  * @{
- * @ingroup module_properties
  */
 
 /**
@@ -1615,10 +1613,8 @@ class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
 // Define typed properties
 
 /**
- * @defgroup property_classes Property Classes
- *
+ * @addtogroup property_classes
  * @{
- * @ingroup module_properties
  */
 
 /**
