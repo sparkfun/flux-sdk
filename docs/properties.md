@@ -1,3 +1,5 @@
+\defgroup module_properties Properties
+@{
 
 # Properties
 
@@ -22,10 +24,10 @@ The following types are available for properties
 * bool
 * int8
 * int16
-* int
+* int32
 * uint8
 * uint16
-* uint
+* uint32
 * float
 * double
 * string
@@ -59,7 +61,7 @@ For the framework, two types of property classes exist.
 
 For each of the above types, besides _normal_ property types that are visible and stored as is, there are three different attributes available:
 
-* Hidden - ```flxPropertyHidden<type>```, ```flxPropertyRWHidden<type>``` - The property isn't presented in menu systems, but can be used by an object to store/persist it's value. 
+* Hidden - ```flxPropertyHidden<type>```, ```flxPropertyRWHidden<type>``` - The property isn't presented in menu systems, but can be used by an object to store/persist it's value.
 * Secure - ```flxPropertySecure<type>```, ```flxPropertyRWSecure<type>``` -The value of the property is encrypted before saving the value. This value is only written internally (not to a public JSON file)
 * Secret - ```flxPropertySecret<type>```, ```flxPropertyRWSecret<type>``` - The value is _hidden_ and _secure_.
 
@@ -85,10 +87,10 @@ Available Property Types:
 * flxPropertyBool
 * flxPropertyInt8
 * flxPropertyInt16
-* flxPropertyInt
-* flxPropertyUint8
-* flxPropertyUint16
-* flxPropertyUint
+* flxPropertyInt32
+* flxPropertyUInt8
+* flxPropertyUInt16
+* flxPropertyUInt32
 * flxPropertyFloat
 * flxPropertyDouble
 * flxPropertyString
@@ -176,10 +178,10 @@ Where:
 * flxPropertyRWBool - bool property
 * flxPropertyRWInt8  - integer 8 property
 * flxPropertyRWInt16  - integer 16 property
-* flxPropertyRWInt  - integer property
-* flxPropertyRWUint8 - unsigned 8 integer
-* flxPropertyRWUint16 - unsigned 16 integer
-* flxPropertyRWUint - unsigned integer
+* flxPropertyRWInt32  - integer 32 property
+* flxPropertyRWUInt8 - unsigned 8 integer
+* flxPropertyRWUInt16 - unsigned 16 integer
+* flxPropertyRWUInt32 - unsigned 32 integer
 * flxPropertyRWFloat - float
 * flxPropertyRWDouble - double
 * flxPropertyRWString - string -> std::string
@@ -274,7 +276,7 @@ Note: If an initial value was set for the property, the value is passed to the _
 
 Data limits define restrictions on the values the input parameter accepts. There are two types of data limits: range and valid value sets.
 
-*Data Range*
+_Data Range_
 This represents the minimum and maximum values a input parameter will accept. The values can be specified at property definition (the preferred method) and also set at runtime.
 
 To set the range at parameter definition, just set the declared parameter to the range using a C++ initializer list ```{ min, max}```
@@ -311,7 +313,7 @@ For Example:
 
 This changes the data range accepted by the object and deletes any existing data limit.
 
-*Data Valid Value Set*
+_Data Valid Value Set_
 
 This represents data limit provides a defined set of valid values for the property. The limit is defined by a set of _name, value_ pairs that enable a human readable presentation for the values a property will accept. The values can be specified at property definition and also set at runtime.
 
@@ -367,3 +369,5 @@ Or for an entire parameter list:
 ```
 
 The values are added to the current valid value list. If a _ValidValue_ data limit was not in place when called, any current limit (i.e. range limit) is deleted and a valid value limit is put in place.
+
+@}
