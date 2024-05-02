@@ -721,11 +721,16 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
  */
 
 /**
- * @brief A boolean read/write property object that takes a getter and a setter method and the target object.
+ * @brief A boolean property object that calls provided methods to set/get the property value
  *
- * @tparam Object The containing object of this property
- * @tparam (Object::*_getter)() The method of Object to call when the property is read
- * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ * The value of the property is set and read via methods provided during instantiation of the property object.
+ * The setter method is called when the value is set on the property. The getter method is called to retrieve the
+ * value of the property. Using methods to set/get the property value allows for dynamic behavior of the property.
+ *
+ * @tparam Object The containing object of this property - implementor of the getter/setter methods
+ * @tparam (Object::*_getter)() A pointer to the method of Object to call when the property is read.
+ * The method must return a boolean value
+ * @tparam (Object::*_setter)(bool) A pointer to the method of Object to call when the property is set
  */
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
 class flxPropertyRWBool : public _flxPropertyTypedRW<bool, Object, _getter, _setter>
