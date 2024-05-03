@@ -1,7 +1,5 @@
-\addtogroup module_properties
-@{
 
-# Properties
+# Properties Overview {#properties_overview}
 
 Properties represent the "_settings_" for a particular object within the system. This property values describe their object, as well as how the object behaves/operates within the system.
 
@@ -369,5 +367,3 @@ Or for an entire parameter list:
 ```
 
 The values are added to the current valid value list. If a _ValidValue_ data limit was not in place when called, any current limit (i.e. range limit) is deleted and a valid value limit is put in place.
-
-@}

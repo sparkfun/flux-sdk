@@ -19,11 +19,11 @@ The new device class should subclass from the frameworks ```flxDevice``` class, 
 
 > Note - In some cases, because of the underlying Arduino Library design, an alternative > implementation pattern is required - such as object containment.
 
-##### Example of a class definition
+### Example of a class definition
 
 Implementing a driver for the `BME280` Device.
 
-```C++
+```cpp
 class flxDevBME280 : public flxDeviceI2CType<flxDevBME280>, public BME280
 {
 
@@ -38,12 +38,12 @@ To accomplish this task, class level (static) methods and data are implemented b
 
 |Item | Description|
 |----|--|
- ```bool isConnected(flxBusI2C, address)``` | Returns true if the device is connected |
- ```char* getDeviceName()``` | Returns the Device Name |
+| ```bool isConnected(flxBusI2C, address)``` | Returns true if the device is connected |
+| ```char* getDeviceName()``` | Returns the Device Name |
 |```uint8_t *getDefaultAddresses()``` | Return a list of addresses for the device. This list terminates with the value of ```kSparkDeviceAddressNull``` |
 |```flxDeviceConfidence_t connectedConfidence()``` | Returns the confidence level of the drivers ```isConnected()``` algorithm. Values supported range from *Exact* to *Ping* |
 
-Note
+> [!note]
 >
 >* Often the device implements the address list as a class level variable
 >* It is common to define a constant or macro for the device name and return it from ```getDeviceName()```
@@ -56,9 +56,9 @@ The first step for a given driver is the retrieval of default addresses for the 
 
 The system uses the array of addresses to determine what addresses are currently available, and call the ```isConnected()``` with the possible and available addresses until a connection is found, or it hits the end of the possible addresses for the device.
 
-##### Method Signature
+##### Method Signature {#device-address-method}
 
-```C++
+```cpp
 static const uint8_t *getDefaultAddresses();
 ```
 
@@ -68,9 +68,9 @@ For each of the addresses returned, the system calls the drivers ```isConnected(
 
 How the driver determines if a device is connected is determined by the implementation
 
-##### Method Signature
+##### Method Signature {#is-connected-method}
 
-```C++
+```cpp
 static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 ```
 
@@ -83,9 +83,9 @@ static bool isConnected(flxBusI2C &i2cDriver, uint8_t address);
 
 The static interface for the device also includes a method to return the name of the device.
 
-##### Method Signature
+##### Method Signature {#device-name-method}
 
-```C++
+```cpp
 static const char *getDeviceName()
 ```
 
@@ -97,19 +97,19 @@ This method returns the confidence level for the algorithm in the devices ```isC
 
 This confidence level is used to resolve detection conflicts between devices that support the same address on the I2C bus. Drivers that have a higher confidence level are evaluated first.
 
-#### Method Signature
+#### Method Signature {#confidence-level-method}
 
-```C++
+```cpp
 static flxDeviceConfidence_t connectedConfidence(void)
 ```
 
 The return value should be one of the following:
 
-|||
+| | |
 |---|---|
-```flxDevConfidenceExact``` | The algorithm can perform an exact match
-```flxDevConfidenceFuzzy``` | The algorithm has high-confidence in a match, but it's not exact
-```flxDevConfidencePing``` | An address "ping" is used - just detecting a device at a location, but not verifying the device type.
+|```flxDevConfidenceExact``` | The algorithm can perform an exact match|
+|```flxDevConfidenceFuzzy``` | The algorithm has high-confidence in a match, but it's not exact|
+|```flxDevConfidencePing``` | An address "ping" is used - just detecting a device at a location, but not verifying the device type.|
 
 > Note: Only one device with a PING confidence is allowed at an address.
 
@@ -119,7 +119,7 @@ This example is taken from the device driver for the BME280 device.
 
 The class definition - ```flxDevBME280.h```
 
-```C++
+```cpp
 // What is the name used to ID this device?
 #define kBME280DeviceName "bme280";
 
@@ -166,7 +166,7 @@ To complete the auto-discovery capabilities of the system, besides the implement
 
 This is call is placed before the class implementation and has the following signature:
 
-```C++
+```cpp
 flxRegisterDevice(DeviceClassName);
 ```
 
@@ -174,11 +174,12 @@ Where `DeviceClassName` is the class name of the device being registered.
 
 Once a device is registered, it is available for auto-detection and loading by the framework during the startup process of system.
 
-> Note: The ```flxRegisterDevice()``` call is a macro that defines a global object using a c++ template. The object is instantiated on system startup (all globals are), and in the constructor of the object, it registers itself with the device discovery system.
+> ![note]
+> The ```flxRegisterDevice()``` call is a macro that defines a global object using a c++ template. The object is instantiated on system startup (all globals are), and in the constructor of the object, it registers itself with the device discovery system.
 
 Building off the above BME280 example, the implementation looks like:
 
-```C++
+```cpp
 #define kBMEAddressDefault 0x77
 #define kBMEAddressAlt1 0x76
 
@@ -204,15 +205,15 @@ flxDevBME280::flxDevBME280()
 }
 ```
 
-Notes
-
-* This example includes the implementation of ```defaultDeviceAddress[]```, the class variable holding the addresses for the device.
-* The device is registered before the class constructor
-* In the constructor, the device identity is set, which is based of runtime conditions.
+> [!note]
+>
+> * This example includes the implementation of ```defaultDeviceAddress[]```, the class variable holding the addresses for the device.
+> * The device is registered before the class constructor
+> * In the constructor, the device identity is set, which is based of runtime conditions.
 
 The isConnected() method for this example is:
 
-```C++
+```cpp
 bool flxDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
 
@@ -223,17 +224,17 @@ bool flxDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 }
 ```
 
-Note
-
-* This is a static (has no `this` instance) and as such uses the methods on the passed in I2C bus driver to determine in a BME280 is connected to the system
+> [!note]
+>
+> * This is a static (has no `this` instance) and as such uses the methods on the passed in I2C bus driver to determine in a BME280 is connected to the system
 
 ### Startup Sequence
 
 The last part of implementing a device descriptor/driver class is the addition of an initialization method, named ``onInitialize()``.
 
-##### Method Signature
+#### Method Signature {#on-init-method}
 
-```C++
+```cpp
  bool onInitialize(TwoWire &);
  ```
 
@@ -241,7 +242,7 @@ The only argument to this methods is the Arduino I2C `TwoWire` class, which the 
 
 The BME280 example implementation:
 
-```C++
+```cpp
 bool flxDevBME280::onInitialize(TwoWire &wirePort)
 {
 
@@ -251,7 +252,8 @@ bool flxDevBME280::onInitialize(TwoWire &wirePort)
 }
 ```
 
-> Note: The ```address()``` method returns the device address for this instance of the driver.
+> [!note]
+> The ```address()``` method returns the device address for this instance of the driver.
 
 ### Determining if a Device is Initialized
 

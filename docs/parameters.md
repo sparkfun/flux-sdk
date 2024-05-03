@@ -1,11 +1,10 @@
-
-# Parameters
+# Parameters Overview  {#parameters_overview}
 
 Parameters represent the method to read or pass in a specific data  _value_ to an operation object  withing the SDK. Parameters can be thought of as the data values passed into or returned from a function call. Parameter objects provide a means to support dynamically discoverable input and output data for a particular operation within the framework.
 
 There are two types of Parameter objects with the framework: Input Parameters ("functions") and Output Parameters
 
-### Parameter Attributes
+## Parameter Attributes
 
 The following are key attributes of parameters within the framework
 
@@ -14,7 +13,7 @@ The following are key attributes of parameters within the framework
 * Parameter objects can act like a function
 * Parameter objects allow introspection - they can be discovered and manipulated at runtime via software
 
-#### Parameter Data Types
+### Parameter Data Types
 
 The following types are available for properties
 
@@ -126,7 +125,7 @@ Note
 
 Data limits define restrictions on the values the input parameter accepts. There are two types of data limits: range and valid value sets.
 
-*Data Range*
+_Data Range_
 This represents the minimum and maximum values a input parameter will accept. The values can be specified at parameter definition and also set at runtime.
 
 To set the range at parameter definition, just set the declared parameter to the range using a C++ initializer list ```{ min, max}```
@@ -151,7 +150,7 @@ Using the example parameter from above:
 
 This changes the data range accepted by the input parameter and deletes any existing data limit.
 
-*Data Valid Value Set*
+_Data Valid Value Set_
 This represents data limit provides a defined set of valid values for the input parameter. The limit is defined by a set of _name,value_ pairs that enable a human readable presentation for the values a input parameter will accept. The values can be specified at parameter definition and also set at runtime.
 
 To set the valid values at parameter definition, just set the declared parameter to the range using a C++ initializer list of name value pairs:  
