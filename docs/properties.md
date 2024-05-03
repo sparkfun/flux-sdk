@@ -15,7 +15,7 @@ The following are key attributes of properties within the framework
 * Property objects can act like a variable
 * Property objects allow introspection - they can be discovered and manipulated at runtime via software
 
-### Property Types
+## Property Types
 
 The following types are available for properties
 
@@ -30,7 +30,7 @@ The following types are available for properties
 * double
 * string
 
-#### Property Use
+### Property Use
 
 Setting an value:
 
@@ -48,14 +48,14 @@ Getting a value:
     value = anObject.property.get();
 ```
 
-### Defining a Property
+## Defining a Property
 
 For the framework, two types of property classes exist.
 
 * Standard Property - Defines a property that acts like a variable
 * Read/Write Property - Defines a property that calls a ```get()``` method on a value request and calls a ```set()``` method when it's value is set.
 
-#### Different Property "Kinds"
+### Different Property "Kinds"
 
 For each of the above types, besides _normal_ property types that are visible and stored as is, there are three different attributes available:
 
@@ -63,11 +63,11 @@ For each of the above types, besides _normal_ property types that are visible an
 * Secure - ```flxPropertySecure<type>```, ```flxPropertyRWSecure<type>``` -The value of the property is encrypted before saving the value. This value is only written internally (not to a public JSON file)
 * Secret - ```flxPropertySecret<type>```, ```flxPropertyRWSecret<type>``` - The value is _hidden_ and _secure_.
 
-### Standard Property Objects
+## Standard Property Objects
 
 These property objects define a typed property and provided storage for this property. As such, they act like a instance variable for their containment class.
 
-#### Declaring the Property
+### Declaring the Property
 
 Within the definition of the class the property is for, the property is defined using the following pattern:
 
@@ -93,7 +93,7 @@ Available Property Types:
 * flxPropertyDouble
 * flxPropertyString
 
-##### Example
+#### Example
 
 ```C++
 class MyClass : public flxObject
@@ -105,7 +105,7 @@ public:
 }
 ```
 
-#### Setting an Initial Value
+### Setting an Initial Value
 
 The initial value for a property can be set in it's declaration statement by assigning the desired value to the declared variable. The value is set using a standard C++ initialization list syntax - aka `{}` braces.
 
@@ -121,7 +121,7 @@ public:
 }
 ```
 
-#### Runtime Registration
+### Runtime Registration
 
 When an instance of the object that contains the property is created, the property is registered with that object using the ```flxRegister()``` function. This step connects the object instance with the property.
 
@@ -150,13 +150,13 @@ MyClass()
 
 > Internally, the flxRegister() call makes the containing object aware of the property object - adding it to an internal _property list_. This allows the system to enumerate properties at runtime as part of an introspection process.
 
-### Read/Write (RW) Property Objects
+## Read/Write (RW) Property Objects
 
 These property objects define a typed property and required a get and set method be provided to enable reading/writing of the property value.
 
 By calling methods on read and write of the property, the Read/Write property objects allow for the immediate, dynamic response to a property operation.
 
-#### Declaring Read/Write the Property
+### Declaring Read/Write the Property
 
 Within the definition of a class the property is for, the property is defined using the following pattern:
 
@@ -171,7 +171,7 @@ Where:
 * Getter - the name of the _get_ method the property should call when it's value is requested. **NOTE**: A reference, `& operator`, to the getter is provided
 * Setter - the name of the _set_ method the property should call when it's value is set.  **NOTE**: A reference, `& operator`, to the getter is provided
 
-##### Available Property Types
+#### Available Property Types
 
 * flxPropertyRWBool - bool property
 * flxPropertyRWInt8  - integer 8 property
@@ -184,7 +184,7 @@ Where:
 * flxPropertyRWDouble - double
 * flxPropertyRWString - string -> std::string
 
-##### Getter Methods
+#### Getter Methods
 
 These methods are implemented on the containing class and are called when the value of a property is requested. These methods have the following signature:
 
@@ -200,7 +200,7 @@ Where
 Note
 >By convention, getters method names are prefixed by ```get_```
 
-##### Setter Methods
+#### Setter Methods
 
 These methods are implemented on the containing class and are called when the value of a property is set. These methods have the following signature:
 
@@ -216,7 +216,7 @@ Where
 Note
 > By convention, getters method names are prefixed by ```set_```
 
-##### Example
+#### Example {#rw-props-example}
 
 ```C++
 class MyClass2 : public flxObject
@@ -239,7 +239,7 @@ Note
 > * The use of `set_` and `get_` prefixes on the setter and getter methods help identify the methods as supporting a property.
 > * If an initial value is set for a RW property it it's declaration statement, the _setter_ method called with the initial value when the property is registered via _flxRegister()_.
 
-#### RW Property Runtime Registration
+### RW Property Runtime Registration
 
 When an instance of the object that contains the property is created, the property is registered with that object using the ```flxRegister()``` function. This step connects the object instance with the property.
 
@@ -268,9 +268,9 @@ MyClass2()
 
 Note: If an initial value was set for the property, the value is passed to the _setter_ method as part of the registration process.
 
-### Property Data Limits
+## Property Data Limits
 
-#### Data Limit Values
+### Data Limit Values
 
 Data limits define restrictions on the values the input parameter accepts. There are two types of data limits: range and valid value sets.
 
