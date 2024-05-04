@@ -34,7 +34,7 @@ The following types are available for properties
 
 Setting an value:
 
-```c++
+```cpp
     anObject.property = value;
     anObject.property(value); 
     anObject.property.set(value);
@@ -42,7 +42,7 @@ Setting an value:
 
 Getting a value:
 
-```C++
+```cpp
     value = anObject.property;
     value = anObject.property();
     value = anObject.property.get();
@@ -71,7 +71,7 @@ These property objects define a typed property and provided storage for this pro
 
 Within the definition of the class the property is for, the property is defined using the following pattern:
 
-```C++
+```cpp
     flxPropertyType<ClassName>  property_name = {optional initial value, optional data limit};
 ```
 
@@ -95,7 +95,7 @@ Available Property Types:
 
 #### Example
 
-```C++
+```cpp
 class MyClass : public flxObject
 {
 public:
@@ -111,7 +111,7 @@ The initial value for a property can be set in it's declaration statement by ass
 
 In the above example, setting an initial value of 42 to _my_property_ looks like:
 
-```C++
+```cpp
 class MyClass : public flxObject
 {
 public:
@@ -127,7 +127,7 @@ When an instance of the object that contains the property is created, the proper
 
 The calling sequence for flxRegister is:
 
-```C++
+```cpp
     flxRegister(Object [, Name][,Description]);
 ```
 
@@ -139,7 +139,7 @@ Where:
 
 For the example above, the registration call looks like:
 
-```C++
+```cpp
 // MyClass Constructor
 MyClass()     
 {
@@ -160,7 +160,7 @@ By calling methods on read and write of the property, the Read/Write property ob
 
 Within the definition of a class the property is for, the property is defined using the following pattern:
 
-```C++
+```cpp
 flxPropertyRWType<ClassName, &ClassName::Getter, &ClassName::Setter>  property_name;
 ```
 
@@ -176,7 +176,7 @@ Where:
 * flxPropertyRWBool - bool property
 * flxPropertyRWInt8  - integer 8 property
 * flxPropertyRWInt16  - integer 16 property
-* flxPropertyRWInt32  - integer3 property
+* flxPropertyRWInt32  - integer32 property
 * flxPropertyRWUInt8 - unsigned 8 integer
 * flxPropertyRWUInt16 - unsigned 16 integer
 * flxPropertyRWUInt32 - unsigned 32 integer
@@ -188,7 +188,7 @@ Where:
 
 These methods are implemented on the containing class and are called when the value of a property is requested. These methods have the following signature:
 
-```C++
+```cpp
 property_type ClassName::get_Name(void);
 ```
 
@@ -204,7 +204,7 @@ Note
 
 These methods are implemented on the containing class and are called when the value of a property is set. These methods have the following signature:
 
-```C++
+```cpp
 void ClassName::set_Name(property_type value);
 ```
 
@@ -218,7 +218,7 @@ Note
 
 #### Example {#rw-props-example}
 
-```C++
+```cpp
 class MyClass2 : public flxObject
 {
 private:
@@ -232,7 +232,7 @@ public:
 }
 ```
 
-Note
+> [!note]
 >
 > * By convention the getters and setters are declared as private. This can be optional
 > * The getter and setter methods must be declared before defining the property
@@ -245,7 +245,7 @@ When an instance of the object that contains the property is created, the proper
 
 The calling sequence for flxRegister is:
 
-```C++
+```cpp
     flxRegister(Object [, Name][,Description]);
 ```
 
@@ -257,7 +257,7 @@ Where:
 
 For the example above, the registration call looks like:
 
-```C++
+```cpp
 // MyClass Constructor
 MyClass2()     
 {
@@ -283,7 +283,7 @@ Additionally, the method `clearDataLimit()` can be called to delete the current 
 
 A range examples for properties:
 
-```C++
+```cpp
     // System sleep properties
     flxPropertyUint<sfeDataLogger> sleepInterval = {5, 86400};
 
@@ -294,7 +294,7 @@ A range examples for properties:
 
 If providing an initial value, the declaration has the form ```{initial value, min, max}```.
 
-```C++
+```cpp
     // Define a Property with an initial value of
     // 1, and a range of -29 to 144
     flxPropertyInInt<MyClass, &MyClass::write_MyInput>  my_input = { 01, -28, 144 };
@@ -304,7 +304,7 @@ To set/change the range value at runtime, the method ```setDataLimitRange(min, m
 
 For Example:
 
-```C++
+```cpp
     // change the data range
     my_input.setDataLimitRange(100, 198);
 ```
@@ -317,7 +317,7 @@ This represents data limit provides a defined set of valid values for the proper
 
 To set the valid values at property definition, just set the declared property to the range using a C++ initializer list of name value pairs:  
 
-```
+```cpp
     {
         { NAME0, value0},
         { NAME1, value1},
@@ -327,7 +327,7 @@ To set the valid values at property definition, just set the declared property t
 
 An example of a Valid Value Set - note an initial value is provided in this example:
 
-```C++
+```cpp
 
     // Define our read-write properties
     // binaryGas is STC3X_binary_gas_type_e. Default is STC3X_BINARY_GAS_CO2_AIR_25
@@ -348,7 +348,7 @@ Additionally, the method `clearDataLimit()` can be called to delete the current 
 
 Simple Example:
 
-```C++
+```cpp
     // Add valid values ...
     my_property.addDataLimitValidValue("ONE K", 100.);
     my_property.addDataLimitValidValue("ONE K", 100.);    
@@ -356,7 +356,7 @@ Simple Example:
 
 Or for an entire parameter list:
 
-```C++
+```cpp
     my_property.addDataLimitValidValue( {
                                         {"Value One", 22},
                                         {"Value Two", 44},
