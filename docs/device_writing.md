@@ -111,7 +111,9 @@ The return value should be one of the following:
 |```flxDevConfidenceFuzzy``` | The algorithm has high-confidence in a match, but it's not exact|
 |```flxDevConfidencePing``` | An address "ping" is used - just detecting a device at a location, but not verifying the device type.|
 
-> Note: Only one device with a PING confidence is allowed at an address.
+> [!note]
+>
+> Only one device with a PING confidence is allowed at an address.
 
 #### Example Method Definition
 
@@ -173,9 +175,6 @@ flxRegisterDevice(DeviceClassName);
 Where `DeviceClassName` is the class name of the device being registered.
 
 Once a device is registered, it is available for auto-detection and loading by the framework during the startup process of system.
-
-> ![note]
-> The ```flxRegisterDevice()``` call is a macro that defines a global object using a c++ template. The object is instantiated on system startup (all globals are), and in the constructor of the object, it registers itself with the device discovery system.
 
 Building off the above BME280 example, the implementation looks like:
 
@@ -253,6 +252,7 @@ bool flxDevBME280::onInitialize(TwoWire &wirePort)
 ```
 
 > [!note]
+>
 > The ```address()``` method returns the device address for this instance of the driver.
 
 ### Determining if a Device is Initialized

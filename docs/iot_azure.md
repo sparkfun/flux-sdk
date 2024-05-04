@@ -1,6 +1,6 @@
-# Creating and Connecting to an Azure IoT Device
+# Azure IoT Device {#flux-using-iot-azure}
 
-One of the key features of the Flux Framework is it's simplified access to IoT service providers. This document outlines how an Azure IoT device is used by the Flux framework. 
+One of the key features of the Flux Framework is it's simplified access to IoT service providers. This document outlines how an Azure IoT device is used by the Flux framework.
 
 The following is covered by this document:
 
@@ -17,13 +17,13 @@ Azure IoT enables connectivity between an IoT / Edge device and the Azure Cloud 
 
 In Azure IoT, an virtual representation of an actual device is created and referred to as a *Device*. The virtual device is allocated a connection endpoint, security certificates and a device **digital twin** - a JSON document used to persist, communicate and manage device state within Azure. Unlike AWS IoT, data from the device isn't posted to the devices digital twin (AWS Shadow), but to the device directly.
 
-The actual IoT device communicates with it's Azure representation via a secure MQTT connection, posting JSON document payloads to a set of pre-defined topics. Updates are posted directly to the Azure device, which is then accessed within Azure for further process as defined by the users particular cloud implementation. 
+The actual IoT device communicates with it's Azure representation via a secure MQTT connection, posting JSON document payloads to a set of pre-defined topics. Updates are posted directly to the Azure device, which is then accessed within Azure for further process as defined by the users particular cloud implementation.
 
 ![Azure IoT Overview](images/iot_az_iot_overview.png)
 
 ## Creating a Device in Azure IoT
 
-The following discussion outlines the basic steps taken to create a Device in Azure IoT that the Flux Framework can connect to. 
+The following discussion outlines the basic steps taken to create a Device in Azure IoT that the Flux Framework can connect to.
 
 First step is to log into your Azure account and Select **Internet of Things > IoT Hub** from the menu of services.
 
@@ -131,7 +131,7 @@ The Device ID is obtained from the device detail page. This page is accessible v
 
 ![Azure IoT Device Details](images/iot_az_device_details.png)
 
-### Device Primary Key 
+### Device Primary Key
 
 This is obtained via the Device details page, as outlined in the previous section. Note - you view and copy the key via the icons on the right of the key entry line.
 
@@ -139,7 +139,7 @@ This is obtained via the Device details page, as outlined in the previous sectio
 
 The Certificate Authority file for Azure is downloaded from this page:
 
-https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details
+<https://learn.microsoft.com/en-us/azure/security/fundamentals/azure-ca-details>
 
 The file to download is the ***Baltimore CyberTrust Root*** entry in the **Root Certificate Authorities** section of the page.
 
@@ -169,7 +169,7 @@ The above property values must be set on the Flux Azure IoT object before use. T
 
 Once the Flux-based device is configured and running, the Azure IoT capability in Flux posts messages via MQTT to the connected Azure Device via it's IoT Hub. Messages to the device are posted as ***Telemetry Data*** for the device.
 
-The easiest method to view the Telemetry data being sent to an Azure Iot Device is via the Azure IoT Hub extension for the Visual Studio Code editor. 
+The easiest method to view the Telemetry data being sent to an Azure Iot Device is via the Azure IoT Hub extension for the Visual Studio Code editor.
 
 ![Azure IoT Hub Extension](images/iot_az_iot_hub_ext.png)
 
@@ -177,7 +177,7 @@ Once installed, and connected to Azure via the Azure Account extension, you can 
 
 ### Connect to your Azure IoT Hub
 
-On the Explorer pain of Visual Studio Code, click on the **...** menu of the **AZURE IOT HUB** section. In the popup menu, select the **Select IoT Hub** menu entry. 
+On the Explorer pain of Visual Studio Code, click on the **...** menu of the **AZURE IOT HUB** section. In the popup menu, select the **Select IoT Hub** menu entry.
 
 ![Select IoT Hub](images/iot_az_iot_hub_sel.png)
 
@@ -185,7 +185,7 @@ The available IoT Hubs are displayed in the editors command prompt. Select the d
 
 ![Select IoT Hub](images/iot_az_iot_hub_sel_menu.png)
 
-The hub is then displayed in the **AZURE IOT HUB** section of the editor Explorer. Expanding the **Devices** section of the Hub will list the example device created above. 
+The hub is then displayed in the **AZURE IOT HUB** section of the editor Explorer. Expanding the **Devices** section of the Hub will list the example device created above.
 
 ![Select IoT Hub](images/iot_az_iot_hub_exp.png)
 
@@ -199,9 +199,8 @@ Once selected, the editor output console will start displaying output for the se
 
 ![Monitor Output](images/iot_az_iot_mon_output.png)
 
-To stop monitoring, click the **Stop Monitoring build-in event endpoint** item that is displayed in the status bar of the editor. 
+To stop monitoring, click the **Stop Monitoring build-in event endpoint** item that is displayed in the status bar of the editor.
 
 ![Stop Monitoring](images/iot_az_iot_stop_mon.png)
 
-A menu option to stop monitoring is also available from the **...** menu of the **AZURE IOT HUB** section in the editor Explorer panel. 
-
+A menu option to stop monitoring is also available from the **...** menu of the **AZURE IOT HUB** section in the editor Explorer panel.

@@ -1,4 +1,4 @@
-# System Reset and Firmware Update Action - ESP32
+# Firmware Update - ESP32 {#flux-using-esp32-firmware}
 
 > *ESP32*
 
@@ -25,7 +25,6 @@ When this option is selected, the device is restarted, using the current firmwar
 When this option is selected, the user is presented a prompt to continue. To launch a factory reset, the user should enter 'Y'. To abort the update, enter 'n' or press the 'escape' key.
 
 ![Restart Prompt](images/act_sysfirm_restart.png)
-
 
 ## Factory Reset
 
@@ -180,7 +179,7 @@ The `VersionNumber` field is often created by the following formula:
   versionNumber = Major_Version * 10000 + Minor_Version * 100 + Point_Version
 ```
 
-#### MD5 Hash Creation 
+#### MD5 Hash Creation
 
 The following command are used to create an MD5 hash value
 
@@ -201,5 +200,3 @@ Windows - using `Power Shell`
 ```
 Get-FileHash <firmware file> -Algorithm MD5
 ```
-
-

@@ -1,4 +1,4 @@
-# Connecting and Publishing Data to MQTT
+# Publishing Data to MQTT {#flux-using-iot-mqtt}
 
 One of the key features of the Flux Framework is it's simplified access to IoT service providers and servers. This document outlines how output from a Flux/DataLogger device is sent to an MQTT Broker.
 
@@ -179,4 +179,3 @@ During the setup of the framework - at initialization, the following steps finis
     // to the MQTT Broker.
     _fmtJSON.add(_mqttClient);
 ```
-

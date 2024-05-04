@@ -1,4 +1,4 @@
-# Creating and Connecting to an Arduino IoT Device
+# Arduino IoT Device {#flux-using-iot-arduino}
 
 One of the key features of the Flux Framework is it's simplified access to IoT service providers. This document outlines how an Arduino IoT Device is used by the Flux framework.
 

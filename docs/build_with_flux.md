@@ -1,9 +1,9 @@
 
-# Building with Flux
+# Building with Flux {#building-with-flux}
 
-This section outline the steps needed to support Flux in an Arduino Build Environment. Both support for Arduino IDE development, as well as automated builds that use the Arduino CLI (GitHub actions). 
+This section outline the steps needed to support Flux in an Arduino Build Environment. Both support for Arduino IDE development, as well as automated builds that use the Arduino CLI (GitHub actions).
 
-Since Flux is private, only available to SparkFun employees and approved partners, the build integration is different from standard Open Source projects. 
+Since Flux is private, only available to SparkFun employees and approved partners, the build integration is different from standard Open Source projects.
 
 ## Using Flux within the Arduino IDE
 
@@ -31,9 +31,9 @@ To use Flux in another project that is being build using build automation (GitHu
 git submodule add git@github.com:sparkfun/SparkFun_Flux.git
 ```
 
-With this structure in place, access to the Flux within a GitHub action is accomplished by using ssh keys. 
+With this structure in place, access to the Flux within a GitHub action is accomplished by using ssh keys.
 
-The first step is to generate a new key locally - in a shell 
+The first step is to generate a new key locally - in a shell
 
 ```sh
 ssh-keygen -t rsa -b 4096 -C "Access to flux"
@@ -47,11 +47,11 @@ Next add the public part of the key to the Flux repo as a deploy key. In the Flu
 
 Give the key a descriptive name (***my project access key***) and paste the public part of the key into the dialog. Keep the key read-only.
 
-The next step is to add the private part of the key as a ***secret*** in main project (the project using flux) github repository. This is done in ```Settings > Secrets and variables > Actions``` page. On this page, on the **Secrets** tab, select the ***New repository secret*** button. 
+The next step is to add the private part of the key as a ***secret*** in main project (the project using flux) github repository. This is done in ```Settings > Secrets and variables > Actions``` page. On this page, on the **Secrets** tab, select the ***New repository secret*** button.
 
 ![Action Secret](images/github_action_secret.png)
 
-In the provided dialog, enter a name for the secret (follow  variable naming methodology) and set the value to the private portion of the generated key. 
+In the provided dialog, enter a name for the secret (follow  variable naming methodology) and set the value to the private portion of the generated key.
 
 ## Download the Flux Submodule
 
@@ -73,10 +73,9 @@ Within a github action, the key is used to download the Flux submodule. Once the
 
 NOTE: In this example, ```FLUX_PULL_KEY_2``` is the name of the Flux key secret within this repository.
 
-
 Once the Flux submodule is checked out, the application is setup and built using the Arduino Command Line (```arduino-cli```)
 
-## Using Arduino CLI 
+## Using Arduino CLI
 
 ### Installation
 
@@ -100,11 +99,11 @@ If working within a github action, the following code will install and setup the
         run: arduino-cli core install esp32:esp32
 ```
 
-Note: The above example also installed the ESP32 platform 
+Note: The above example also installed the ESP32 platform
 
 ### Install Flux Dependencies
 
-The Flux repository includes a script that installs all library dependencies using the ```arduino-cli```. This command, ```install-libs.sh``` is located within the root directory of the Flux repository. 
+The Flux repository includes a script that installs all library dependencies using the ```arduino-cli```. This command, ```install-libs.sh``` is located within the root directory of the Flux repository.
 
 To run this command within a github Action, the following code is used:
 
@@ -114,13 +113,13 @@ To run this command within a github Action, the following code is used:
         run: ./SparkFun_Flux/install-libs.sh
 ```
 
-Note: The above command assumes Flux is installed in the root directory of the repository. Adjust the command path to the structure of your repository if needed. 
+Note: The above command assumes Flux is installed in the root directory of the repository. Adjust the command path to the structure of your repository if needed.
 
 ### Compile and Build
 
 Once all the dependencies are installed, the ```arduino-cli compile``` option is called to build the desired application. To use Flux as a library, the ```--library``` switch is used with the compile call.
 
-The following is an example of building an ESP32 based sketch, which uses the Flux library. 
+The following is an example of building an ESP32 based sketch, which uses the Flux library.
 
 Note that the location of the Flux library is passed in using the ```--library'`` switch, and that the ***full*** path to the Flux directory is provided. Using a relative path to the Flux library directory causes this command to fail
 

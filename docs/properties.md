@@ -82,16 +82,16 @@ Where:
 
 Available Property Types:
 
-* flxPropertyBool
-* flxPropertyInt8
-* flxPropertyInt16
-* flxPropertyInt32
-* flxPropertyUInt8
-* flxPropertyUInt16
-* flxPropertyUInt32
-* flxPropertyFloat
-* flxPropertyDouble
-* flxPropertyString
+* #flxPropertyBool
+* #flxPropertyInt8
+* #flxPropertyInt16
+* #flxPropertyInt32
+* #flxPropertyUInt8
+* #flxPropertyUInt16
+* #flxPropertyUInt32
+* #flxPropertyFloat
+* #flxPropertyDouble
+* #flxPropertyString
 
 #### Example
 
@@ -173,16 +173,16 @@ Where:
 
 #### Available Property Types
 
-* flxPropertyRWBool - bool property
-* flxPropertyRWInt8  - integer 8 property
-* flxPropertyRWInt16  - integer 16 property
-* flxPropertyRWInt32  - integer32 property
-* flxPropertyRWUInt8 - unsigned 8 integer
-* flxPropertyRWUInt16 - unsigned 16 integer
-* flxPropertyRWUInt32 - unsigned 32 integer
-* flxPropertyRWFloat - float
-* flxPropertyRWDouble - double
-* flxPropertyRWString - string -> std::string
+* #flxPropertyRWBool - bool property
+* #flxPropertyRWInt8  - integer 8 property
+* #flxPropertyRWInt16  - integer 16 property
+* #flxPropertyRWInt32  - integer32 property
+* #flxPropertyRWUInt8 - unsigned 8 integer
+* #flxPropertyRWUInt16 - unsigned 16 integer
+* #flxPropertyRWUInt32 - unsigned 32 integer
+* #flxPropertyRWFloat - float
+* #flxPropertyRWDouble - double
+* #flxPropertyRWString - string -> std::string
 
 #### Getter Methods
 
