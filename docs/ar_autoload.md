@@ -1,4 +1,4 @@
-# Architecture - Device Detection and Loading
+# Device Detection and Loading {#device_detection_loading}
 
 One of the key features of the Flux framework is the ability to automatically detect and load different I2C devices, while placing minimal requirements on the device driver developer.
 

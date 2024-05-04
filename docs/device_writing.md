@@ -1,5 +1,5 @@
 
-# Writing a Device Class
+# Writing a Device Class {#writing_a_device_class}
 
 A framework device class wraps an underlying device driver, providing the needed functionally to bring the device withing the framework.
 
