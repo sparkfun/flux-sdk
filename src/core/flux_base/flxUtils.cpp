@@ -430,8 +430,8 @@ void flx_utils::formatByteString(uint64_t nBytes, uint prec, char *szBuffer, siz
 /// createVariableName()
 ///
 /// @brief     Creates a valid arduino variable name
-/// @param[In] szInVariable the name to convert
-/// @param[Out] szOutVariable the converted name - assumed to same len as in variable.
+/// @param[in] szInVariable the name to convert
+/// @param[out] szOutVariable the converted name - assumed to same len as in variable.
 ///
 /// @return true on success, false on failure
 ///

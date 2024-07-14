@@ -1,4 +1,4 @@
-# Architecture - Device Detection and Loading
+# I2C Device Detection {#device_detection_loading}
 
 One of the key features of the Flux framework is the ability to automatically detect and load different I2C devices, while placing minimal requirements on the device driver developer.
 
@@ -18,9 +18,9 @@ The key classes to support this pattern are:
 
 | | |
 |------|-------|
-**Device Driver** | The device specific driver, often implemented based on an existing Arduino Library |
-**Device Builder** | A device specific class that is automatically generated and used by the Framework to detect and instantiate a device
-**Device Factory** | An overall singleton within the system that enables device registration at startup and device discovery, instantiation and initialization at runtime
+|**Device Driver** | The device specific driver, often implemented based on an existing Arduino Library |
+|**Device Builder** | A device specific class that is automatically generated and used by the Framework to detect and instantiate a device |
+|**Device Factory** | An overall singleton within the system that enables device registration at startup and device discovery, instantiation and initialization at runtime|
 
 ### Device Class
 
@@ -36,22 +36,22 @@ The class hierarchy for the Device class is outlined in the following diagram:
 
 The following **static** methods form the device discovery interface:
 
-|||
-|----|---|
-```isConnected()``` | Called with an I2C bus object - should return true of the device is connected
-```connectedConfidence()``` | Returns a confidence level to indicate the accuracy of the ```isConnected()``` algorithm used. Helpful when resolving device address conflicts
-```getDeviceName()``` | Returns the name of the device - should be a static constant
-```getDefaultAddress()``` | Returns the default I2C address for the device. *This method is deprecated*
-```getDefaultAddresses()``` | Returns a list of I2C addresses the device can use. The first address should be the default address for the device. This array is terminated with the value ```kSparkDeviceAddressNull```
+| | |
+|----|----|
+|```isConnected()``` | Called with an I2C bus object - should return true of the device is connected|
+|```connectedConfidence()``` | Returns a confidence level to indicate the accuracy of the ```isConnected()``` algorithm used. Helpful when resolving device address conflicts|
+|```getDeviceName()``` | Returns the name of the device - should be a static constant|
+|```getDefaultAddress()``` | Returns the default I2C address for the device. *This method is deprecated*|
+|```getDefaultAddresses()``` | Returns a list of I2C addresses the device can use. The first address should be the default address for the device. This array is terminated with the value ```kSparkDeviceAddressNull```|
 
 #### Instance Methods
 
 For the startup sequence the following instance methods are important
-|||
+| | |
 |------|--------|
-```onInitialize()``` | Called during the initialization process allowing the performance of the driver specific startup sequence. The Arduino TwoWire (Wire) object is passed in for use by the driver. Note: to get the address to use for the device, the driver calls the ```address()``` method.
-```address()``` | Inherited - this method returns the address for the attached device
-```isInitialized()``` | Returns true of the method ```onInitialized()``` returned true - indicating the driver is initialized.
+|```onInitialize()``` | Called during the initialization process allowing the performance of the driver specific startup sequence. The Arduino TwoWire (Wire) object is passed in for use by the driver. Note: to get the address to use for the device, the driver calls the ```address()``` method.|
+|```address()``` | Inherited - this method returns the address for the attached device|
+|```isInitialized()``` | Returns true of the method ```onInitialized()``` returned true - indicating the driver is initialized.|
 
 ### Device Builder Class
 
@@ -59,7 +59,7 @@ This class provides a common interface for the Factory class to use during the d
 
 The template definition for the ```DeviceBuilder``` class:
 
-```c++
+```cpp
 template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
 ```
 
@@ -67,7 +67,7 @@ For the most part, all the methods in this class just wrap the *introspection* m
 
 Example of a wrapped method in the ```DeviceBuilder``` template:
 
-```C++
+```cpp
 bool isConnected(flxBusI2C &i2cDriver, uint8_t address)
 {
     return DeviceType::isConnected(i2cDriver, address);
@@ -82,7 +82,7 @@ In the implementation file of each device driver, a static ```global``` instance
 
 The definition of the ```DeviceBuilder``` constructor:
 
-```C++
+```cpp
 DeviceBuilder()
 {
     flxDeviceFactory::get().registerDevice(this);
@@ -95,19 +95,19 @@ The Flux Factory class ```flxDeviceFactory``` is a *singleton*, and globally acc
 
 To register a device driver, a static ```DeviceBuilder``` is added to the drivers implementation file.
 
-```C++
+```cpp
 static DeviceBuilder<kDevice> global_##kDevice##Builder;
 ```
 
 But to make this easier, the following macro is defined.
 
-```C++
+```cpp
 #define flxRegisterDevice(kDevice) static DeviceBuilder<kDevice> global_##kDevice##Builder;
 ```
 
 Using this macro, device registration looks like the following (using the BME280 driver)
 
-```C++
+```cpp
 flxRegisterDevice(flxDevBME280);
 ```
 

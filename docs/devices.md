@@ -1,4 +1,4 @@
-# Devices
+# Available Devices   {#flux-available-devices}
 
 Supported devices are:
 

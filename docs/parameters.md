@@ -1,11 +1,10 @@
-
-# Parameters
+# Parameters Overview  {#parameters_overview}
 
 Parameters represent the method to read or pass in a specific data  _value_ to an operation object  withing the SDK. Parameters can be thought of as the data values passed into or returned from a function call. Parameter objects provide a means to support dynamically discoverable input and output data for a particular operation within the framework.
 
 There are two types of Parameter objects with the framework: Input Parameters ("functions") and Output Parameters
 
-### Parameter Attributes
+## Parameter Attributes
 
 The following are key attributes of parameters within the framework
 
@@ -14,7 +13,7 @@ The following are key attributes of parameters within the framework
 * Parameter objects can act like a function
 * Parameter objects allow introspection - they can be discovered and manipulated at runtime via software
 
-#### Parameter Data Types
+### Parameter Data Types
 
 The following types are available for properties
 
@@ -33,14 +32,14 @@ The following types are available for properties
 
 Setting an value of a Input Parameter - named ```input``` in this example:
 
-```c++
+```cpp
     anObject.input(value);
     anObject.input.set(value);
 ```
 
 Getting a value of an Output Parameter - named ```output``` in this example:
 
-```C++
+```cpp
     value = anObject.output();
     value = anObject.output.get();
 ```
@@ -52,7 +51,8 @@ For the framework, two types of Parameter classes exist.
 * Input Parameter - Defines a Parameter to set input value to an operation. These are referred to as functions at times - especially in the user experience of an application.
 * Output Parameter - Defines a Parameter to get an output value from an operation
 
-Note
+> [!note]
+>
 > The get and set operations on a parameter are mapped to methods implemented by the containing class.
 
 ### Input Parameter Objects
@@ -63,7 +63,7 @@ These parameter objects are used to define a input parameter to an operation. Be
 
 Within the definition of the class the parameter is for, the input parameter is defined using the following pattern:
 
-```C++
+```cpp
 flxParameterInType<ClassName, &ClassName::Writer>  input_name = {optional data limit values};
 ```
 
@@ -75,36 +75,37 @@ Where:
 
 ##### Available Input Parameter Types
 
-* flxParameterInBool - bool parameter
-* flxParameterInInt8  - integer8 parameter
-* flxParameterInInt16  - integer16 parameter
-* flxParameterInInt  - integer parameter
-* flxParameterInUint8 - unsigned integer8
-* flxParameterInUint16 - unsigned integer15
-* flxParameterInUint - unsigned integer
-* flxParameterInFloat - float
-* flxParameterInDouble - double
-* flxParameterInString - string -> std::string
+* #flxParameterInBool - bool parameter
+* #flxParameterInInt8  - integer8 parameter
+* #flxParameterInInt16  - integer16 parameter
+* #flxParameterInInt  - integer parameter
+* #flxParameterInUint8 - unsigned integer8
+* #flxParameterInUint16 - unsigned integer15
+* #flxParameterInUint - unsigned integer
+* #flxParameterInFloat - float
+* #flxParameterInDouble - double
+* #flxParameterInString - string -> std::string
 
 ##### Writer Methods
 
 These methods are implemented on the containing class and are called when the value of a parameter is set. These methods have the following signature:
 
-```C++
+```cpp
 void ClassName::write_Name(parameter_type value);
 ```
 
-Where
+Where:
 
 * parameter_type - the type of the parameter (bool, int, uint, float, double, std::string)
 * ClassName - the name of the containing class for the property
 
-Note
->By convention, writer method names are prefixed by ```write_```
+> [!note]
+>
+> By convention, writer method names are prefixed by ```write_```
 
 ##### Example
 
-```C++
+```cpp
 class MyClass : public flxObject
 {
 private:
@@ -116,7 +117,7 @@ public:
 }
 ```
 
-Note
+> [!note]
 >
 > * By convention declaring the input writer method as private. This can be optional
 > * The writer method must be declared before defining the parameter
@@ -126,16 +127,17 @@ Note
 
 Data limits define restrictions on the values the input parameter accepts. There are two types of data limits: range and valid value sets.
 
-*Data Range*
+_Data Range_
+
 This represents the minimum and maximum values a input parameter will accept. The values can be specified at parameter definition and also set at runtime.
 
-To set the range at parameter definition, just set the declared parameter to the range using a C++ initializer list ```{ min, max}```
+To set the range at parameter definition, just set the declared parameter to the range using a cpp initializer list ```{ min, max}```
 
 Additionally, the method `clearDataLimit()` can be called to delete the current limit.
 
 Using the example from above:
 
-```C++
+```cpp
     // Define an input parameter with a range of -29 to 144
     flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = { -28, 144 };
 ```
@@ -144,19 +146,20 @@ To set/change the range value at runtime, the method ```setDataLimitRange(min, m
 
 Using the example parameter from above:
 
-```C++
+```cpp
     // change the data range
     my_input.setDataLimitRange(100, 198);
 ```
 
 This changes the data range accepted by the input parameter and deletes any existing data limit.
 
-*Data Valid Value Set*
+_Data Valid Value Set_
+
 This represents data limit provides a defined set of valid values for the input parameter. The limit is defined by a set of _name,value_ pairs that enable a human readable presentation for the values a input parameter will accept. The values can be specified at parameter definition and also set at runtime.
 
-To set the valid values at parameter definition, just set the declared parameter to the range using a C++ initializer list of name value pairs:  
+To set the valid values at parameter definition, just set the declared parameter to the range using a cpp initializer list of name value pairs:  
 
-```
+```cpp
     {
         { NAME0, value0},
         { NAME1, value1},
@@ -166,7 +169,7 @@ To set the valid values at parameter definition, just set the declared parameter
 
 Using the example from above:
 
-```C++
+```cpp
 // Define an input parameter with a range of -29 to 144
 flxParameterInInt<MyClass, &MyClass::write_MyInput>  my_input = {
                                         {"Value One", 22},
@@ -186,7 +189,7 @@ Additionally, the method `clearDataLimit()` can be called to delete the current 
 
 Using the example parameter from above:
 
-```C++
+```cpp
     // Add valid values ...
     my_input.addDataLimitValidValue("ONE K", 100.);
     my_input.addDataLimitValidValue("ONE K", 100.);    
@@ -194,7 +197,7 @@ Using the example parameter from above:
 
 Or for an entire parameter list:
 
-```C++
+```cpp
     my_input.addDataLimitValidValue( {
                                         {"Value One", 22},
                                         {"Value Two", 44},
@@ -214,7 +217,7 @@ These parameter objects are used to define a output parameter to an operation. B
 
 Within the definition of the class the parameter is for, the output parameter is defined using the following pattern:
 
-```C++
+```cpp
 flxParameterOutType<ClassName, &ClassName::Reader>  output_name;
 ```
 
@@ -226,36 +229,37 @@ Where:
 
 ##### Available Output Parameter Types
 
-* flxParameterOutBool - bool parameter
-* flxParameterOutInt8  - integer 8 parameter
-* flxParameterOutInt16  - integer 16 parameter
-* flxParameterOutInt  - integer parameter
-* flxParameterOutUint8 - unsigned 8 integer
-* flxParameterOutUint16 - unsigned 16 integer
-* flxParameterOutUint - unsigned integer
-* flxParameterOutFloat - float
-* flxParameterOutDouble - double
-* flxParameterOutString - string -> std::string
+* #flxParameterOutBool - bool parameter
+* #flxParameterOutInt8  - integer 8 parameter
+* #flxParameterOutInt16  - integer 16 parameter
+* #flxParameterOutInt  - integer parameter
+* #flxParameterOutUint8 - unsigned 8 integer
+* #flxParameterOutUint16 - unsigned 16 integer
+* #flxParameterOutUint - unsigned integer
+* #flxParameterOutFloat - float
+* #flxParameterOutDouble - double
+* #flxParameterOutString - string -> std::string
 
 ##### Reader Methods
 
 These methods are implemented on the containing class and are called when the value of a parameter is requested. These methods have the following signature:
 
-```C++
+```cpp
 parameter_type ClassName::read_Name(void);
 ```
 
-Where
+Where:
 
 * parameter_type - the type of the parameter (bool, int, uint, float, double, std::string)
 * ClassName - the name of the containing class for the property
 
-Note
->By convention, reader method names are prefixed by ```read_```
+> [!note]
+>
+> By convention, reader method names are prefixed by ```read_```
 
-##### Example
+##### Example {#param-out-example}
 
-```C++
+```cpp
 class MyClass : public flxObject
 {
 private:
@@ -267,7 +271,7 @@ public:
 }
 ```
 
-Note
+> [!note]
 >
 > * By convention declaring the output reader method as private. This can be optional
 > * The reader method must be declared before defining the parameter
@@ -281,7 +285,7 @@ For outputs that have array values, an array output parameter is declared. These
 
 Within the definition of the class the parameter is for, the output array parameter is defined using the following pattern:
 
-```C++
+```cpp
 flxParameterOutArrayType<ClassName, &ClassName::Reader>  output_name;
 ```
 
@@ -291,24 +295,24 @@ Where:
 * ClassName - the class name that the parameter is for. The name of the class type the parameter is being defined in.
 * Reader - the name of the _read_ method the parameter should call when it's value is retrieved. **NOTE**: A reference, `& operator`, to the reader is provided
 
-##### Available Output Parameter Types
+##### Available Output Parameter Types {#output-param-types}
 
-* flxParameterOutArrayBool - bool parameter
-* flxParameterOutArrayInt8  - integer 8 parameter
-* flxParameterOutArrayInt16  - integer 16 parameter
-* flxParameterOutArrayInt  - integer parameter
-* flxParameterOutArrayUint8 - unsigned 8 integer
-* flxParameterOutArrayUint16 - unsigned 16 integer
-* flxParameterOutArrayUint - unsigned integer
-* flxParameterOutArrayFloat - float
-* flxParameterOutArrayDouble - double
-* flxParameterOutArrayString - string -> std::string
+* #flxParameterOutArrayBool - bool parameter
+* #flxParameterOutArrayInt8  - integer 8 parameter
+* #flxParameterOutArrayInt16  - integer 16 parameter
+* #flxParameterOutArrayInt  - integer parameter
+* #flxParameterOutArrayUInt8 - unsigned 8 integer
+* #flxParameterOutArrayUInt16 - unsigned 16 integer
+* #flxParameterOutArrayUInt - unsigned integer
+* #flxParameterOutArrayFloat - float
+* #flxParameterOutArrayDouble - double
+* #flxParameterOutArrayString - string -> std::string
 
-##### Reader Methods
+##### Reader Methods {#reader-methods-sig}
 
 These methods are implemented on the containing class and are called when the value of a parameter is requested. These methods have the following signature:
 
-```C++
+```cpp
 bool ClassName::read_Name(flxDataArray<type> *array);
 ```
 
@@ -318,33 +322,34 @@ Where
 * ClassName - the name of the containing class for the property
 * On success, a true value is returned, false on error.
 
-Note
->By convention, reader method names are prefixed by ```read_```
+> [!note]
+>
+> By convention, reader method names are prefixed by ```read_```
 
 In the reader methods, the data and dimensions of the array are set in the array object.
 
-```C++
+```cpp
    array->set(myArrayData, X );
 ```
 
 or for two dimensional arrays...
 
-```C++
+```cpp
    array->set(myArrayData, X, Y );
 ```
 
-Note:
+> [!note]
 >
 > * By default the set method will make a copy of the data array passed in.
 > * To prevent the array copy, pass in the optional no_copy parameter set to `true`
 
-```C++
+```cpp
     array->set(myArrayData, X, true);
 ```
 
-##### Example
+##### Example  {#reader-method-example}
 
-```C++
+```cpp
 class MyClass : public flxObject
 {
 private:
@@ -356,7 +361,7 @@ public:
 }
 ```
 
-Note
+> [!note]
 >
 > * By convention declaring the output reader method as private. This can be optional
 > * The reader method must be declared before defining the parameter
@@ -368,7 +373,7 @@ When an instance of the object that contains the parameter is created, the param
 
 The calling sequence for flxRegister is:
 
-```C++
+```cpp
     flxRegister(Object [, Name][,Description]);
 ```
 
@@ -380,7 +385,7 @@ Where:
 
 For the example above, the registration call looks like:
 
-```C++
+```cpp
 // MyClass Constructor
 MyClass()     
 {
