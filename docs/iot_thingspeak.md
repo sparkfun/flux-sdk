@@ -1,4 +1,4 @@
-# Creating and Connecting to ThingSpeak
+# Connecting to ThingSpeak {#flux-using-iot-thingspeak}
 
 One of the key features of the Flux Framework is it's simplified access to IoT service providers. This document outlines how a ThinkSpeak output is used by the Flux framework
 
@@ -13,7 +13,7 @@ The following is covered by this document:
 
 ### ThingSpeak Structure
 
-The structure of ThingSpeak is based off of the concept of ***Channels**, with each channel supporting up to eight fields for data specific to the data source. Each channel is named, and has a unique ID associated with it.  One what to think of it is that a Channel is a grouping of associated data values or fields. 
+The structure of ThingSpeak is based off of the concept of ***Channels**, with each channel supporting up to eight fields for data specific to the data source. Each channel is named, and has a unique ID associated with it.  One what to think of it is that a Channel is a grouping of associated data values or fields.
 
 The fields of a channel are enumerated as ***Field1, Field2, ..., Field8**, but each field can be named to simplify data access and understanding.
 
@@ -32,17 +32,17 @@ The concept of Channels that contain Fields in ThingSpeak is similar to the Devi
 
 ![Flux to ThingSpeak Mapping](images/iot_ts_mapping.png)
 
-During configuration of the Flux ThingSpeak connector, the mapping between the Flux Device and ThingSpeak channel is specified. The data to field mapping is automatically created by Flux following the data reporting order from the specific Flux device driver. 
+During configuration of the Flux ThingSpeak connector, the mapping between the Flux Device and ThingSpeak channel is specified. The data to field mapping is automatically created by Flux following the data reporting order from the specific Flux device driver.
 
 ## Creating a Flux Device to a ThingSpeak Channel
 
-The following discussion outlines the basic steps taken to create a Channel in ThingSpeak and then connect it to a Flux Device. 
+The following discussion outlines the basic steps taken to create a Channel in ThingSpeak and then connect it to a Flux Device.
 
 First step is to log into your ThingSpeak and create a Channel. Once logged into your ThingSpeak account, select ***Channels > My Channels*** menu item and on the **My Channel** page, select the **New Channel** button.
 
 ![New Channel](images/iot_ts_channel.png)
 
-On the presented channel page, name the channel and fill in the specific channel fields. The fields should map to the data fields reported from the Flux Device being linked to this channel. Order is important, and is determined by looking at output of a device to the serial device (or reviewing the device driver code). 
+On the presented channel page, name the channel and fill in the specific channel fields. The fields should map to the data fields reported from the Flux Device being linked to this channel. Order is important, and is determined by looking at output of a device to the serial device (or reviewing the device driver code).
 
 ![New Channel](images/iot_ts_new_channel.png)
 
@@ -52,7 +52,7 @@ Key note - at the top of this page is listed the **Channel ID**. Note this numbe
 
 ### Setting up ThingSpeak MQTT
 
-The Flux ThingSpeak connector uses MQTT to post data to a channel. From the ThingSpeak menu, select ***Devices > MQTT***, which display a list of your MQTT devices. From this page, select the **Add a new device** button. 
+The Flux ThingSpeak connector uses MQTT to post data to a channel. From the ThingSpeak menu, select ***Devices > MQTT***, which display a list of your MQTT devices. From this page, select the **Add a new device** button.
 
 On the presented dialog, enter a name for the MQTT connection and in the **Authorize channels to access**, select the channel created earlier. Note: More channels can be added later. Once you select a channel, click the **Add Channel** button. The selected Channel is then listed in the **Authorized Channel** table. Ensure that the Allow Publish and Allow Subscribe attributes are enabled for the added channel.
 
@@ -67,7 +67,6 @@ On the presented dialog, enter a name for the MQTT connection and in the **Autho
 Channel Authorization.
 
 At this point, the ThingSpeak Channel is setup for access by the Flux ThingSpeak connector.
-
 
 ## Adding the ThingSpeak Connector in the Flux Framework
 
@@ -160,6 +159,7 @@ The above property values must be set on the Flux ThingSpeak object before use. 
     "Channels" : "BME280=<channel id>"
   }
 ```
+
 **NOTE**
 
 > The **Channels** value is a list of **[DEVICE NAME]=[Channel ID]** pairs. Each pair is separated by a comma.

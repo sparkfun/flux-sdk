@@ -1,0 +1,23 @@
+/**
+ * @defgroup core Core
+ @brief Core Module of the SDK
+ */
+
+/**
+ * @defgroup module_properties Properties
+   @brief Using and developing with object properties 
+ * @ingroup core
+ */
+
+
+/**
+ * @defgroup property_rw_classes Read/Write Property Classes
+ * @brief Read/Write Property Class Definitions
+ * @ingroup module_properties
+ */
+
+ /**
+  * @defgroup property_classes Property Classes
+    @brief Property Class Definitions
+  * @ingroup module_properties
+  */

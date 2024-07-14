@@ -10,6 +10,13 @@
  *---------------------------------------------------------------------------------
  */
 
+/**
+ * @file flxCoreProps.h
+ *
+ * @brief Defines the objects that make up the property system in the framework.
+ * @note
+ */
+
 // flxCoreProps.h
 //
 // Defines the objects that make up the property system in the framework.
@@ -81,7 +88,10 @@ class flxProperty : public flxDescriptor
     virtual bool restore(flxStorageBlock *) = 0;
 };
 
-// simple def - list of flxProperty objects (it's a vector)
+/**
+ * @brief Define a property list type - vector of properties
+ *
+ */
 using flxPropertyList = std::vector<flxProperty *>;
 
 //----------------------------------------------------------------------------------------
@@ -214,7 +224,16 @@ class _flxPropertyContainer
 // Note - operator overloading isn't included. Easier to add in the actual property object
 //        templates.  Although some "using" magic might work ...
 //
-
+/**
+ * @brief A core template to define a property object that implements a typed value that
+ * sets/gets an attribute value of a objects *property*
+ *
+ * This class implements the core behavior that is used by all property objects
+ *
+ * @tparam T  The type of the property value
+ * @tparam HIDDEN If true, this a hidden property - not shown to users - for internal object use
+ * @tparam SECURE If true, this is a secure property - the value is encrypted when stored on device
+ */
 template <class T, bool HIDDEN, bool SECURE>
 class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDataOut<T>
 {
@@ -696,154 +715,453 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
 };
 
 // Create typed read/writer property objects - type and RW objects as super classes
+/**
+ * @addtogroup property_rw_classes
+ * @{
+ */
 
-// bool
+/**
+ * @brief A boolean property object that calls provided methods to set/get the property value
+ *
+ * The value of the property is set and read via methods provided during instantiation of the property object.
+ * The setter method is called when the value is set on the property. The getter method is called to retrieve the
+ * value of the property. Using methods to set/get the property value allows for dynamic behavior of the property.
+ *
+ * @tparam Object The containing object of this property - implementor of the getter/setter methods
+ * @tparam (Object::*_getter)() A pointer to the method of Object to call when the property is read.
+ * The method must return a boolean value
+ * @tparam (Object::*_setter)(bool) A pointer to the method of Object to call when the property is set
+ */
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
 using flxPropertyRWBool = _flxPropertyTypedRW<bool, Object, _getter, _setter>;
 
-// int8
+/**
+ * @brief A int8_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(int8_t) The method of Object to call when the property is set
+ */
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
 using flxPropertyRWInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter>;
 
-// int16
+/**
+ * @brief A int16_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
 using flxPropertyRWInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter>;
 
-// int
+/**
+ * @brief A int32_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
 using flxPropertyRWInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter>;
 
-// unsigned int 8
+/**
+ * @brief A uint8_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
 using flxPropertyRWUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter>;
 
-// unsigned int 16
+/**
+ * @brief A uint16_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
 using flxPropertyRWUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter>;
 
-// unsigned int
+/**
+ * @brief A uint32_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
 using flxPropertyRWUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter>;
 
-// float
+/**
+ * @brief A float read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
 using flxPropertyRWFloat = _flxPropertyTypedRW<float, Object, _getter, _setter>;
 
-// double
+/**
+ * @brief A double read/write property object that takes a getter and a setter method and the target object.
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using flxPropertyRWDouble = _flxPropertyTypedRW<double, Object, _getter, _setter>;
 
 // HIDDEN
-// bool
+
+/**
+ * @brief A HIDDEN boolean read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
 using flxPropertyRWHiddenBool = _flxPropertyTypedRW<bool, Object, _getter, _setter, true>;
 
-// int8
+/**
+ * @brief A HIDDEN int8_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
 using flxPropertyRWHiddenInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter, true>;
 
-// int16
+/**
+ * @brief A HIDDEN int16_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
 using flxPropertyRWHiddenInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, true>;
 
-// int
+/**
+ * @brief A HIDDEN int32_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
 using flxPropertyRWHiddenInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter, true>;
 
-// unsigned int 8
+/**
+ * @brief A HIDDEN uint8_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
 using flxPropertyRWHiddenUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true>;
 
-// unsigned int 16
+/**
+ * @brief A HIDDEN uint16_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
 using flxPropertyRWHiddenUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true>;
 
-// unsigned int
+/**
+ * @brief A HIDDEN uint32_t read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
 using flxPropertyRWHiddenUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter, true>;
 
-// float
+/**
+ * @brief A HIDDEN float read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
 using flxPropertyRWHiddenFloat = _flxPropertyTypedRW<float, Object, _getter, _setter, true>;
 
-// double
+/**
+ * @brief A HIDDEN double read/write property object that takes a getter and a setter method and the target object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using flxPropertyRWHiddenDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, true>;
 
 // Secure
-// bool
+/**
+ * @brief A SECURE bool read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
 using flxPropertyRWSecureBool = _flxPropertyTypedRW<bool, Object, _getter, _setter, false, true>;
 
-// int8
+/**
+ * @brief A SECURE int8_t read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
 using flxPropertyRWSecureInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter, false, true>;
 
-// int16
+/**
+ * @brief A SECURE int16_t read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
 using flxPropertyRWSecureInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, false, true>;
 
-// int
+/**
+ * @brief A SECURE int32_t read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
 using flxPropertyRWSecureInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter, false, true>;
 
-// unsigned int 8
+/**
+ * @brief A SECURE uint8_t read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
+
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
 using flxPropertyRWSecureUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, false, true>;
 
-// unsigned int 16
+/**
+ * @brief A SECURE uint16_t read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
 using flxPropertyRWSecureUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, false, true>;
 
-// unsigned int
+/**
+ * @brief A SECURE uint32_t read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
 using flxPropertyRWSecureUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter, false, true>;
 
-// float
+/**
+ * @brief A SECURE float read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
 using flxPropertyRWSecureFloat = _flxPropertyTypedRW<float, Object, _getter, _setter, false, true>;
 
-// double
+/**
+ * @brief A SECURE double read/write property object that takes a getter and a setter method and the target
+ *
+ * object. This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using flxPropertyRWSecureDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, false, true>;
 
 // Hidden Secure
-// bool
+/**
+ * @brief A HIDDEN and SECURE bool read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, bool (Object::*_getter)(), void (Object::*_setter)(bool)>
 using flxPropertyRWSecretBool = _flxPropertyTypedRW<bool, Object, _getter, _setter, true, true>;
 
-// int8
+/**
+ * @brief A HIDDEN and SECURE int8_t read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int8_t (Object::*_getter)(), void (Object::*_setter)(int8_t)>
 using flxPropertyRWSecretInt8 = _flxPropertyTypedRW<int8_t, Object, _getter, _setter, true, true>;
 
-// int16
+/**
+ * @brief A HIDDEN and SECURE int16_t read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int16_t (Object::*_getter)(), void (Object::*_setter)(int16_t)>
 using flxPropertyRWSecretInt16 = _flxPropertyTypedRW<int16_t, Object, _getter, _setter, true, true>;
 
-// int
+/**
+ * @brief A HIDDEN and SECURE int32_t read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, int32_t (Object::*_getter)(), void (Object::*_setter)(int32_t)>
 using flxPropertyRWSecretInt32 = _flxPropertyTypedRW<int32_t, Object, _getter, _setter, true, true>;
 
-// unsigned int 8
+/**
+ * @brief A HIDDEN and SECURE uint8_t read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint8_t (Object::*_getter)(), void (Object::*_setter)(uint8_t)>
 using flxPropertyRWSecretUInt8 = _flxPropertyTypedRW<uint8_t, Object, _getter, _setter, true, true>;
 
-// unsigned int 16
+/**
+ * @brief A HIDDEN and SECURE uint16_t read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint16_t (Object::*_getter)(), void (Object::*_setter)(uint16_t)>
 using flxPropertyRWSecretUInt16 = _flxPropertyTypedRW<uint16_t, Object, _getter, _setter, true, true>;
 
-// unsigned int
+/**
+ * @brief A HIDDEN and SECURE uint32_t read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, uint32_t (Object::*_getter)(), void (Object::*_setter)(uint32_t)>
 using flxPropertyRWSecretUInt32 = _flxPropertyTypedRW<uint32_t, Object, _getter, _setter, true, true>;
 
-// float
+/**
+ * @brief A HIDDEN and SECURE float read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, float (Object::*_getter)(), void (Object::*_setter)(float)>
 using flxPropertyRWSecretFloat = _flxPropertyTypedRW<float, Object, _getter, _setter, true, true>;
 
-// double
+/**
+ * @brief A HIDDEN and SECURE double read/write property object that takes a getter and a setter method and the target
+ * object.
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, double (Object::*_getter)(), void (Object::*_setter)(double)>
 using flxPropertyRWSecretDouble = _flxPropertyTypedRW<double, Object, _getter, _setter, true, true>;
-
+/** @} */
 //---------------------------------------------------------------------------------
 // flxPropertyRWString
 //
@@ -851,6 +1169,14 @@ using flxPropertyRWSecretDouble = _flxPropertyTypedRW<double, Object, _getter, _
 //
 // A read/write property string class that takes a getter and a setter method and the target object
 //
+/**
+ * @brief A  string read/write property object that takes a getter and a setter method and the target object.
+ * @ingroup property_rw_classes
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string), bool HIDDEN = false,
           bool SECURE = false>
 class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
@@ -995,15 +1321,45 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     };
 };
 
-// HIDDEN
+/**
+ * @brief A HIDDEN uint8_t read/write property object that takes a getter and a setter method and the target object.
+ * @ingroup property_rw_classes
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
 using flxPropertyRWHiddenString = flxPropertyRWString<Object, _getter, _setter, true, false>;
 
-// SECURE
+/**
+ * @brief A SECURE string read/write property object that takes a getter and a setter method and the target
+ * object.
+ * @ingroup property_rw_classes
+ *
+ * This property is secure - the value is encrypted when stored on device and not exported from the device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
 using flxPropertyRWSecureString = flxPropertyRWString<Object, _getter, _setter, false, true>;
 
-// Hidden and SECURE
+/**
+ * @brief A HIDDEN and SECURE string read/write property object that takes a getter and a setter method and the target
+ * object.
+ * @ingroup property_rw_classes
+ *
+ * This property is hidden from the user - not shown in editors, property sheets or in exported setting lists
+ * and this property is secure - the value is encrypted when stored on device
+ *
+ * @tparam Object The containing object of this property
+ * @tparam (Object::*_getter)() The method of Object to call when the property is read
+ * @tparam (Object::*_setter)(bool) The method of Object to call when the property is set
+ */
 template <class Object, std::string (Object::*_getter)(), void (Object::*_setter)(std::string)>
 using flxPropertyRWSecretString = flxPropertyRWString<Object, _getter, _setter, true, true>;
 //----------------------------------------------------------------------------------------------------
@@ -1152,14 +1508,73 @@ class _flxPropertyTyped : public _flxPropertyBase<T, HIDDEN, SECURE>
 };
 
 // Define typed properties
+
+/**
+ * @addtogroup property_classes
+ * @{
+ */
+
+/**
+ * @brief A boolean property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyBool = _flxPropertyTyped<Object, bool>;
+
+/**
+ * @brief A int8_t property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyInt8 = _flxPropertyTyped<Object, int8_t>;
+
+/**
+ * @brief A int16_t property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyInt16 = _flxPropertyTyped<Object, int16_t>;
+
+/**
+ * @brief A int32_t property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyInt32 = _flxPropertyTyped<Object, int32_t>;
+
+/**
+ * @brief A uint8_t property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyUInt8 = _flxPropertyTyped<Object, uint8_t>;
+
+/**
+ * @brief A uint16_t property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyUInt16 = _flxPropertyTyped<Object, uint16_t>;
+
+/**
+ * @brief A uint32_t property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyUInt32 = _flxPropertyTyped<Object, uint32_t>;
+
+/**
+ * @brief A float property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyFloat = _flxPropertyTyped<Object, float>;
+
+/**
+ * @brief A double property object
+ *
+ * @tparam Object The containing object of this property
+ */
 template <class Object> using flxPropertyDouble = _flxPropertyTyped<Object, double>;
 
 // Define typed properties - HIDDEN
@@ -1194,6 +1609,8 @@ template <class Object> using flxPropertySecretUInt16 = _flxPropertyTyped<Object
 template <class Object> using flxPropertySecretUInt32 = _flxPropertyTyped<Object, uint32_t, true, true>;
 template <class Object> using flxPropertySecretFloat = _flxPropertyTyped<Object, float, true, true>;
 template <class Object> using flxPropertySecretDouble = _flxPropertyTyped<Object, double, true, true>;
+
+/** @} */
 //----------------------------------------------------------------------------------------------------
 // flxPropertyString
 //
