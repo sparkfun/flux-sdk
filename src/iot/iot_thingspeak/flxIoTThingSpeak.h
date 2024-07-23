@@ -92,7 +92,10 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
         {
             jObj = jsonDoc[it->first];
             if (jObj.isNull())
+            {
+                flxLog_W(F("ThingSpeak - no channel id found for device: %s. Check the Channel setting"), it->first);
                 continue;
+            }
 
             // Thingspeak channel values are sent as "field<n>=<value>&field<n+1>=<value>..."
             buffer = "";
