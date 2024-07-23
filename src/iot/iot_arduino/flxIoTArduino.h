@@ -209,7 +209,10 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
 ///
 typedef struct
 {
+    /// @brief The type of the variable
     flxDataType_t type;
+
+    /// @brief The variable itself - from the ArduinoIoTCloud library
     void *variable;
 } flxIoTArduinoVar_t;
 
