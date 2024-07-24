@@ -51,6 +51,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
         std::stringstream s_stream(theList); // create string stream from the string
         std::string keyvalue;
         std::string::size_type sz;
+        std::string newValue;
 
         while (s_stream.good())
         {
@@ -65,7 +66,18 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
                 flxLogM_W(kMsgErrValueError, name(), "Device=Channel ID");
                 continue;
             }
-            _deviceToChannel[flx_utils::strtrim(keyvalue.substr(0, sz))] = flx_utils::strtrim(keyvalue.substr(sz + 1));
+            newValue = flx_utils::strtrim(keyvalue.substr(sz + 1));
+            // no dups for values (channel ids)
+            for (auto it = _deviceToChannel.begin(); it != _deviceToChannel.end(); it++)
+            {
+                if (it->second == newValue)
+                {
+                    flxLogM_W(kMsgErrValueError, name(), "Duplicate ThingStream channel ID [%s], skipping",
+                              keyvalue.c_str());
+                    continue;
+                }
+            }
+            _deviceToChannel[flx_utils::strtrim(keyvalue.substr(0, sz))] = newValue;
         }
     }
 
