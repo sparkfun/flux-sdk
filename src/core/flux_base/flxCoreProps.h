@@ -63,6 +63,7 @@ class flxProperty : public flxDescriptor
     virtual flxDataVariable getValue(void) = 0;
 
     virtual bool hidden(void) = 0;
+    virtual void setHidden(void) = 0;
     virtual bool secure(void) = 0;
     //---------------------------------------------------------------------------------
     virtual size_t size(void)
@@ -209,6 +210,16 @@ class _flxPropertyContainer
         return totalSize;
     };
 
+    //---------------------------------------------------------------------------------
+    // method to hide a property.
+    void hideProperty(flxProperty &theProp)
+    {
+        theProp.setHidden();
+        // deal with hidden property optimization..
+        removeProperty(theProp);
+        addProperty(theProp);
+    }
+
   private:
     flxPropertyList _properties;
 
@@ -246,6 +257,11 @@ class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDa
     bool hidden()
     {
         return _isHidden;
+    }
+    // Add a method that allows the property to be hidden if public
+    void setHidden(void)
+    {
+        _isHidden = true;
     }
     bool secure()
     {
@@ -393,6 +409,11 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     bool hidden()
     {
         return _isHidden;
+    }
+    // Add a method that allows the property to be hidden if public
+    void setHidden(void)
+    {
+        _isHidden = true;
     }
     bool secure()
     {
