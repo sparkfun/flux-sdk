@@ -89,8 +89,8 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
         flxRegister(deviceList, "Channels", "Comma separated list of <device name>=<channel ID>");
 
         // The topic is auto-generated -- it needs/uses the channel ID. So, let's hide the topic property it from the
-        // user
-        topic.setHidden(true);
+        // user.
+        hideProperty(topic);
 
         flux.add(this);
     }
