@@ -97,12 +97,12 @@ class flxSerial_ : public flxWriter
     flxSerial_() : _headerWritten{false}, _colorEnabled{false} {};
 
     // Color strings for serial consoles
-    static constexpr char *kClrNormal = "\033[0;39m";
-    static constexpr char *kClrGreen = "\033[1;32m";
-    static constexpr char *kClrYellow = "\033[1;33m";
-    static constexpr char *kClrRed = "\033[1;31m";
-    static constexpr char *kClrBlue = "\033[1;34m";
-    static constexpr char *kClrWhite = "\033[1;37m";
+    static constexpr const char *kClrNormal = "\033[0;39m";
+    static constexpr const char *kClrGreen = "\033[1;32m";
+    static constexpr const char *kClrYellow = "\033[1;33m";
+    static constexpr const char *kClrRed = "\033[1;31m";
+    static constexpr const char *kClrBlue = "\033[1;34m";
+    static constexpr const char *kClrWhite = "\033[1;37m";
 
     bool _headerWritten;
 

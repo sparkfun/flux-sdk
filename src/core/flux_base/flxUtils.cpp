@@ -403,7 +403,7 @@ void flx_utils::timestampISO8601(time_t &t_time, char *buffer, size_t length, bo
 void flx_utils::formatByteString(uint64_t nBytes, uint prec, char *szBuffer, size_t len)
 {
 
-    char *sizeNames[] = {"B", "KB", "MB", "GB", "TB"};
+    const char *sizeNames[] = {"B", "KB", "MB", "GB", "TB"};
 
     if (nBytes < 0)
         nBytes = 0;

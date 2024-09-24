@@ -70,17 +70,17 @@ class flxDevNAU7802 : public flxDeviceI2CType<flxDevNAU7802>, public NAU7802
 
     // methods used to get values for our RW properties
     int32_t get_zero_offset();
-    void set_zero_offset(int);
+    void set_zero_offset(int32_t);
     float get_calibration_factor();
 
     void set_calibration_factor(float);
 
     // methods for the external calibration offset and gain hidden properties
     int32_t get_ext_offset(void);
-    void set_ext_offset(int);
+    void set_ext_offset(int32_t);
 
     uint32_t get_ext_gain(void);
-    void set_ext_gain(uint);
+    void set_ext_gain(uint32_t);
 
     // methods used to set our input parameters
     void calculate_zero_offset();

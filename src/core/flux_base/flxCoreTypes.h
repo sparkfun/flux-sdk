@@ -21,6 +21,7 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+#include <stdexcept>
 
 #include "flxCoreLog.h"
 #include "flxUtils.h"

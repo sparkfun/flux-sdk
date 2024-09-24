@@ -362,7 +362,7 @@ void flxLogger::logMessage(char *header, char *message)
 void flxLogger::updateTimeParameterName(void)
 {
 
-    char *timeTitle = "Time";
+    const char *timeTitle = "Time";
     switch (_timestampType)
     {
     case TimeStampMillis:

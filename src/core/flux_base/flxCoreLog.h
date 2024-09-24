@@ -143,7 +143,7 @@ class flxLogging
 
     //-------------------------------------------------------------------------
     // generic log interface - for flash strings
-    int logPrintf(const flxLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...);
+    int logPrintf(const flxLogLevel_t level, bool newline, const arduino::__FlashStringHelper *fmt, ...);
 
     //-------------------------------------------------------------------------
     // generic log interface

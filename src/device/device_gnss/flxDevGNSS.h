@@ -83,7 +83,7 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
     float read_pdop();
     float read_horiz_acc();
     float read_vert_acc();
-    uint read_tow();
+    uint32_t read_tow();
     std::string read_iso8601();
     std::string read_yyyy_mm_dd();
     std::string read_yyyy_dd_mm();

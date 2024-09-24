@@ -66,7 +66,7 @@ class flxDevPASCO2V01 : public flxDeviceI2CType<flxDevPASCO2V01>
     PASCO2Ino *_theSensor;
 
     // methods used to get values for our output parameters
-    uint read_CO2();
+    uint32_t read_CO2();
 
     // methods used to get values for our RW properties
     bool get_auto_calibrate();
