@@ -1,11 +1,9 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
- * This software includes information which is proprietary to and a
- * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
- * to anyone outside of this organization. Reproduction by any means
- * whatsoever is  prohibited without express written permission.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
+ *
+ * SPDX-License-Identifier: MIT
  *
  *---------------------------------------------------------------------------------
  */
@@ -24,7 +22,7 @@
 #include <mbedtls/md.h>
 #include <mbedtls/sha256.h>
 
-#define INDEFINITE_TIME ((time_t)-1)
+#define INDEFINITE_TIME ((time_t) - 1)
 
 #define az_span_is_content_equal(x, AZ_SPAN_EMPTY)                                                                     \
     (az_span_size(x) == az_span_size(AZ_SPAN_EMPTY) && az_span_ptr(x) == az_span_ptr(AZ_SPAN_EMPTY))

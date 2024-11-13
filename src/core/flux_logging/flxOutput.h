@@ -1,11 +1,9 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
- * This software includes information which is proprietary to and a
- * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
- * to anyone outside of this organization. Reproduction by any means
- * whatsoever is  prohibited without express written permission.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
+ *
+ * SPDX-License-Identifier: MIT
  *
  *---------------------------------------------------------------------------------
  */
@@ -28,7 +26,7 @@ class flxOutputFormat
 {
 
   public:
-    flxOutputFormat(){};
+    flxOutputFormat() {};
 
     // value methods
     virtual void logValue(const std::string &tag, bool value) = 0;
@@ -61,18 +59,18 @@ class flxOutputFormat
     // structure cycle
 
     virtual void beginObservation(const char *szTitle = nullptr) = 0;
-    virtual void beginSection(const char *szName){};
+    virtual void beginSection(const char *szName) {};
     virtual void beginSection(const std::string &name)
     {
         beginSection(name.c_str());
     }
-    virtual void endSection(void){};
+    virtual void endSection(void) {};
     virtual void endObservation(void) = 0;
 
     virtual void writeObservation(void) = 0;
-    virtual void clearObservation(void){};
+    virtual void clearObservation(void) {};
 
-    virtual void reset(void){};
+    virtual void reset(void) {};
 
     void add(flxWriter &newWriter)
     {

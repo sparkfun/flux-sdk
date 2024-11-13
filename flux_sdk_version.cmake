@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2022-2024, SparkFun Electronics Inc.
+#
+# SPDX-License-Identifier: MIT
+#
 # define a version for the SDK
 
 set(FLUX_SDK_VERSION_MAJOR 1)

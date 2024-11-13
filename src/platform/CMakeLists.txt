@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2022-2024, SparkFun Electronics Inc.
+#
+# SPDX-License-Identifier: MIT
+#
 # Determine which port we are supporting. There can only one platform
 if (NOT DEFINED FLUX_SDK_PLATFORM)
     message(
