@@ -146,7 +146,7 @@ class flxSettingsSave : public flxActionType<flxSettingsSave>
         flxRegister(saveFallback, "Save to Fallback", "Save system settings to the fallback storage");
         flxRegister(restoreFallback, "Restore from Fallback", "Restore system settings from the fallback storage");
 
-        flux.add(this);
+
     }
 
     flxStorage *_primaryStorage;

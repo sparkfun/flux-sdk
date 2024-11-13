@@ -47,7 +47,7 @@ flxDevRV8803::flxDevRV8803()
     flxRegister(readMonth, "Read the month", "Read the name of the month (January, February etc)");
     flxRegister(readMonthShort, "Read the month (short)", "Read the name of the month (Jan, Feb etc)");
     flxRegister(readYear, "Read the year", "Read the year (2022 etc)");
-    flxRegister(getEpoch, "Get Epoch", "Get the time in seconds since the Epoch");
+    flxRegister(getEpoch, "Get Epoch", "Get the time in seconds since the Epoch", kParamValueEpoch);
 
     // Register input params
     flxRegister(setEpoch, "Set Epoch", "Set the time since the Epoch");

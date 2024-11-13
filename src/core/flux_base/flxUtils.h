@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <string>
+#include <time.h>
 
 // use a utils namespace
 
@@ -60,5 +61,8 @@ void timestampISO8601(time_t &theTime, char *buffer, size_t length, bool bTZ = f
 void formatByteString(uint64_t nBytes, uint prec, char *szBuffer, size_t len);
 
 bool createVariableName(const char *szInVariable, char *szOutVariable);
+
+// CRC32 Calculation
+uint32_t calc_crc32(uint32_t crc, const uint8_t *buf, uint32_t size);
 
 } // namespace flx_utils

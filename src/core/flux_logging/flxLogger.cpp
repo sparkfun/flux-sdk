@@ -139,7 +139,7 @@ flxLogger::flxLogger()
 
     flxRegister(logRateMetric, "Rate Metric", "Enabled to record the logging rate data");
 
-    flux.add(this);
+    flux_add(this);
 }
 //----------------------------------------------------------------------------
 // logScalar()
@@ -362,7 +362,7 @@ void flxLogger::logMessage(char *header, char *message)
 void flxLogger::updateTimeParameterName(void)
 {
 
-    char *timeTitle = "Time";
+    const char *timeTitle = "Time";
     switch (_timestampType)
     {
     case TimeStampMillis:

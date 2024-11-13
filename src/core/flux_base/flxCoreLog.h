@@ -13,10 +13,11 @@
 #pragma once
 
 // Messaging/logging system for the framework
-//#include "flxCoreEvent.h"
+// #include "flxCoreEvent.h"
 #include <WString.h>
 #include <map>
 #include <stdarg.h>
+#include <stdexcept>
 #include <vector>
 
 #include "flxCoreEventID.h"
@@ -143,7 +144,13 @@ class flxLogging
 
     //-------------------------------------------------------------------------
     // generic log interface - for flash strings
-    int logPrintf(const flxLogLevel_t level, bool newline, const __FlashStringHelper *fmt, ...);
+    int logPrintf(const flxLogLevel_t level, bool newline,
+#if defined(ESP32) || defined(ESP8266)
+                  const __FlashStringHelper *fmt,
+#else
+                  const arduino::__FlashStringHelper *fmt,
+#endif
+                  ...);
 
     //-------------------------------------------------------------------------
     // generic log interface

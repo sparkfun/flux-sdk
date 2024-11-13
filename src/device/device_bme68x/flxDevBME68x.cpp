@@ -53,9 +53,9 @@ flxDevBME68x::flxDevBME68x()
     setDescription("The Bosch BME68x Atmospheric Sensor");
 
     // Register parameters
-    flxRegister(humidity, "Humidity", "The sensed humidity value");
-    flxRegister(temperatureC, "TemperatureC", "The sensed temperature in degrees C");
-    flxRegister(pressure, "Pressure", "The sensed pressure");
+    flxRegister(humidity, "Humidity", "The sensed humidity value", kParamValueHumidity_F);
+    flxRegister(temperatureC, "TemperatureC", "The sensed temperature in degrees C", kParamValueTempC);
+    flxRegister(pressure, "Pressure", "The sensed pressure", kParamValuePressure_F);
     flxRegister(gasResistance, "Gas Resistance", "The sensed gas resistance");
     flxRegister(status, "Sensor Status", "The sensor status");
 }

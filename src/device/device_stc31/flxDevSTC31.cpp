@@ -47,8 +47,8 @@ flxDevSTC31::flxDevSTC31()
     setDescription("STC31 CO2 Sensor");
 
     // Register parameters
-    flxRegister(co2, "CO2 (%)", "The CO2 concentration in %");
-    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(co2, "CO2 (%)", "The CO2 concentration in %", kParamValueCO2_F);
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C", kParamValueTempC);
 
     flxRegister(rh, "Humidity (%RH)", "Adjust the CO2 measurement using this humidity (%RH)");
     flxRegister(temperatureC_In, "Temperature (C)", "Adjust the CO2 measurement using this temperature (C)");

@@ -42,27 +42,25 @@ class flxTimer : public flxActionType<flxTimer>
 
     // for our timing
     unsigned long _lastLogTime = 0;
+    uint32_t _initialInterval = 0;
 
     flxJob _timerJob;
 
   public:
-    flxTimer(int start = 500) : _lastLogTime(0)
+    flxTimer(uint32_t start = 15000) : _lastLogTime(0), _initialInterval(start)
     {
-
-        flxRegister(interval, "Interval", "Timer interval in milliseconds");
-
-        // interval = start;
-
-        flux.add(this);
-
+        // Add this to the list of actions in the framework
+        flux_add(this);
         setName("Timer", "A reoccurring timer");
-
-        // setup the job used to trigger the timer (note - we enable "job compression" for this )
-        _timerJob.setup(name(), start, this, &flxTimer::onTimer, false);
     };
 
     bool initialize(void)
     {
+        // Register the interval property - do here not in ctor due to uncertainty of global object creation order
+
+        flxRegister(interval, "Interval", "Timer interval in milliseconds");
+        // setup the job used to trigger the timer (note - we enable "job compression" for this )
+        _timerJob.setup(name(), _initialInterval, this, &flxTimer::onTimer, false);
         // Add the job to the job queue
         flxAddJobToQueue(_timerJob);
 
