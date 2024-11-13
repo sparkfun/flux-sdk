@@ -1,13 +1,9 @@
 /*
- *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
- * This software includes information which is proprietary to and a
- * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
- * to anyone outside of this organization. Reproduction by any means
- * whatsoever is  prohibited without express written permission.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
  *
- *---------------------------------------------------------------------------------
+ * SPDX-License-Identifier: MIT
+ *
  */
 
 /*
@@ -59,25 +55,25 @@ static const uint8_t BIO_HUB_RESET = 17; // Use the TXD pin as the bio hub reset
 static const uint8_t BIO_HUB_MFIO = 16;  // Use the RXD pin as the bio hub mfio pin
 
 // MQTT
-//#define TEST_MQTT
+// #define TEST_MQTT
 #include <Flux/flxMQTTESP32.h>
 
 // AWS IoT
 // UNCOMMENT TO TEST AWS
-//#define TEST_AWS
+// #define TEST_AWS
 #include <Flux/flxIoTAWS.h>
 
 // ThingSpeak outpout
 // Uncomment to test Thingspeak mqtt
-//#define TEST_THINGSPEAK
+// #define TEST_THINGSPEAK
 #include <Flux/flxIoTThingSpeak.h>
 
 // Azure IoT
-//#define TEST_AZURE_IOT
+// #define TEST_AZURE_IOT
 #include <Flux/flxIoTAzure.h>
 
 // HTTP output (call a URL with a JSON Payload)
-//#define TEST_HTTP_IOT
+// #define TEST_HTTP_IOT
 #include <Flux/flxIoTHTTP.h>
 
 #define OPENLOG_ESP32

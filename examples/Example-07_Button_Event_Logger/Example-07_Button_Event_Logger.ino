@@ -1,21 +1,20 @@
 /*
- *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
- * This software includes information which is proprietary to and a
- * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
- * to anyone outside of this organization. Reproduction by any means
- * whatsoever is  prohibited without express written permission.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
  *
- *---------------------------------------------------------------------------------
+ * SPDX-License-Identifier: MIT
+ *
  */
 
 /*
- * Spark Framework demo - event logging
+ * Flux Framework demo - event logging
+ *
+ * Note: This demo requires the generation of a SparkFun_Flux Arduino library - that is then installed
+ *      into the Arduino libraries folder, or via the --library option in the Arduino CLI.
  *
  */
 
-// Spark framework
+// Flux framework
 #include <Flux.h>
 #include <Flux/flxFmtCSV.h>
 #include <Flux/flxLogger.h>
