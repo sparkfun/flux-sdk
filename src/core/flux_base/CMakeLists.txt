@@ -8,6 +8,7 @@ flux_sdk_add_source_files(
     flxCore.h
     flxCoreDevice.cpp
     flxCoreDevice.h
+    flxDeviceValueTypes.h
     flxCoreEvent.h
     flxCoreEvent.cpp
     flxCoreEventID.h

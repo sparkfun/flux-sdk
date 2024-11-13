@@ -250,22 +250,26 @@ class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDa
 {
 
   public:
-    _flxPropertyBase() : _isHidden{HIDDEN}, _isSecure{SECURE}
+    _flxPropertyBase() : _flags{0}
     {
+        if (HIDDEN)
+            setHidden();
+        if (SECURE)
+            _flags |= kIsSecure;
     }
 
     bool hidden()
     {
-        return _isHidden;
+        return (_flags & kIsHidden == kIsHidden);
     }
     // Add a method that allows the property to be hidden if public
     void setHidden(void)
     {
-        _isHidden = true;
+        _flags |= kIsHidden;
     }
     bool secure()
     {
-        return _isSecure;
+        return (_flags & kIsSecure == kIsSecure);
     }
     //---------------------------------------------------------------------------------
     flxDataType_t type()
@@ -299,7 +303,7 @@ class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDa
         bool status = true;
 
         // We don't save hidden or secure properties if this is an external source
-        if (stBlk->kind() == flxStorage::flxStorageKindInternal || (!_isHidden && !_isSecure))
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal || (!hidden() && !secure()))
         {
             T c = get();
             bool status = stBlk->write(name(), c);
@@ -382,8 +386,10 @@ class _flxPropertyBase : public flxProperty, public _flxDataIn<T>, public _flxDa
     }
 
   private:
-    bool _isHidden;
-    bool _isSecure;
+    static constexpr const uint8_t kIsHidden = 0x1;
+    static constexpr const uint8_t kIsSecure = 0x2;
+
+    uint8_t _flags;
 };
 
 //----------------------------------------------------------------------------------------
@@ -402,22 +408,26 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     flxDataLimitType<std::string> *_dataLimit;
 
   public:
-    _flxPropertyBaseString() : _dataLimit{nullptr}, _isHidden{HIDDEN}, _isSecure{SECURE}
+    _flxPropertyBaseString() : _dataLimit{nullptr}, _flags{0}
     {
+        if (HIDDEN)
+            setHidden();
+        if (SECURE)
+            _flags |= kIsSecure;
     }
 
     bool hidden()
     {
-        return _isHidden;
+        return (_flags & kIsHidden == kIsHidden);
     }
     // Add a method that allows the property to be hidden if public
     void setHidden(void)
     {
-        _isHidden = true;
+        _flags |= kIsHidden;
     }
     bool secure()
     {
-        return _isSecure;
+        return (_flags & kIsSecure == kIsSecure);
     }
 
     flxDataType_t type()
@@ -466,17 +476,17 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
 
         // If this is a secure string and storage is internal, the strings are stored
         // encrypted
-        if (stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal && secure())
             return stBlk->saveSecureString(name(), get().c_str());
 
         // If we are saving to an external source, we don't save hidden values or secure values.
         // But, for secure props, we to write the key and a blank string (makes it easier to enter values)
 
         // We don't save hidden or secure properties if this is an external source
-        if (stBlk->kind() == flxStorage::flxStorageKindInternal || !_isHidden)
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal || !hidden())
         {
             // if a secure property and external storage, set value to an empty string
-            std::string c = (stBlk->kind() == flxStorage::flxStorageKindExternal && _isSecure) ? "" : get();
+            std::string c = (stBlk->kind() == flxStorage::flxStorageKindExternal && secure()) ? "" : get();
 
             status = stBlk->writeString(name(), c.c_str());
             if (!status)
@@ -491,7 +501,7 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
         size_t len;
 
         // Secure string?
-        if (stBlk->kind() == flxStorage::flxStorageKindInternal && _isSecure)
+        if (stBlk->kind() == flxStorage::flxStorageKindInternal && secure())
         {
             // get buffer length. Note, add one to make sure we have room for line termination
             len = stBlk->getBytesLength(name()) + 1;
@@ -565,8 +575,10 @@ class _flxPropertyBaseString : public flxProperty, _flxDataInString, _flxDataOut
     };
 
   private:
-    bool _isHidden;
-    bool _isSecure;
+    static constexpr const uint8_t kIsHidden = 0x1;
+    static constexpr const uint8_t kIsSecure = 0x2;
+
+    uint8_t _flags;
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -636,7 +648,7 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     void operator()(Object *obj, bool skipAdd = false)
     {
         // my_object must be derived from _flxPropertyContainer
-        static_assert(std::is_base_of<_flxPropertyContainer, Object>::value, "TypedRW: invalid object");
+        // static_assert(std::is_base_of<_flxPropertyContainer, Object>::value, "TypedRW: invalid object");
 
         my_object = obj;
         assert(my_object);
@@ -676,6 +688,9 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object) // would normally throw an exception, but not very Arduino like!
         {
+            if (_hasInitial)
+                return _initialValue;
+
             flxLogM_E(kMsgParentObjNotSet, "property");
             return (T)0;
         }
@@ -687,8 +702,10 @@ class _flxPropertyTypedRW : public _flxPropertyBase<T, HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLogM_E(kMsgParentObjNotSet, "property");
-            return; // would normally throw an exception, but not very Arduino like!
+            // cache the value until we are connected to the containing object
+            _hasInitial = true;
+            _initialValue = value;
+            return;
         }
 
         (my_object->*_setter)(value);
@@ -1291,6 +1308,8 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
+            if (_hasInitial)
+                return _initialValue;
             flxLogM_E(kMsgParentObjNotSet, "property");
             return "";
         }
@@ -1303,7 +1322,9 @@ class flxPropertyRWString : public _flxPropertyBaseString<HIDDEN, SECURE>
     {
         if (!my_object)
         {
-            flxLogM_E(kMsgParentObjNotSet, "property");
+            _hasInitial = true;
+            _initialValue = value;
+
             return;
         }
 

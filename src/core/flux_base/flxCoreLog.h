@@ -17,6 +17,7 @@
 #include <WString.h>
 #include <map>
 #include <stdarg.h>
+#include <stdexcept>
 #include <vector>
 
 #include "flxCoreEventID.h"

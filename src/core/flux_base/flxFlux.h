@@ -16,10 +16,13 @@
 #include "flxCoreDevice.h"
 #include "flxSerial.h"
 #include <memory>
+#include <string.h>
+#include <string>
+#include <vector>
 
 class flxApplication;
 
-// // happy functions for happy users.
+// happy functions for happy users.
 // bool spark_start(bool bAutoLoad = true);
 // bool spark_loop();
 
@@ -203,7 +206,6 @@ class flxFlux : public flxObjectContainer
     uint32_t version()
     {
         return _v_major * 10000 + _v_minor * 100 + _v_point;
-        ;
     }
     void version(uint32_t &major, uint32_t &minor, uint32_t &point)
     {
@@ -262,7 +264,9 @@ class flxFlux : public flxObjectContainer
         {
             _theApplication = theApp;
             // set the app as the first entry of our actions list
-            Actions.insert(Actions.begin(), (flxAction *)theApp);
+            // KDB - This is causing a crash on startup on rp2350 <<<<<<<<<<<<<<<<<<<<<<<
+            if (initialized())
+                Actions.insert(Actions.begin(), (flxAction *)theApp);
         }
     }
 
@@ -317,6 +321,7 @@ class flxFlux : public flxObjectContainer
 
     bool _deviceAutoload;
     bool _loadSettings;
+
     // Note private constructor...
     flxFlux()
         : _v_major{0}, _v_minor{0}, _v_point{0}, _v_build{0}, _v_desc{""}, _v_idprefix{"0000"},
@@ -337,6 +342,9 @@ class flxFlux : public flxObjectContainer
         pTmp = &Devices;
         this->push_back(pTmp);
     }
+
+    bool initialized();
+    void setInitialized(bool bInit);
 
     flxOperation *_getByType(flxTypeID type)
     {
@@ -359,6 +367,8 @@ class flxFlux : public flxObjectContainer
 // have a "global" variable that allows access to the spark environment from anywhere...
 
 extern flxFlux &flux;
+
+flxFlux &flux_get(void);
 
 // Define our application class interface.
 class flxApplication : public flxActionType<flxApplication>
@@ -451,6 +461,13 @@ class flxApplication : public flxActionType<flxApplication>
         return false;
     }
 
-  private:
+    //   private:
     flxDescriptor appDesc;
 };
+
+void flux_add(flxAction &theAction);
+void flux_add(flxAction *theAction);
+void flux_add(flxDevice &theDevice);
+void flux_add(flxDevice *theDevice);
+void flux_add(flxApplication &theApp);
+void flux_add(flxApplication *theApp);

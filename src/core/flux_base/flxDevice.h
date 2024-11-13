@@ -33,6 +33,7 @@
 #include <vector>
 
 #include "flxCoreDevice.h"
+#include "flxDeviceValueTypes.h"
 #include "flxFlux.h"
 
 //----------------------------------------------------------------------------------

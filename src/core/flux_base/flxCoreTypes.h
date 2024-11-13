@@ -21,7 +21,6 @@
 #include <string>
 #include <type_traits>
 #include <vector>
-#include <stdexcept>
 
 #include "flxCoreLog.h"
 #include "flxUtils.h"
@@ -283,6 +282,9 @@ enum flxDataType_t : std::uint8_t
     flxTypeDouble = 0x28,
     flxTypeString = 0x21
 };
+const flxDataType_t flxDataTypeArray[] = {flxTypeNone,  flxTypeBool,   flxTypeInt8,  flxTypeUInt8,
+                                          flxTypeInt16, flxTypeUInt16, flxTypeInt32, flxTypeUInt32,
+                                          flxTypeFloat, flxTypeDouble, flxTypeString};
 
 /*******************************************************************************
  * @brief A constexpr function that returns the flxDataType_t value for a given type.
