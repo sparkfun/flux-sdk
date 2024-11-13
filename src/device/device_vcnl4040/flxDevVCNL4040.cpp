@@ -49,8 +49,8 @@ flxDevVCNL4040::flxDevVCNL4040()
     setDescription("VCNL4040 Proximity Sensor");
 
     // Register parameters
-    flxRegister(proximity, "Proximity", "Proximity : high values indicate close proximity");
-    flxRegister(lux, "Lux", "The light level in lux");
+    flxRegister(proximity, "Proximity", "Proximity : high values indicate close proximity", kParamValueProximity);
+    flxRegister(lux, "Lux", "The light level in lux", kParamValueLUX_U16);
 
     // Register read-write properties
     flxRegister(ledCurrent, "LED Current (mA)", "The LED current in milliamps)");

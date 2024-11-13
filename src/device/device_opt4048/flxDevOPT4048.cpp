@@ -49,10 +49,10 @@ flxDevOPT4048::flxDevOPT4048()
     setName(getDeviceName(), "OPT4048 Tristimulus Color Sensor");
 
     // Register parameters
-    flxRegister(CIEx, "CIEx", "The X coordinate on the CIE 1931 Color Space Graph");
-    flxRegister(CIEy, "CIEy", "The Y coordinate on the CIE 1931 Color Space Graph");
-    flxRegister(CCT, "CCT", "The Correlated Color Temperature (CCT) of the sensor (K)");
-    flxRegister(Lux, "Lux", "The Lux value, or 'brightness'.");
+    flxRegister(CIEx, "CIEx", "The X coordinate on the CIE 1931 Color Space Graph", kParamValueCIE_X);
+    flxRegister(CIEy, "CIEy", "The Y coordinate on the CIE 1931 Color Space Graph", kParamValueCIE_Y);
+    flxRegister(CCT, "CCT", "The Correlated Color Temperature (CCT) of the sensor (K)", kParamValueCCT);
+    flxRegister(Lux, "Lux", "The Lux value, or 'brightness'.", kParamValueLUX);
 
     flxRegister(mode, "mode", "The Operation Mode: Power Down, Auto One Shot, One Shot, Continuous");
     flxRegister(time, "time", "Time spent converting analog values from internal sensors");

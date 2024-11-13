@@ -45,10 +45,14 @@ flxDevENS160::flxDevENS160() : _opMode{SFE_ENS160_STANDARD}, _tempCComp{nullptr}
     flxRegister(updatePeriodSecs, "Update Period", "Compensation from input device update period (secs)");
 
     // Register output params
-    flxRegister(val_AQI, "AQI", "Air Quality Index");
-    flxRegister(val_TVOC, "TVOC", "Total Volatile Organic Compound");
-    flxRegister(val_ETOH, "ETOH", "Ethanol Concentration");
-    flxRegister(val_ECO2, "eCO2", "Equivalent CO2");
+    flxRegister(val_AQI, "AQI", "Air Quality Index", kParamValueAQI);
+
+    flxRegister(val_TVOC, "TVOC", "Total Volatile Organic Compound", kParamValueVOC);
+
+    flxRegister(val_ETOH, "ETOH", "Ethanol Concentration", kParamValueETOH);
+
+    flxRegister(val_ECO2, "eCO2", "Equivalent CO2", kParamValueCO2);
+
     flxRegister(val_TempC, "Temp Comp", "The current temperature compensation value (C)");
     flxRegister(val_RH, "Humidity Comp", "The current relative humidity compensation value");
 

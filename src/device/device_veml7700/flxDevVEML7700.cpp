@@ -49,9 +49,9 @@ flxDevVEML7700::flxDevVEML7700()
     setDescription("VEML7700 Ambient Light Sensor");
 
     // Register parameters
-    flxRegister(ambientLight, "Ambient Light Level", "The ambient light level");
-    flxRegister(whiteLevel, "White Level", "The measured light white level");
-    flxRegister(lux, "Lux", "The light level in lux");
+    flxRegister(ambientLight, "Ambient Light Level", "The ambient light level", kParamValueAmbientLight);
+    flxRegister(whiteLevel, "White Level", "The measured light white level", kParamValueWhiteLight);
+    flxRegister(lux, "Lux", "The light level in lux", kParamValueLUX_F);
 
     // Register read-write properties
     flxRegister(integrationTime, "Integration Time (ms)", "The measurement integration time in milliseconds");

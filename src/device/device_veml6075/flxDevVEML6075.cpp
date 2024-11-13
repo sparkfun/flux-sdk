@@ -49,9 +49,9 @@ flxDevVEML6075::flxDevVEML6075()
     setDescription("VEML6075 UV Sensor");
 
     // Register parameters
-    flxRegister(uva, "UVA Level", "The UVA light level");
-    flxRegister(uvb, "UVB Level", "The UVB light level");
-    flxRegister(uvIndex, "UV Index", "The combined UV index");
+    flxRegister(uva, "UVA Level", "The UVA light level", kParamValueUVAIndex);
+    flxRegister(uvb, "UVB Level", "The UVB light level", kParamValueUVBIndex);
+    flxRegister(uvIndex, "UV Index", "The combined UV index", kParamValueUVIndex);
 
     // Register read-write properties
     flxRegister(integrationTime, "Integration Time (ms)", "The measurement integration time in milliseconds");

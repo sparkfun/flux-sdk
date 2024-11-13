@@ -47,8 +47,8 @@ flxDevSTHS34PF80::flxDevSTHS34PF80()
     // needed to support managed properties/public properties and parameters
 
     // Register Properties
-    flxRegister(presence, "Presence (cm^-1)", "Presence Value (1/cm)");
-    flxRegister(motion, "Motion (LSB)", "Motion Value");
+    flxRegister(presence, "Presence (cm^-1)", "Presence Value (1/cm)", kParamValuePresence);
+    flxRegister(motion, "Motion (LSB)", "Motion Value", kParamValueMotion);
     flxRegister(temperature, "Temperature (C)", "Temperature Value (C)");
 
     // Register Parameters

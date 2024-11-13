@@ -57,9 +57,9 @@ flxDevSCD40::flxDevSCD40()
     flxRegister(temperatureOffset, "Temperature Offset", "Define how warm the sensor is compared to ambient");
 
     // Register parameters
-    flxRegister(co2PPM, "CO2 (PPM)", "The CO2 concentration in Parts Per Million");
-    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
-    flxRegister(humidity, "Humidity (%RH)", "The releative humidity in %");
+    flxRegister(co2PPM, "CO2 (PPM)", "The CO2 concentration in Parts Per Million", kParamValueCO2_U32);
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C", kParamValueTempC);
+    flxRegister(humidity, "Humidity (%RH)", "The releative humidity in %", kParamValueHumidity_F);
 }
 
 //----------------------------------------------------------------------------------------------------------

@@ -25,23 +25,41 @@
 #include "flxCoreTypes.h"
 #include "flxUtils.h"
 
+// Define a type used to enumerate parameter value types (not data types, but values, like temp, accel)
+
+typedef uint16_t flxParamValueType_t;
+
+const flxParamValueType_t kParamValueNone = 0;
+
 //----------------------------------------------------------------------------------------
 // flxParameter
 //
 // Base/Core Parameter Class
 //
 // From an abstract sense, a basic parameter   - nothing more
-
+//
 class flxParameter : public flxDescriptor
 {
     bool _isEnabled;
+    flxParamValueType_t _valueType;
 
   public:
-    flxParameter() : _isEnabled{true} {};
+    flxParameter() : _isEnabled{true}, _valueType{kParamValueNone}
+    {
+    }
 
     bool enabled(void)
     {
         return _isEnabled;
+    }
+
+    flxParamValueType_t valueType(void)
+    {
+        return _valueType;
+    }
+    void setValueType(flxParamValueType_t type)
+    {
+        _valueType = type;
     }
 
     virtual void setEnabled(bool enabled)
@@ -292,6 +310,14 @@ class _flxParameterOut : public _flxDataOut<T>, public flxParameterOutScalar
         (*this)(obj, name);
     }
 
+    void operator()(Object *obj, const char *name, const char *desc, flxParamValueType_t vtype)
+    {
+        // Value type
+        setValueType(vtype);
+
+        // cascade to other version of method
+        (*this)(obj, name, desc);
+    }
     // override to deal with dirty status of object.
     void setEnabled(bool bEnabled)
     {
@@ -488,6 +514,14 @@ class flxParameterOutString : public flxParameterOutScalar, public _flxDataOutSt
         (*this)(obj, name);
     }
 
+    void operator()(Object *obj, const char *name, const char *desc, flxParamValueType_t vtype)
+    {
+        // Value type
+        setValueType(vtype);
+
+        // cascade to other version of method
+        (*this)(obj, name, desc);
+    }
     // override to deal with dirty status of object.
     void setEnabled(bool bEnabled)
     {
@@ -641,6 +675,14 @@ class flxParameterOutArrayType : public flxParameterOutArray
         (*this)(obj, name);
     }
 
+    void operator()(Object *obj, const char *name, const char *desc, flxParamValueType_t vtype)
+    {
+        // Value type
+        setValueType(vtype);
+
+        // cascade to other version of method
+        (*this)(obj, name, desc);
+    }
     // override to deal with dirty status of object.
     void setEnabled(bool bEnabled)
     {
@@ -805,7 +847,14 @@ class flxParameterOutArrayString : public flxParameterOutArray
         // cascade to other version of method
         (*this)(obj, name);
     }
+    void operator()(Object *obj, const char *name, const char *desc, flxParamValueType_t vtype)
+    {
+        // Value type
+        setValueType(vtype);
 
+        // cascade to other version of method
+        (*this)(obj, name, desc);
+    }
     // override to deal with dirty status of object.
     void setEnabled(bool bEnabled)
     {
@@ -913,6 +962,14 @@ class _flxParameterIn : public flxParameterIn, public _flxDataIn<T>
         (*this)(obj, name);
     }
 
+    void operator()(Object *obj, const char *name, const char *desc, flxParamValueType_t vtype)
+    {
+        // Value type
+        setValueType(vtype);
+
+        // cascade to other version of method
+        (*this)(obj, name, desc);
+    }
     //---------------------------------------------------------------------------------
     void set(T const &value)
     {
@@ -1063,6 +1120,14 @@ class flxParameterInString : public flxParameterIn, _flxDataInString
         (*this)(obj, name);
     }
 
+    void operator()(Object *obj, const char *name, const char *desc, flxParamValueType_t vtype)
+    {
+        // Value type
+        setValueType(vtype);
+
+        // cascade to other version of method
+        (*this)(obj, name, desc);
+    }
     //---------------------------------------------------------------------------------
     void set(std::string const &value)
     {
@@ -1188,6 +1253,15 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
         (*this)(obj, name);
     }
 
+    void operator()(Object *obj, const char *name, const char *desc, flxParamValueType_t vtype)
+    {
+        // Value type
+        setValueType(vtype);
+
+        // cascade to other version of method
+        (*this)(obj, name, desc);
+    }
+
     //---------------------------------------------------------------------------------
     void set()
     {
@@ -1229,9 +1303,10 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
 
 // Use some macro magic to determine which actual call to make based on the number of passed in
 // parameters..
-#define _spGetRegAttributeMacro(_1, _2, _3, _NAME_, ...) _NAME_
+#define _spGetRegAttributeMacro(_1, _2, _3, _4, _NAME_, ...) _NAME_
 #define flxRegister(...)                                                                                               \
-    _spGetRegAttributeMacro(__VA_ARGS__, flxRegisterDesc, flxRegisterName, flxRegisterObj)(__VA_ARGS__)
+    _spGetRegAttributeMacro(__VA_ARGS__, flxRegisterValueType, flxRegisterDesc, flxRegisterName,                       \
+                            flxRegisterObj)(__VA_ARGS__)
 
 #define flxRegisterObj(_obj_name_) _obj_name_(this, #_obj_name_)
 
@@ -1240,6 +1315,9 @@ template <class Object, void (Object::*_setter)()> class flxParameterInVoid : pu
 
 // User provided Name and description
 #define flxRegisterDesc(_obj_name_, _name_, _desc_) _obj_name_(this, _name_, _desc_)
+
+// For parameters - user provided value type
+#define flxRegisterValueType(_obj_name_, _name_, _desc_, _type_) _obj_name_(this, _name_, _desc_, _type_)
 
 // Define a object type that supports parameter lists (input and output)
 class flxOperation : public flxObject, public _flxParameterContainer

@@ -47,7 +47,7 @@ flxDevTMP117::flxDevTMP117()
     setDescription("TMP117 Precision Temperature Sensor");
 
     // Register parameters
-    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C", kParamValueTempC);
 }
 
 //----------------------------------------------------------------------------------------------------------
