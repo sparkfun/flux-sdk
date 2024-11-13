@@ -1,13 +1,9 @@
 /*
- *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
- * This software includes information which is proprietary to and a
- * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
- * to anyone outside of this organization. Reproduction by any means
- * whatsoever is  prohibited without express written permission.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
  *
- *---------------------------------------------------------------------------------
+ * SPDX-License-Identifier: MIT
+ *
  */
 
 #pragma once
@@ -236,7 +232,7 @@ class _flxEventHub
     }
 
   private:
-    _flxEventHub(){};
+    _flxEventHub() {};
 
     // map event ID to event signal
     std::map<uint32_t, flxSignalBase *> _eventSignals;

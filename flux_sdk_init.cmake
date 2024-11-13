@@ -1,3 +1,8 @@
+#
+# Copyright (c) 2022-2024, SparkFun Electronics Inc.
+#
+# SPDX-License-Identifier: MIT
+#
 # @file: flux_sdk_init.cmake
 
 # ##################################################################################################

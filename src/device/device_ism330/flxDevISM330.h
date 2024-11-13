@@ -1,11 +1,9 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
- * This software includes information which is proprietary to and a
- * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
- * to anyone outside of this organization. Reproduction by any means
- * whatsoever is  prohibited without express written permission.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
+ *
+ * SPDX-License-Identifier: MIT
  *
  *---------------------------------------------------------------------------------
  */
@@ -188,7 +186,7 @@ class flxDevISM330 : public flxDeviceI2CType<flxDevISM330, flxDevISM330Base>
 {
 
   public:
-    flxDevISM330(){};
+    flxDevISM330() {};
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.
@@ -229,7 +227,7 @@ class flxDevISM330_SPI : public flxDeviceSPIType<flxDevISM330_SPI, flxDevISM330B
 {
 
   public:
-    flxDevISM330_SPI(){};
+    flxDevISM330_SPI() {};
 
     // Method called to initialize the class
     bool onInitialize(SPIClass &);

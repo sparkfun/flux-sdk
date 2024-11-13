@@ -1,21 +1,20 @@
 /*
- *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.  All rights reserved.
- * This software includes information which is proprietary to and a
- * trade secret of SparkFun Electronics Inc.  It is not to be disclosed
- * to anyone outside of this organization. Reproduction by any means
- * whatsoever is  prohibited without express written permission.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
  *
- *---------------------------------------------------------------------------------
+ * SPDX-License-Identifier: MIT
+ *
  */
 
 /*
- * Spark Framework demo - logging
+ * Flux Framework demo - simple logging output on a ESP32 device
+ *
+ * Note: This demo requires the generation of a SparkFun_Flux Arduino library - that is then installed
+ *      into the Arduino libraries folder, or via the --library option in the Arduino CLI.
  *
  */
 
-// Spark framework
+// Flux framework
 #include <Flux.h>
 #include <Flux/flxFmtCSV.h>
 #include <Flux/flxFmtJSON.h>
@@ -40,12 +39,6 @@
 
 // NTP
 #include <Flux/flxNTPESP32.h>
-
-//#define OPENLOG_ESP32
-#ifdef OPENLOG_ESP32
-#define EN_3V3_SW 32
-#define LED_BUILTIN 25
-#endif
 
 //------------------------------------------
 // Default log interval in milli secs
@@ -101,11 +94,6 @@ void setup()
     while (!Serial)
         ;
     Serial.println("\n---- Startup ----");
-
-#ifdef OPENLOG_ESP32
-    pinMode(EN_3V3_SW, OUTPUT); // Enable Qwiic power and I2C
-    digitalWrite(EN_3V3_SW, HIGH);
-#endif
 
     // If not using settings, can use the following lines to test WiFi manually
     // Try WiFi
