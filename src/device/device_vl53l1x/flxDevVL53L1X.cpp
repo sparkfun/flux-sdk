@@ -49,7 +49,7 @@ flxDevVL53L1X::flxDevVL53L1X()
     setDescription("VL53L1X Distance Sensor");
 
     // Register parameters
-    flxRegister(distance, "Distance (mm)", "The measured distance in mm");
+    flxRegister(distance, "Distance (mm)", "The measured distance in mm", kParamValueDistance);
     flxRegister(rangeStatus, "Range Status", "The measurement range status : 0 = good");
     flxRegister(signalRate, "Signal Rate", "The measurement signal rate");
 

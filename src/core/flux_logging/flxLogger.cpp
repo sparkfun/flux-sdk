@@ -139,7 +139,7 @@ flxLogger::flxLogger()
 
     flxRegister(logRateMetric, "Rate Metric", "Enabled to record the logging rate data");
 
-    flux.add(this);
+    flux_add(this);
 }
 //----------------------------------------------------------------------------
 // logScalar()

@@ -61,11 +61,11 @@ flxDevGNSS::flxDevGNSS()
     flxRegister(hour, "Hour", "Hour");
     flxRegister(min, "Minute", "Minute");
     flxRegister(sec, "Second", "Second");
-    flxRegister(latitude, "Latitude (deg)", "Latitude in degrees");
+    flxRegister(latitude, "Latitude (deg)", "Latitude in degrees", kParamValueLatitude);
     latitude.setPrecision(7);
-    flxRegister(longitude, "Longitude (deg)", "Longitude in degrees");
+    flxRegister(longitude, "Longitude (deg)", "Longitude in degrees", kParamValueLongitude);
     longitude.setPrecision(7);
-    flxRegister(altitude, "Altitude (m)", "Altitude above geoid in meters");
+    flxRegister(altitude, "Altitude (m)", "Altitude above geoid in meters", kParamValueAltitude);
     flxRegister(altitudeMSL, "Altitude MSL (m)", "Altitude above Mean Sea Level in meters");
     flxRegister(SIV, "SIV", "Satellites In View");
     flxRegister(fixType, "Fix Type", "Fix Type");

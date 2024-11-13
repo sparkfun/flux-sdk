@@ -79,3 +79,15 @@ void flxSerial_::textToNormal(void)
     if (_colorEnabled)
         Serial.print(kClrNormal);
 }
+
+void flxSerial_::textToCyan(void)
+{
+    if (_colorEnabled)
+        Serial.print(kClrCyan);
+}
+
+void flxSerial_::textToMagenta(void)
+{
+    if (_colorEnabled)
+        Serial.print(kClrMagenta);
+}

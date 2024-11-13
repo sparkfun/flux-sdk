@@ -52,12 +52,12 @@ flxDevISM330Base::flxDevISM330Base()
     // to support managed properties/public properties
 
     // Register parameters
-    flxRegister(accelX, "Accel X (milli-g)", "Accelerometer X (milli-g)");
-    flxRegister(accelY, "Accel Y (milli-g)", "Accelerometer Y (milli-g)");
-    flxRegister(accelZ, "Accel Z (milli-g)", "Accelerometer Z (milli-g)");
-    flxRegister(gyroX, "Gyro X (milli-dps)", "Gyro X (milli-dps)");
-    flxRegister(gyroY, "Gyro Y (milli-dps)", "Gyro Y (milli-dps)");
-    flxRegister(gyroZ, "Gyro Z (milli-dps)", "Gyro Z (milli-dps)");
+    flxRegister(accelX, "Accel X (milli-g)", "Accelerometer X (milli-g)", kParamValueAccelX);
+    flxRegister(accelY, "Accel Y (milli-g)", "Accelerometer Y (milli-g)", kParamValueAccelY);
+    flxRegister(accelZ, "Accel Z (milli-g)", "Accelerometer Z (milli-g)", kParamValueAccelZ);
+    flxRegister(gyroX, "Gyro X (milli-dps)", "Gyro X (milli-dps)", kParamValueGyroX);
+    flxRegister(gyroY, "Gyro Y (milli-dps)", "Gyro Y (milli-dps)", kParamValueGyroY);
+    flxRegister(gyroZ, "Gyro Z (milli-dps)", "Gyro Z (milli-dps)", kParamValueGyroZ);
     flxRegister(temperature, "Temperature (C)", "The ambient temperature in degrees C");
 
     // Register properties

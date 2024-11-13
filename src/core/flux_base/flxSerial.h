@@ -17,6 +17,7 @@
 #pragma once
 
 #include "flxCoreEvent.h"
+#include "flxCoreInterface.h"
 #include "flxOutput.h"
 #include <Arduino.h>
 
@@ -92,6 +93,8 @@ class flxSerial_ : public flxWriter
     void textToBlue(void);
     void textToWhite(void);
     void textToNormal(void);
+    void textToCyan(void);
+    void textToMagenta(void);
 
   private:
     flxSerial_() : _headerWritten{false}, _colorEnabled{false} {};
@@ -103,6 +106,8 @@ class flxSerial_ : public flxWriter
     static constexpr const char *kClrRed = "\033[1;31m";
     static constexpr const char *kClrBlue = "\033[1;34m";
     static constexpr const char *kClrWhite = "\033[1;37m";
+    static constexpr const char *kClrCyan = "\033[1;36m";
+    static constexpr const char *kClrMagenta = "\033[1;35m";
 
     bool _headerWritten;
 

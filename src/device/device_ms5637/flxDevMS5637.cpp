@@ -35,8 +35,8 @@ flxDevMS5637::flxDevMS5637()
     setDescription("MS5637 Pressure and Temperature sensor");
 
     // Register output params
-    flxRegister(pressure_mbar, "Pressure (mbar)", "Atmospheric pressure in milli-bar");
-    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C");
+    flxRegister(pressure_mbar, "Pressure (mbar)", "Atmospheric pressure in milli-bar", kParamValuePressure_mBar);
+    flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C", kParamValueTempC);
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

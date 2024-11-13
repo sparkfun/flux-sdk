@@ -75,7 +75,7 @@ flxDevNAU7802::flxDevNAU7802()
     flxRegister(_externalCalGain, "ExternalGain");
 
     // Register parameters
-    flxRegister(weight, "Weight", "Weight in units - as set by the calibrationFactor");
+    flxRegister(weight, "Weight", "Weight in units - as set by the calibrationFactor", kParamValueWeightUserUnits);
     flxRegister(calculateZeroOffset, "Calculate Zero Offset",
                 "Perform a zero offset calibration. Sets the scale weight to zero");
     flxRegister(calculateCalibrationFactor, "Calculate Calibration Factor",

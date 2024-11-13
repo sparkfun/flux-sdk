@@ -52,8 +52,8 @@ flxDevBMP581::flxDevBMP581()
     setDescription("The Bosch BMP581 Pressure and Temperature Sensor.");
 
     // Register parameters
-    flxRegister(temperatureC, "Temperature (C)", "The sensed temperature in degrees Celsius");
-    flxRegister(pressure, "Pressure (Pa)", "The sensed pressure in Pascals");
+    flxRegister(temperatureC, "Temperature (C)", "The sensed temperature in degrees Celsius", kParamValueTempC);
+    flxRegister(pressure, "Pressure (Pa)", "The sensed pressure in Pascals", kParamValuePressure_F);
 }
 
 //----------------------------------------------------------------------------------------------------------

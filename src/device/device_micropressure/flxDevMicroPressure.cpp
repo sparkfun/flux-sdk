@@ -37,7 +37,7 @@ flxDevMicroPressure::flxDevMicroPressure()
 
     // Register output params
     flxRegister(pressure_PSI, "Pressure (PSI)", "Atmospheric pressure in Pounds per Square Inch");
-    flxRegister(pressure_Pa, "Pressure (Pa)", "Atmospheric pressure in Pascals");
+    flxRegister(pressure_Pa, "Pressure (Pa)", "Atmospheric pressure in Pascals", kParamValuePressure_F);
     flxRegister(pressure_kPa, "Pressure (kPa)", "Atmospheric pressure in kilo-Pascals");
     flxRegister(pressure_torr, "Pressure (torr)", "Atmospheric pressure in torr");
     flxRegister(pressure_inHg, "Pressure (inHg)", "Atmospheric pressure in inches of mercury");

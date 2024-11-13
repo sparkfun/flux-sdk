@@ -25,23 +25,45 @@
 
 static flxLoggingDrvDefault _logDriver;
 
+static bool _isInitalized = false;
+
 const char *kApplicationHashIDTag = "Application ID";
 
 // Global object - for quick access to Spark.
 flxFlux &flux = flxFlux::get();
+
+bool flxFlux::initialized()
+{
+    return _isInitalized;
+}
+
+void flxFlux::setInitialized(bool bInit)
+{
+    _isInitalized = bInit;
+}
 //-------------------------------------------------------
 //
 // Note: Auto-load is true by default
 bool flxFlux::start()
 {
 
+    // settings - add to our system now that we are up and running.
+    add(&flxSettings);
+
     // if we have an application, call the init method.
     // The intent is to give the app time to setup anything before
     // the system sets up
 
     if (_theApplication)
-        _theApplication->onInit();
+    {
 
+        // if the app was set during startup (before main - when globals are instantiated), it
+        // wasn't added to the system. So do that now.
+        if (Actions.size() == 0 || Actions.at(0) != (flxAction *)_theApplication)
+            Actions.insert(Actions.begin(), (flxAction *)_theApplication);
+
+        _theApplication->onInit();
+    }
     // setup our logging system.
     _logDriver.setOutput(flxSerial);
     flxLog.setLogDriver(_logDriver);
@@ -62,6 +84,8 @@ bool flxFlux::start()
         if (strlen(_theApplication->description()) > 0)
             this->setDescription(_theApplication->description());
     }
+    else
+        flxLog_W(F("No application object set."));
 
     writeBanner();
 
@@ -77,6 +101,12 @@ bool flxFlux::start()
     if (_theApplication)
         _theApplication->onDeviceLoad();
 
+    // initialize actions
+    for (auto pAction : Actions)
+    {
+        if (!pAction->initialize())
+            flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
+    }
     // Everything should be loaded -- restore settings from storage
     if (_loadSettings && flxSettings.isAvailable())
     {
@@ -90,13 +120,6 @@ bool flxFlux::start()
     }
     else
         flxLog_I(F("Restore of System Settings unavailable."));
-
-    // initialize actions
-    for (auto pAction : Actions)
-    {
-        if (!pAction->initialize())
-            flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
-    }
 
     // Call start on the application
     // Loop in the application
@@ -116,11 +139,12 @@ bool flxFlux::start()
     // start the job queue
     if (!flxJobQueue.start())
         flxLog_E("Job queue failed to start - unrecoverable error. ");
-    // else
-    // {
-    //     flxLog_I(F("Job queue initialized"));
-    //     flxJobQueue.dump();
-    // }
+    // // else
+    // // {
+    // //     flxLog_I(F("Job queue initialized"));
+    // //     flxJobQueue.dump();
+    // // }
+    setInitialized(true);
 
     return true;
 }
@@ -349,7 +373,6 @@ const char *flxFlux::deviceId(void)
         snprintf(szDeviceID, sizeof(szDeviceID), "%4s%012llX", _v_idprefix, ESP.getEfuseMac());
         bInitialized = true;
     }
-
 #endif
     return (const char *)szDeviceID;
 }
@@ -405,4 +428,32 @@ void flxFlux::setVerboseDevNames(bool bVerbose)
 bool flxFlux::verboseDevNames(void)
 {
     return _verboseDevNames;
+}
+flxFlux &flux_get()
+{
+    return flxFlux::get();
+}
+void flux_add(flxAction &theAction)
+{
+    flxFlux::get().add(&theAction);
+}
+void flux_add(flxAction *theAction)
+{
+    flxFlux::get().add(theAction);
+}
+void flux_add(flxDevice &theDevice)
+{
+    flxFlux::get().add(&theDevice);
+}
+void flux_add(flxDevice *theDevice)
+{
+    flxFlux::get().add(theDevice);
+}
+void flux_add(flxApplication &theApp)
+{
+    flxFlux::get().setApplication(&theApp);
+}
+void flux_add(flxApplication *theApp)
+{
+    flxFlux::get().setApplication(theApp);
 }

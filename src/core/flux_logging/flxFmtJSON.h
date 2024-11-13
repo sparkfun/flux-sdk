@@ -181,7 +181,9 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     {
         if (_spDoc)
         {
-            _jSection = _spDoc->createNestedObject(szName);
+            // _jSection = _spDoc->createNestedObject(szName);
+
+            _jSection = (*_spDoc)[szName].to<JsonObject>();
             _pSectionName = szName;
         }
     }
@@ -276,6 +278,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     }
 
     //-----------------------------------------------------------------
+    // TODO: Rethink the buffer settings -- appears to not be needed with latest ArduinoJson version.
     void setBufferSize(size_t new_size)
     {
         // Same?
@@ -286,17 +289,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
         if (_spDoc)
             _spDoc.reset();
 
-        // create a smart pointer to hold the JSON document
-        try
-        {
-            _spDoc = std::make_shared<DynamicJsonDocument>(new_size);
-        }
-        catch (const std::exception &e)
-        {
-            _buffer_size = 0;
-            flxLogM_E(kMsgErrAllocError, "JSON Buffer");
-            return;
-        }
+        _spDoc = std::make_shared<JsonDocument>();
         _buffer_size = new_size;
     }
 
@@ -331,7 +324,8 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
             // Need to recurse
             for (int i = 0; i < theArray->dimensions()[currentDim]; i++)
             {
-                JsonArray jsonNext = jsonArray.createNestedArray();
+                // JsonArray jsonNext = jsonArray.createNestedArray();
+                JsonArray jsonNext = jsonArray.add<JsonArray>();
                 // recurse
                 writeOutArrayDimension(jsonNext, pData, theArray, currentDim + 1);
             }
@@ -342,7 +336,8 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     {
         // create an array in this section
 
-        JsonArray jsonArray = _jSection.createNestedArray(tag);
+        // JsonArray jsonArray = _jSection.createNestedArray(tag);
+        JsonArray jsonArray = _jSection[tag].to<JsonArray>();
 
         T *pData = theArray->get();
 
@@ -357,7 +352,7 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
     size_t _buffer_size;
 
     // Shared pointer to the JSON document
-    std::shared_ptr<DynamicJsonDocument> _spDoc;
+    std::shared_ptr<JsonDocument> _spDoc;
 
   private:
     std::vector<flxIWriterJSON *> _jsonWriters;

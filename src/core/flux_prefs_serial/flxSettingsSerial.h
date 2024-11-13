@@ -41,6 +41,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
         setHidden(); // don't cross the streams and don't show this object ... in the menu system it creates :)
 
         // Default root is our system
+        // TODO - move this to the application level
         setSystemRoot(&flux);
 
         // Our menu timeout value
