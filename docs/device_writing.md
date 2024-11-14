@@ -13,11 +13,11 @@ The key capabilities provided by the implemented framework device class are:
 
 The device class should following the naming pattern `flxDev[Name]`, where Name is a unique name of the class.
 
-The implementation requires separate header and implementation files, since a several class variables and a global object are defined that required the use of an implementation file.  
+The implementation requires separate header and implementation files, since several class variables and a global object are defined that required the use of an implementation file.  
 
-The new device class should subclass from the frameworks ```flxDevice``` class, using the ```flxDeviceI2CType<DeviceName>``` template. Additionally, the device class subclasses from the underlying driver class in most cases. This allows the descriptor class to support the existing driver's interface.
+The new device class should subclass from the frameworks ```flxDevice``` class, using the ```flxDeviceI2CType<DeviceName>``` template. Additionally, the device class subclasses from the underlying Arduino driver class in most cases. This allows the descriptor class to support the existing driver's interface.
 
-> Note - In some cases, because of the underlying Arduino Library design, an alternative > implementation pattern is required - such as object containment.
+> Note - In some cases, because of the underlying Arduino Library design, an alternative implementation pattern is required - such as object containment.
 
 ### Example of a class definition
 
@@ -32,7 +32,7 @@ class flxDevBME280 : public flxDeviceI2CType<flxDevBME280>, public BME280
 
 ## Automatic Device Discovery
 
-The framework supports runtime discovery of connected devices. This is performed using information from the framework device class, while not creating a device instance until the device is actually detected.
+The framework supports runtime discovery of connected devices. This is performed using information from the framework device class, and not creating a device instance until the device is actually detected.
 
 To accomplish this task, class level (static) methods and data are implemented by the device object. Each device class implements the following:
 
@@ -43,8 +43,6 @@ To accomplish this task, class level (static) methods and data are implemented b
 |```uint8_t *getDefaultAddresses()``` | Return a list of addresses for the device. This list terminates with the value of ```kSparkDeviceAddressNull``` |
 |```flxDeviceConfidence_t connectedConfidence()``` | Returns the confidence level of the drivers ```isConnected()``` algorithm. Values supported range from *Exact* to *Ping* |
 
-> [!note]
->
 >* Often the device implements the address list as a class level variable
 >* It is common to define a constant or macro for the device name and return it from ```getDeviceName()```
 
@@ -93,7 +91,7 @@ This method returns a constant C string.
 
 #### Connected Confidence
 
-This method returns the confidence level for the algorithm in the devices ```isConnected()``` algorithm in exactly determining if a device is connected at the specific address.
+This method returns the confidence level for the algorithm in the devices ```isConnected()``` method in exactly determining if a device is connected at the specific address.
 
 This confidence level is used to resolve detection conflicts between devices that support the same address on the I2C bus. Drivers that have a higher confidence level are evaluated first.
 
@@ -111,8 +109,6 @@ The return value should be one of the following:
 |```flxDevConfidenceFuzzy``` | The algorithm has high-confidence in a match, but it's not exact|
 |```flxDevConfidencePing``` | An address "ping" is used - just detecting a device at a location, but not verifying the device type.|
 
-> [!note]
->
 > Only one device with a PING confidence is allowed at an address.
 
 #### Example Method Definition
@@ -126,7 +122,7 @@ The class definition - ```flxDevBME280.h```
 #define kBME280DeviceName "bme280";
 
 // Define our class - note sub-classing from the Qwiic Library
-class flxDevBME280 : public flxDevice<flxDevBME280>, public BME280
+class flxDevBME280 : public flxDeviceI2CType<flxDevBME280>, public BME280
 {
 
   public:
@@ -160,7 +156,7 @@ class flxDevBME280 : public flxDevice<flxDevBME280>, public BME280
 * This device defined its name, bme280, using the macro `kBME280DeviceName`
 * Default device addresses are contained in a class variable  ```defaultDeviceAddress[];```
 * The method ```onInitialize()``` is called after the object is instantiated.
-* The class subclasses from flxDevice, passing in the class name to the template. The class also subclasses from the Arduino Library class - ```BME280```
+* The class subclasses from flxDeviceI2CType, passing in the class name to the template. The class also subclasses from the Arduino Library class - ```BME280```
 
 ### Auto Discovery - Class Implementation
 
@@ -204,8 +200,6 @@ flxDevBME280::flxDevBME280()
 }
 ```
 
-> [!note]
->
 > * This example includes the implementation of ```defaultDeviceAddress[]```, the class variable holding the addresses for the device.
 > * The device is registered before the class constructor
 > * In the constructor, the device identity is set, which is based of runtime conditions.
@@ -223,8 +217,6 @@ bool flxDevBME280::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 }
 ```
 
-> [!note]
->
 > * This is a static (has no `this` instance) and as such uses the methods on the passed in I2C bus driver to determine in a BME280 is connected to the system
 
 ### Startup Sequence
@@ -251,8 +243,6 @@ bool flxDevBME280::onInitialize(TwoWire &wirePort)
 }
 ```
 
-> [!note]
->
 > The ```address()``` method returns the device address for this instance of the driver.
 
 ### Determining if a Device is Initialized
