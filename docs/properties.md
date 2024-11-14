@@ -232,8 +232,6 @@ public:
 }
 ```
 
-> [!note]
->
 > * By convention the getters and setters are declared as private. This can be optional
 > * The getter and setter methods must be declared before defining the property
 > * The use of `set_` and `get_` prefixes on the setter and getter methods help identify the methods as supporting a property.
@@ -351,7 +349,7 @@ Simple Example:
 ```cpp
     // Add valid values ...
     my_property.addDataLimitValidValue("ONE K", 100.);
-    my_property.addDataLimitValidValue("ONE K", 100.);    
+    my_property.addDataLimitValidValue("TWO K", 200.);    
 ```
 
 Or for an entire parameter list:

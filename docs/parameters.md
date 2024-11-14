@@ -20,10 +20,10 @@ The following types are available for properties
 * bool
 * int8
 * int16
-* int
+* int32
 * uint8
 * uint16
-* uint
+* uint32
 * float
 * double
 * string
@@ -51,8 +51,6 @@ For the framework, two types of Parameter classes exist.
 * Input Parameter - Defines a Parameter to set input value to an operation. These are referred to as functions at times - especially in the user experience of an application.
 * Output Parameter - Defines a Parameter to get an output value from an operation
 
-> [!note]
->
 > The get and set operations on a parameter are mapped to methods implemented by the containing class.
 
 ### Input Parameter Objects
@@ -78,10 +76,10 @@ Where:
 * #flxParameterInBool - bool parameter
 * #flxParameterInInt8  - integer8 parameter
 * #flxParameterInInt16  - integer16 parameter
-* #flxParameterInInt  - integer parameter
-* #flxParameterInUint8 - unsigned integer8
-* #flxParameterInUint16 - unsigned integer15
-* #flxParameterInUint - unsigned integer
+* #flxParameterInInt32  - integer parameter
+* #flxParameterInUInt8 - unsigned integer8
+* #flxParameterInUInt16 - unsigned integer15
+* #flxParameterInUInt32 - unsigned integer
 * #flxParameterInFloat - float
 * #flxParameterInDouble - double
 * #flxParameterInString - string -> std::string
@@ -99,8 +97,6 @@ Where:
 * parameter_type - the type of the parameter (bool, int, uint, float, double, std::string)
 * ClassName - the name of the containing class for the property
 
-> [!note]
->
 > By convention, writer method names are prefixed by ```write_```
 
 ##### Example
@@ -117,8 +113,6 @@ public:
 }
 ```
 
-> [!note]
->
 > * By convention declaring the input writer method as private. This can be optional
 > * The writer method must be declared before defining the parameter
 > * The use of the `write_` prefix on the writer methods help identify the methods as supporting a parameter.
@@ -192,7 +186,7 @@ Using the example parameter from above:
 ```cpp
     // Add valid values ...
     my_input.addDataLimitValidValue("ONE K", 100.);
-    my_input.addDataLimitValidValue("ONE K", 100.);    
+    my_input.addDataLimitValidValue("TWO K", 200.);    
 ```
 
 Or for an entire parameter list:
@@ -271,8 +265,6 @@ public:
 }
 ```
 
-> [!note]
->
 > * By convention declaring the output reader method as private. This can be optional
 > * The reader method must be declared before defining the parameter
 > * The use of the `read_` prefix on the writer methods help identify the methods as supporting a parameter.
@@ -322,8 +314,6 @@ Where
 * ClassName - the name of the containing class for the property
 * On success, a true value is returned, false on error.
 
-> [!note]
->
 > By convention, reader method names are prefixed by ```read_```
 
 In the reader methods, the data and dimensions of the array are set in the array object.
@@ -361,8 +351,6 @@ public:
 }
 ```
 
-> [!note]
->
 > * By convention declaring the output reader method as private. This can be optional
 > * The reader method must be declared before defining the parameter
 > * The use of the `read_` prefix on the writer methods help identify the methods as supporting a parameter.
