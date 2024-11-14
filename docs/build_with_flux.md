@@ -11,7 +11,7 @@ The cmake build system creates the target Arduino Library, the library is either
 
 A custom library is configured and built using the standard build tool `cmake`
 
-### Install the *flux sdk*
+### Install the flux sdk
 
 The flux sdk is used to create a custom Arduino Library called ```SparkFun_Flux``` that is made available for use by the Arduino build environment. This allows tailoring which components are needed for the specific application - in this case the datalogger.
 
