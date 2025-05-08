@@ -55,9 +55,9 @@ bool _flxFSSDCard::initialize()
     if (_pinPower)
         pinMode(_pinPower, OUTPUT);
 
-    pinMode(_pinCS, OUTPUT);
-    digitalWrite(_pinCS, HIGH);
-
+    // pinMode(_pinCS, OUTPUT);
+    // digitalWrite(_pinCS, HIGH);
+    
     setPower(true);
 
     delay(1000);
@@ -245,7 +245,8 @@ uint64_t _flxFSSDCard::total(void)
     if (!_isInitalized)
         return 0;
 
-    return SD.totalClusters() * SD.clusterSize();
+    return (uint64_t)SD.totalBlocks() * (uint64_t)SD.blockSize();
+    
 }
 //-----------------------------------------------------------------------
 
