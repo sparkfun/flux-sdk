@@ -166,9 +166,10 @@ int flxSysFirmware::getFirmwareFilesFromSD(flxDataLimitSetString &dataLimit)
         // Note adding one to filename  - it always starts with "/"
 
         if (_firmwareFilePrefix.length() > 0 &&
-            strncmp(_firmwareFilePrefix.c_str(), filename.c_str() + 1, _firmwareFilePrefix.length()) != 0)
+            strncmp(_firmwareFilePrefix.c_str(), filename.c_str(), _firmwareFilePrefix.length()) != 0)
             continue; // no match
 
+        flxLog_V(F("Update search - found firmware file: %s"), filename.c_str());
         // We have a match
         dataLimit.addItem(blank, filename);
         nFound++;
