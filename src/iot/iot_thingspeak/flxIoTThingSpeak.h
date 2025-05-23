@@ -123,11 +123,11 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
                 else if (kv.value().is<const char *>())
                     value = kv.value().as<const char *>();
                 else if (kv.value().is<signed int>())
-                    value = flx_utils::to_string(kv.value().as<signed int>());
+                    value = flx_utils::to_string((int32_t)kv.value().as<signed int>());
                 else if (kv.value().is<unsigned int>())
-                    value = flx_utils::to_string(kv.value().as<unsigned int>());
+                    value = flx_utils::to_string((uint32_t)kv.value().as<unsigned int>());
                 else if (kv.value().is<unsigned int>())
-                    value = flx_utils::to_string(kv.value().as<unsigned int>());
+                    value = flx_utils::to_string((uint32_t)kv.value().as<unsigned int>());
                 else
                 {
                     flxLogM_W(kMsgErrValueError, name(), "Unknown type");
