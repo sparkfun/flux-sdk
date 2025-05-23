@@ -10,6 +10,8 @@
 
 #include "flxPlatform.h"
 
+#include <Esp.h>
+
 // esp version of our platform class
 
 //---------------------------------------------------------------------------------
@@ -30,7 +32,7 @@ const char *flxPlatform::unique_id(void)
 //---------------------------------------------------------------------------------
 /// @brief Restart the device
 ///
-static void flxPlatform::restart_device(void)
+void flxPlatform::restart_device(void)
 {
     esp_restart();
 }
