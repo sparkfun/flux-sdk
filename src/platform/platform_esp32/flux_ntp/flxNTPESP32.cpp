@@ -142,7 +142,7 @@ void flxNTPESP32::stop(void)
 //----------------------------------------------------------
 // Clock interface things
 //----------------------------------------------------------
-uint flxNTPESP32::get_epoch(void)
+uint32_t flxNTPESP32::get_epoch(void)
 {
 
     time_t now;
