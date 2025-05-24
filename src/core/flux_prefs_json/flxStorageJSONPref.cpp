@@ -152,9 +152,10 @@ bool flxStorageJSONBlock::writeBytes(const char *tag, const uint8_t *value, size
 
     if (!_jSection.isNull() && !_readOnly)
     {
-        JsonArray jArr;
+        // JsonArray jArr;
 
-        jArr = _jSection.createNestedArray(tag);
+        // jArr = _jSection.createNestedArray(tag);
+        JsonArray jArr = _jSection[tag].to<JsonArray>();
 
         for (int i = 0; i < len; i++)
             jArr.add(value[i]);
@@ -170,7 +171,7 @@ bool flxStorageJSONBlock::writeBytes(const char *tag, const uint8_t *value, size
 
 bool flxStorageJSONBlock::readBool(const char *tag, bool &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<JsonVariant>())
     {
         value = (_jSection)[tag];
         return true;
@@ -181,7 +182,7 @@ bool flxStorageJSONBlock::readBool(const char *tag, bool &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readInt8(const char *tag, int8_t &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<JsonVariant>())
     {
         value = (_jSection)[tag];
         return true;
@@ -192,7 +193,7 @@ bool flxStorageJSONBlock::readInt8(const char *tag, int8_t &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readInt16(const char *tag, int16_t &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<JsonVariant>())
     {
         value = (_jSection)[tag];
         return true;
@@ -204,7 +205,7 @@ bool flxStorageJSONBlock::readInt16(const char *tag, int16_t &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readInt32(const char *tag, int32_t &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<JsonVariant>())
     {
         value = (_jSection)[tag];
         return true;
@@ -216,7 +217,7 @@ bool flxStorageJSONBlock::readInt32(const char *tag, int32_t &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readUInt8(const char *tag, uint8_t &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<JsonVariant>())
     {
         value = (_jSection)[tag];
         return true;
@@ -228,7 +229,7 @@ bool flxStorageJSONBlock::readUInt8(const char *tag, uint8_t &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readUInt16(const char *tag, uint16_t &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<JsonVariant>())
     {
         value = (_jSection)[tag];
         return true;
@@ -240,7 +241,7 @@ bool flxStorageJSONBlock::readUInt16(const char *tag, uint16_t &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readUInt32(const char *tag, uint32_t &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<JsonVariant>())
     {
         value = (_jSection)[tag];
         return true;
@@ -252,7 +253,7 @@ bool flxStorageJSONBlock::readUInt32(const char *tag, uint32_t &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readFloat(const char *tag, float &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<float>())
     {
         value = (_jSection)[tag];
         return true;
@@ -264,7 +265,7 @@ bool flxStorageJSONBlock::readFloat(const char *tag, float &value)
 //------------------------------------------------------------------------
 bool flxStorageJSONBlock::readDouble(const char *tag, double &value)
 {
-    if (!_jSection.isNull() && _jSection.containsKey(tag))
+    if (!_jSection.isNull() && _jSection[tag].is<double>())
     {
         value = (_jSection)[tag];
         return true;
@@ -277,7 +278,7 @@ bool flxStorageJSONBlock::readDouble(const char *tag, double &value)
 size_t flxStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 {
 
-    if (_jSection.isNull() || !_jSection.containsKey(tag))
+    if (_jSection.isNull() || !_jSection[tag].is<const char*>())
         return 0;
 
     std::string value = (_jSection)[tag];
@@ -288,7 +289,7 @@ size_t flxStorageJSONBlock::readString(const char *tag, char *data, size_t len)
 size_t flxStorageJSONBlock::getStringLength(const char *tag)
 {
 
-    if (_jSection.isNull() || !_jSection.containsKey(tag))
+    if (_jSection.isNull() || !_jSection[tag].is<const char*>())
         return 0;
 
     std::string value = (_jSection)[tag];
@@ -299,7 +300,7 @@ size_t flxStorageJSONBlock::getStringLength(const char *tag)
 size_t flxStorageJSONBlock::readBytes(const char *tag, uint8_t *data, size_t len)
 {
 
-    if (_jSection.isNull() || !_jSection.containsKey(tag) || len < 1)
+    if (_jSection.isNull() || !_jSection[tag].is<JsonArray>() || len < 1)
         return 0;
 
     JsonArray jArr = (_jSection)[tag];
@@ -320,7 +321,7 @@ size_t flxStorageJSONBlock::readBytes(const char *tag, uint8_t *data, size_t len
 size_t flxStorageJSONBlock::getBytesLength(const char *tag)
 {
 
-    if (_jSection.isNull() || !_jSection.containsKey(tag))
+    if (_jSection.isNull() || !_jSection[tag].is<JsonArray>())
         return 0;
 
     JsonArray jArr = (_jSection)[tag];
@@ -331,7 +332,7 @@ size_t flxStorageJSONBlock::getBytesLength(const char *tag)
 bool flxStorageJSONBlock::valueExists(const char *tag)
 {
     if (!_jSection.isNull())
-        return _jSection.containsKey(tag);
+        return _jSection[tag].is<JsonVariant>();
     else
         return false;
 }
@@ -342,19 +343,11 @@ bool flxStorageJSONBlock::valueExists(const char *tag)
 
 bool flxStorageJSONPref::begin(bool readonly)
 {
-    if (_pDocument)
-    {
-        _pDocument->clear();
-        delete _pDocument;
-        _pDocument = nullptr;
-    }
+    if (_spDocument)
+        _spDocument.reset();
 
-    _pDocument = new DynamicJsonDocument(_jsonDocSize);
-    if (!_pDocument)
-    {
-        flxLog_E(F("Unable to create JSON object for preferences. Document Size: %d"), _jsonDocSize);
-        return false;
-    }
+    _spDocument = std::make_shared<JsonDocument>();
+  
     _readOnly = readonly;
 
     return true;
@@ -363,12 +356,9 @@ bool flxStorageJSONPref::begin(bool readonly)
 void flxStorageJSONPref::end(void)
 {
     // Clear memory
-    if (_pDocument)
-    {
-        _pDocument->clear();
-        delete _pDocument;
-        _pDocument = nullptr;
-    }
+    if (_spDocument)
+        _spDocument.reset();
+
     _readOnly = false;
 }
 
@@ -382,17 +372,18 @@ flxStorageJSONBlock *flxStorageJSONPref::beginBlock(const char *tag)
     JsonObject jObj;
 
     // Does the object already exists?
-    jObj = (*_pDocument)[tag];
+    jObj = (*_spDocument)[tag];
     if (jObj.isNull())
     {
-        jObj = _pDocument->createNestedObject(tag);
+        // jObj = _spDocument->createNestedObject(tag);
+        jObj = (*_spDocument)[tag].to<JsonObject>();
 
-        if (jObj.isNull())
-        {
-            flxLog_E(F("Unable to allocate JSON object for storage. Document size: %d, Usage: %d"), _jsonDocSize,
-                     _pDocument->memoryUsage());
-            return nullptr;
-        }
+        // if (jObj.isNull())
+        // {
+        //     flxLog_E(F("Unable to allocate JSON object for storage. Document size: %d, Usage: %d"), _jsonDocSize,
+        //              _pDocument->memoryUsage());
+        //     return nullptr;
+        // }
     }
 
     _theBlock.setObject(jObj);
@@ -453,7 +444,7 @@ bool flxStorageJSONPrefFile::begin(bool readonly)
 
                     if (nRead == nBytes)
                     {
-                        if (deserializeJson(*_pDocument, (const char *)pBuffer, nBytes) == DeserializationError::Ok)
+                        if (deserializeJson(*_spDocument, (const char *)pBuffer, nBytes) == DeserializationError::Ok)
                             status = true;
                     }
                 }
@@ -481,7 +472,7 @@ void flxStorageJSONPrefFile::end(void)
 
         // Create a json string and write to the filesystem
         std::string value;
-        if (!serializeJsonPretty(*_pDocument, value))
+        if (!serializeJsonPretty(*_spDocument, value))
         {
             flxLogM_E(kMsgErrCreateFailure, "JSON Settings", "JSON string");
         }
@@ -533,7 +524,7 @@ bool flxStorageJSONPrefSerial::begin(bool readonly)
 {
 
     // if we already have a document  return
-    if (_pDocument)
+    if (_spDocument)
         return true;
 
     // call super - it creates the document
@@ -541,7 +532,7 @@ bool flxStorageJSONPrefSerial::begin(bool readonly)
         return false;
 
     // Set Serial Timeout? Serial.setTimeout(1000);
-    DeserializationError err = deserializeJson(*_pDocument, Serial);
+    DeserializationError err = deserializeJson(*_spDocument, Serial);
     if (err)
     {
         if (err.code() == DeserializationError::NoMemory)
@@ -555,8 +546,8 @@ bool flxStorageJSONPrefSerial::begin(bool readonly)
 
 void flxStorageJSONPrefSerial::end(void)
 {
-    if (!_readOnly && _pDocument)
-        serializeJsonPretty(*_pDocument, Serial);
+    if (!_readOnly && _spDocument)
+        serializeJsonPretty(*_spDocument, Serial);
 
     // call super to clear out everything
     flxStorageJSONPref::end();

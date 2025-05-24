@@ -174,3 +174,6 @@ const flxParamValueType_t kParamValueSoilMoistureRaw = 52;
 
 // Soil Moisture - percent
 const flxParamValueType_t kParamValueSoilMoisturePercent_F = 53;
+
+// Location - float array[2] - Lat, Lon
+const flxParamValueType_t kParamValueLocation = 54;

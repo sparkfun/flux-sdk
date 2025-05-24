@@ -578,7 +578,7 @@ class flxMQTTESP32Secure : public flxMQTTESP32SecureCore<flxMQTTESP32Secure>, pu
         flux.add(this);
     }
     // for the Writer interface
-    void write(int data)
+    void write(int32_t data)
     {
         // noop
     }

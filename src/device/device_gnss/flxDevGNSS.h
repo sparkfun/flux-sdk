@@ -100,6 +100,8 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
     void jobHandlerCB(void);
     flxJob _theJob;
 
+    bool get_location(flxDataArrayFloat *);
+
   public:
     // Define our read-write properties
     flxPropertyRWUInt32<flxDevGNSS, &flxDevGNSS::get_measurement_rate, &flxDevGNSS::set_measurement_rate>
@@ -135,6 +137,9 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_hh_mm_ss> HHMMSS;
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_fix_string> fixTypeStr;
     flxParameterOutString<flxDevGNSS, &flxDevGNSS::read_carrier_soln_string> carrierSolutionStr;
+
+    // position
+    flxParameterOutArrayFloat<flxDevGNSS, &flxDevGNSS::get_location> location;
 
     //-----------------------------------------------------
     // Clock interface methods -- so the GNSS reciever can be used as a time reference.

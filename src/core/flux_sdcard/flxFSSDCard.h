@@ -130,7 +130,7 @@ class _flxFSSDCard : public flxIFileSystem
     {
         return _isInitalized;
     }
-    // FS fileSystem(void);
+    FS fileSystem(void);
 
   private:
     // private constructor
@@ -246,8 +246,8 @@ class flxFSSDCard : public flxIFileSystem, public flxSystemType<flxFSSDCard>
         return _theSDCard.enabled();
     };
 
-    // FS fileSystem(void)
-    // {
-    //     return _theSDCard.fileSystem();
-    // }
+    FS fileSystem(void)
+    {
+        return _theSDCard.fileSystem();
+    }
 };

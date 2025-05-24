@@ -223,7 +223,7 @@ void flxDevSoilMoisture::calibrate_low_value(void)
     // our running reading sum
     uint32_t valueSum = 0;
 
-    flxLog_N(F("Place the sensor in a dry state - both probes expose to air and not touching"));
+    flxLog_N(F("Place the sensor in a dry state - both probes exposed to air and not touching soil"));
     delay(2000);
     flxLog_N_(F("Calibrating sensor dry value.."));
 

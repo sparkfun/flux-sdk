@@ -81,6 +81,7 @@ flxDevGNSS::flxDevGNSS()
     flxRegister(HHMMSS, "HHMMSS", "Hour:Minute:Second");
     flxRegister(fixTypeStr, "Fix Type (String)", "Fix type in string format");
     flxRegister(carrierSolutionStr, "Carrier Solution (String)", "Carrier solution in string format");
+    flxRegister(location, "Location", "Location: (Lat,Lon)", kParamValueLocation);
 
     // Register read-write properties
     flxRegister(measurementRate, "Measurement Rate (ms)", "Set the measurement interval in milliseconds");
@@ -373,6 +374,20 @@ std::string flxDevGNSS::read_carrier_soln_string()
     std::string theString = types[carrSoln];
 
     return theString;
+}
+
+// method for location
+bool flxDevGNSS::get_location(flxDataArrayFloat *arrLocation)
+{
+
+    float position[2] = {0};
+
+    position[0] = (float)this->read_latitude();
+    position[1] = (float)this->read_longitude();
+
+    arrLocation->set(position, sizeof(position) / sizeof(float));
+
+    return true;
 }
 
 // methods for read-write properties

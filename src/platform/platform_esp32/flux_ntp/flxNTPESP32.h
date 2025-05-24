@@ -67,8 +67,8 @@ class flxNTPESP32 : public flxActionType<flxNTPESP32>, public flxIClock
     // timing/clock upating interface methods
     // Note - the NTP updates run in the background for the ESP32
 
-    uint get_epoch(void);
-    void set_epoch(const uint &)
+    uint32_t get_epoch(void);
+    void set_epoch(const uint32_t &)
     {
     }
     bool valid_epoch(void);

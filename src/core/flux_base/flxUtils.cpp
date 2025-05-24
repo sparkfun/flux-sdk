@@ -562,11 +562,10 @@ bool flx_utils::base64_decode(const char *data_in, size_t len, char *output)
 
     // convert the input value
     size_t outlen;
-    rc = mbedtls_base64_decode(output, len, &outlen, (unsigned char *)data_in, len) == 0;
+    rc = mbedtls_base64_decode((unsigned char *)output, len, &outlen, (unsigned char *)data_in, len) == 0;
 #endif
     return rc;
 }
-
 
 bool flx_utils::is_little_endian()
 {
