@@ -57,7 +57,7 @@ bool _flxFSSDCard::initialize()
 
     // pinMode(_pinCS, OUTPUT);
     // digitalWrite(_pinCS, HIGH);
-    
+
     setPower(true);
 
     delay(1000);
@@ -246,7 +246,6 @@ uint64_t _flxFSSDCard::total(void)
         return 0;
 
     return (uint64_t)SD.totalBlocks() * (uint64_t)SD.blockSize();
-    
 }
 //-----------------------------------------------------------------------
 
@@ -282,10 +281,16 @@ uint64_t _flxFSSDCard::used(void)
     return fs_info.usedBytes;
 }
 
-// FS _flxFSSDCard::fileSystem(void)
-// {
-//     return FS;
-// }
+FS _flxFSSDCard::fileSystem(void)
+{
+#if defined(ESP32)
+    return SD;
+#elif defined(ARDUINO_PICO_MAJOR)
+    return SDFS;
+#else
+    return FS;
+#endif
+}
 // -------------------------------------------------------
 // File implementation
 
