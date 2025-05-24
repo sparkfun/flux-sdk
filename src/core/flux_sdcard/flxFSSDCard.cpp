@@ -236,7 +236,13 @@ uint64_t _flxFSSDCard::size(void)
     if (!_isInitalized)
         return 0;
 
-    return SD.size64();
+#if defined(ESP32)
+    return SD.cardSize();
+#elif defined(ARDUINO_PICO_MAJOR)
+    return SDFS.size64();
+#else
+    return (uint64_t)FS.size();
+#endif
 }
 
 //-----------------------------------------------------------------------
@@ -244,8 +250,13 @@ uint64_t _flxFSSDCard::total(void)
 {
     if (!_isInitalized)
         return 0;
-
+#if defined(ESP32)
+    return SD.totalBytes();
+#elif defined(ARDUINO_PICO_MAJOR)
     return (uint64_t)SD.totalBlocks() * (uint64_t)SD.blockSize();
+#else
+    return (uint64_t)FS.size();
+#endif
 }
 //-----------------------------------------------------------------------
 
@@ -253,7 +264,19 @@ const char *_flxFSSDCard::type(void)
 {
     if (!_isInitalized)
         return "Unknown";
+#if defined(ESP32)
+    switch (SD.cardType())
+    {
+    case CARD_MMC:
+        return "MMC";
+    case CARD_SD:
+        return "SD";
+    case CARD_SDHC:
+        return "SDHC";
+    case CARD_NONE:
+        return "NO CARD";
 
+#elif defined(ARDUINO_PICO_MAJOR)
     switch (SD.type())
     {
     case SD_CARD_TYPE_SD1:
@@ -264,7 +287,7 @@ const char *_flxFSSDCard::type(void)
         return "SDHC";
     case 0:
         return "NO CARD";
-
+#endif
     default:
         return "UNKNOWN";
     }
@@ -275,10 +298,16 @@ uint64_t _flxFSSDCard::used(void)
     if (!_isInitalized)
         return 0;
 
+#if defined(ESP32)
+    return SD.usedBytes();
+#elif defined(ARDUINO_PICO_MAJOR)
     FSInfo fs_info;
     SDFS.info(fs_info);
 
     return fs_info.usedBytes;
+#else
+    return 0;
+#endif
 }
 
 FS _flxFSSDCard::fileSystem(void)
