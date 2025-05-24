@@ -239,7 +239,7 @@ uint64_t _flxFSSDCard::size(void)
 #if defined(ESP32)
     return SD.cardSize();
 #elif defined(ARDUINO_PICO_MAJOR)
-    return SDFS.size64();
+    return SD.size64();
 #else
     return (uint64_t)FS.size();
 #endif
