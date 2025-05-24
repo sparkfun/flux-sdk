@@ -18,6 +18,7 @@
 #include "flxNetwork.h"
 
 #include <ArduinoMqttClient.h>
+#include <WiFiClient.h>
 #include <WiFiClientSecure.h>
 
 // A General MQTT client for the framework - for use on the ESP32
