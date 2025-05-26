@@ -95,6 +95,10 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
 
     void write(JsonDocument &jsonDoc)
     {
+
+        if (connected() == false)
+            return;
+
         // loop over our channels and see if they are in the document
         JsonObject jObj;
         std::string buffer;
@@ -107,7 +111,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
             jObj = jsonDoc[it->first];
             if (jObj.isNull())
             {
-                flxLog_W(F("ThingSpeak - no channel id found for device: %s. Check the Channel setting"), it->first);
+                flxLog_V(F("ThingSpeak - no channel id found for device: %s. Check the Channel setting"), it->first);
                 continue;
             }
 
