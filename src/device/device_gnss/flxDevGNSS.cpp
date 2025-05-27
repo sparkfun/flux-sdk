@@ -45,7 +45,7 @@ flxRegisterDevice(flxDevGNSS);
 // Object constructor. Performs initialization of device values, including device identifiers (name, I2C address),
 // and managed properties.
 
-flxDevGNSS::flxDevGNSS()
+flxDevGNSS::flxDevGNSS() : _bPPSLoggingEnabled{false}, _ppsPin{0}, _ppsLoggingIsSetup{false}
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -85,6 +85,7 @@ flxDevGNSS::flxDevGNSS()
 
     // Register read-write properties
     flxRegister(measurementRate, "Measurement Rate (ms)", "Set the measurement interval in milliseconds");
+    flxRegister(ppsLogging, "PPS Logging", "Controle logging triggered by the PPS signal");
 
     // Register our input parameters
     flxRegister(factoryDefault, "Restore Factory Defaults", "Restore Factory Defaults - takes 5 seconds");
@@ -416,4 +417,87 @@ void flxDevGNSS::factory_default()
 void flxDevGNSS::jobHandlerCB(void)
 {
     SFE_UBLOX_GNSS::checkUblox();
+
+    // PPS Event triggered?
+    if (_ppsLoggingIsSetup && _pps_triggered)
+    {
+        _pps_triggered = false;
+        flxSendEvent(flxEvent::kOnGNSSPPSEvent);
+    }
+}
+
+// ----------------------------------------------------------------------------------------------------------
+// PPS Things
+// ----------------------------------------------------------------------------------------------------------
+//
+// our ISR static var for state
+bool flxDevGNSS::_pps_triggered = false;
+
+//-------------------------------------------------------------
+// ISR Callback for the PPS interrupt
+void flxDevGNSS::pps_isr_cb(void)
+{
+    flxDevGNSS::_pps_triggered = true;
+}
+//-------------------------------------------------------------
+void flxDevGNSS::shutdownPPSLogging(void)
+{
+    if (_ppsLoggingIsSetup)
+    {
+        if (_ppsPin)
+            detachInterrupt(_ppsPin);
+        _ppsLoggingIsSetup = false;
+    }
+}
+//-------------------------------------------------------------
+void flxDevGNSS::setupPPSLogging(uint16_t ppsPinIn)
+{
+    // Already setup = lets  disable?
+    if (_ppsLoggingIsSetup)
+        shutdownPPSLogging();
+
+    _ppsPin = ppsPinIn;
+    // Everything set?
+    if (_bPPSLoggingEnabled && _ppsPin > 0)
+    {
+        // interrupt enabled
+        pinMode(_ppsPin, INPUT);
+        attachInterrupt(_ppsPin, pps_isr_cb, RISING);
+        _ppsLoggingIsSetup = true;
+        flxLog_V(F("GNSS PPS Logging Enabled on pin (%u)"), _ppsPin);
+    }
+}
+//-----------------------------------------
+void flxDevGNSS::set_pps_pin(uint16_t ppsPinIn)
+{
+    // if the pin is different that current make some changes
+
+    if (_ppsPin == ppsPinIn)
+        return;
+    setupPPSLogging(ppsPinIn);
+}
+//-----------------------------------------
+// Methods for read-write properties - PPS logging
+void flxDevGNSS::set_pps_logging(bool enable)
+{
+    // no change?
+    if (_bPPSLoggingEnabled == enable)
+        return;
+
+    _bPPSLoggingEnabled = enable;
+
+    if (_ppsPin == 0)
+        return;
+
+    // Are we enabling
+    if (_bPPSLoggingEnabled)
+        setupPPSLogging(_ppsPin);
+    else
+        shutdownPPSLogging();
+}
+//-----------------------------------------
+
+bool flxDevGNSS::get_pps_logging(void)
+{
+    return _bPPSLoggingEnabled;
 }

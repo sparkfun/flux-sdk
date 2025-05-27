@@ -24,8 +24,12 @@
 
 #include "SparkFun_u-blox_GNSS_Arduino_Library.h"
 #include "flxClock.h"
+#include "flxCoreEvent.h"
 #include "flxCoreJobs.h"
 #include "flxDevice.h"
+
+// Define an event for PPS logging
+flxDefineEventID(kOnGNSSPPSEvent);
 
 // What is the name used to ID this device?
 #define kGNSSDeviceName "GNSS"
@@ -97,16 +101,33 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
     uint32_t get_measurement_rate();
     void set_measurement_rate(uint32_t);
 
+    // property methods - enable/disable the PPS interrupt logging
+
+    void set_pps_logging(bool enable);
+    bool get_pps_logging(void);
+
+    static void pps_isr_cb(void);
+
+    void shutdownPPSLogging(void);
+    void setupPPSLogging(uint16_t);
+
     void jobHandlerCB(void);
     flxJob _theJob;
 
     bool get_location(flxDataArrayFloat *);
+
+    bool _bPPSLoggingEnabled; // flag to indicate if PPS logging is enabled
+    uint16_t _ppsPin;         // interrupt pin number for PPS logging event detection.
+    bool _ppsLoggingIsSetup;
+
+    static bool _pps_triggered;
 
   public:
     // Define our read-write properties
     flxPropertyRWUInt32<flxDevGNSS, &flxDevGNSS::get_measurement_rate, &flxDevGNSS::set_measurement_rate>
         measurementRate;
 
+    flxPropertyRWBool<flxDevGNSS, &flxDevGNSS::get_pps_logging, &flxDevGNSS::set_pps_logging> ppsLogging;
     // Define our input parameters - specify the write functions to call.
     flxParameterInVoid<flxDevGNSS, &flxDevGNSS::factory_default> factoryDefault;
 
@@ -141,6 +162,14 @@ class flxDevGNSS : public flxDeviceI2CType<flxDevGNSS>, public flxIClock, public
     // position
     flxParameterOutArrayFloat<flxDevGNSS, &flxDevGNSS::get_location> location;
 
+    //-----------------------------------------------------
+    // methods to set/get PPS pin number
+    void set_pps_pin(uint16_t ppsPin);
+
+    uint16_t get_pps_pin(void)
+    {
+        return _ppsPin;
+    }
     //-----------------------------------------------------
     // Clock interface methods -- so the GNSS reciever can be used as a time reference.
     uint32_t get_epoch(void)
