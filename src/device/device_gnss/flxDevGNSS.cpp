@@ -85,7 +85,6 @@ flxDevGNSS::flxDevGNSS() : _bPPSLoggingEnabled{false}, _ppsPin{0}, _ppsLoggingIs
 
     // Register read-write properties
     flxRegister(measurementRate, "Measurement Rate (ms)", "Set the measurement interval in milliseconds");
-    flxRegister(ppsLogging, "PPS Logging", "Controle logging triggered by the PPS signal");
 
     // Register our input parameters
     flxRegister(factoryDefault, "Restore Factory Defaults", "Restore Factory Defaults - takes 5 seconds");
@@ -464,17 +463,55 @@ void flxDevGNSS::setupPPSLogging(uint16_t ppsPinIn)
         pinMode(_ppsPin, INPUT);
         attachInterrupt(_ppsPin, pps_isr_cb, RISING);
         _ppsLoggingIsSetup = true;
-        flxLog_V(F("GNSS PPS Logging Enabled on pin (%u)"), _ppsPin);
+        flxLog_I(F("GNSS PPS Logging Enabled on pin (%u)"), _ppsPin);
     }
 }
 //-----------------------------------------
-void flxDevGNSS::set_pps_pin(uint16_t ppsPinIn)
+void flxDevGNSS::setAvailablePPSPins(const uint16_t *inPPSPins, size_t len)
 {
-    // if the pin is different that current make some changes
-
-    if (_ppsPin == ppsPinIn)
+    if (!inPPSPins || (len == 0))
+    {
+        flxLog_D(F("GNSS PPS Pin list is null or empty"));
         return;
-    setupPPSLogging(ppsPinIn);
+    }
+
+    flxDataLimitSetUInt16 *dataLimit = new flxDataLimitSetUInt16;
+    size_t nItems = 0;
+    char szBuffer[8];
+
+    // We set the provided pins as limits on the pin property. Let's set that up
+    for (int i = 0; i < len; i++)
+    {
+        if (inPPSPins[i] == 0)
+        {
+            flxLog_D(F("GNSS PPS Pin list contains a zero pin - ignoring"));
+            continue; // skip zero pins
+        }
+        snprintf(szBuffer, sizeof(szBuffer), "%u", inPPSPins[i]);
+        dataLimit->addItem((const char *)szBuffer, inPPSPins[i]);
+        nItems++;
+        // first pin is our winner
+        if (nItems == 1)
+            _ppsPin = inPPSPins[i]; // set the first pin as the default
+    }
+
+    if (nItems == 0)
+    {
+        flxLog_D(F("GNSS PPS Pin list contains no valid pins - ignoring"));
+        delete dataLimit; // clean up
+        return;           // no valid pins
+    }
+    ppsPin.setDataLimit(dataLimit);
+
+    // Okay, our pin is setup. Make sure the properties are registered.
+    if (this->containsProperty(&ppsLogging) == false)
+    {
+        ppsLogging.setTitle("PPS Signal");
+        flxRegister(ppsLogging, "PPS Logging", "Send Logging event when the PPS inturrupt is received");
+        flxRegister(ppsPin, "PPS Pin", "Pin used to trigger PPS event");
+    }
+
+    setupPPSLogging(_ppsPin);
 }
 //-----------------------------------------
 // Methods for read-write properties - PPS logging
