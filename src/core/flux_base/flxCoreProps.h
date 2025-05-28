@@ -152,6 +152,10 @@ class _flxPropertyContainer
             _properties.erase(iter);
     }
 
+    bool containsProperty(flxProperty *prop)
+    {
+        return std::find(_properties.begin(), _properties.end(), prop) != _properties.end();
+    }
     //---------------------------------------------------------------------------------
     void removeProperty(flxProperty &rmProp)
     {
