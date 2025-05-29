@@ -36,6 +36,7 @@ class flxTimer : public flxActionType<flxTimer>
     void onTimer(void)
     {
         on_interval.emit();
+        on_interval_with_name.emit(name());
     }
 
     // for our timing
@@ -73,6 +74,7 @@ class flxTimer : public flxActionType<flxTimer>
     }
     // Our output event
     flxSignalVoid on_interval;
+    flxSignalString on_interval_with_name;
 
     // Property  - interval for the timer -- and set a default value of 10 seconds
     flxPropertyRWUInt32<flxTimer, &flxTimer::get_interval, &flxTimer::set_interval> interval = {10000};
