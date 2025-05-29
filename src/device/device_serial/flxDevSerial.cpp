@@ -33,6 +33,8 @@
 // update period for the device.
 
 #define kflxDevSerialUpdateDelta 50
+
+const uint32_t kflxDevSerialDefaultBaudRate = 115200; // Default baud rate for the serial connection
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -40,7 +42,8 @@
 // and managed properties.
 
 flxDevSerial::flxDevSerial()
-    : _pinRX{kNoPinSet}, _pinTX{kNoPinSet}, _isEnabled{false}, _baudRate{115200}, _serialPort{nullptr}
+    : _pinRX{kNoPinSet}, _pinTX{kNoPinSet}, _isEnabled{false}, _baudRate{kflxDevSerialDefaultBaudRate},
+      _serialPort{nullptr}
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -168,8 +171,10 @@ void flxDevSerial::set_is_enabled(bool enable)
 
     _isEnabled = enable;
     // are we turning this on?
-    // if (enable)
-    //     setupSensor();
+    if (enable)
+        setupSerial();
+    else
+        flxRemoveJobFromQueue(_theJob); // Remove the job from the queue if we are disabling
 }
 
 //-----------------------------------------------------------------------
@@ -189,10 +194,8 @@ void flxDevSerial::set_rx_pin(uint8_t newPin)
     // If this is a no pin set value, disable sensor
     if (newPin == kNoPinSet)
         set_is_enabled(false);
-
-    // TODO setup the pin
-    // else
-    //     setupSensor(); // new pin, do the setup.
+    else
+        setupSerial(); // new pin, try setup
 }
 
 //-----------------------------------------------------------------------
@@ -203,7 +206,6 @@ uint8_t flxDevSerial::get_tx_pin(void)
 }
 void flxDevSerial::set_tx_pin(uint8_t newPin)
 {
-
     // same pin, same state
     if (_pinTX == newPin)
         return;
@@ -213,11 +215,11 @@ void flxDevSerial::set_tx_pin(uint8_t newPin)
     // If this is a no pin set value, disable sensor
     if (newPin == kNoPinSet)
         set_is_enabled(false);
-
-    // TODO setup up da pin
+    else
+        setupSerial(); // new pin, try setup
 }
 
-//=======-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 // Baud Rate
 uint32_t flxDevSerial::get_baud_rate(void)
 {
@@ -231,7 +233,9 @@ void flxDevSerial::set_baud_rate(uint32_t baudRate)
 
     _baudRate = baudRate;
 
-    // TODO setup the serial port with the new baud rate
+    // Baud rate changed, we need to reinitialize the serial port
+    if (_serialPort != nullptr)
+        setupSerial(); // Reinitialize the serial port with the new baud rate
 }
 
 //----------------------------------------------------------------------------------------------------------
