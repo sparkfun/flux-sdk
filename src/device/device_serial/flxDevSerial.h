@@ -10,20 +10,7 @@
 
 /**
  * @file flxDevSerial.h
- * @brief Header file for the SparkFun Soil Moisture sensor device object.
  *
- * This file contains the definition of the device object for the SparkFun Soil Moisture sensor.
- * Note - this is a GPIO device, which depends on the Soil Moisture Sensor being connected to defined GPIO pins.
- * The required pins are VCC - a digitally controlled pin (to set low and high to power the sensor during reading),
- * and Sensor - which is an ANALOG pin to read the sensor value. These pins are settable via properties.
- *
- * @details
- * The class provides methods to initialize the sensor, read moisture values, and calibrate the sensor for dry and wet
- * states. It also includes properties to enable the sensor, set the GPIO pins, and retrieve the moisture values.
- *
- * @date 2025-03-05
- * @version 1.0
- * @note This file is part of the SparkFun Electronics Flux SDK.
  */
 
 #pragma once

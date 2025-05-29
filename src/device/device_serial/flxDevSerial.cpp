@@ -10,20 +10,13 @@
 
 /**
  * @file flxDevSerial.cpp
- * @brief Device object for the SparkFun Soil Moisture sensor.
+ * @brief Device object receiving data via a serial port.
  *
- * This file contains the implementation of the device object for the SparkFun Soil Moisture sensor.
- * Note - this is a GPIO device, which depends on the Soil Moisture Sensor being connected to defined GPIO pins.
- * The required pins are VCC - a digitally controlled pin (to set low and high to power the sensor during reading),
- * and Sensor - which is an ANALOG pin to read the sensor value. These pins are settable via properties.
+ * DEV NOTE:
+ *  Currently - May 2025 - this system supports only an ESP32 implementation.
  *
- * @details
- * The class provides methods to initialize the sensor, read moisture values, and calibrate the sensor for dry and wet
- * states. It also includes properties to enable the sensor, set the GPIO pins, and retrieve the moisture values.
+ *  To port to rp2350 - The Serial port would probably just be Serial2, with the internal pointer not used.
  *
- * @date 2025-03-05
- * @version 1.0
- * @note This file is part of the SparkFun Electronics Flux SDK.
  */
 
 #include "Arduino.h"
