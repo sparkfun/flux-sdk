@@ -97,7 +97,7 @@ class _flxLoggerMetrics
 
 flxLogger::flxLogger()
     : _timestampType{TimeStampNone}, _outputDeviceID{false}, _outputLocalName{false}, _sampleNumberEnabled{false},
-      _currentSampleNumber{0}, _pMetrics{nullptr}
+      _currentSampleNumber{0}, _pMetrics{nullptr}, _sourceNameEnabled{false}, _eventSourceName{""}
 {
     setName("Logger", "Data logging action");
 
@@ -137,7 +137,18 @@ flxLogger::flxLogger()
 
     flxRegister(logRateMetric, "Rate Metric", "Enabled to record the logging rate data");
 
+    // Enable/Disable prop for soure name output
+    flxRegister(enableSourceNameOutput, "Output Source Name", "Include the log event source name in the log output");
+
+    // add param to reg with obj, then remove it
+    flxRegister(logEventSourceName, "Trigger");
+    removeParameter(logEventSourceName); // added on enable of prop
+
     flux_add(this);
+
+    // setup a callback for the log event
+    // wire in the event to the logger
+    flxRegisterEventCB(flxEvent::kOnLogObservationWithSource, this, &flxLogger::logObservationWithSource);
 }
 //----------------------------------------------------------------------------
 // logScalar()
@@ -291,6 +302,13 @@ void flxLogger::logSection(const char *section_name, flxParameterOutList &paramL
 //----------------------------------------------------------------------------
 void flxLogger::logObservation(void)
 {
+    logObservationWithSource("");
+}
+void flxLogger::logObservationWithSource(const char *sourceName)
+{
+    // set the event source name - so this can be used if logging it.
+    _eventSourceName = sourceName == nullptr ? "" : sourceName;
+
     // Begin the observation with all our formatters
     for (auto theFormatter : _Formatters)
         theFormatter->beginObservation();
@@ -325,6 +343,8 @@ void flxLogger::logObservation(void)
 
     // send an activity event
     flxSendEvent(flxEvent::kOnSystemActivityLow);
+
+    _eventSourceName = ""; // clear the event source name after logging
 }
 //----------------------------------------------------------------------------
 // log message
@@ -626,4 +646,40 @@ void flxLogger::setEnableLogRate(bool enable)
 float flxLogger::getLogRate(void)
 {
     return _pMetrics ? _pMetrics->getMetricRate() : 0;
+}
+
+//----------------------------------------------------------------------------
+// Log sample number property get/set
+//----------------------------------------------------------------------------
+bool flxLogger::get_source_enable(void)
+{
+    return _sourceNameEnabled;
+}
+//----------------------------------------------------------------------------
+void flxLogger::set_source_enable(bool newMode)
+{
+    if (newMode == _sourceNameEnabled)
+        return;
+
+    // Are we going from having a number to not having a number?
+    if (!newMode)
+    {
+        // Remove the event source parameter from our internal parameter list
+        auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &logEventSourceName);
+
+        if (iter != _paramsToLog.end())
+            _paramsToLog.erase(iter);
+    }
+    else
+    {
+        // Add the source name parameter to our output list. It should be position the end
+        _paramsToLog.push_back(&logEventSourceName);
+    }
+    _sourceNameEnabled = newMode;
+}
+// for event source
+std::string flxLogger::get_source(void)
+{
+    // return the event source name
+    return _eventSourceName;
 }
