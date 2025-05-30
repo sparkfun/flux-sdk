@@ -84,7 +84,7 @@ bool flxOptExtSerial::setupSerial(void)
             delete _serialPort; // Delete the serial port object
         _serialPort = nullptr;  // Set the pointer to null
     }
-    // TODO: Check platform type here and take dif
+
 #ifdef ESP32
     _serialPort = new HardwareSerial(1); // Create a new serial port object
 
@@ -112,6 +112,10 @@ bool flxOptExtSerial::setupSerial(void)
         return false;          // Failed to initialize the serial port
     }
     flxLog_V("Serial port initialized on RX pin %u and TX pin %u with baud rate %u", _pinRX, _pinTX, _baudRate);
+
+    // do we have a serial device?
+    if (_devSerial != nullptr)
+        _devSerial->setSerialPort(_serialPort); // Set the serial port for the device
 
     return true;
 }
