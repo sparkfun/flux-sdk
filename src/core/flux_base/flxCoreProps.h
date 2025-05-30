@@ -2008,6 +2008,28 @@ template <class T> class flxContainer : public flxObject
             value->setParent(this);
     }
 
+    // insert a value after another value
+    bool insert_after(T value, T prev)
+    {
+        if (value == prev)
+            return false;
+
+        // is prev in the vector
+        auto itPrev = std::find(_vector.begin(), _vector.end(), prev);
+        if (itPrev == _vector.end())
+        {
+            flxLog_V(F("%s: insert_after: prev not in vector"), name());
+            return false;
+        }
+        // if value is in the vector, remove it.
+        remove(value);
+        // the interator could of changed -- maybe?
+        itPrev = std::find(_vector.begin(), _vector.end(), prev);
+        insert(itPrev + 1, value);
+
+        return true;
+    }
+
     auto back(void) -> decltype(_vector.back())
     {
         return _vector.back();

@@ -50,10 +50,14 @@ class flxFlux : public flxObjectContainer
     {
         add(&theAction);
     }
-    void add(flxAction *theAction)
+    void add(flxAction *theAction);
+
+    bool contains(flxAction &theAction)
     {
-        Actions.push_back(theAction);
+        return contains(&theAction);
     }
+    bool contains(flxAction *theAction);
+    bool insert_after(flxAction *theAction, flxAction *prevAction);
 
     void add(flxDevice &theDevice)
     {
@@ -74,6 +78,8 @@ class flxFlux : public flxObjectContainer
     }
 
     bool contains(flxDevice *theDevice);
+
+    bool insert_after(flxDevice *theDevice, flxDevice *prevDevice);
 
     // This is a singleton class - so delete copy & assignment constructors
     flxFlux(flxFlux const &) = delete;

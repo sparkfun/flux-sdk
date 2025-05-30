@@ -166,6 +166,26 @@ bool flxFlux::loop(void)
 
     return rc;
 }
+void flxFlux::add(flxAction *theAction)
+{
+    // make sure the action isn't already in the list
+    if (Actions.contains(theAction))
+    {
+        flxLog_D(F("Not adding action %s - already in the list"), theAction->name());
+        return;
+    }
+    Actions.push_back(theAction);
+}
+
+bool flxFlux::contains(flxAction *theAction)
+{
+    return Actions.contains(theAction);
+}
+
+bool flxFlux::insert_after(flxAction *value, flxAction *prev)
+{
+    return Actions.insert_after(value, prev);
+}
 //------------------------------------------------------------------------------
 // add()  -- a device pointer
 //
@@ -178,6 +198,13 @@ bool flxFlux::loop(void)
 //
 void flxFlux::add(flxDevice *theDevice)
 {
+    // make sure the device isn't already in the list
+    if (Devices.contains(theDevice))
+    {
+        flxLog_D(F("Not adding device %s - already in the list"), theDevice->name());
+        return;
+    }
+
     if (!theDevice->autoload())
         flxDeviceFactory::get().pruneAutoload(theDevice, Devices);
 
@@ -217,6 +244,10 @@ void flxFlux::remove(flxDevice *theDevice)
 bool flxFlux::contains(flxDevice *theDevice)
 {
     return Devices.contains(theDevice);
+}
+bool flxFlux::insert_after(flxDevice *value, flxDevice *prev)
+{
+    return Devices.insert_after(value, prev);
 }
 
 #define kApplicationHashIDSize 24
