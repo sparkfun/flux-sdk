@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: MIT
 #
 # Add the source files for this directory
-flux_sdk_add_source_files(flxDevSerial.h flxDevSerial.cpp)
+flux_sdk_add_source_files(flxDevSerial.h flxDevSerial.cpp flxOptExtSerial.h flxOptExtSerial.cpp)
