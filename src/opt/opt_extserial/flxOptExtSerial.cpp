@@ -49,7 +49,7 @@ flxOptExtSerial::flxOptExtSerial()
 
     flxRegister(serialBaudRate, "Baud Rate", "Baud rate for the serial connection");
 
-    serialBaudRate.setTitle("Functionality");
+    serialDeviceEnabled.setTitle("Functionality");
     flxRegister(serialDeviceEnabled, "Serial Input Device", "Enable the serial input device for this connection");
 }
 
@@ -72,9 +72,16 @@ bool flxOptExtSerial::initialize(void)
 bool flxOptExtSerial::setupSerial(void)
 {
 
-    // Pins define yet?
-    if (_pinRX == kNoPinSet || _pinRX == kNoPinSet || !_isEnabled)
+    // If we are not enabled, just return
+    if (!_isEnabled)
         return false;
+
+    // Pins define yet?
+    if (_pinRX == kNoPinSet || _pinTX == kNoPinSet)
+    {
+        flxLog_E(F("RX(%d) or TX(%d) pin not set for serial port"), _pinRX, _pinTX);
+        return false;
+    }
 
     // If we have a serial port, delete it
     if (_serialPort != nullptr)
@@ -86,16 +93,16 @@ bool flxOptExtSerial::setupSerial(void)
     }
 
 #ifdef ESP32
-    _serialPort = new HardwareSerial(1); // Create a new serial port object
+    _serialPort = &Serial1; // new HardwareSerial(1); // Create a new serial port object
 
     if (_serialPort == nullptr)
     {
         flxLog_E("Failed to create serial port object");
         return false; // Failed to create the serial port object
     }
-    _bSerialIsAlloc = true; // Set the flag indicating that the serial port is allocated
-    _serialPort->begin(_baudRate, SERIAL_8N1, _pinRX,
-                       _pinTX); // Initialize the serial port with the specified baud rate and pins
+    // _bSerialIsAlloc = true; // Set the flag indicating that the serial port is allocated
+    // Initialize the serial port with the specified baud rate and pins
+    _serialPort->begin(_baudRate, SERIAL_8N1, _pinRX, _pinTX);
 #elif defined(ARDUINO_PICO_MAJOR)
     Serial2.setRX(_pinRX);    // Set the RX pin for Serial2
     Serial2.setTX(_pinTX);    // Set the TX pin for Serial2
@@ -123,22 +130,6 @@ bool flxOptExtSerial::setupSerial(void)
 //-----------------------------------------------------------------------
 //  Properties
 //-----------------------------------------------------------------------
-//
-// ENABLED?
-bool flxOptExtSerial::get_is_enabled(void)
-{
-    return _isEnabled;
-}
-void flxOptExtSerial::set_is_enabled(bool enable)
-{
-    if (enable == _isEnabled)
-        return;
-
-    _isEnabled = enable;
-    // are we turning this on?
-    if (enable)
-        setupSerial();
-}
 
 //-----------------------------------------------------------------------
 // RX PIN
@@ -155,9 +146,7 @@ void flxOptExtSerial::set_rx_pin(uint8_t newPin)
     _pinRX = newPin;
 
     // If this is a no pin set value, disable sensor
-    if (newPin == kNoPinSet)
-        set_is_enabled(false);
-    else
+    if (newPin != kNoPinSet && _isEnabled)
         setupSerial(); // new pin, try setup
 }
 
@@ -176,9 +165,7 @@ void flxOptExtSerial::set_tx_pin(uint8_t newPin)
     _pinTX = newPin;
 
     // If this is a no pin set value, disable sensor
-    if (newPin == kNoPinSet)
-        set_is_enabled(false);
-    else
+    if (newPin != kNoPinSet && _isEnabled)
         setupSerial(); // new pin, try setup
 }
 
@@ -212,6 +199,7 @@ void flxOptExtSerial::set_enable_serialdevice(bool enable)
     // if enable - do we have a serial port and device?
     if (enable)
     {
+        _isEnabled = true; // Set the device as enabled
         if (_serialPort == nullptr)
         {
             if (!setupSerial())

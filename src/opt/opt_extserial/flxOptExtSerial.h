@@ -106,9 +106,6 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
 
   public:
     // properties
-    flxPropertyRWBool<flxOptExtSerial, &flxOptExtSerial::get_is_enabled, &flxOptExtSerial::set_is_enabled> isEnabled = {
-        false};
-
     flxPropertyRWUInt8<flxOptExtSerial, &flxOptExtSerial::get_rx_pin, &flxOptExtSerial::set_rx_pin> rxPin;
     flxPropertyRWUInt8<flxOptExtSerial, &flxOptExtSerial::get_tx_pin, &flxOptExtSerial::set_tx_pin> txPin;
 
