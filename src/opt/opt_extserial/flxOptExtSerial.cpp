@@ -36,17 +36,21 @@ const uint32_t kflxExtSerialDefaultBaudRate = 115200; // Default baud rate for t
 
 flxOptExtSerial::flxOptExtSerial()
     : _pinRX{kNoPinSet}, _pinTX{kNoPinSet}, _isEnabled{false}, _baudRate{kflxExtSerialDefaultBaudRate},
-      _serialPort{nullptr}, _bSerialIsAlloc{false}
+      _serialPort{nullptr}, _bSerialIsAlloc{false}, _devSerial{nullptr}
 {
 
     // Setup unique identifiers for this device and basic device object systems
     setName("External Serial", "External Serial Connections");
 
     // Register properties
+    rxPin.setTitle("Serial Settings");
     flxRegister(rxPin, "RX Pin", "The read (RX) GPIO pin for the serial connection. 255 = disabled");
     flxRegister(txPin, "TX Pin", "The transmission (TX) pin cfor the serial connection. 255 = disabled");
 
     flxRegister(serialBaudRate, "Baud Rate", "Baud rate for the serial connection");
+
+    serialBaudRate.setTitle("Functionality");
+    flxRegister(serialDeviceEnabled, "Serial Input Device", "Enable the serial input device for this connection");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -191,4 +195,53 @@ void flxOptExtSerial::set_baud_rate(uint32_t baudRate)
     // Baud rate changed, we need to reinitialize the serial port
     if (_serialPort != nullptr)
         setupSerial(); // Reinitialize the serial port with the new baud rate
+}
+bool flxOptExtSerial::get_enable_serialdevice(void)
+{
+    return _devSerial != nullptr && _devSerial->isEnabled();
+}
+void flxOptExtSerial::set_enable_serialdevice(bool enable)
+{
+    if (enable == get_enable_serialdevice())
+        return; // No change, do nothing
+
+    // if enable - do we have a serial port and device?
+    if (enable)
+    {
+        if (_serialPort == nullptr)
+        {
+            if (!setupSerial())
+            {
+                flxLog_E("%s:Failed to setup serial port for device", name());
+                return; // Failed to setup the serial port
+            }
+        }
+        if (_devSerial == nullptr)
+        {
+            _devSerial = new flxDevSerial(); // Create a new serial device object
+            if (_devSerial == nullptr)
+            {
+                flxLog_E("%s:Failed to create serial device object", name());
+                return; // Failed to create the serial device object
+            }
+            _devSerial->setSerialPort(_serialPort); // Set the serial port for the device
+            _devSerial->initialize();               // Initialize the device
+        }
+        // Now enable the device and add to the internal device list
+        _devSerial->isEnabled = true; // Enable the serial device
+        // Make sure the device is not in the system already.
+        if (!flux.contains(_devSerial))
+        {
+            flux.add(_devSerial); // Add the serial device to the system
+        }
+    }
+    else
+    {
+        // if we have a device, just pull it from the device list and disable it.
+        if (_devSerial != nullptr)
+        {
+            _devSerial->isEnabled = false; // Disable the serial device
+            flux.remove(_devSerial);       // Remove the serial device from the system       // Set the pointer to null
+        }
+    }
 }
