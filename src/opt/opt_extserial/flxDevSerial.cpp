@@ -247,7 +247,5 @@ void flxDevSerial::jobHandlerCB(void)
 
     // Any data available?
     if (_serialPort->available() > 0)
-    {
         flxSendEvent(flxEvent::kOnSerialDataAvailable); // Send an event that data is available
-    }
 }
