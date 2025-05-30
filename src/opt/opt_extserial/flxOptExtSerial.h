@@ -20,6 +20,7 @@
 #pragma once
 
 #include "Arduino.h"
+#include "flxFlux.h"
 #include <HardwareSerial.h>
 
 //----------------------------------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
      * @brief Method called to initialize the class.
      * @return True if initialization is successful, false otherwise.
      */
-    bool onInitialize(void);
+    bool initialize(void);
 
   private:
     bool setupSerial(void);

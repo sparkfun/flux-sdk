@@ -50,17 +50,15 @@ flxOptExtSerial::flxOptExtSerial()
 }
 
 //----------------------------------------------------------------------------------------------------------
-// onInitialize()
+// initialize()
 //
 // Called during the startup/initialization of the driver (after the constructor is called).
 //
 //
 //-----------------------------------------------------------------------
-bool flxOptExtSerial::onInitialize(void)
+bool flxOptExtSerial::initialize(void)
 {
-    // already initialized?
-    if (isInitialized())
-        return true;
+    return true;
 }
 //-----------------------------------------------------------------------
 // setupSensor()
