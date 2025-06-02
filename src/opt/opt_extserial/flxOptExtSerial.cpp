@@ -27,7 +27,8 @@
 #include <SerialUART.h>
 #endif
 
-const uint32_t kflxExtSerialDefaultBaudRate = 115200; // Default baud rate for the serial connection
+// Found 9600 works well overall
+const uint32_t kflxExtSerialDefaultBaudRate = 9600; // Default baud rate for the serial connection
 //----------------------------------------------------------------------------------------------------------
 // Constructor
 //
@@ -36,7 +37,7 @@ const uint32_t kflxExtSerialDefaultBaudRate = 115200; // Default baud rate for t
 
 flxOptExtSerial::flxOptExtSerial()
     : _pinRX{kNoPinSet}, _pinTX{kNoPinSet}, _isEnabled{false}, _baudRate{kflxExtSerialDefaultBaudRate},
-      _serialPort{nullptr}, _bSerialIsAlloc{false}, _devSerial{nullptr}
+      _serialPort{nullptr}, _devSerial{nullptr}
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -86,35 +87,28 @@ bool flxOptExtSerial::setupSerial(void)
     // If we have a serial port, delete it
     if (_serialPort != nullptr)
     {
-        _serialPort->end(); // End the serial port if it was initialized
-        if (_bSerialIsAlloc)
-            delete _serialPort; // Delete the serial port object
-        _serialPort = nullptr;  // Set the pointer to null
+        _serialPort->end();    // End the serial port if it was initialized
+        _serialPort = nullptr; // Set the pointer to null
     }
 
 #ifdef ESP32
-    _serialPort = &Serial1; // new HardwareSerial(1); // Create a new serial port object
+    _serialPort = &Serial1;             // new HardwareSerial(1); // Create a new serial port object
+    _serialPort->setRxBufferSize(1024); // Set the RX buffer size for the serial port
 
-    if (_serialPort == nullptr)
-    {
-        flxLog_E("Failed to create serial port object");
-        return false; // Failed to create the serial port object
-    }
-    // _bSerialIsAlloc = true; // Set the flag indicating that the serial port is allocated
     // Initialize the serial port with the specified baud rate and pins
     _serialPort->begin(_baudRate, SERIAL_8N1, _pinRX, _pinTX);
 #elif defined(ARDUINO_PICO_MAJOR)
-    Serial2.setRX(_pinRX);    // Set the RX pin for Serial2
-    Serial2.setTX(_pinTX);    // Set the TX pin for Serial2
-    _bSerialIsAlloc = false;  // Serial2 is not dynamically allocated, so we don't delete it later
-    Serial2.begin(_baudRate); // Initialize Serial2 with the specified baud rate
-    _serialPort = &Serial2;
+    // NOTE: Note Tested
+    // Serial2.setRX(_pinRX);    // Set the RX pin for Serial2
+    // Serial2.setTX(_pinTX);    // Set the TX pin for Serial2
+    // _bSerialIsAlloc = false;  // Serial2 is not dynamically allocated, so we don't delete it later
+    // Serial2.begin(_baudRate); // Initialize Serial2 with the specified baud rate
+    // _serialPort = &Serial2;
 #endif
 
     if ((*_serialPort) == false)
     {
         flxLog_E("Failed to initialize serial port on RX pin %u and TX pin %u", _pinRX, _pinTX);
-        delete _serialPort;    // Clean up the serial port object
         _serialPort = nullptr; // Set the pointer to null
         return false;          // Failed to initialize the serial port
     }
@@ -175,6 +169,7 @@ uint32_t flxOptExtSerial::get_baud_rate(void)
 {
     return _baudRate;
 }
+//-----------------------------------------------------------------------
 void flxOptExtSerial::set_baud_rate(uint32_t baudRate)
 {
     // same baud rate, same state
@@ -187,10 +182,12 @@ void flxOptExtSerial::set_baud_rate(uint32_t baudRate)
     if (_serialPort != nullptr)
         setupSerial(); // Reinitialize the serial port with the new baud rate
 }
+//-----------------------------------------------------------------------
 bool flxOptExtSerial::get_enable_serialdevice(void)
 {
     return _devSerial != nullptr && _devSerial->isEnabled();
 }
+//-----------------------------------------------------------------------
 void flxOptExtSerial::set_enable_serialdevice(bool enable)
 {
     if (enable == get_enable_serialdevice())

@@ -60,10 +60,7 @@ class flxDevSerial : public flxDeviceGPIOType<flxDevSerial>
      */
     bool onInitialize(void);
 
-    void setSerialPort(HardwareSerial *serialPort)
-    {
-        _serialPort = serialPort;
-    }
+    void setSerialPort(HardwareSerial *serialPort);
 
   private:
     // props

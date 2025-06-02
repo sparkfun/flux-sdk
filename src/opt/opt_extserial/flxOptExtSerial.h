@@ -50,9 +50,8 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
                 _devSerial = nullptr; // Set the pointer to null
             }
             _serialPort->end(); // End the serial port if it was initialized
-            if (_bSerialIsAlloc)
-                delete _serialPort; // Delete the serial port object if it was allocated
-            _serialPort = nullptr;  // Set the pointer to null
+
+            _serialPort = nullptr; // Set the pointer to null
         }
     }
     /**
@@ -100,7 +99,6 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
     uint32_t _baudRate;
 
     HardwareSerial *_serialPort; // Pointer to the serial port used for communication
-    bool _bSerialIsAlloc;        // Flag to indicate if the serial port is allocated
 
     flxDevSerial *_devSerial; // Pointer to the serial device object, if needed
 

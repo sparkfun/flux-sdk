@@ -25,7 +25,7 @@
 
 // update period for the device.
 
-#define kflxDevSerialUpdateDelta 50
+#define kflxDevSerialUpdateDelta 200
 
 //----------------------------------------------------------------------------------------------------------
 // Constructor
@@ -65,6 +65,7 @@ bool flxDevSerial::onInitialize(void)
     return true;
 }
 
+//-----------------------------------------------------------------------
 std::string flxDevSerial::read_serial_value(void)
 {
     if (!_isEnabled || _serialPort == nullptr)
@@ -77,26 +78,49 @@ std::string flxDevSerial::read_serial_value(void)
     std::string result = "";
     char szBuffer[256]; // Buffer to hold the incoming data
     size_t bytesRead = 0;
-    uint32_t iterations = 30; // set a cap on run iterations ...
-    while (_serialPort->available() > 0 && iterations-- > 0)
+
+    // flxLog_D("Serial read  - chars available: %d", _serialPort->available());
+    // char cc;
+    int bytesAvailable = _serialPort->available();
+    while (bytesAvailable > 0) // && iterations-- > 0)
     {
+        // cc = _serialPort->read(); // Peek at the next byte without removing it
         // Read a byte from the serial port
-        bytesRead = _serialPort->read((uint8_t *)szBuffer, sizeof(szBuffer) - 1);
+        bytesRead = _serialPort->readBytes(
+            (uint8_t *)szBuffer, bytesAvailable < sizeof(szBuffer) - 1 ? bytesAvailable : sizeof(szBuffer) - 1);
+        // flxLog_D("Serial read - Bytes read: %d", bytesRead);
 
         // if nothing read, we're done
         if (bytesRead < 0)
             break;
         szBuffer[bytesRead] = '\0'; // Null-terminate the string
+        // flxLog_D("Serial read - string: '%s'", szBuffer);
 
         // Append the byte to the result string
         result += szBuffer;
+        bytesAvailable = _serialPort->available(); // Check how many bytes are left to read
     }
 
     // Log the received line
-    flxLog_V("%s: Read %d characters", name(), result.size());
+    // flxLog_D("%s: Read %d characters, result: %s", name(), result.size(), result.c_str());
 
     // Return the line as a string
     return result;
+}
+//-----------------------------------------------------------------------
+
+void flxDevSerial::setSerialPort(HardwareSerial *serialPort)
+{
+    if (_serialPort == serialPort)
+        return; // No change
+
+    _serialPort = serialPort; // Set the serial port
+    if (_serialPort != nullptr)
+    {
+        // Any pending data - empty it out
+        while (_serialPort->available() > 0)
+            _serialPort->read(); // Read and discard any data
+    }
 }
 //-----------------------------------------------------------------------
 //  Properties
@@ -127,7 +151,7 @@ void flxDevSerial::jobHandlerCB(void)
 {
     if (!_isEnabled || _serialPort == nullptr)
     {
-        flxLog_D("Serial port is not enabled or not initialized");
+        flxLog_D("Serial port is not enabled or not initialized %d: %x", _isEnabled, (uint32_t)_serialPort);
 
         // why is the job being called
         flxRemoveJobFromQueue(_theJob);
