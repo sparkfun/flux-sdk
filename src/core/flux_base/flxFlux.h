@@ -20,9 +20,9 @@
 
 class flxApplication;
 
-// happy functions for happy users.
-// bool spark_start(bool bAutoLoad = true);
-// bool spark_loop();
+// Define an event for serial data available
+flxDefineEventID(kOnFluxAddDevice);
+flxDefineEventID(kOnFluxRemoveDevice);
 
 // Define a default app class name
 #define kDefaultAppClassName "SFE-FLUX-APPLICATION"

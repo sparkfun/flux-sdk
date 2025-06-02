@@ -232,6 +232,9 @@ void flxFlux::add(flxDevice *theDevice)
         theDevice->addAddressToName();
 
     Devices.push_back(theDevice);
+
+    // send the device add event
+    flxSendEvent(flxEvent::kOnFluxAddDevice, (uint32_t)theDevice);
 }
 
 //---------------------------------------------------------------------------------
@@ -239,6 +242,9 @@ void flxFlux::add(flxDevice *theDevice)
 void flxFlux::remove(flxDevice *theDevice)
 {
     Devices.remove(theDevice);
+
+    // send the device remove event
+    flxSendEvent(flxEvent::kOnFluxRemoveDevice, (uint32_t)theDevice);
 }
 
 bool flxFlux::contains(flxDevice *theDevice)
