@@ -62,6 +62,7 @@ bool flxDevSerial::onInitialize(void)
     if (isInitialized())
         return true;
 
+    // nothing to see here...
     return true;
 }
 
@@ -108,19 +109,42 @@ std::string flxDevSerial::read_serial_value(void)
     return result;
 }
 //-----------------------------------------------------------------------
+void flxDevSerial::checkJobState(void)
+{
+    if (!_isEnabled || _serialPort == nullptr)
+    {
+        flxLog_D("%s: Serial port is not enabled or not initialized %d: %x", __func__, _isEnabled,
+                 (uint32_t)_serialPort);
+        // why is the job being called
+        flxRemoveJobFromQueue(_theJob);
+    }
+    else
+    {
+        flxLog_D("%s: Serial port is enabled - adding job to queue", __func__);
+        // Add the job to the queue if we are enabling
+        flxAddJobToQueue(_theJob);
+    }
+}
+//-----------------------------------------------------------------------
 
 void flxDevSerial::setSerialPort(HardwareSerial *serialPort)
 {
     if (_serialPort == serialPort)
-        return; // No change
-
-    _serialPort = serialPort; // Set the serial port
-    if (_serialPort != nullptr)
     {
-        // Any pending data - empty it out
-        while (_serialPort->available() > 0)
-            _serialPort->read(); // Read and discard any data
+        flxLog_D("%s: No change in serial port - returning", __func__);
+        return; // No change
     }
+    flxLog_D("%s: Setting serial port to %p", __func__, (void *)serialPort);
+    _serialPort = serialPort; // Set the serial port
+
+    checkJobState();
+    // if (_serialPort != nullptr)
+    // {
+    //     // // Any pending data - empty it out
+    //     // while (_serialPort->available() > 0)
+    //     //     _serialPort->read(); // Read and discard any data
+    //     // make sure the job is added
+    // }
 }
 //-----------------------------------------------------------------------
 //  Properties
@@ -137,11 +161,13 @@ void flxDevSerial::set_is_enabled(bool enable)
         return;
 
     _isEnabled = enable;
-    // are we turning this on?
-    if (enable)
-        flxAddJobToQueue(_theJob); // Add the job to the queue if we are enabling
-    else
-        flxRemoveJobFromQueue(_theJob); // Remove the job from the queue if we are disabling
+
+    checkJobState(); // Check the job state based on the new enabled state
+    // // are we turning this on?
+    // if (enable)
+    //     flxAddJobToQueue(_theJob); // Add the job to the queue if we are enabling
+    // else
+    //     flxRemoveJobFromQueue(_theJob); // Remove the job from the queue if we are disabling
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -160,5 +186,5 @@ void flxDevSerial::jobHandlerCB(void)
 
     // Any data available?
     if (_serialPort->available() > 0)
-        flxSendEvent(flxEvent::kOnSerialDataAvailable); // Send an event that data is available
+        flxSendEvent(flxEvent::kOnSerialDataAvailable);
 }

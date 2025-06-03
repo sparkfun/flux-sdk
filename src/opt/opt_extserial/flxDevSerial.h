@@ -71,7 +71,9 @@ class flxDevSerial : public flxDeviceGPIOType<flxDevSerial>
     // methods used to get values for our output parameters
     std::string read_serial_value();
 
+    void checkJobState(void);
     void jobHandlerCB(void);
+
     flxJob _theJob;
 
     bool _isEnabled;

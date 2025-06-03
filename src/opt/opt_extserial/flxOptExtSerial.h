@@ -67,7 +67,7 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
      * @brief Method called to initialize the class.
      * @return True if initialization is successful, false otherwise.
      */
-    bool initialize(void);
+    bool begin(void);
 
   private:
     bool setupSerial(void);
@@ -90,6 +90,7 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
 
     bool get_enable_serialdevice(void);
     void set_enable_serialdevice(bool);
+    bool setupDeviceSerialDriver(void);
 
     uint8_t _pinRX;
     uint8_t _pinTX;
@@ -101,6 +102,8 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
     HardwareSerial *_serialPort; // Pointer to the serial port used for communication
 
     flxDevSerial *_devSerial; // Pointer to the serial device object, if needed
+
+    bool _started;
 
   public:
     // properties
