@@ -75,6 +75,10 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
     {
         if (_isEnabled)
             setupSerial(); // Re-setup the serial port if it is enabled
+
+        // was this set/called by the startup reset job? If so, clear out the job pointer/smart pointer
+        if (_jobReset != nullptr)
+            _jobReset.reset(nullptr); // release the job /smart pointer
     }
 
   private:
@@ -112,6 +116,7 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
     flxDevSerial *_devSerial; // Pointer to the serial device object, if needed
 
     bool _started;
+    std::unique_ptr<flxJob> _jobReset; // Pointer to a job that resets the serial port
 
   public:
     // properties

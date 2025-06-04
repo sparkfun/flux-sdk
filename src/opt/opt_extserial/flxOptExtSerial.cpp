@@ -37,7 +37,7 @@ const uint32_t kflxExtSerialDefaultBaudRate = 9600; // Default baud rate for the
 
 flxOptExtSerial::flxOptExtSerial()
     : _pinRX{kNoPinSet}, _pinTX{kNoPinSet}, _isEnabled{false}, _baudRate{kflxExtSerialDefaultBaudRate},
-      _serialPort{nullptr}, _devSerial{nullptr}, _started{false}
+      _serialPort{nullptr}, _devSerial{nullptr}, _started{false}, _jobReset{nullptr}
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -56,17 +56,28 @@ flxOptExtSerial::flxOptExtSerial()
     flux_add(this);
 }
 
-//----------------------------------------------------------------------------------------------------------
-// initialize()
-//
-// Called during the startup/initialization of the driver (after the constructor is called).
-//
-//
 //-----------------------------------------------------------------------
 bool flxOptExtSerial::begin(void)
 {
     _started = true;
-    return setupDeviceSerialDriver();
+    bool status = setupDeviceSerialDriver();
+    if (status)
+    {
+        // June 2025 - ESP32 arduino core v3.07- if a serial device is enabled, the setup of the device
+        // the serial device doesn't behave correctly - new data fails to register. But, "resetting a few seconds
+        // after startup  enables the serial device to work correctly.
+        //
+        // So setup a one shot job (_jobReset) to reset the serial port after 3 seconds. Use a smart pointer...
+        _jobReset.reset(new flxJob);
+        if (_jobReset != nullptr)
+        {
+            _jobReset->setup("Serial Reset", 3000, this, &flxOptExtSerial::reset, true);
+            flxAddJobToQueue(*_jobReset); // Add the reset job to the job queue
+        }
+        else
+            flxLog_W(F("Startup failure - serial port might fail to start"));
+    }
+    return status;
 }
 //-----------------------------------------------------------------------
 // setupSerial()
