@@ -451,7 +451,7 @@ std::string flxLogger::get_timestamp(void)
         break;
 
     case TimeStampEpoch:
-        snprintf(szBuffer, sizeof(szBuffer), "%ld", t_now);
+        snprintf(szBuffer, sizeof(szBuffer), "%lu", (unsigned long)time(NULL));
         break;
 
     case TimeStampDateTimeUSA:
