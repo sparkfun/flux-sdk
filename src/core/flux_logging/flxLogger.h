@@ -281,19 +281,25 @@ class flxLogger : public flxActionType<flxLogger>
         TimeStampDateTime,
         TimeStampISO8601,
         TimeStampISO8601TZ,
+        TimeStampISO8601WD,
+        TimeStampISO8601WDTZ,
     } Timestamp_t;
 
     // Timestamp property
 
     flxPropertyRWUInt32<flxLogger, &flxLogger::get_ts_type, &flxLogger::set_ts_type> timestampMode = {
         TimeStampNone,
-        {{"No Timestamp", TimeStampNone},
-         {"Milliseconds since program start", TimeStampMillis},
-         {"Seconds since Epoch", TimeStampEpoch},
-         {"Date Time - USA Date format", TimeStampDateTimeUSA},
-         {"Date Time", TimeStampDateTime},
-         {"ISO8601 Timestamp", TimeStampISO8601},
-         {"ISO8601 Timestamp with Time Zone", TimeStampISO8601TZ}}};
+        {
+            {"No Timestamp", TimeStampNone},
+            {"Milliseconds since program start", TimeStampMillis},
+            {"Seconds since Epoch", TimeStampEpoch},
+            {"Date Time - USA Date format", TimeStampDateTimeUSA},
+            {"Date Time", TimeStampDateTime},
+            {"ISO8601 Timestamp", TimeStampISO8601},
+            {"ISO8601 Timestamp with Time Zone", TimeStampISO8601TZ},
+            {"ISO8601 Timestamp - Week Date", TimeStampISO8601WD},
+            {"ISO8601 Timestamp - Week Date with Time Zone", TimeStampISO8601WDTZ},
+        }};
 
     // output parameter for the timestamp
     flxParameterOutString<flxLogger, &flxLogger::get_timestamp> timestamp;

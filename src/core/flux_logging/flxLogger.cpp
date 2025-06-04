@@ -455,16 +455,27 @@ std::string flxLogger::get_timestamp(void)
         break;
 
     case TimeStampDateTimeUSA:
-        strftime(szBuffer, sizeof(szBuffer), "%m-%d-%G %T", tmLocal);
+        // June 2025 - Year was originally %G - The ISO 8601 week-based year as a decimal number.
+        strftime(szBuffer, sizeof(szBuffer), "%m-%d-%Y %T", tmLocal);
         break;
 
     case TimeStampDateTime:
-        strftime(szBuffer, sizeof(szBuffer), "%d-%m-%G %T", tmLocal);
+        // June 2025 - Year was originally %G - The ISO 8601 week-based year as a decimal number.
+        // This would cause to year to increment, but the date still being on the older year (12/29/2025 -> 12/30/2025).
+        // Note - first week with this format is the week that contains the first Thursday of the year.
+        strftime(szBuffer, sizeof(szBuffer), "%d-%m-%Y %T", tmLocal);
         break;
 
+    // Standard ISO 8601 format
     case TimeStampISO8601:
     case TimeStampISO8601TZ:
         flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), _timestampType == TimeStampISO8601TZ);
+        break;
+
+    // Week date format?
+    case TimeStampISO8601WD:
+    case TimeStampISO8601WDTZ:
+        flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), _timestampType == TimeStampISO8601WDTZ, true);
         break;
 
     case TimeStampNone:
