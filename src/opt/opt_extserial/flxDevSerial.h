@@ -74,7 +74,7 @@ class flxDevSerial : public flxDeviceGPIOType<flxDevSerial>
     void checkJobState(void);
     void jobHandlerCB(void);
 
-    flxJob _theJob;
+    std::unique_ptr<flxJob> _theJob;
 
     bool _isEnabled;
 

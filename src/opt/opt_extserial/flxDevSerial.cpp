@@ -33,7 +33,7 @@
 // Object constructor. Performs initialization of device values,
 // and managed properties.
 
-flxDevSerial::flxDevSerial() : _isEnabled{false}, _serialPort{nullptr}
+flxDevSerial::flxDevSerial() : _isEnabled{false}, _serialPort{nullptr}, _theJob(nullptr)
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -44,9 +44,6 @@ flxDevSerial::flxDevSerial() : _isEnabled{false}, _serialPort{nullptr}
     flxRegister(isEnabled, "Enable", "When true, this serial input is enabled");
 
     flxRegister(serialValue, "Value", "The next line/value from the serial connection");
-
-    // The update job used for this device
-    _theJob.setup(name(), kflxDevSerialUpdateDelta, this, &flxDevSerial::jobHandlerCB);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -100,9 +97,27 @@ std::string flxDevSerial::read_serial_value(void)
 void flxDevSerial::checkJobState(void)
 {
     if (!_isEnabled || _serialPort == nullptr)
-        flxRemoveJobFromQueue(_theJob);
+    {
+        if (_theJob != nullptr)
+            flxRemoveJobFromQueue(*_theJob);
+    }
     else
-        flxAddJobToQueue(_theJob);
+    {
+        // If the job is not initialized, create it
+        if (_theJob == nullptr)
+        {
+            _theJob.reset(new flxJob);
+            // do we have a job?
+            if (_theJob == nullptr)
+            {
+                flxLog_E("%s: Unable to create job - external serial device disabled", name());
+                _isEnabled = false;
+                return; // No job allocated
+            }
+            _theJob->setup(name(), kflxDevSerialUpdateDelta, this, &flxDevSerial::jobHandlerCB);
+        }
+        flxAddJobToQueue(*_theJob);
+    }
 }
 //-----------------------------------------------------------------------
 
@@ -144,7 +159,7 @@ void flxDevSerial::jobHandlerCB(void)
         flxLog_D("Serial port is not enabled or not initialized %d: %x", _isEnabled, (uint32_t)_serialPort);
 
         // why is the job being called
-        flxRemoveJobFromQueue(_theJob);
+        flxRemoveJobFromQueue(*_theJob);
         return; // Nothing to do
     }
 
