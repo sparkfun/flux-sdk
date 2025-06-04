@@ -68,6 +68,14 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
      * @return True if initialization is successful, false otherwise.
      */
     bool begin(void);
+    // reset/reapply settings to the serial port. Found at times during startup, this is needed to ensure
+    // the serial port actuall works on the esp32. It makese no sense ...
+
+    void reset(void)
+    {
+        if (_isEnabled)
+            setupSerial(); // Re-setup the serial port if it is enabled
+    }
 
   private:
     bool setupSerial(void);
