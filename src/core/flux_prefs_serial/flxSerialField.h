@@ -86,6 +86,18 @@ class flxSerialField : public flxDataEditor
     bool editFieldCString(char *value, size_t lenValue, bool hidden = false, uint32_t timeout = 60);
     void beep();
 
+    // Define an enum for field return values
+    enum EditReturn_t
+    {
+        kEditReturnEscape = 0, // Escape key pressed
+        kEditReturnCR,         // Carrige return key pressed (return)
+        kEditReturnUpArrow,    // Up arrow key pressed
+        kEditReturnDownArrow   // Down arrow key pressed
+    };
+
+    // Edit field method, similar as above, but will return an EditReturn_t value.
+    flxSerialField::EditReturn_t editFieldStringCLI(std::string &value, bool hidden = false, uint32_t timeout = 60);
+
   private:
     static constexpr uint16_t kEditBufferMax = 256;
     typedef struct
@@ -108,6 +120,6 @@ class flxSerialField : public flxDataEditor
     void processEndOfLineKey(FieldContext_t &ctxEdit);
     void processStartOfLineKey(FieldContext_t &ctxEdit);
     uint16_t processText(FieldContext_t &ctxEdit, char *inputBuffer, uint length);
-    bool editLoop(FieldContext_t &ctxEdit, uint32_t timeout = 10);
+    EditReturn_t editLoop(FieldContext_t &ctxEdit, uint32_t timeout = 10, bool arrowUpDown = false);
     void fulltext(FieldContext_t &ctxEdit, char *buffer, size_t length = kEditBufferMax);
 };

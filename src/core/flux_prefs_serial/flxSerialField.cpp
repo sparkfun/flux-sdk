@@ -98,6 +98,8 @@ const uint8_t kCodeKillEOL = 11;
 const uint8_t kCodeESC = 27;
 const uint8_t kCodeAsterisk = 42;
 const uint8_t kCodeESCExtend = 91;
+const uint8_t kCodeArrowUp = 65;
+const uint8_t kCodeArrowDown = 66;
 const uint8_t kCodeArrowRight = 67;
 const uint8_t kCodeArrowLeft = 68;
 const uint8_t kCodeKPDel = 126;
@@ -542,14 +544,14 @@ uint16_t flxSerialField::processText(FieldContext_t &ctxEdit, char *inputBuffer,
 //
 //  timeout - is in secs
 //
-bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
+flxSerialField::EditReturn_t flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout, bool arrowUpDown)
 {
 
     char inputBuffer[kInputBufferSize];
     uint nInput, nRead;
 
     // Loop until the user stops (CR/Enter or ESC key), or timeout
-    bool returnValue = false;
+    EditReturn_t returnValue = kEditReturnEscape;
 
     timeout = timeout * 1000; // secs to millis
 
@@ -626,7 +628,19 @@ bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
                     // Arrow Keys?
                     if (nRead == 3)
                     {
-                        processArrowKeys(ctxEdit, inputBuffer[iInput + 2]);
+                        // if Checking updown arrow keys
+                        if (arrowUpDown && inputBuffer[iInput + 2] == kCodeArrowUp) // Up arrow
+                        {
+                            returnValue = kEditReturnUpArrow;
+                            bBreakOut = true; // end loop
+                        }
+                        else if (arrowUpDown && inputBuffer[iInput + 2] == kCodeArrowDown) // Down arrow
+                        {
+                            returnValue = kEditReturnDownArrow;
+                            bBreakOut = true; // end loop
+                        }
+                        else
+                            processArrowKeys(ctxEdit, inputBuffer[iInput + 2]);
                         iInput += 2;
                     }
                     else if (nRead == 4 && inputBuffer[iInput + 3] == kCodeKPDel) // Keypad delete
@@ -645,7 +659,8 @@ bool flxSerialField::editLoop(FieldContext_t &ctxEdit, uint32_t timeout)
             {
                 // move text to all
                 fulltext(ctxEdit, ctxEdit.all);
-                returnValue = true;
+                returnValue = kEditReturnCR;
+                ;
                 bBreakOut = true; // end loop
             }
             else if (inputBuffer[iInput] == kCodeEOL) // Move to end of line.
@@ -699,7 +714,7 @@ bool flxSerialField::editFieldCString(char *value, size_t lenValue, bool hidden,
 
     // Okay, setup, lets dispatch to the edit loop
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         // Editing was successful - copy out entered value
         strlcpy(value, ctxEdit.all, lenValue);
@@ -726,7 +741,7 @@ bool flxSerialField::editFieldString(std::string &value, bool hidden, uint32_t t
 
     // Okay, setup, lets dispatch to the edit loop
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         // Editing was successful - copy out entered value
         value = ctxEdit.all;
@@ -736,6 +751,31 @@ bool flxSerialField::editFieldString(std::string &value, bool hidden, uint32_t t
 
     // editing wasn't successful.
     return false;
+}
+// This is a little hacky - maybe - but a way to get arrow values out, while
+// preserving the original interface.
+flxSerialField::EditReturn_t flxSerialField::editFieldStringCLI(std::string &value, bool hidden, uint32_t timeout)
+{
+    // setup context
+    FieldContext_t ctxEdit;
+
+    resetContext(ctxEdit);
+    ctxEdit.validator = isTrue; // always true for text
+    ctxEdit.hidden = hidden;
+
+    // copy in our initial value.
+    ctxEdit.cursor = value.length();
+    if (ctxEdit.cursor > 0)
+        strlcpy(ctxEdit.head, value.c_str(), kEditBufferMax);
+
+    // Okay, setup, lets dispatch to the edit loop
+    EditReturn_t ret = editLoop(ctxEdit, timeout, true);
+
+    // if we didn't return a Escape, return the current value
+    if (ret != kEditReturnEscape)
+        value = ctxEdit.all;
+
+    return ret; // return the edit return value
 }
 
 //--------------------------------------------------------------------------
@@ -759,7 +799,7 @@ bool flxSerialField::editFieldBool(bool &value, bool hidden, uint32_t timeout)
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value ? 1 : 0);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         if (strlen(ctxEdit.all) > 0)
         {
@@ -792,7 +832,7 @@ bool flxSerialField::editFieldInt8(int8_t &value, bool hidden, uint32_t timeout)
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
@@ -818,7 +858,7 @@ bool flxSerialField::editFieldInt16(int16_t &value, bool hidden, uint32_t timeou
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
@@ -844,7 +884,7 @@ bool flxSerialField::editFieldInt(int32_t &value, bool hidden, uint32_t timeout)
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%d", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
@@ -871,7 +911,7 @@ bool flxSerialField::editFieldUInt8(uint8_t &value, bool hidden, uint32_t timeou
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%u", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
@@ -898,7 +938,7 @@ bool flxSerialField::editFieldUInt16(uint16_t &value, bool hidden, uint32_t time
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%u", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
@@ -925,7 +965,7 @@ bool flxSerialField::editFieldUInt(uint32_t &value, bool hidden, uint32_t timeou
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%u", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
@@ -952,7 +992,7 @@ bool flxSerialField::editFieldFloat(float &value, bool hidden, uint32_t timeout)
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%f", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
@@ -979,7 +1019,7 @@ bool flxSerialField::editFieldDouble(double &value, bool hidden, uint32_t timeou
     snprintf(ctxEdit.head, sizeof(ctxEdit.head), "%f", value);
     ctxEdit.cursor = strlen(ctxEdit.head);
 
-    if (editLoop(ctxEdit, timeout))
+    if (editLoop(ctxEdit, timeout) == kEditReturnCR)
     {
         char *p;
         // Editing was successful - copy out entered value
