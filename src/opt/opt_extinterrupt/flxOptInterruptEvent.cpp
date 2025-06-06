@@ -36,6 +36,7 @@ flxOptInterruptEvent::flxOptInterruptEvent()
 
     // Register properties
     flxRegister(isEnabled, "Enabled", "When true, this interrupt is enabled");
+    flxRegister(eventName, "Event Name", "Name to use for the event");
 
     flux_add(this);
 
@@ -211,6 +212,6 @@ void flxOptInterruptEvent::jobHandlerCB(void)
     {
         flxOptInterruptEvent::_intr_triggered = false; // Reset the trigger state
         // Send the event
-        flxSendEvent(_eventID, eventName); // Send the event
+        flxSendEvent(_eventID, eventName().c_str()); // Send the event
     }
 }
