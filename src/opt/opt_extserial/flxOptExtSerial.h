@@ -87,9 +87,6 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
     static constexpr uint8_t kNoPinSet = 255;
 
     // props
-    // is enabled?
-    bool get_is_enabled(void);
-    void set_is_enabled(bool);
 
     uint8_t get_rx_pin(void);
     void set_rx_pin(uint8_t);

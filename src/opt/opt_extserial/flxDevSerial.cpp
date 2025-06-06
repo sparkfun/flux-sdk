@@ -98,6 +98,7 @@ void flxDevSerial::checkJobState(void)
 {
     if (!_isEnabled || _serialPort == nullptr)
     {
+        // do we have a job setup
         if (_theJob != nullptr)
             flxRemoveJobFromQueue(*_theJob);
     }
