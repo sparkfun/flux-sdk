@@ -203,8 +203,26 @@ class _flxEventHub
     //
     template <typename T> void sendEvent(flxEvent::flxEventID_t id, T value)
     {
+        // do the version that uses id numbers
+        sendEvent(id(), value);
+    }
+    //----------------------------------------------------------------------------------------------------
+    // Send a void event
+    //
+    void sendEvent(flxEvent::flxEventID_t id)
+    {
+        // do the version that uses id numbers
+        sendEvent(id());
+    }
+
+    // send using the event number
+    //----------------------------------------------------------------------------------------------------
+    // Send and event with the given value.
+    //
+    template <typename T> void sendEvent(flxEvent::flxEventIDNum_t num, T value)
+    {
         // does this event exist/registered?
-        auto mpSig = _eventSignals.find(id());
+        auto mpSig = _eventSignals.find(num);
 
         if (mpSig == _eventSignals.end())
         {
@@ -217,10 +235,10 @@ class _flxEventHub
     //----------------------------------------------------------------------------------------------------
     // Send a void event
     //
-    void sendEvent(flxEvent::flxEventID_t id)
+    void sendEvent(flxEvent::flxEventIDNum_t num)
     {
         // does this event exist/registered?
-        auto mpSig = _eventSignals.find(id());
+        auto mpSig = _eventSignals.find(num);
 
         if (mpSig == _eventSignals.end())
         {
@@ -235,7 +253,7 @@ class _flxEventHub
     _flxEventHub() {};
 
     // map event ID to event signal
-    std::map<uint32_t, flxSignalBase *> _eventSignals;
+    std::map<flxEvent::flxEventIDNum_t, flxSignalBase *> _eventSignals;
 };
 //
 extern _flxEventHub &flxEventHub;
@@ -260,9 +278,22 @@ template <typename T> void flxRegisterEventCB(flxEvent::flxEventID_t id, T *inst
 void flxSendEvent(flxEvent::flxEventID_t id);
 
 //----------------------------------------------------------------------------------------------------
+// User exposed convenience function to send a void /empty event
+//
+void flxSendEvent(flxEvent::flxEventIDNum_t id);
+
+//----------------------------------------------------------------------------------------------------
 // User exposed convenience function to sent an event that takes a value
 //
 template <typename T> void flxSendEvent(flxEvent::flxEventID_t id, T value)
 {
     flxEventHub.sendEvent(id, value);
+}
+
+//----------------------------------------------------------------------------------------------------
+// User exposed convenience function to sent an event that takes a value
+//
+template <typename T> void flxSendEvent(flxEvent::flxEventIDNum_t num, T value)
+{
+    flxEventHub.sendEvent(num, value);
 }

@@ -21,3 +21,7 @@ void flxSendEvent(flxEvent::flxEventID_t id)
 {
     flxEventHub.sendEvent(id);
 }
+void flxSendEvent(flxEvent::flxEventIDNum_t num)
+{
+    flxEventHub.sendEvent(num);
+}
