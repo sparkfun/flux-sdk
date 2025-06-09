@@ -315,6 +315,7 @@ class flxFlux : public flxObjectContainer
     {
         flxDeviceFactory::get().dumpDeviceTable();
     }
+    bool initialized();
 
   private:
     flxBusI2C _i2cDriver;
@@ -361,7 +362,6 @@ class flxFlux : public flxObjectContainer
         this->push_back(pTmp);
     }
 
-    bool initialized();
     void setInitialized(bool bInit);
 
     flxOperation *_getByType(flxTypeID type)
