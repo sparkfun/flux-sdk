@@ -69,22 +69,6 @@ flxDevSoilMoisture::flxDevSoilMoisture()
     flxRegister(moisturePercent, "Percent Moisture", "Value between 0.0% and 100.0%", kParamValueSoilMoisturePercent_F);
 }
 
-//----------------------------------------------------------------------------------------------------------
-// onInitialize()
-//
-// Called during the startup/initialization of the driver (after the constructor is called).
-//
-//
-//-----------------------------------------------------------------------
-bool flxDevSoilMoisture::onInitialize(void)
-{
-    // already initialized?
-    if (isInitialized())
-        return true;
-
-    // return what setup sensor returns.
-    return setupSensor();
-}
 //-----------------------------------------------------------------------
 // setupSensor()
 //
@@ -95,7 +79,10 @@ bool flxDevSoilMoisture::setupSensor(void)
 
     // Pins define yet?
     if (_pinVCC == kNoPinSet || _pinSensor == kNoPinSet)
+    {
+        flxLog_W("%s: VCC or Sensor pin not set", name());
         return false;
+    }
 
     // setup our power pin - enable output, set to low
     pinMode(_pinVCC, OUTPUT);
@@ -140,6 +127,9 @@ void flxDevSoilMoisture::set_vcc_pin(uint8_t newPin)
 
     _pinVCC = newPin;
 
+    if (_isEnabled == false)
+        return;
+
     // If this is a no pin set value, disable sensor
     if (newPin == kNoPinSet)
         set_is_enabled(false);
@@ -163,9 +153,14 @@ void flxDevSoilMoisture::set_sensor_pin(uint8_t newPin)
     _pinSensor = newPin;
     setAddress(_pinSensor);
 
+    if (!_isEnabled)
+        return;
+
     // If this is a no pin set value, disable sensor
     if (newPin == kNoPinSet)
         set_is_enabled(false);
+    else
+        setupSensor(); // new pin, do the setup.
 }
 
 //-----------------------------------------------------------------------

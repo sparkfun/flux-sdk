@@ -69,11 +69,6 @@ class flxDevSoilMoisture : public flxDeviceGPIOType<flxDevSoilMoisture>
     {
         return kSoilMoistureDeviceName;
     };
-    /**
-     * @brief Method called to initialize the class.
-     * @return True if initialization is successful, false otherwise.
-     */
-    bool onInitialize(void);
 
   private:
     // consts
