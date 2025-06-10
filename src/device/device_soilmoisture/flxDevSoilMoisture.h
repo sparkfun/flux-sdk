@@ -58,8 +58,10 @@ class flxDevSoilMoisture : public flxDeviceGPIOType<flxDevSoilMoisture>
      * @param pinVCC The GPIO pin connected to the VCC of the soil sensor.
      * @param pinSensor The GPIO pin connected to the sensor of the soil sensor.
      */
-    flxDevSoilMoisture(uint8_t pinVCC, uint8_t pinSensor) : _pinVCC{pinVCC}, _pinSensor{pinSensor}
+    flxDevSoilMoisture(uint8_t pinVCC, uint8_t pinSensor) : flxDevSoilMoisture()
     {
+        _pinVCC = pinVCC;
+        _pinSensor = pinSensor;
     }
     /**
      * @brief Get the device name.
