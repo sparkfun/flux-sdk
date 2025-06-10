@@ -28,117 +28,69 @@
 
 //----------------------------------------------------------------------------------------------------------
 // Define our templateclass -
-
-template <typename T> class flxOptEnableDevice : public flxActionType<T>
-{
-  private:
-    bool get_is_enabled(void)
-    {
-        return _isEnabled;
-    }
-    //---------------------------------------------------------------------
-    void set_is_enabled(bool enable)
-    {
-        if (enable == _isEnabled)
-            return; // No change, do nothing
-
-        _isEnabled = enable;
-
-        if (_isEnabled)
-        {
-            // Create the device if needed
-            if (_pDevice == nullptr)
-            {
-                _pDevice = new T;
-                if (_pDevice == nullptr)
-                {
-                    flxLog_E(F("%s: Unable to create device"), this->name());
-                    _isEnabled = false;
-                    return; // No device allocated
-                }
-                // Initialize the device
-                if (_pDevice->initialize() == false)
-                {
-                    flxLog_E(F("%s: Device initialization failed"), this->name());
-                    delete _pDevice;
-                    _pDevice = nullptr;
-                    _isEnabled = false;
-                    return; // No device allocated
-                }
-                // restore any saved settings for this device. Only do this if flux is initialized and running
-                // If not initialized, the settings restore will happen as part of normal startup
-                if (flux.initialized())
-                    flxSettings.restore(_pDevice);
-            }
-            // already in the system? This would be a bookkeeping error
-            if (flux.contains(_pDevice))
-                flxLog_D(F("%s: Device already in system"), this->name());
-            else
-                flux.add(_pDevice);
-        }
-        else if (_pDevice != nullptr)
-        {
-            // Remove the device from the system
-            flux.remove(_pDevice);
-            delete _pDevice;
-            _pDevice = nullptr;
-        }
-    }
-
-    bool _isEnabled;
-    T *_pDevice;
-
-  public:
-    // Constructor - no default, just one that takes a name and description
-    flxOptEnableDevice() = delete;
-
-    flxOptEnableDevice(const char *name, const char *desc) : _isEnabled{false}, _pDevice{nullptr}
-    {
-
-        // Setup unique identifiers for this device and basic device object systems
-        this->setName(name, desc);
-        // Register properties
-        flxRegister(isEnabled, "Enabled", "Enable/Disable the device");
-
-        flux_add(this);
-    }
-    // enable / disable device ...
-    flxPropertyRWBool<flxOptEnableDevice, &flxOptEnableDevice::get_is_enabled, &flxOptEnableDevice::set_is_enabled>
-        isEnabled = {false};
-};
-
-//----------------------------------------------------------------------------------------------------------
-// Testing a method to capture args to pass to the underlying device constructor.
+//
+// The below template class is used to capture arguments passed in for later use when the specified object is
+// created. This allows us to pass in args to a object, store those, and then use them later when creating a new
+// object, whose type is specified by T.
 
 #include <functional>
 
-template <typename T> struct flxNestBase
+// First create a base class - interface that has a method which returns an instance of the desired class. Our
+// class (below) that uses it, just works with the interface, since each defined class is different b/c it's a template.
+template <typename T> struct flxObjFactoryArgsBase
 {
-    virtual T *process(void) = 0;
+    virtual T *create(void) = 0;
 };
-template <typename T, typename... Args> struct flxNestNew : public flxNestBase<T>
-{
-    std::function<T *()> callBack;
 
+// Define the object factory w/ args class template. The template takes the type T of the object we want to create,
+// and any number of arguments that will be passed to the constructor of the object we want to create.
+//
+// The way this works is that the passed in "Args" - a variadic parameter pack - is captured in a lambda function
+// that is stored in the "callBack" member variable. When the "process" method is called, it invokes the lambda,
+// which in turn calls the constructor of the object T with the captured arguments. This allows us to create an
+// instance of T with the arguments provided at the time of the factory's setup.
+template <typename T, typename... Args> struct flxObjFactoryArgs : public flxObjFactoryArgsBase<T>
+{
+    // Define the "callback function" that will be used to create an instance of T
+    std::function<T *()> callBack = nullptr;
+
+    // this setup method, takes the provided parameter pack and captures it in a lambda function.
     void setup(Args... args)
     {
         callBack = [args...]() { return new T(args...); };
     }
 
-    T *process()
+    // The  method calls the callback function, which creates an instance of T with the captured arguments.
+    T *create()
     {
+        if (callBack == nullptr)
+            flxLog_E(F("flxObjFactoryArgs: Callback not set, cannot create object"));
+
         return callBack();
     }
 };
 
-template <typename T> class flxOptEnableDevice2 : public flxActionType<T>
+// Template class used to manage the creation and destruction of a device driver via the flux menu system.
+// This preserves the overhead of a device driver object until its needed.
+//
+// The is several key aspects for this class:
+//   - The template takes the type of the device we want to create, which is specified by T.
+//   - The constructor takes a name and description, which are used to identify the device in the system.
+//   - The constructor also takes any number of arguments that will be passed to the constructor of the device we want.
+//     This can be any number of arguments, but the created device class must have a constructor that matches the
+//     arguments passed.
+//   - The class provides a property to enable/disable the device, which will create or destroy the device as needed.
+template <typename T> class flxOptEnableDevice : public flxActionType<T>
 {
   private:
+    //---------------------------------------------------------------------
+    // Getter and setter for the isEnabled property
     bool get_is_enabled(void)
     {
         return _isEnabled;
     }
     //---------------------------------------------------------------------
+    // This method does all the work
     void set_is_enabled(bool enable)
     {
         if (enable == _isEnabled)
@@ -146,13 +98,19 @@ template <typename T> class flxOptEnableDevice2 : public flxActionType<T>
 
         _isEnabled = enable;
 
+        // enabling the device - need to make sure the object is created and setup
         if (_isEnabled)
         {
             // Create the device if needed
             if (_pDevice == nullptr)
             {
-                if (_nestNew != nullptr)
-                    _pDevice = _nestNew->process();
+                // if we have a device factory, use it to create the new device.
+                // The factory will pass along any arguments that were captured in the constructor of this object
+                // to the new call
+                if (_deviceFactory != nullptr)
+                    _pDevice.reset(_deviceFactory->create());
+
+                // success?
                 if (_pDevice == nullptr)
                 {
                     flxLog_E(F("%s: Unable to create device"), this->name());
@@ -163,7 +121,8 @@ template <typename T> class flxOptEnableDevice2 : public flxActionType<T>
                 if (_pDevice->initialize() == false)
                 {
                     flxLog_E(F("%s: Device initialization failed"), this->name());
-                    delete _pDevice;
+                    // delete _pDevice
+                    _pDevice.reset(); // Use smart pointer to delete the device
                     _pDevice = nullptr;
                     _isEnabled = false;
                     return; // No device allocated
@@ -171,34 +130,45 @@ template <typename T> class flxOptEnableDevice2 : public flxActionType<T>
                 // restore any saved settings for this device. Only do this if flux is initialized and running
                 // If not initialized, the settings restore will happen as part of normal startup
                 if (flux.initialized())
-                    flxSettings.restore(_pDevice);
+                    flxSettings.restore(_pDevice.get());
             }
             // already in the system? This would be a bookkeeping error
-            if (flux.contains(_pDevice))
+            if (flux.contains(_pDevice.get()))
                 flxLog_D(F("%s: Device already in system"), this->name());
             else
-                flux.add(_pDevice);
+                flux.add(_pDevice.get());
         }
         else if (_pDevice != nullptr)
         {
             // Remove the device from the system
-            flux.remove(_pDevice);
-            delete _pDevice;
+            flux.remove(_pDevice.get());
+            // delete _pDevice;
+            _pDevice.reset(); // Use smart pointer to delete the device
             _pDevice = nullptr;
         }
     }
 
     bool _isEnabled;
-    T *_pDevice;
+    // T *_pDevice;
 
-    flxNestBase<T> *_nestNew; // Pointer to the nested object that creates the device
+    std::unique_ptr<T> _pDevice; // Use a smart pointer to manage the device object
+
+    // A smart pointer for our nested object, which captures any arguments that are passed
+    // to the constructor of the device we want to create. This allows us to pass
+    // parameters to the device constructor without having to know the exact type at compile time.
+
+    std::unique_ptr<flxObjFactoryArgsBase<T>> _deviceFactory; // Pointer to the nested object that creates the device
+
   public:
     // Constructor - no default, just one that takes a name and description
-    flxOptEnableDevice2() = delete;
+    flxOptEnableDevice() = delete;
 
+    // This constructor takes a name, description, and any number of arguments that will be passed to the
+    // constructor of the device we want to create. The arguments are captured by the nested object template class
+    // above.
     template <typename... Args>
-    flxOptEnableDevice2(const char *name, const char *desc, Args &&...args)
-        : _isEnabled{false}, _pDevice{nullptr}, _nestNew{nullptr}
+    flxOptEnableDevice(const char *name, const char *desc, Args &&...args)
+        : _isEnabled{false}, _pDevice{nullptr}, _deviceFactory{nullptr}
     {
 
         // Setup unique identifiers for this device and basic device object systems
@@ -208,12 +178,24 @@ template <typename T> class flxOptEnableDevice2 : public flxActionType<T>
 
         flux_add(this);
 
-        flxNestNew<T, Args...> *nestTmp = new flxNestNew<T, Args...>(); // Create a new nested object
-        // Setup the callback to create the device
-        nestTmp->setup(args...);
-        _nestNew = nestTmp; // Store the nested object
+        // Any additional arguments passed to the constructor will be passed into the constructor for
+        // the "device" this object manages. To capture these args, we use the above define nest template class.
+        // This is created dynamically, since it's based on what was passed into this constructor.
+
+        flxObjFactoryArgs<T, Args...> *factoryTmp = new flxObjFactoryArgs<T, Args...>(); // Create a new nested object
+        if (factoryTmp == nullptr)
+        {
+            flxLog_E(F("%s: Unable to capture device arguments"), this->name());
+            _isEnabled = false;
+            return; // No nested object allocated
+        }
+        // Initialize the nested object with the arguments.
+        factoryTmp->setup(args...);
+
+        // Store the nested object in our smart pointer
+        _deviceFactory.reset(factoryTmp);
     }
     // enable / disable device ...
-    flxPropertyRWBool<flxOptEnableDevice2, &flxOptEnableDevice2::get_is_enabled, &flxOptEnableDevice2::set_is_enabled>
+    flxPropertyRWBool<flxOptEnableDevice, &flxOptEnableDevice::get_is_enabled, &flxOptEnableDevice::set_is_enabled>
         isEnabled = {false};
 };
