@@ -195,6 +195,16 @@ template <typename T> class flxOptEnableDevice : public flxActionType<T>
         // Store the nested object in our smart pointer
         _deviceFactory.reset(factoryTmp);
     }
+
+    // this works for our analog device
+    flxOptEnableDevice(const char *name, const char *desc,
+                       std::initializer_list<std::pair<const std::string, int>> limitSet)
+    {
+    }
+    // No worky
+    // template <typename... Args> flxOptEnableDevice(Args &&...args)
+    // {
+    // }
     // enable / disable device ...
     flxPropertyRWBool<flxOptEnableDevice, &flxOptEnableDevice::get_is_enabled, &flxOptEnableDevice::set_is_enabled>
         isEnabled = {false};
