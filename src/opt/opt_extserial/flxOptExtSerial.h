@@ -45,10 +45,8 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
         if (_serialPort != nullptr)
         {
             if (_devSerial != nullptr)
-            {
-                delete _devSerial;    // Delete the serial device object if it was allocated
-                _devSerial = nullptr; // Set the pointer to null
-            }
+                _devSerial.reset(nullptr); // Delete the serial device object if it was allocated
+
             _serialPort->end(); // End the serial port if it was initialized
 
             _serialPort = nullptr; // Set the pointer to null
@@ -69,7 +67,7 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
      */
     bool begin(void);
     // reset/reapply settings to the serial port. Found at times during startup, this is needed to ensure
-    // the serial port actuall works on the esp32. It makese no sense ...
+    // the serial port actually works on the esp32. It makes no sense ...
 
     void reset(void)
     {
@@ -110,7 +108,7 @@ class flxOptExtSerial : public flxActionType<flxOptExtSerial>
 
     HardwareSerial *_serialPort; // Pointer to the serial port used for communication
 
-    flxDevSerial *_devSerial; // Pointer to the serial device object, if needed
+    std::unique_ptr<flxDevSerial> _devSerial; // Pointer to the serial device object, if needed
 
     bool _started;
     std::unique_ptr<flxJob> _jobReset; // Pointer to a job that resets the serial port

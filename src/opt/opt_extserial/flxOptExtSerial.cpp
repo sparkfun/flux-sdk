@@ -220,7 +220,7 @@ bool flxOptExtSerial::setupDeviceSerialDriver(void)
     // do we have a serial device?
     if (_devSerial == nullptr)
     {
-        _devSerial = new flxDevSerial(); // Create a new serial device object
+        _devSerial.reset(new flxDevSerial()); // Create a new serial device object
 
         if (_devSerial == nullptr)
         {
@@ -236,8 +236,8 @@ bool flxOptExtSerial::setupDeviceSerialDriver(void)
     _devSerial->isEnabled = true;
 
     // Make sure the device is not in the system already.
-    if (!flux.contains(_devSerial))
-        flux.add(_devSerial); // Add the serial device to the system
+    if (!flux.contains(_devSerial.get()))
+        flux.add(_devSerial.get()); // Add the serial device to the system
 
     return true;
 }
@@ -272,7 +272,7 @@ void flxOptExtSerial::set_enable_serialdevice(bool enable)
         if (_devSerial != nullptr)
         {
             _devSerial->isEnabled = false; // Disable the serial device
-            flux.remove(_devSerial);       // Remove the serial device from the system       // Set the pointer to null
+            flux.remove(_devSerial.get()); // Remove the serial device from the system       // Set the pointer to null
         }
     }
 }
