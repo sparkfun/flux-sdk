@@ -224,6 +224,19 @@ template <typename T> class flxOptEnableDevice : public flxActionType<T>
 
         setupFactory(vLimitset);
     }
+    // support two initializer lists - for the case where we have two sets of limits
+    flxOptEnableDevice(const char *name, const char *desc,
+                       std::initializer_list<std::pair<const std::string, int>> &&limitSet,
+                       std::initializer_list<std::pair<const std::string, int>> &&limitSet2)
+        : flxOptEnableDevice(name, desc)
+    {
+        // move the init list to something more resident in the system. - a vector. initializer_list is temporary
+        // and won't hang around for when the factory is called.
+        std::vector<std::pair<const std::string, int>> vLimitset = limitSet;
+        std::vector<std::pair<const std::string, int>> vLimitset2 = limitSet2;
+
+        setupFactory(vLimitset, vLimitset2);
+    }
     // enable / disable device ...
     flxPropertyRWBool<flxOptEnableDevice, &flxOptEnableDevice::get_is_enabled, &flxOptEnableDevice::set_is_enabled>
         isEnabled = {false};
