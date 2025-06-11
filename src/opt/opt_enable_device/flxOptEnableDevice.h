@@ -130,7 +130,12 @@ template <typename T> class flxOptEnableDevice : public flxActionType<T>
                 // restore any saved settings for this device. Only do this if flux is initialized and running
                 // If not initialized, the settings restore will happen as part of normal startup
                 if (flux.initialized())
+                {
+                    // helps with output formatting .. useful at time.
+                    flxLog_N("");
+                    flxLog_I_("%s: ", this->name());
                     flxSettings.restore(_pDevice.get());
+                }
             }
             // already in the system? This would be a bookkeeping error
             if (flux.contains(_pDevice.get()))
@@ -148,36 +153,10 @@ template <typename T> class flxOptEnableDevice : public flxActionType<T>
         }
     }
 
-    bool _isEnabled;
-    // T *_pDevice;
-
-    std::unique_ptr<T> _pDevice; // Use a smart pointer to manage the device object
-
-    // A smart pointer for our nested object, which captures any arguments that are passed
-    // to the constructor of the device we want to create. This allows us to pass
-    // parameters to the device constructor without having to know the exact type at compile time.
-
-    std::unique_ptr<flxObjFactoryArgsBase<T>> _deviceFactory; // Pointer to the nested object that creates the device
-
-  public:
-    // Constructor - no default, just one that takes a name and description
-    flxOptEnableDevice() = delete;
-
-    // This constructor takes a name, description, and any number of arguments that will be passed to the
-    // constructor of the device we want to create. The arguments are captured by the nested object template class
-    // above.
-    template <typename... Args>
-    flxOptEnableDevice(const char *name, const char *desc, Args &&...args)
-        : _isEnabled{false}, _pDevice{nullptr}, _deviceFactory{nullptr}
+    // ---------------------------------------------------------------------------------
+    // General method to setup the factory object/class for this device
+    template <typename... Args> void setupFactory(Args &&...args)
     {
-
-        // Setup unique identifiers for this device and basic device object systems
-        this->setName(name, desc);
-        // Register properties
-        flxRegister(isEnabled, "Enabled", "Enable/Disable the device");
-
-        flux_add(this);
-
         // Any additional arguments passed to the constructor will be passed into the constructor for
         // the "device" this object manages. To capture these args, we use the above define nest template class.
         // This is created dynamically, since it's based on what was passed into this constructor.
@@ -195,16 +174,56 @@ template <typename T> class flxOptEnableDevice : public flxActionType<T>
         // Store the nested object in our smart pointer
         _deviceFactory.reset(factoryTmp);
     }
+    bool _isEnabled;
 
-    // this works for our analog device
-    flxOptEnableDevice(const char *name, const char *desc,
-                       std::initializer_list<std::pair<const std::string, int>> limitSet)
+    std::unique_ptr<T> _pDevice; // Use a smart pointer to manage the device object
+
+    // A smart pointer for our nested object, which captures any arguments that are passed
+    // to the constructor of the device we want to create. This allows us to pass
+    // parameters to the device constructor without having to know the exact type at compile time.
+
+    std::unique_ptr<flxObjFactoryArgsBase<T>> _deviceFactory; // Pointer to the nested object that creates the device
+
+  public:
+    // Constructor - no default, just one that takes a name and description
+    flxOptEnableDevice() = delete;
+
+    // the core constructor
+    flxOptEnableDevice(const char *name, const char *desc)
+        : _isEnabled{false}, _pDevice{nullptr}, _deviceFactory{nullptr}
     {
+        // Setup unique identifiers for this device and basic device object systems
+        this->setName(name, desc);
+        // Register properties
+        flxRegister(isEnabled, "Enabled", "Enable/Disable the device");
+
+        flux_add(this);
     }
-    // No worky
-    // template <typename... Args> flxOptEnableDevice(Args &&...args)
-    // {
-    // }
+    // This constructor takes a name, description, and any number of arguments that will be passed to the
+    // constructor of the device we want to create. The arguments are captured by the nested object template class
+    // above.
+    template <typename... Args>
+    flxOptEnableDevice(const char *name, const char *desc, Args &&...args) : flxOptEnableDevice(name, desc)
+    {
+        // setup the factory obj to build the underlying device.
+        setupFactory(args...);
+    }
+
+    // this works for our analog device - takes a initializer list of pairs, which are the name and value
+
+    // This constructor will take the name, desc, and an initializer list of pairs that represent the a name-value
+    // The above variatic constructor won't deail with initializer lists, because of unclear typing. So
+    // made a constructor that takes an initializer list of pairs, which are the name and value.
+    flxOptEnableDevice(const char *name, const char *desc,
+                       std::initializer_list<std::pair<const std::string, int>> &&limitSet)
+        : flxOptEnableDevice(name, desc)
+    {
+        // move the init list to something more resident in the system. - a vector. initializer_list is temporary
+        // and won't hang around for when the factory is called.
+        std::vector<std::pair<const std::string, int>> vLimitset = limitSet;
+
+        setupFactory(vLimitset);
+    }
     // enable / disable device ...
     flxPropertyRWBool<flxOptEnableDevice, &flxOptEnableDevice::get_is_enabled, &flxOptEnableDevice::set_is_enabled>
         isEnabled = {false};
