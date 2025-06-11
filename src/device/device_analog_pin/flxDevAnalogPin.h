@@ -39,9 +39,9 @@ class flxDevAnalogPin : public flxDeviceGPIOType<flxDevAnalogPin>
      */
     flxDevAnalogPin();
 
-    flxDevAnalogPin(std::initializer_list<std::pair<const std::string, uint8_t>> limitSet) : flxDevAnalogPin()
+    template <typename T> flxDevAnalogPin(std::vector<std::pair<const std::string, T>> limitSet) : flxDevAnalogPin()
     {
-        sensorPin.addDataLimitValidValue(limitSet);
+        setAvailablePins(limitSet);
     }
 
     static const char *getDeviceName()
@@ -66,7 +66,27 @@ class flxDevAnalogPin : public flxDeviceGPIOType<flxDevAnalogPin>
     uint8_t _pinAnalog;
 
   public:
-    void setAvailablePins(const int *pPins, char *const *pNames, const size_t length);
+    template <typename T> void setAvailablePins(std::vector<std::pair<const std::string, T>> &limitSet)
+    {
+        // setup available values for the sensor pin property
+        if (limitSet.size() == 0)
+        {
+            flxLog_E(F("%s:Invalid pin list for Analog Pin Device"), name());
+            return;
+        }
+        flxDataLimitSetUInt8 *thePinLimitSet = new flxDataLimitSetUInt8; // reset the previous pin limit set
+        if (thePinLimitSet == nullptr)
+        {
+            flxLog_W(F("%s:Failed to allocate pin limit set"), name());
+            return;
+        }
+        for (auto item : limitSet)
+            thePinLimitSet->addItem(item.first.c_str(), (uint8_t)item.second);
+
+        _pinAnalog = limitSet[1].second;
+
+        sensorPin.setDataLimit(thePinLimitSet);
+    }
 
     // properties
     flxPropertyRWBool<flxDevAnalogPin, &flxDevAnalogPin::get_is_enabled, &flxDevAnalogPin::set_is_enabled> isEnabled = {

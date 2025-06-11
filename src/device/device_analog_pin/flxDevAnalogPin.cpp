@@ -61,32 +61,27 @@ flxDevAnalogPin::flxDevAnalogPin() : _isEnabled{false}, _pinAnalog{0}
 }
 
 //-----------------------------------------------------------------------
-void flxDevAnalogPin::setAvailablePins(const int *pPins, char *const *pNames, const size_t length)
-{
-    // setup available values for the sensor pin property
-    if (pPins == nullptr || pNames == nullptr || length == 0)
-    {
-        flxLog_E(F("%s:Invalid pin list for Analog Pin Device"), name());
-        return;
-    }
-    flxDataLimitSetUInt8 *thePinLimitSet = new flxDataLimitSetUInt8; // reset the previous pin limit set
-    if (thePinLimitSet == nullptr)
-    {
-        flxLog_W(F("%s:Failed to allocate pin limit set"), name());
-        return;
-    }
+// void flxDevAnalogPin::setAvailablePins(std::vector<std::pair<const std::string, uint8_t>> &limitSet)
+// {
+//     // setup available values for the sensor pin property
+//     if (limitSet.size() == 0)
+//     {
+//         flxLog_E(F("%s:Invalid pin list for Analog Pin Device"), name());
+//         return;
+//     }
+//     flxDataLimitSetUInt8 *thePinLimitSet = new flxDataLimitSetUInt8; // reset the previous pin limit set
+//     if (thePinLimitSet == nullptr)
+//     {
+//         flxLog_W(F("%s:Failed to allocate pin limit set"), name());
+//         return;
+//     }
+//     for (auto item : limitSet)
+//         thePinLimitSet->addItem(item.first.c_str(), item.second);
 
-    // We set the provided pins as limits on the pin property. Let's set that up
-    for (int i = 0; i < length; i++)
-    {
-        thePinLimitSet->addItem((const char *)pNames[i], pPins[i]);
-        // first pin is our winner
-        if (i == 1)
-            _pinAnalog = pPins[i]; // set the first pin as the default
-    }
+//     _pinAnalog = limitSet[1].second;
 
-    sensorPin.setDataLimit(thePinLimitSet);
-}
+//     sensorPin.setDataLimit(thePinLimitSet);
+// }
 //-----------------------------------------------------------------------
 //  Properties
 //-----------------------------------------------------------------------
