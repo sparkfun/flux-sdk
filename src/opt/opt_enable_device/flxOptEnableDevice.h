@@ -212,7 +212,7 @@ template <typename T> class flxOptEnableDevice : public flxActionType<T>
     // this works for our analog device - takes a initializer list of pairs, which are the name and value
 
     // This constructor will take the name, desc, and an initializer list of pairs that represent the a name-value
-    // The above variatic constructor won't deail with initializer lists, because of unclear typing. So
+    // The above variadic constructor won't deal with initializer lists, because of unclear typing. So
     // made a constructor that takes an initializer list of pairs, which are the name and value.
     flxOptEnableDevice(const char *name, const char *desc,
                        std::initializer_list<std::pair<const std::string, int>> &&limitSet)
@@ -224,6 +224,7 @@ template <typename T> class flxOptEnableDevice : public flxActionType<T>
 
         setupFactory(vLimitset);
     }
+
     // support two initializer lists - for the case where we have two sets of limits
     flxOptEnableDevice(const char *name, const char *desc,
                        std::initializer_list<std::pair<const std::string, int>> &&limitSet,
