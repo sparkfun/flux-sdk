@@ -85,6 +85,7 @@ class flxDevAS7343 : public flxDeviceI2CType<flxDevAS7343>, public SfeAS7343ArdI
         return getNIR();
     }
     bool get_spectral_data(flxDataArrayUInt16 *);
+    uint8_t get_flicker_value(void);
     bool _valid_data;
 
   public:
@@ -123,6 +124,7 @@ class flxDevAS7343 : public flxDeviceI2CType<flxDevAS7343>, public SfeAS7343ArdI
     flxParameterOutUInt16<flxDevAS7343, &flxDevAS7343::get_green_value> greenValue;
     flxParameterOutUInt16<flxDevAS7343, &flxDevAS7343::get_red_value> redValue;
     flxParameterOutUInt16<flxDevAS7343, &flxDevAS7343::get_nir_value> nirValue;
+    flxParameterOutUInt8<flxDevAS7343, &flxDevAS7343::get_flicker_value> flickerValue;
 
     flxParameterOutArrayUInt16<flxDevAS7343, &flxDevAS7343::get_spectral_data> spectralData;
 };

@@ -45,6 +45,7 @@ flxDevAS7343::flxDevAS7343() : _gain{4}, _read_spectra{true}, _flicker_detect{fa
     flxRegister(greenValue, "Green", "Green channel value");
     flxRegister(redValue, "Red", "Red channel value");
     flxRegister(nirValue, "NIR", "Near Infrared channel value");
+    flxRegister(flickerValue, "Flicker", "Flicker detection value");
     flxRegister(spectralData, "Spectral Data", "All the spectral data from the sensor");
 }
 
@@ -238,4 +239,16 @@ bool flxDevAS7343::get_spectral_data(flxDataArrayUInt16 *outData)
     outData->set(theData, channelsRead);
 
     return true;
+}
+
+uint8_t flxDevAS7343::get_flicker_value(void)
+{
+    if (_valid_data || !_flicker_detect)
+        return 0;
+
+    if (!SfeAS7343ArdI2C::isFlickerDetectionValid())
+        return 0;
+    if (SfeAS7343ArdI2C::isFlickerDetectionSaturated())
+        return 0; // Get the flicker detection saturation status
+    return SfeAS7343ArdI2C::getFlickerDetectionFrequency();
 }
