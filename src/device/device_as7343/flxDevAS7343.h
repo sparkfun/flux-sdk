@@ -54,9 +54,9 @@ class flxDevAS7343 : public flxDeviceI2CType<flxDevAS7343>, public SfeAS7343ArdI
 
   private:
     // gain pro getter/setter/stash
-    uint8_t get_gain(void);
-    void set_gain(uint8_t);
-    uint8_t _gain;
+    uint16_t get_gain(void);
+    void set_gain(uint16_t);
+    uint16_t _gain;
 
     // Read Spectra data
     bool get_read_spectra(void);
@@ -88,6 +88,12 @@ class flxDevAS7343 : public flxDeviceI2CType<flxDevAS7343>, public SfeAS7343ArdI
     uint8_t get_flicker_value(void);
     bool _valid_data;
 
+    uint16_t get_led_drive(void);
+    void set_led_drive(uint16_t);
+    uint16_t _led_drive_current;
+
+    bool _in_setup;
+
   public:
     // our data accessors - use our base class for the simple readings
 
@@ -103,7 +109,7 @@ class flxDevAS7343 : public flxDeviceI2CType<flxDevAS7343>, public SfeAS7343ArdI
     flxPropertyRWBool<flxDevAS7343, &flxDevAS7343::get_flicker_detect, &flxDevAS7343::set_flicker_detect>
         flickerDetect = {false};
     // Gain prop
-    flxPropertyRWUInt8<flxDevAS7343, &flxDevAS7343::get_gain, &flxDevAS7343::set_gain> sensorGain = {
+    flxPropertyRWUInt16<flxDevAS7343, &flxDevAS7343::get_gain, &flxDevAS7343::set_gain> sensorGain = {
         AGAIN_256,
         {{"0.5", AGAIN_0_5}, // 0.5x gain
          {"1.0", AGAIN_1},
@@ -118,6 +124,10 @@ class flxDevAS7343 : public flxDeviceI2CType<flxDevAS7343>, public SfeAS7343ArdI
          {"512.0", AGAIN_512},
          {"1024.0", AGAIN_1024},
          {"2048.0", AGAIN_2048}}};
+
+    // LED drive current - min = 4, max = 257
+    flxPropertyRWUInt16<flxDevAS7343, &flxDevAS7343::get_led_drive, &flxDevAS7343::set_led_drive> ledDriveCurrent = {
+        12, 4, 258};
 
     // Data parameters
     flxParameterOutUInt16<flxDevAS7343, &flxDevAS7343::get_blue_value> blueValue;

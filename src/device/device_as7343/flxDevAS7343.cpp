@@ -29,7 +29,8 @@ flxRegisterDevice(flxDevAS7343);
 //----------------------------------------------------------------------------------------------------------
 /// @brief Constructor
 ///
-flxDevAS7343::flxDevAS7343() : _gain{4}, _read_spectra{true}, _flicker_detect{false}, _valid_data{false}
+flxDevAS7343::flxDevAS7343()
+    : _gain{4}, _read_spectra{true}, _flicker_detect{false}, _valid_data{false}, _in_setup{false}
 {
 
     setName(getDeviceName(), "AS7343 Spectral Sensor");
@@ -39,6 +40,7 @@ flxDevAS7343::flxDevAS7343() : _gain{4}, _read_spectra{true}, _flicker_detect{fa
     flxRegister(readSpectra, "Read Spectra", "Read the spectral data from the sensor");
     flxRegister(flickerDetect, "Flicker Detect", "Enable flicker detection");
     flxRegister(sensorGain, "Gain", "Gain settings for sensor");
+    flxRegister(ledDriveCurrent, "LED Drive Current", "LED drive current in mA");
 
     // Data parameters
     flxRegister(blueValue, "Blue", "Blue channel value");
@@ -96,6 +98,7 @@ bool flxDevAS7343::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 ///
 bool flxDevAS7343::onInitialize(TwoWire &wirePort)
 {
+
     // Initialize sensor and run default setup.
     if (!SfeAS7343ArdI2C::begin())
     {
@@ -133,6 +136,14 @@ bool flxDevAS7343::onInitialize(TwoWire &wirePort)
             return false;
         }
     }
+
+    _in_setup = true; // we are in setup mode
+
+    set_gain(_gain); // Set the gain to our default value
+
+    set_led_drive(_led_drive_current); // Set the LED drive current to our default value
+    _in_setup = false;                 // we are no longer in setup mode
+
     return true;
 }
 
@@ -140,14 +151,23 @@ bool flxDevAS7343::onInitialize(TwoWire &wirePort)
 // Gain property - getter/setter
 //---------------------------------------------------------------------------
 
-uint8_t flxDevAS7343::get_gain(void)
+uint16_t flxDevAS7343::get_gain(void)
 {
     return _gain;
 }
 
-void flxDevAS7343::set_gain(uint8_t value)
+void flxDevAS7343::set_gain(uint16_t value)
 {
+    if (value == _gain && !_in_setup)
+        return; // no change
+
+    // stash the value
     _gain = value;
+
+    // if the device is not initialized, then we cannot set the gain
+    if (!isInitialized() && !_in_setup)
+        return;
+
     if (!SfeAS7343ArdI2C::setAgain((sfe_as7343_again_t)_gain))
         flxLog_W(F("%s : Failed to set gain to %d."), name(), _gain);
 }
@@ -188,6 +208,33 @@ void flxDevAS7343::set_flicker_detect(bool new_value)
         return;
     }
     _flicker_detect = new_value;
+}
+//---------------------------------------------------------------------------
+uint16_t flxDevAS7343::get_led_drive(void)
+{
+    return _led_drive_current;
+}
+void flxDevAS7343::set_led_drive(uint16_t value)
+{
+    if (value == _led_drive_current && !_in_setup)
+        return; // no change
+
+    if (value < 4 || value > 258)
+    {
+        flxLog_W(F("%s : LED drive current must be between 4 and 258, got %d"), name(), value);
+        return;
+    }
+
+    _led_drive_current = value;
+
+    if (!isInitialized() && !_in_setup)
+        return;
+
+    // the values from the user are 4-258, but the sensor wants values from 0-127 - really.
+    // Map it out.
+    uint8_t driveValue = (value - 4) / 2; // The sensor wants values from 0-127, so we subtract 4 from the user value.
+    if (!SfeAS7343ArdI2C::setLedDrive(driveValue))
+        flxLog_W(F("%s : Failed to set LED drive current to %d"), name(), value);
 }
 
 //---------------------------------------------------------------------------
