@@ -221,6 +221,59 @@ class _flxEventHub
     //
     template <typename T> void sendEvent(flxEvent::flxEventIDNum_t num, T value)
     {
+        // first process this event.
+        send_event(num, value);
+
+        // now check if there are any aliases for this event
+        // does this event exist/registered?
+        auto mpSig = _eventAlias.find(num);
+
+        // None?
+        if (mpSig == _eventAlias.end())
+            return;
+
+        // send the alias events
+        for (auto &alias : mpSig->second)
+            send_event(alias, value);
+    }
+    //----------------------------------------------------------------------------------------------------
+    // Send a void event
+    //
+    void sendEvent(flxEvent::flxEventIDNum_t num)
+    {
+        // first process this event.
+        send_event(num);
+
+        // now check if there are any aliases for this event
+        // does this event exist/registered?
+        auto mpSig = _eventAlias.find(num);
+
+        // None?
+        if (mpSig == _eventAlias.end())
+            return;
+
+        // send the alias events
+        for (auto &alias : mpSig->second)
+            send_event(alias);
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    // add an alias for an event ID
+
+    void addEventAlias(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias)
+    {
+        // add the alias
+        _eventAlias[id()].push_back(alias());
+    }
+
+  private:
+    // our internal send event routines
+    // send using the event number
+    //----------------------------------------------------------------------------------------------------
+    // Send and event with the given value.
+    //
+    template <typename T> void send_event(flxEvent::flxEventIDNum_t num, T value)
+    {
         // does this event exist/registered?
         auto mpSig = _eventSignals.find(num);
 
@@ -235,7 +288,7 @@ class _flxEventHub
     //----------------------------------------------------------------------------------------------------
     // Send a void event
     //
-    void sendEvent(flxEvent::flxEventIDNum_t num)
+    void send_event(flxEvent::flxEventIDNum_t num)
     {
         // does this event exist/registered?
         auto mpSig = _eventSignals.find(num);
@@ -249,11 +302,14 @@ class _flxEventHub
         reinterpret_cast<flxSignal<void> *>(mpSig->second)->emit();
     }
 
-  private:
     _flxEventHub() {};
 
     // map event ID to event signal
     std::map<flxEvent::flxEventIDNum_t, flxSignalBase *> _eventSignals;
+
+    // map to store event alias - one event ID can have multiple aliases
+    // If a event is called, the alias list is also checked.
+    std::map<flxEvent::flxEventIDNum_t, std::vector<flxEvent::flxEventIDNum_t>> _eventAlias;
 };
 //
 extern _flxEventHub &flxEventHub;
@@ -296,4 +352,10 @@ template <typename T> void flxSendEvent(flxEvent::flxEventID_t id, T value)
 template <typename T> void flxSendEvent(flxEvent::flxEventIDNum_t num, T value)
 {
     flxEventHub.sendEvent(num, value);
+}
+
+//----------------------------------------------------------------------------------------------------
+void flxAddEventAlias(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias)
+{
+    flxEventHub.addEventAlias(id, alias);
 }
