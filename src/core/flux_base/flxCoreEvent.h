@@ -355,7 +355,4 @@ template <typename T> void flxSendEvent(flxEvent::flxEventIDNum_t num, T value)
 }
 
 //----------------------------------------------------------------------------------------------------
-void flxAddEventAlias(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias)
-{
-    flxEventHub.addEventAlias(id, alias);
-}
+void flxAddEventAlias(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias);
