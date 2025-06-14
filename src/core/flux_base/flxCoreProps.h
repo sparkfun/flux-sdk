@@ -1956,11 +1956,11 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
 //  A list/container that holds flxObjects and supports serialization. The
 //  container itself is a object
 
-template <class T> class flxContainer : public flxObject
+template <class T> class flxContainer : public T
 {
   protected:
     // Use a vector to store data
-    std::vector<T> _vector;
+    std::vector<T *> _vector;
 
   public:
     flxContainer() : _vector()
@@ -1973,12 +1973,12 @@ template <class T> class flxContainer : public flxObject
         return _vector.size();
     }
 
-    void push_back(T value)
+    void push_back(T *value)
     {
         // make sure the value isn't already in the list...
         if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
         {
-            flxLogM_V(kMsgNotAddDupDev, name());
+            flxLogM_V(kMsgNotAddDupDev, T::name());
             return;
         }
         _vector.push_back(value);
@@ -1993,12 +1993,12 @@ template <class T> class flxContainer : public flxObject
         _vector.pop_back();
     }
 
-    void insert(typename std::vector<T>::iterator it, T value)
+    void insert(typename std::vector<T *>::iterator it, T *value)
     {
         // make sure the value isn't already in the list...
         if (std::find(_vector.begin(), _vector.end(), value) != _vector.end())
         {
-            flxLogM_I(kMsgNotAddDupDev, name());
+            flxLogM_I(kMsgNotAddDupDev, T::name());
             return;
         }
         _vector.insert(it, value);
@@ -2009,7 +2009,7 @@ template <class T> class flxContainer : public flxObject
     }
 
     // insert a value after another value
-    bool insert_after(T value, T prev)
+    bool insert_after(T *value, T *prev)
     {
         if (value == prev)
             return false;
@@ -2018,7 +2018,7 @@ template <class T> class flxContainer : public flxObject
         auto itPrev = std::find(_vector.begin(), _vector.end(), prev);
         if (itPrev == _vector.end())
         {
-            flxLog_V(F("%s: insert_after: prev not in vector"), name());
+            flxLog_V(F("%s: insert_after: prev not in vector"), T::name());
             return false;
         }
         // if value is in the vector, remove it.
@@ -2038,7 +2038,7 @@ template <class T> class flxContainer : public flxObject
     {
         return _vector.front();
     }
-    T &at(size_t pos)
+    T *&at(size_t pos)
     {
         return _vector.at(pos);
     }
@@ -2072,7 +2072,7 @@ template <class T> class flxContainer : public flxObject
         return _vector.empty();
     }
 
-    typedef typename std::vector<T>::iterator iterator;
+    typedef typename std::vector<T *>::iterator iterator;
 
     iterator erase(iterator pos)
     {
@@ -2080,7 +2080,7 @@ template <class T> class flxContainer : public flxObject
     }
 
     // simple remove based on value
-    void remove(T value)
+    void remove(T *value)
     {
         // in the vector?
         iterator it = std::find(_vector.begin(), _vector.end(), value);
@@ -2092,7 +2092,7 @@ template <class T> class flxContainer : public flxObject
     }
 
     // Does this vector contains a value?
-    bool contains(T value)
+    bool contains(T *value)
     {
         // in the vector?
         iterator it = std::find(_vector.begin(), _vector.end(), value);
@@ -2108,7 +2108,7 @@ template <class T> class flxContainer : public flxObject
 
     static flxTypeID type(void)
     {
-        static flxTypeID _myTypeID = flxGetClassTypeID<T>();
+        static flxTypeID _myTypeID = flxGetClassTypeID<T *>();
 
         return _myTypeID;
     }
@@ -2123,7 +2123,7 @@ template <class T> class flxContainer : public flxObject
     virtual bool save(flxStorage *pStorage)
     {
         // save ourselves
-        flxObject::save(pStorage);
+        T::save(pStorage);
 
         // Save the children
         for (auto pObj : _vector)
@@ -2140,12 +2140,12 @@ template <class T> class flxContainer : public flxObject
             pObj->restore(pStorage);
 
         // restore ourselves - after our children to manage our dirty flag
-        flxObject::restore(pStorage);
+        T::restore(pStorage);
 
         return true;
     };
 };
-using flxObjectContainer = flxContainer<flxObject *>;
+using flxObjectContainer = flxContainer<flxObject>;
 
 //----------------------------------------------------------------------
 // Handy template to test if an object is of a specific type

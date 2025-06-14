@@ -230,7 +230,7 @@ class flxDevice : public flxOperation
     bool _isInitalized;
 };
 
-using flxDeviceContainer = flxContainer<flxDevice *>;
+using flxDeviceContainer = flxContainer<flxDevice>;
 
 // Macro used to simplify device setup
 #define spSetupDeviceIdent(_name_) this->setName(_name_);

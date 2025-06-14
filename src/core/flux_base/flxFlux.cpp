@@ -97,12 +97,14 @@ bool flxFlux::start()
     if (_theApplication)
         _theApplication->onDeviceLoad();
 
-    // initialize actions
-    for (auto pAction : Actions)
-    {
-        if (!pAction->initialize())
-            flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
-    }
+    // initialize actions - just call initialize on the container
+    if (!Actions.initialize())
+        flxLog_D(F("Error initializing actions"));
+    // for (auto pAction : Actions)
+    // {
+    //     if (!pAction->initialize())
+    //         flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
+    // }
     // Everything should be loaded -- restore settings from storage
     if (_loadSettings && flxSettings.isAvailable())
     {
@@ -159,7 +161,6 @@ bool flxFlux::loop(void)
     // Just Call loop on the job queue system
     //
     bool rc = flxJobQueue.loop();
-
     // and the application loop handler if we have an app
     if (_theApplication)
         rc = rc || _theApplication->loop();
