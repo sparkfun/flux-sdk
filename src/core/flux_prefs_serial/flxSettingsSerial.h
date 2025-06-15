@@ -376,7 +376,7 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
 
         return returnValue;
     };
-    void drawMenuEntry(uint item, flxDescriptor *pDesc);
+    void drawMenuEntry(uint item, flxObject *pObj);
     void drawMenuEntry(uint item, flxProperty *pProp);
     void drawMenuEntry(uint item, flxParameter *pParam);
     void drawMenuEntry(uint item, const char *);

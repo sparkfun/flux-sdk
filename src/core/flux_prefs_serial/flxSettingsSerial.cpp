@@ -508,16 +508,16 @@ void flxSettingsSerial::drawPageFooter(flxObject *pCurrent)
 //
 // Draw the entry in the menu for the give item
 //
-void flxSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
+void flxSettingsSerial::drawMenuEntry(uint item, flxObject *pObj)
 {
 
-    if (!pDesc)
+    if (!pObj)
         return;
 
-    if (pDesc->title())
+    if (pObj->title())
     {
         flxSerial.textToWhite();
-        Serial.printf("\n\r    %s\n\r", pDesc->title());
+        Serial.printf("\n\r    %s\n\r", pObj->title());
         flxSerial.textToNormal();
     }
 
