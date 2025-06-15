@@ -1836,7 +1836,11 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
     virtual ~flxObject()
     {
     }
-
+    // used to determine if an object is a scalar size = 0, or a container that
+    virtual size_t n_children(void)
+    {
+        return 0;
+    }
     void setParent(flxObject *parent)
     {
         _parent = parent;
@@ -1971,6 +1975,11 @@ template <class T> class flxContainer : public T
     auto size() -> decltype(_vector.size())
     {
         return _vector.size();
+    }
+
+    size_t n_children(void)
+    {
+        return (size_t)_vector.size();
     }
 
     void push_back(T *value)
