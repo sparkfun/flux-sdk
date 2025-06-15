@@ -521,7 +521,7 @@ void flxSettingsSerial::drawMenuEntry(uint item, flxObject *pObj)
         flxSerial.textToNormal();
     }
 
-    Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
+    Serial.printf("\t%2d)  %s - %s\n\r", item, pObj->name(), pObj->description());
 }
 
 //-----------------------------------------------------------------------------
