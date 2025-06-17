@@ -269,7 +269,7 @@ class flxMQTTESP32 : public flxMQTTESP32Base<flxMQTTESP32, WiFiClient>, public f
     {
         this->setName("MQTT Client", "A generic MQTT Client");
 
-        flux.add(this);
+        // flux.add(this);
     }
     // for the Writer interface
     void write(int32_t data)
@@ -576,7 +576,7 @@ class flxMQTTESP32Secure : public flxMQTTESP32SecureCore<flxMQTTESP32Secure>, pu
     {
         this->setName("MQTT Secure Client", "A secure MQTT client");
 
-        flux.add(this);
+        // flux.add(this);
     }
     // for the Writer interface
     void write(int32_t data)

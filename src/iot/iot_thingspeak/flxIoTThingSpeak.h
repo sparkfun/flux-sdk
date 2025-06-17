@@ -90,7 +90,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
         // user.
         hideProperty(topic);
 
-        flux.add(this);
+        // flux.add(this);
     }
 
     void write(JsonDocument &jsonDoc)
