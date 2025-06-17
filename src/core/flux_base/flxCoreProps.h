@@ -1996,6 +1996,10 @@ template <class T> class flxContainer : public T
         if (!value->parent())
             value->setParent(this);
     }
+    void push_back(T &value)
+    {
+        push_back(&value);
+    }
 
     void pop_back(void)
     {
