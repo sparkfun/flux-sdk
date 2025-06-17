@@ -290,12 +290,18 @@ bool flxDevAS7343::get_spectral_data(flxDataArrayUInt16 *outData)
 
 uint8_t flxDevAS7343::get_flicker_value(void)
 {
-    if (_valid_data || !_flicker_detect)
+    if (!_valid_data || !_flicker_detect)
         return 0;
 
     if (!SfeAS7343ArdI2C::isFlickerDetectionValid())
+    {
+        flxLog_V(F("%s : Flicker detection is not valid."), name());
         return 0;
+    }
     if (SfeAS7343ArdI2C::isFlickerDetectionSaturated())
+    {
+        flxLog_V(F("%s : Flicker detection is saturated."), name());
         return 0; // Get the flicker detection saturation status
+    }
     return SfeAS7343ArdI2C::getFlickerDetectionFrequency();
 }
