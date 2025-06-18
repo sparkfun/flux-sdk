@@ -24,7 +24,7 @@
 #pragma once
 
 #include "flxCoreParam.h"
-#include "flxFLux.h"
+#include "flxFlux.h"
 
 //----------------------------------------------------------------------------------------------------------
 // Define our templateclass -
