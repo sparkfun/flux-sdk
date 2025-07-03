@@ -1821,4 +1821,52 @@ template <typename T> flxTypeID flxGetClassTypeID()
     return flx_utils::id_hash_string(__PRETTY_FUNCTION__);
 };
 
+//---------------------------------------------------------
+// Testing of descriptors ..
+//---------------------------------------------------------
+
+// core interface descriptor interface
+class flxIObjDescriptor
+{
+  public:
+    virtual ~flxIObjDescriptor() = default;
+    virtual const char *getName(void) const = 0;
+    virtual const char *getDescription(void) const = 0;
+};
+
+// Define the object descriptor
+template <typename T> class flxObjDescriptor : public flxIObjDescriptor
+{
+  public:
+    flxObjDescriptor() : _name{nullptr}, _description{nullptr}
+    {
+        setupDescriptor();
+    }
+
+    const char *getName(void) const override
+    {
+        return _name;
+    }
+    const char *getDescription(void) const override
+    {
+        return _description;
+    }
+
+    static size_t size(void)
+    {
+        return sizeof(T);
+    }
+
+  private:
+    void setupDescriptor()
+    {
+    }
+
+    const char *_name;
+    const char *_description;
+};
+
+//---------------------------------------------------------
+// End testing
+//---------------------------------------------------------
 // End - flxCoreTypes.h

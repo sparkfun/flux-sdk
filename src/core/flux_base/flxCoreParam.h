@@ -1422,6 +1422,12 @@ template <typename T> class flxActionType : public flxAction
     {
         return type();
     }
+    // testing - for managing object Descriptors
+    static const flxObjDescriptor<T> &getDescriptor(void)
+    {
+        static flxObjDescriptor<T> _descriptor;
+        return _descriptor;
+    }
 };
 
 // KDB - Temporary ...

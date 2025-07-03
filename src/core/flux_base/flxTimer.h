@@ -13,6 +13,7 @@
 #include <Arduino.h>
 
 #include "flxCoreJobs.h"
+#include "flxCoreTypes.h"
 #include "flxFlux.h"
 
 class flxTimer : public flxActionType<flxTimer>
@@ -78,4 +79,18 @@ class flxTimer : public flxActionType<flxTimer>
 
     // Property  - interval for the timer -- and set a default value of 10 seconds
     flxPropertyRWUInt32<flxTimer, &flxTimer::get_interval, &flxTimer::set_interval> interval = {10000};
+
+    // // testing
+    // static const flxObjDescriptor<flxTimer> &getDescriptor(void)
+    // {
+    //     static flxObjDescriptor<flxTimer> _descriptor;
+    //     return _descriptor;
+    // }
 };
+
+// Descriptor test...
+template <> void flxObjDescriptor<flxTimer>::setupDescriptor();
+// {
+//     _name = "Timer";
+//     _description = "A timer that can be used to trigger actions at a set interval.";
+// }
