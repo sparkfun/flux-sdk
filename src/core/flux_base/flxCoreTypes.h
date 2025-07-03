@@ -1865,7 +1865,15 @@ template <typename T> class flxObjDescriptor : public flxIObjDescriptor
     const char *_name;
     const char *_description;
 };
-
+// maybe something simplier
+struct flxObjDescriptor2
+{
+    const char *name;
+    const char *description;
+    flxObjDescriptor2() : name(nullptr), description(nullptr)
+    {
+    }
+};
 //---------------------------------------------------------
 // End testing
 //---------------------------------------------------------

@@ -1428,6 +1428,14 @@ template <typename T> class flxActionType : public flxAction
         static flxObjDescriptor<T> _descriptor;
         return _descriptor;
     }
+
+    static flxObjDescriptor2 getDescriptor2(void)
+    {
+        flxObjDescriptor2 shuffle;
+        T::setupDescriptor(shuffle);
+
+        return shuffle;
+    }
 };
 
 // KDB - Temporary ...
