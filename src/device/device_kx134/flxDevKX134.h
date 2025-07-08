@@ -201,10 +201,10 @@ class flxDevKX134 : public flxDeviceI2CType<flxDevKX134>, public SfeKX134ArdI2C
 
     // Enable Props:
     flxPropertyRWBool<flxDevKX134, &flxDevKX134::get_enable_acceleration, &flxDevKX134::set_enable_acceleration>
-        enableAcceleration = {false};
+        enableAcceleration = {true};
 
     flxPropertyRWBool<flxDevKX134, &flxDevKX134::get_enable_data_engine, &flxDevKX134::set_enable_data_engine>
-        enableDataEngine = {false};
+        enableDataEngine = {true};
 
     flxPropertyRWBool<flxDevKX134, &flxDevKX134::get_enable_tap_engine, &flxDevKX134::set_enable_tap_engine>
         enableTapEngine = {false};
@@ -287,12 +287,12 @@ class flxDevKX134 : public flxDeviceI2CType<flxDevKX134>, public SfeKX134ArdI2C
          {"32g", SFE_KX134_RANGE32G},
          {"64g", SFE_KX134_RANGE64G}}};
     
-    // // Data parameters
+    // Data parameters
 
-    // // Tap detection Parameter
+    // Tap detection Parameter
 
-    // flxParameterOutUInt8<flxDevKX134, &flxDevKX134::get_tap_detected> tapDetected;
+    flxParameterOutUInt8<flxDevKX134, &flxDevKX134::get_tap_detected> tapDetected;
 
-    // // Acceleration data parameter
-    // flxParameterOutArrayFloat<flxDevKX134, &flxDevKX134::get_accel> accelData;
+    // Acceleration data parameter
+    flxParameterOutArrayFloat<flxDevKX134, &flxDevKX134::get_accel> accelData;
 };

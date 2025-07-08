@@ -68,12 +68,12 @@ flxDevKX134::flxDevKX134()
     _enable_wake_engine{false},
     _enable_direct_tap_interrupt{false},
     _enable_double_tap_interrupt{false},
-    _range{SFE_KX134_RANGE16G}, // Default range
-    _output_data_rate{kOdr50Hz}, // Default output data rate
-    _tap_data_rate{kTapOdr400Hz}, // Default tap data rate
-    _tilt_data_rate{kTiltOdr12_5Hz}, // Default tilt data rate
-    _wake_data_rate{kWakeOdr0_781Hz} // Default wake data rate
-//   _lastAccelData{0.0f, 0.0f, 0.0f} // Initialize lastAccelData to zero
+    _range{SFE_KX134_RANGE16G},
+    _output_data_rate{kOdr50Hz},
+    _tap_data_rate{kTapOdr400Hz},
+    _tilt_data_rate{kTiltOdr12_5Hz},
+    _wake_data_rate{kWakeOdr0_781Hz},
+    _lastAccelData{0.0f, 0.0f, 0.0f}
 {
 
     setName(getDeviceName(), "KX134 Accelerometer");
@@ -95,9 +95,9 @@ flxDevKX134::flxDevKX134()
     flxRegister(wakeDataRate, "Wake Data Rate", "Set wake detection data rate (Hz)");
     flxRegister(range, "Range", "Set accelerometer range");
 
-    // // Params
-    // flxRegister(tapDetected, "Tap Detected", "Tap detection status");
-    // flxRegister(accelData, "Acceleration Data", "Acceleration data (x, y, z)");
+    // Params
+    flxRegister(tapDetected, "Tap Detected", "Tap detection status");
+    flxRegister(accelData, "Acceleration Data", "Acceleration data (x, y, z)");
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -145,36 +145,53 @@ bool flxDevKX134::onInitialize(TwoWire &wirePort)
         return false;
     }
 
+    
+    // Perform a software reset (TODO: is this needed?)
+    if (!SfeKX134ArdI2C::softwareReset())
+    {
+        flxLog_W(F("%s : Failed to perform software reset."), name());
+        // return false;
+    }
+
+    delay(5); // Wait for the sensor to reset
+
     _in_setup = true;
 
     // According to the Arduino lib, many settings for KX13X can only be applied when accel is disabled
-    set_enable_acceleration(false);
+    //set_enable_acceleration(false);
+
+    // Perform a software reset (TODO: is this needed?)
 
     // Set the default range
-    set_range(_range);
+    //set_range(_range);
 
     // Set the default output data rate
-    set_output_data_rate(_output_data_rate);
+    // set_output_data_rate(_output_data_rate);
 
-    // Set the default tap data rate
-    set_tap_data_rate(_tap_data_rate);
+    // // Set the default tap data rate
+    // set_tap_data_rate(_tap_data_rate);
 
-    // Set the default tilt data rate
-    set_tilt_data_rate(_tilt_data_rate);
+    // // Set the default tilt data rate
+    // set_tilt_data_rate(_tilt_data_rate);
 
-    // Set the default wake data rate
-    set_wake_data_rate(_wake_data_rate);
+    // // Set the default wake data rate
+    // set_wake_data_rate(_wake_data_rate);
 
     // Enable/disable engines as needed
-    set_enable_data_engine(_enable_data_engine);
-    set_enable_tap_engine(_enable_tap_engine);
-    set_enable_tilt_engine(_enable_tilt_engine);
-    set_enable_sleep_engine(_enable_sleep_engine);
-    set_enable_wake_engine(_enable_wake_engine);
-    set_enable_direct_tap_interrupt(_enable_direct_tap_interrupt);
-    set_enable_double_tap_interrupt(_enable_double_tap_interrupt);
+    //set_enable_data_engine(_enable_data_engine);
+    // set_enable_tap_engine(_enable_tap_engine);
+    // set_enable_tilt_engine(_enable_tilt_engine);
+    // set_enable_sleep_engine(_enable_sleep_engine);
+    // set_enable_wake_engine(_enable_wake_engine);
+    // set_enable_direct_tap_interrupt(_enable_direct_tap_interrupt);
+    // set_enable_double_tap_interrupt(_enable_double_tap_interrupt);
 
-    set_enable_acceleration(_enable_acceleration);
+    //set_enable_acceleration(_enable_acceleration);
+
+    SfeKX134ArdI2C::enableAccel(false);
+    SfeKX134ArdI2C::setRange(SFE_KX132_RANGE16G);
+    SfeKX134ArdI2C::enableDataEngine();
+    SfeKX134ArdI2C::enableAccel();
 
     _in_setup = false;
 
@@ -183,26 +200,6 @@ bool flxDevKX134::onInitialize(TwoWire &wirePort)
 
 // Boolean properties
 FLX_KX134_CREATE_PROPERTY(bool, enable_acceleration, _enable_acceleration, enableAccel)
-
-// bool flxDevKX134::get_enable_acceleration(void)
-// {
-//     return _enable_acceleration;
-// }
-
-// void flxDevKX134::set_enable_acceleration(bool value)
-// {
-//     if ((_enable_acceleration == value) && !_in_setup)
-//         return; // no change
-
-//     _enable_acceleration = value; 
-
-//     if (!isInitialized() && !_in_setup)
-//         return;
-    
-//     if (!SfeKX134ArdI2C::enableAccel(value))
-//         flxLog_W(F("%s : Failed to set enable_acceleration to %d."), name(), value);
-// }
-
 FLX_KX134_CREATE_PROPERTY(bool, enable_data_engine, _enable_data_engine, enableDataEngine)
 FLX_KX134_CREATE_PROPERTY(bool, enable_tap_engine, _enable_tap_engine, enableTapEngine)
 FLX_KX134_CREATE_PROPERTY(bool, enable_tilt_engine, _enable_tilt_engine, enableTiltEngine)
