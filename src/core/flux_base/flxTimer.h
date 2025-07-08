@@ -51,7 +51,7 @@ class flxTimer : public flxActionType<flxTimer>
     {
         // Add this to the list of actions in the framework
         flux_add(this);
-        setName("Timer", "A reoccurring timer");
+        // setName("Timer", "A reoccurring timer");
     };
 
     bool initialize(void)
@@ -80,22 +80,9 @@ class flxTimer : public flxActionType<flxTimer>
     // Property  - interval for the timer -- and set a default value of 10 seconds
     flxPropertyRWUInt32<flxTimer, &flxTimer::get_interval, &flxTimer::set_interval> interval = {10000};
 
-    static void setupDescriptor(flxObjDescriptor2 &desc)
+    static void setupDescriptor(flxObjDescriptor &desc)
     {
         desc.name = "Timer";
         desc.description = "A timer that can be used to trigger actions at a set interval.";
     }
-    // // testing
-    // static const flxObjDescriptor<flxTimer> &getDescriptor(void)
-    // {
-    //     static flxObjDescriptor<flxTimer> _descriptor;
-    //     return _descriptor;
-    // }
 };
-
-// Descriptor test...
-template <> void flxObjDescriptor<flxTimer>::setupDescriptor();
-// {
-//     _name = "Timer";
-//     _description = "A timer that can be used to trigger actions at a set interval.";
-// }

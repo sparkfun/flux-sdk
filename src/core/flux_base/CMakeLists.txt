@@ -32,7 +32,6 @@ flux_sdk_add_source_files(
     flxSerial.cpp
     flxSerial.h
     flxTimer.h
-    flxTimer.cpp    
     flxUtils.cpp
     flxUtils.h
     flxFlux.cpp

@@ -1366,6 +1366,12 @@ class flxOperation : public flxObject, public _flxParameterContainer
 
         return flxObject::onRestore(stBlk);
     }
+
+    // and a default for the setup call - the expectation is that this is hidden by the subclass
+    static void setupDescriptor(flxObjDescriptor &desc)
+    {
+        // noop
+    }
 };
 
 using flxOperationContainer = flxContainer<flxOperation>;
@@ -1400,6 +1406,14 @@ class flxActionContainer : public flxContainer<flxAction>
 template <typename T> class flxActionType : public flxAction
 {
   public:
+    // constructor
+    flxActionType()
+    {
+        // get the descriptor for this type and if valid use this to init some things about the object
+        flxObjDescriptor desc = getDescriptor();
+        if (desc)
+            setName(desc.getName(), desc.getDescription());
+    }
     // ---------------------------------------------------------------
     // Typing system for actions
     //
@@ -1423,16 +1437,15 @@ template <typename T> class flxActionType : public flxAction
         return type();
     }
     // testing - for managing object Descriptors
-    static const flxObjDescriptor<T> &getDescriptor(void)
-    {
-        static flxObjDescriptor<T> _descriptor;
-        return _descriptor;
-    }
 
-    static flxObjDescriptor2 getDescriptor2(void)
+    static flxObjDescriptor getDescriptor(void)
     {
-        flxObjDescriptor2 shuffle;
+        flxObjDescriptor shuffle;
+        // Call the classes setupDescriptor method
+        // This is expected to be implemented by the class
         T::setupDescriptor(shuffle);
+
+        // Just return the struct --sure, it's an assignment statement, but descriptors should be simple.
 
         return shuffle;
     }

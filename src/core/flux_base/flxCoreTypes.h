@@ -1825,53 +1825,26 @@ template <typename T> flxTypeID flxGetClassTypeID()
 // Testing of descriptors ..
 //---------------------------------------------------------
 
-// core interface descriptor interface
-class flxIObjDescriptor
-{
-  public:
-    virtual ~flxIObjDescriptor() = default;
-    virtual const char *getName(void) const = 0;
-    virtual const char *getDescription(void) const = 0;
-};
-
-// Define the object descriptor
-template <typename T> class flxObjDescriptor : public flxIObjDescriptor
-{
-  public:
-    flxObjDescriptor() : _name{nullptr}, _description{nullptr}
-    {
-        setupDescriptor();
-    }
-
-    const char *getName(void) const override
-    {
-        return _name;
-    }
-    const char *getDescription(void) const override
-    {
-        return _description;
-    }
-
-    static size_t size(void)
-    {
-        return sizeof(T);
-    }
-
-  private:
-    void setupDescriptor()
-    {
-    }
-
-    const char *_name;
-    const char *_description;
-};
-// maybe something simplier
-struct flxObjDescriptor2
+// Define the base object descriptor
+struct flxObjDescriptor
 {
     const char *name;
     const char *description;
-    flxObjDescriptor2() : name(nullptr), description(nullptr)
+    flxObjDescriptor() : name{nullptr}, description{nullptr}
     {
+    }
+    operator bool() const
+    {
+        // if we have a name, we are valid
+        return (name != nullptr);
+    }
+    const char *getName(void) const
+    {
+        return name == nullptr ? "" : name;
+    }
+    const char *getDescription(void) const
+    {
+        return description == nullptr ? "" : description;
     }
 };
 //---------------------------------------------------------
