@@ -24,28 +24,36 @@
 // -------------------- Macros for property getters and setters ---------------------------------------------
 // Enable properties' getters and setters
 // We will have a set_<PropertyName> and get_<PropertyName> methods for each property.
-// TODO: we could also explicitly define these if we don't want to use macros...
-// TODO: if this is a common pattern, we could also move this up a level to a header file
-#define FLX_KX134_CREATE_PROPERTY(TYPE, NAME, MEMBER, SETTER_FN)           \
-TYPE flxDevKX134::get_##NAME(void)                                         \
-{                                                                          \
-    return MEMBER;                                                         \
-}                                                                          \
-                                                                           \
-void flxDevKX134::set_##NAME(TYPE value)                                   \
-{                                                                          \
-    if ((MEMBER == value) && !_in_setup)                                   \
-        return; /* no change */                                            \
-                                                                           \
-    MEMBER = value;                                                        \
-                                                                           \
-    if (!isInitialized() && !_in_setup)                                    \
-        return;                                                            \
-                                                                           \
-    if (!SfeKX134ArdI2C::SETTER_FN(value))                                 \
-        flxLog_W(F("%s : Failed to set " #NAME " to %d."), name(), value); \
+// Note how we disable acceleration while setting each value, if it is enabled.
+// This is because, according to the Arduino lib, many settings for KX13X can only be applied when accel is disabled
+// We could also explicitly define these if we don't want to use macros. 
+// If this is a common pattern, we could also move this up a level to a header file
+#define FLX_KX134_CREATE_PROPERTY(TYPE, NAME, MEMBER, SETTER_FN)                     \
+TYPE flxDevKX134::get_##NAME(void)                                                   \
+{                                                                                    \
+    return MEMBER;                                                                   \
+}                                                                                    \
+                                                                                     \
+void flxDevKX134::set_##NAME(TYPE value)                                             \
+{                                                                                    \
+    if ((MEMBER == value) && !_in_setup)                                             \
+        return; /* no change */                                                      \
+                                                                                     \
+    MEMBER = value;                                                                  \
+                                                                                     \
+    if (!isInitialized() && !_in_setup)                                              \
+        return;                                                                      \
+                                                                                     \
+    bool prevAccelState = _enable_acceleration;                                      \
+    if (prevAccelState && (std::string(#NAME) != "enable_acceleration"))             \
+        SfeKX134ArdI2C::enableAccel(false);                                          \
+                                                                                     \
+    if (!SfeKX134ArdI2C::SETTER_FN(value))                                           \
+        flxLog_W(F("%s : Failed to set " #NAME " to %d."), name(), value);           \
+                                                                                     \
+    if (prevAccelState && (std::string(#NAME) != "enable_acceleration"))             \
+        SfeKX134ArdI2C::enableAccel(true);                                           \
 }
-//----------------------------------------------------------------------------------------------------------
 
 // device addresses for our device interface -- using macros from qwiic/arduino library
 uint8_t flxDevKX134::defaultDeviceAddress[] = {KX13X_ADDRESS_HIGH, kSparkDeviceAddressNull};
@@ -145,53 +153,37 @@ bool flxDevKX134::onInitialize(TwoWire &wirePort)
         return false;
     }
 
-    
-    // Perform a software reset (TODO: is this needed?)
-    if (!SfeKX134ArdI2C::softwareReset())
-    {
-        flxLog_W(F("%s : Failed to perform software reset."), name());
-        // return false;
-    }
-
-    delay(5); // Wait for the sensor to reset
-
     _in_setup = true;
 
     // According to the Arduino lib, many settings for KX13X can only be applied when accel is disabled
-    //set_enable_acceleration(false);
-
-    // Perform a software reset (TODO: is this needed?)
+    bool enableAccelInitial = _enable_acceleration; // Store the initial state of acceleration
+    set_enable_acceleration(false);
 
     // Set the default range
-    //set_range(_range);
+    set_range(_range);
 
     // Set the default output data rate
-    // set_output_data_rate(_output_data_rate);
+    set_output_data_rate(_output_data_rate);
 
-    // // Set the default tap data rate
-    // set_tap_data_rate(_tap_data_rate);
+    // Set the default tap data rate
+    set_tap_data_rate(_tap_data_rate);
 
-    // // Set the default tilt data rate
-    // set_tilt_data_rate(_tilt_data_rate);
+    // Set the default tilt data rate
+    set_tilt_data_rate(_tilt_data_rate);
 
-    // // Set the default wake data rate
-    // set_wake_data_rate(_wake_data_rate);
+    // Set the default wake data rate
+    set_wake_data_rate(_wake_data_rate);
 
     // Enable/disable engines as needed
-    //set_enable_data_engine(_enable_data_engine);
-    // set_enable_tap_engine(_enable_tap_engine);
-    // set_enable_tilt_engine(_enable_tilt_engine);
-    // set_enable_sleep_engine(_enable_sleep_engine);
-    // set_enable_wake_engine(_enable_wake_engine);
-    // set_enable_direct_tap_interrupt(_enable_direct_tap_interrupt);
-    // set_enable_double_tap_interrupt(_enable_double_tap_interrupt);
+    set_enable_data_engine(_enable_data_engine);
+    set_enable_tap_engine(_enable_tap_engine);
+    set_enable_tilt_engine(_enable_tilt_engine);
+    set_enable_sleep_engine(_enable_sleep_engine);
+    set_enable_wake_engine(_enable_wake_engine);
+    set_enable_direct_tap_interrupt(_enable_direct_tap_interrupt);
+    set_enable_double_tap_interrupt(_enable_double_tap_interrupt);
 
-    //set_enable_acceleration(_enable_acceleration);
-
-    SfeKX134ArdI2C::enableAccel(false);
-    SfeKX134ArdI2C::setRange(SFE_KX132_RANGE16G);
-    SfeKX134ArdI2C::enableDataEngine();
-    SfeKX134ArdI2C::enableAccel();
+    set_enable_acceleration(enableAccelInitial);
 
     _in_setup = false;
 
@@ -225,8 +217,6 @@ bool flxDevKX134::execute(void)
     // enable data engine and enable accel should already be set so we shouldn't need to 
     // explicitly do it each time here...
 
-    // TODO: should we perform the accelerometer read here or directly in the getter for the output param
-    
     return true; // We don't need to anything here for the KX134
 }
 
@@ -249,7 +239,6 @@ uint8_t flxDevKX134::get_tap_detected(void) {
         SfeKX134ArdI2C::clearInterrupt();
 
     return static_cast<uint8_t>(tapDetected);
-    // TODO: Should we include the required delay between tap measurements at all in this?
 }
 
 bool flxDevKX134::get_accel(flxDataArrayFloat *accelData)

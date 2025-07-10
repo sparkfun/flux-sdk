@@ -22,8 +22,6 @@
 
 #define kKX134DeviceName "KX134"
 
-//TODO: Maybe generalize this for the KX134 and KX132 devices?
-// OR: make separate classes (and possibly files) for each...
 // Define our class
 class flxDevKX134 : public flxDeviceI2CType<flxDevKX134>, public SfeKX134ArdI2C
 {
@@ -135,6 +133,7 @@ class flxDevKX134 : public flxDeviceI2CType<flxDevKX134>, public SfeKX134ArdI2C
     float _lastAccelData[3] = {0.0f, 0.0f, 0.0f}; // Last accelerometer data read
 
     // Enable Props
+    // (technically these prototypes could be moved into a macro along w/ the definition macros that are currently in the .h/.cpp, but its kinda nice for them to be explicit here)
     bool get_enable_acceleration(void);
     void set_enable_acceleration(bool);
     bool _enable_acceleration;
@@ -188,7 +187,7 @@ class flxDevKX134 : public flxDeviceI2CType<flxDevKX134>, public SfeKX134ArdI2C
     void set_wake_data_rate(uint8_t);
     uint8_t _wake_data_rate;
 
-    // Since tap types share interrupts, if multiple taps are detected, there will be a priority order of what is returned:
+    // Since tap types share interrupts, if multiple taps are detected in a measurement cycle, there will be a priority order of what is returned:
     // kSingleTap > kDoubleTap > kUnknownTap
     uint8_t get_tap_detected(void);
 
@@ -290,7 +289,6 @@ class flxDevKX134 : public flxDeviceI2CType<flxDevKX134>, public SfeKX134ArdI2C
     // Data parameters
 
     // Tap detection Parameter
-
     flxParameterOutUInt8<flxDevKX134, &flxDevKX134::get_tap_detected> tapDetected;
 
     // Acceleration data parameter
