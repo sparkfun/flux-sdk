@@ -47,7 +47,7 @@ SdFat
 "SparkFun u-blox GNSS Arduino Library"
 "SparkFun VCNL4040 Proximity Sensor Library"
 "SparkFun VEML6075 Arduino Library"
-"SparkFun VEML7700 Arduino Library"                       
+"SparkFun VEML7700 Arduino Library@2.0.1"                       
 "SparkFun VL53L1X 4m Laser Distance Sensor"
 "SparkFun VL53L5CX Arduino Library"
 "SparkFun_FS3000_Arduino_Library"
