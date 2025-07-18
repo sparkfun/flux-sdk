@@ -23,7 +23,7 @@
 
 // Define our class static variables - allocs storage for them
 
-#define kVEML7700AddressDefault VEML7700_I2C_ADDRESS
+#define kVEML7700AddressDefault SF_VEML7700_DEFAULT_ADDRESS
 
 uint8_t flxDevVEML7700::defaultDeviceAddress[] = {kVEML7700AddressDefault, kSparkDeviceAddressNull};
 
@@ -89,30 +89,30 @@ bool flxDevVEML7700::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevVEML7700::onInitialize(TwoWire &wirePort)
 {
-    return VEML7700::begin(wirePort);
+    return SparkFunVEML7700::begin(address(), wirePort);
 }
 
 // GETTER methods for output params
 uint32_t flxDevVEML7700::read_ambient_light()
 {
-    return VEML7700::getAmbientLight();
+    return SparkFunVEML7700::getAmbientLight();
 }
 
 uint32_t flxDevVEML7700::read_white_level()
 {
-    return VEML7700::getWhiteLevel();
+    return SparkFunVEML7700::getWhiteLevel();
 }
 
 float flxDevVEML7700::read_lux()
 {
-    return VEML7700::getLux();
+    return SparkFunVEML7700::getLux();
 }
 
 // methods for read-write properties
 uint8_t flxDevVEML7700::get_integration_time()
 {
     if (isInitialized())
-        _integrationTime = VEML7700::getIntegrationTime();
+        _integrationTime = SparkFunVEML7700::getIntegrationTime();
     return _integrationTime;
 }
 
@@ -120,13 +120,13 @@ void flxDevVEML7700::set_integration_time(uint8_t intTime)
 {
     _integrationTime = intTime;
     if (isInitialized())
-        VEML7700::setIntegrationTime((VEML7700_integration_time_t)intTime);
+        SparkFunVEML7700::setIntegrationTime((VEML7700_integration_time_t)intTime);
 }
 
 uint8_t flxDevVEML7700::get_sensitivity()
 {
     if (isInitialized())
-        _sensitivity = VEML7700::getSensitivityMode();
+        _sensitivity = SparkFunVEML7700::getSensitivityMode();
     return _sensitivity;
 }
 
@@ -134,13 +134,13 @@ void flxDevVEML7700::set_sensitivity(uint8_t sens)
 {
     _sensitivity = sens;
     if (isInitialized())
-        VEML7700::setSensitivityMode((VEML7700_sensitivity_mode_t)sens);
+        SparkFunVEML7700::setSensitivityMode((VEML7700_sensitivity_mode_t)sens);
 }
 
 uint8_t flxDevVEML7700::get_persistence()
 {
     if (isInitialized())
-        _persistence = VEML7700::getPersistenceProtect();
+        _persistence = SparkFunVEML7700::getPersistenceProtect();
     return _persistence;
 }
 
@@ -148,5 +148,5 @@ void flxDevVEML7700::set_persistence(uint8_t pers)
 {
     _persistence = pers;
     if (isInitialized())
-        VEML7700::setPersistenceProtect((VEML7700_persistence_protect_t)pers);
+        SparkFunVEML7700::setPersistenceProtect((VEML7700_persistence_protect_t)pers);
 }
