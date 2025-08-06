@@ -83,7 +83,7 @@ bool flxDevST25DV::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     }
     else
     {
-        flxLog_E("ST25DV: isConnected unexpected icRef 0x%x", icRef);
+        flxLog_D("ST25DV: isConnected unexpected icRef 0x%x", icRef);
         return false;
     }
 }
