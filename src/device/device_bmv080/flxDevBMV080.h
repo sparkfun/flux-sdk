@@ -59,8 +59,10 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     // Method called to initialize the class
     bool onInitialize(TwoWire &);
 
-  private:
+    // called before reading values
+    bool execute(void);
 
+  private:
     // Define our output parameters - these are the values we will return
 
     float read_pm10(void)
@@ -79,15 +81,11 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     {
         return SparkFunBMV080::isObstructed();
     }
-    
-    
 
   public:
-    
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm10> PM10;
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm25> PM25;
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm1> PM1;
     flxParameterOutBool<flxDevBMV080, &flxDevBMV080::is_obstructed> obstructed;
-    
 };

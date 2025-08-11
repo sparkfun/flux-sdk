@@ -47,7 +47,7 @@ flxDevBMV080::flxDevBMV080()
     setDescription("BMV080 Particulate Matter Sensor");
 
     // Register parameters
-   
+
     // Register read-write properties
     flxRegister(PM10, "PM10", "The PM10 concentration in micrograms per cubic meter (µg/m³)");
     flxRegister(PM25, "PM25", "The measurement sensitivity");
@@ -72,16 +72,31 @@ bool flxDevBMV080::isConnected(flxBusI2C &i2cDriver, uint8_t address)
 //
 bool flxDevBMV080::onInitialize(TwoWire &wirePort)
 {
-    bool rc =  SparkFunBMV080::begin(address(), wirePort);
 
-    if (rc == true)
-        rc = SparkFunBMV080::init();
+    if (SparkFunBMV080::begin(address(), wirePort) == false)
+    {
+        flxLog_D(F("BMV080: Failed to initialize device at address 0x%02X"), address());
+        return false;
+    }
 
+    if (SparkFunBMV080::init() == false)
+    {
+        flxLog_D(F("BMV080: Failed to initialize device"));
+        return false;
+    }
 
     if (SparkFunBMV080::setMode(SF_BMV080_MODE_CONTINUOUS) == false)
     {
-        flxLog_E(F("BMV080: Failed to set continuous mode"));
-        rc = false;
+        flxLog_D(F("BMV080: Failed to set continuous mode"));
+        return false;
     }
-    return rc;
+    return true;
+}
+
+//----------------------------------------------------------------------------------------------------------
+// execute()
+//
+bool flxDevBMV080::execute(void)
+{
+    return SparkFunBMV080::readSensor();
 }
