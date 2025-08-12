@@ -39,7 +39,7 @@ flxRegisterDevice(flxDevBMV080);
 // Object constructor. Performs initialization of device values, including device identifiers (name, I2C address),
 // and managed properties.
 
-flxDevBMV080::flxDevBMV080()
+flxDevBMV080::flxDevBMV080() : _obstructedEnabled{true}
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -47,6 +47,7 @@ flxDevBMV080::flxDevBMV080()
     setDescription("BMV080 Particulate Matter Sensor");
 
     // Register parameters
+    flxRegister(enableObstructed, "Obstruction Detection", "Enable or disable obstruction detection");
 
     // Register read-write properties
     flxRegister(PM10, "PM10", "The PM10 concentration in micrograms per cubic meter (µg/m³)");
@@ -90,6 +91,12 @@ bool flxDevBMV080::onInitialize(TwoWire &wirePort)
         flxLog_D(F("BMV080: Failed to set continuous mode"));
         return false;
     }
+
+    // We are up - setup our device parameters
+
+    // Set the obstruction detection state. And force the change
+    _set_enable_obstructed(_obstructedEnabled, true);
+
     return true;
 }
 
@@ -99,4 +106,43 @@ bool flxDevBMV080::onInitialize(TwoWire &wirePort)
 bool flxDevBMV080::execute(void)
 {
     return SparkFunBMV080::readSensor();
+}
+
+//----------------------------------------------------------------------------------------------------------
+// Property Getters and Setters
+//-----------------------------------------------------------------------------------------------------------
+//
+// get_enable_obstructed()
+//
+// Returns the current state of the enable obstructed property.
+bool flxDevBMV080::get_enable_obstructed(void)
+{
+    return _obstructedEnabled;
+}
+
+void flxDevBMV080::_set_enable_obstructed(bool enable, bool force)
+{
+    if (_obstructedEnabled == enable && isInitialized() && !force)
+        return;
+
+    _obstructedEnabled = enable;
+
+    // Has this device been setup yet an/or should we force the change?
+    // Why have "force"? - This method manages the IsObstructed output parameter,
+    // and we want to leverage this before the device's isInitialized flag is set.
+    if (!isInitialized() && !force)
+        return;
+
+    // Set the obstruction detection state
+    SparkFunBMV080::setDoObstructionDetection(enable);
+
+    // Set if the output variable is disabled or not
+    obstructed.setEnabled(enable);
+}
+
+// For the property setter
+void flxDevBMV080::set_enable_obstructed(bool enable)
+{
+    // relay
+    _set_enable_obstructed(enable, false);
 }

@@ -82,7 +82,19 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
         return SparkFunBMV080::isObstructed();
     }
 
+    // Property Getters and Setters
+    bool get_enable_obstructed(void);
+    // internal method
+    void _set_enable_obstructed(bool enable, bool force = false);
+    void set_enable_obstructed(bool);
+
+    bool _obstructedEnabled; // Flag to enable/disable obstructed detection
+
   public:
+    // Properties
+    flxPropertyRWBool<flxDevBMV080, &flxDevBMV080::get_enable_obstructed, &flxDevBMV080::set_enable_obstructed>
+        enableObstructed;
+
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm10> PM10;
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm25> PM25;
