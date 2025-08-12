@@ -87,13 +87,29 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     // internal method
     void _set_enable_obstructed(bool enable, bool force = false);
     void set_enable_obstructed(bool);
-
     bool _obstructedEnabled; // Flag to enable/disable obstructed detection
+
+    // Operating Mode - continuous or duty cycle
+    uint8_t get_operating_mode(void);
+    void set_operating_mode(uint8_t mode);
+    uint8_t _operatingMode;
+
+    // duty cycle
+    uint16_t get_duty_cycle(void);
+    void set_duty_cycle(uint16_t dutyCycle);
+    uint16_t _dutyCycle; // in seconds, 0 means continuous mode
 
   public:
     // Properties
     flxPropertyRWBool<flxDevBMV080, &flxDevBMV080::get_enable_obstructed, &flxDevBMV080::set_enable_obstructed>
         enableObstructed;
+
+    flxPropertyRWUInt8<flxDevBMV080, &flxDevBMV080::get_operating_mode, &flxDevBMV080::set_operating_mode>
+        operatingMode = {SF_BMV080_MODE_CONTINUOUS,
+                         {{"Continuous", SF_BMV080_MODE_CONTINUOUS}, {"Duty Cycle", SF_BMV080_MODE_DUTY_CYCLE}}};
+
+    flxPropertyRWUInt16<flxDevBMV080, &flxDevBMV080::get_duty_cycle, &flxDevBMV080::set_duty_cycle> dutyCycle = {
+        1, 3600}; // 1 to 3600 seconds}
 
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm10> PM10;
