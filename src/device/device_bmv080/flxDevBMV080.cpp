@@ -222,7 +222,7 @@ void flxDevBMV080::set_duty_cycle(uint16_t dutyCycle)
         dutyCycle = kBMV080DutyCycleMin; // Ensure minimum duty cycle
     }
 
-    if (dutyCycle == _dutyCycle)
+    if (dutyCycle == _dutyCycle || !isInitialized())
         return;
 
     beginUpdate();
@@ -262,7 +262,6 @@ void flxDevBMV080::set_integration_time(uint16_t integrationTime)
 
     if (integrationTime == _integrationTime || !isInitialized())
         return;
-    flxLog_I(F("BMV080: Setting integration time to %d seconds"), integrationTime);
 
     beginUpdate();
     _integrationTime = integrationTime;
