@@ -43,7 +43,8 @@ flxRegisterDevice(flxDevBMV080);
 
 flxDevBMV080::flxDevBMV080()
     : _obstructedEnabled{true}, _operatingMode{SF_BMV080_MODE_CONTINUOUS}, _dutyCycle{kDutyCycleDefault},
-      _vibrationFilterEnabled{false}, _integrationTime{kIntegrationTimeDefault}, _isRunning{false}, _updateCnt{0}
+      _vibrationFilterEnabled{false}, _integrationTime{kIntegrationTimeDefault},
+      _measurementAlgorithm{E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION}, _isRunning{false}, _updateCnt{0}
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -57,6 +58,7 @@ flxDevBMV080::flxDevBMV080()
     flxRegister(dutyCycle, "Duty Cycle", "The duty cycle (secs) when in duty cycle mode");
     flxRegister(enableVibrationFilter, "Vibration Filter", "Enable or disable vibration filtering");
     flxRegister(integrationTime, "Integration Time", "The integration time in seconds");
+    flxRegister(measurementAlgorithm, "Measurement Algorithm", "The measurement algorithm to use");
 
     // Register read-write properties
     flxRegister(PM10, "PM10", "The PM10 concentration in micrograms per cubic meter (µg/m³)");
@@ -281,4 +283,20 @@ void flxDevBMV080::set_integration_time(uint16_t integrationTime)
 uint16_t flxDevBMV080::get_integration_time(void)
 {
     return _integrationTime;
+}
+
+uint8_t flxDevBMV080::get_measurment_algo(void)
+{
+    return _measurementAlgorithm;
+}
+
+void flxDevBMV080::set_measurment_algo(uint8_t algo)
+{
+    if (algo == _measurementAlgorithm || !isInitialized())
+        return;
+
+    beginUpdate();
+    _measurementAlgorithm = algo;
+
+    endUpdate();
 }

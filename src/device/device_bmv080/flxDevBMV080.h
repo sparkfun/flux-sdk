@@ -116,6 +116,11 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     uint16_t get_integration_time(void);
     uint16_t _integrationTime; // in seconds
 
+    // Measurement Algorithm
+    uint8_t get_measurment_algo(void);
+    void set_measurment_algo(uint8_t algo);
+    uint8_t _measurementAlgorithm;
+
     bool _isRunning; // Flag to indicate if the device is running
     uint8_t _updateCnt;
 
@@ -140,6 +145,12 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
 
     flxPropertyRWUInt16<flxDevBMV080, &flxDevBMV080::get_integration_time, &flxDevBMV080::set_integration_time>
         integrationTime = {1, 120}; // 1 to 120 seconds
+
+    flxPropertyRWUInt8<flxDevBMV080, &flxDevBMV080::get_measurment_algo, &flxDevBMV080::set_measurment_algo>
+        measurementAlgorithm = {E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION,
+                                {{"High Precision", E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION},
+                                 {"Balanced", E_BMV080_MEASUREMENT_ALGORITHM_BALANCED},
+                                 {"Fast Response", E_BMV080_MEASUREMENT_ALGORITHM_FAST_RESPONSE}}};
 
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm10> PM10;
