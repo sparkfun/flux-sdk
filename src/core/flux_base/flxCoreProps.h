@@ -1906,10 +1906,18 @@ class flxObject : public flxPersist, public _flxPropertyContainer, public flxDes
         return status;
     };
 
+    // ---------------------------------------------------------------------------------
+    virtual void restoreComplete(void)
+    {
+        // Called when restore is complete for the object.
+        // for subclasses to implement - helpful at times.
+    }
     //---------------------------------------------------------------------------------
     virtual bool onRestore(flxStorageBlock *stBlk)
     {
-        return restoreProperties(stBlk);
+        bool status = restoreProperties(stBlk);
+        restoreComplete();
+        return status;
     }
     //---------------------------------------------------------------------------------
     virtual bool restore(flxStorage *pStorage)
