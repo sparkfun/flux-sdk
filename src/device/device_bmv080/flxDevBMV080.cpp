@@ -26,7 +26,9 @@
 
 uint8_t flxDevBMV080::defaultDeviceAddress[] = {kBMV080AddressDefault, kSparkDeviceAddressNull};
 
-const uint16_t kDutyCycleDefault = 20;
+// note: Data sheet default is 30 seconds
+static const uint16_t kDutyCycleDefault = 30;
+static const uint16_t kIntegrationTimeDefault = 10; // Default integration time in seconds
 //----------------------------------------------------------------------------------------------------------
 // Register this class with the system, enabling this driver during system
 // initialization and device discovery.
@@ -40,7 +42,8 @@ flxRegisterDevice(flxDevBMV080);
 // and managed properties.
 
 flxDevBMV080::flxDevBMV080()
-    : _obstructedEnabled{true}, _operatingMode{SF_BMV080_MODE_CONTINUOUS}, _dutyCycle{kDutyCycleDefault}
+    : _obstructedEnabled{true}, _operatingMode{SF_BMV080_MODE_CONTINUOUS}, _dutyCycle{kDutyCycleDefault},
+      _vibrationFilterEnabled{false}, _integrationTime{kIntegrationTimeDefault}, _isRunning{false}, _updateCnt{0}
 {
 
     // Setup unique identifiers for this device and basic device object systems
@@ -52,6 +55,8 @@ flxDevBMV080::flxDevBMV080()
 
     flxRegister(operatingMode, "Operating Mode", "Continuous or Duty Cycle");
     flxRegister(dutyCycle, "Duty Cycle", "The duty cycle (secs) when in duty cycle mode");
+    flxRegister(enableVibrationFilter, "Vibration Filter", "Enable or disable vibration filtering");
+    flxRegister(integrationTime, "Integration Time", "The integration time in seconds");
 
     // Register read-write properties
     flxRegister(PM10, "PM10", "The PM10 concentration in micrograms per cubic meter (µg/m³)");
@@ -84,14 +89,40 @@ bool flxDevBMV080::onInitialize(TwoWire &wirePort)
         return false;
     }
 
+    // update counter is 0
+    _updateCnt = 0;
+    // setting parameters is defered until after any properties are restore - once
+    // the system is up and started any param changes seem to require a restart.
+
+    return true;
+}
+void flxDevBMV080::stopSensor(void)
+{
+    // Stop the sensor
+    if (_isRunning)
+    {
+        SparkFunBMV080::close();
+        _isRunning = false; // Set the running flag to false
+    }
+}
+//----------------------------------------------------------------------------------------------------------
+void flxDevBMV080::startSensor(void)
+{
     if (SparkFunBMV080::init() == false)
     {
         flxLog_D(F("BMV080: Failed to initialize device"));
-        return false;
+        return;
     }
+    // Set the obstruction detection state.
+    if (!SparkFunBMV080::setDoObstructionDetection(_obstructedEnabled))
+        flxLog_W(F("BMV080: Failed to set obstruction detection state: %d"), _obstructedEnabled);
 
-    // Set the obstruction detection state. And force the change
-    _set_enable_obstructed(_obstructedEnabled, true);
+    if (!SparkFunBMV080::setDoVibrationFiltering(_vibrationFilterEnabled))
+        flxLog_E(F("BMV080: Failed to set vibration filtering: %d"), _vibrationFilterEnabled);
+
+    // Set the integration time
+    if (!SparkFunBMV080::setIntegrationTime((float)_integrationTime))
+        flxLog_E(F("BMV080: Failed to set integration time: %d seconds"), _integrationTime);
 
     // set a duty cycle - do before setting the MODE.
     if (_operatingMode == SF_BMV080_MODE_DUTY_CYCLE)
@@ -101,14 +132,16 @@ bool flxDevBMV080::onInitialize(TwoWire &wirePort)
     }
     // op mode
     if (SparkFunBMV080::setMode(_operatingMode) == false)
-    {
         flxLog_E(F("BMV080: Failed to set operating mode: %d"), _operatingMode);
-        return false;
-    }
 
-    return true;
+    _isRunning = true; // Set the running flag to true
 }
 
+void flxDevBMV080::restoreComplete(void)
+{
+    // Finalize the setup
+    startSensor();
+}
 //----------------------------------------------------------------------------------------------------------
 // execute()
 //
@@ -117,6 +150,24 @@ bool flxDevBMV080::execute(void)
     return SparkFunBMV080::readSensor();
 }
 
+// used to manage updates -- if a parameter to the device changes, we need to re-init
+void flxDevBMV080::beginUpdate(void)
+{
+    _updateCnt++;
+}
+void flxDevBMV080::endUpdate(void)
+{
+    if (_updateCnt == 1)
+    {
+        // If we are running, restart to take into account the updated settings.
+        if (_isRunning)
+        {
+            stopSensor();
+            startSensor();
+        }
+    }
+    _updateCnt--;
+}
 //----------------------------------------------------------------------------------------------------------
 // Property Getters and Setters
 //-----------------------------------------------------------------------------------------------------------
@@ -129,32 +180,18 @@ bool flxDevBMV080::get_enable_obstructed(void)
     return _obstructedEnabled;
 }
 
-void flxDevBMV080::_set_enable_obstructed(bool enable, bool force)
+void flxDevBMV080::set_enable_obstructed(bool enable)
 {
-    if (_obstructedEnabled == enable && isInitialized() && !force)
+    if (_obstructedEnabled == enable)
         return;
 
+    beginUpdate();
     _obstructedEnabled = enable;
-
-    // Has this device been setup yet an/or should we force the change?
-    // Why have "force"? - This method manages the IsObstructed output parameter,
-    // and we want to leverage this before the device's isInitialized flag is set.
-    if (!isInitialized() && !force)
-        return;
-
-    // Set the obstruction detection state
-    if (!SparkFunBMV080::setDoObstructionDetection(enable))
-        flxLog_W(F("BMV080: Failed to set obstruction detection state: %s"), enable ? "Enabled" : "Disabled");
 
     // Set if the output variable is disabled or not
     obstructed.setEnabled(enable);
-}
 
-// For the property setter
-void flxDevBMV080::set_enable_obstructed(bool enable)
-{
-    // relay
-    _set_enable_obstructed(enable, false);
+    endUpdate();
 }
 
 // Operating Mode - continuous or duty cycle
@@ -164,18 +201,12 @@ uint8_t flxDevBMV080::get_operating_mode(void)
 }
 void flxDevBMV080::set_operating_mode(uint8_t mode)
 {
-    if (mode == _operatingMode && isInitialized())
+    if (mode == _operatingMode)
         return;
 
+    beginUpdate();
     _operatingMode = mode;
-
-    // Has this device been setup yet?
-    if (!isInitialized())
-        return;
-
-    // Set the operating mode
-    if (!SparkFunBMV080::setMode(mode))
-        flxLog_E(F("BMV080: Failed to set operating mode: %d"), mode);
+    endUpdate();
 }
 
 // duty cycle
@@ -185,14 +216,70 @@ uint16_t flxDevBMV080::get_duty_cycle(void)
 }
 void flxDevBMV080::set_duty_cycle(uint16_t dutyCycle)
 {
-    if (dutyCycle == _dutyCycle && isInitialized())
+    if (dutyCycle < kBMV080DutyCycleMin)
+    {
+        flxLog_W(F("BMV080: Duty cycle must be at least %d seconds - setting to minimum"), kBMV080DutyCycleMin);
+        dutyCycle = kBMV080DutyCycleMin; // Ensure minimum duty cycle
+    }
+
+    if (dutyCycle == _dutyCycle)
         return;
 
+    beginUpdate();
     _dutyCycle = dutyCycle;
-    // Has this device been setup yet?
-    if (!isInitialized())
+
+    // The duty cycle must be greater than the integration time by at least 2 seconds.
+    // Check and adjust the integration time
+    if (_integrationTime > _dutyCycle - 2)
+    {
+        uint16_t tmp = _dutyCycle - 2;
+        flxLog_W(F("BMV080: Adjusting integration time to %d"), tmp);
+        set_integration_time(tmp);
+    }
+    endUpdate();
+}
+
+// vibration filtering
+void flxDevBMV080::set_enable_vibration_filter(bool enable)
+{
+    if (enable == _vibrationFilterEnabled)
         return;
 
-    if (!SparkFunBMV080::setDutyCyclingPeriod(_dutyCycle))
-        flxLog_E(F("BMV080: Failed to set duty cycle: %d seconds"), _dutyCycle);
+    beginUpdate();
+    _vibrationFilterEnabled = enable;
+
+    endUpdate();
+}
+
+bool flxDevBMV080::get_enable_vibration_filter(void)
+{
+    return _vibrationFilterEnabled;
+}
+
+// vibration filtering
+void flxDevBMV080::set_integration_time(uint16_t integrationTime)
+{
+
+    if (integrationTime == _integrationTime || !isInitialized())
+        return;
+    flxLog_I(F("BMV080: Setting integration time to %d seconds"), integrationTime);
+
+    beginUpdate();
+    _integrationTime = integrationTime;
+
+    // The duty cycle must be greater than the integration time by at lest 2 seconds.
+    // Check and adjust the duty cycle
+    if (_dutyCycle < (_integrationTime + 2))
+    {
+        _dutyCycle = _integrationTime + 2;
+        flxLog_W(F("BMV080: Adjusting duty cycle to %d seconds to be greater than integration time"), _dutyCycle);
+
+        set_duty_cycle(_dutyCycle);
+    }
+    endUpdate();
+}
+
+uint16_t flxDevBMV080::get_integration_time(void)
+{
+    return _integrationTime;
 }

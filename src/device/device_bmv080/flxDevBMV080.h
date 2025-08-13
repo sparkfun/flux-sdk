@@ -27,6 +27,9 @@
 
 // What is the name used to ID this device?
 #define kBMV080DeviceName "BMV080"
+
+// Minimum duty cycle in seconds to take into account smallest integration time (secs)
+const uint16_t kBMV080DutyCycleMin = 3;
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
 class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV080
@@ -62,7 +65,12 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     // called before reading values
     bool execute(void);
 
+    void restoreComplete(void);
+
   private:
+    void startSensor(void);
+    void stopSensor(void);
+
     // Define our output parameters - these are the values we will return
 
     float read_pm10(void)
@@ -85,7 +93,6 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     // Property Getters and Setters
     bool get_enable_obstructed(void);
     // internal method
-    void _set_enable_obstructed(bool enable, bool force = false);
     void set_enable_obstructed(bool);
     bool _obstructedEnabled; // Flag to enable/disable obstructed detection
 
@@ -99,6 +106,22 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     void set_duty_cycle(uint16_t dutyCycle);
     uint16_t _dutyCycle; // in seconds, 0 means continuous mode
 
+    // vibration filtering
+    void set_enable_vibration_filter(bool enable);
+    bool get_enable_vibration_filter(void);
+    bool _vibrationFilterEnabled;
+
+    // Integration Time (s)
+    void set_integration_time(uint16_t integrationTime);
+    uint16_t get_integration_time(void);
+    uint16_t _integrationTime; // in seconds
+
+    bool _isRunning; // Flag to indicate if the device is running
+    uint8_t _updateCnt;
+
+    void beginUpdate(void);
+    void endUpdate(void);
+
   public:
     // Properties
     flxPropertyRWBool<flxDevBMV080, &flxDevBMV080::get_enable_obstructed, &flxDevBMV080::set_enable_obstructed>
@@ -109,7 +132,14 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
                          {{"Continuous", SF_BMV080_MODE_CONTINUOUS}, {"Duty Cycle", SF_BMV080_MODE_DUTY_CYCLE}}};
 
     flxPropertyRWUInt16<flxDevBMV080, &flxDevBMV080::get_duty_cycle, &flxDevBMV080::set_duty_cycle> dutyCycle = {
-        1, 3600}; // 1 to 3600 seconds}
+        kBMV080DutyCycleMin, 3600}; // 1 to 3600 seconds}
+
+    flxPropertyRWBool<flxDevBMV080, &flxDevBMV080::get_enable_vibration_filter,
+                      &flxDevBMV080::set_enable_vibration_filter>
+        enableVibrationFilter;
+
+    flxPropertyRWUInt16<flxDevBMV080, &flxDevBMV080::get_integration_time, &flxDevBMV080::set_integration_time>
+        integrationTime = {1, 120}; // 1 to 120 seconds
 
     // Define our output parameters - specify the get functions to call.
     flxParameterOutFloat<flxDevBMV080, &flxDevBMV080::read_pm10> PM10;
