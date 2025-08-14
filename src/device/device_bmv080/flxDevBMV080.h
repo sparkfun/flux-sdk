@@ -1,7 +1,7 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.
+ * Copyright (c) 2022-2025, SparkFun Electronics Inc.
  *
  * SPDX-License-Identifier: MIT
  *
@@ -12,15 +12,11 @@
  *
  *  flxDevBMV080.h
  *
- *  Spark Device object for the BMV080 device.
- *
- *
+ *  Flux Device object for the BMV080 device.
  *
  */
 
 #pragma once
-
-#include "Arduino.h"
 
 #include "SparkFun_BMV080_Arduino_Library.h"
 #include "flxDevice.h"
@@ -32,6 +28,7 @@
 const uint16_t kBMV080DutyCycleMin = 3;
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
+//
 class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV080
 {
 
@@ -65,10 +62,14 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     // called before reading values
     bool execute(void);
 
+    // called by system after a restore property operation is complete
     void restoreComplete(void);
 
   private:
+    // Start the sensor
     void startSensor(void);
+
+    // Stop the sensor, but keeps the underlying connection (handle) to the device - if one exists.
     void stopSensor(void);
 
     // Define our output parameters - these are the values we will return
@@ -92,7 +93,7 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
 
     // Property Getters and Setters
     bool get_enable_obstructed(void);
-    // internal method
+
     void set_enable_obstructed(bool);
     bool _obstructedEnabled; // Flag to enable/disable obstructed detection
 
@@ -117,8 +118,8 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     uint16_t _integrationTime; // in seconds
 
     // Measurement Algorithm
-    uint8_t get_measurment_algo(void);
-    void set_measurment_algo(uint8_t algo);
+    uint8_t get_measurement_algo(void);
+    void set_measurement_algo(uint8_t algo);
     uint8_t _measurementAlgorithm;
 
     bool _isRunning; // Flag to indicate if the device is running
@@ -146,7 +147,7 @@ class flxDevBMV080 : public flxDeviceI2CType<flxDevBMV080>, public SparkFunBMV08
     flxPropertyRWUInt16<flxDevBMV080, &flxDevBMV080::get_integration_time, &flxDevBMV080::set_integration_time>
         integrationTime = {1, 120}; // 1 to 120 seconds
 
-    flxPropertyRWUInt8<flxDevBMV080, &flxDevBMV080::get_measurment_algo, &flxDevBMV080::set_measurment_algo>
+    flxPropertyRWUInt8<flxDevBMV080, &flxDevBMV080::get_measurement_algo, &flxDevBMV080::set_measurement_algo>
         measurementAlgorithm = {E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION,
                                 {{"High Precision", E_BMV080_MEASUREMENT_ALGORITHM_HIGH_PRECISION},
                                  {"Balanced", E_BMV080_MEASUREMENT_ALGORITHM_BALANCED},

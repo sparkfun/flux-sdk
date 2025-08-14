@@ -1,7 +1,7 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * Copyright (c) 2022-2024, SparkFun Electronics Inc.
+ * Copyright (c) 2022-2025, SparkFun Electronics Inc.
  *
  * SPDX-License-Identifier: MIT
  *
@@ -12,9 +12,7 @@
  *
  *  flxDevBMV080.h
  *
- *  Spark Device object for the VEML7700 device.
- *
- *
+ *  FLux Device object for the BMV080 device.
  *
  */
 
@@ -53,7 +51,6 @@ flxDevBMV080::flxDevBMV080()
 
     // Register parameters
     flxRegister(enableObstructed, "Obstruction Detection", "Enable or disable obstruction detection");
-
     flxRegister(operatingMode, "Operating Mode", "Continuous or Duty Cycle");
     flxRegister(dutyCycle, "Duty Cycle", "The duty cycle (secs) when in duty cycle mode");
     flxRegister(enableVibrationFilter, "Vibration Filter", "Enable or disable vibration filtering");
@@ -93,11 +90,17 @@ bool flxDevBMV080::onInitialize(TwoWire &wirePort)
 
     // update counter is 0
     _updateCnt = 0;
-    // setting parameters is defered until after any properties are restore - once
+    // setting parameters is deferred until after any properties are restore - once
     // the system is up and started any param changes seem to require a restart.
 
     return true;
 }
+
+//----------------------------------------------------------------------------------------------------------
+// stopSensor()
+//
+// Stops the sensor, but keeps the underlying connection (handle) to the device - if one exists.
+//
 void flxDevBMV080::stopSensor(void)
 {
     // Stop the sensor
@@ -108,6 +111,10 @@ void flxDevBMV080::stopSensor(void)
     }
 }
 //----------------------------------------------------------------------------------------------------------
+// Called to start the sensor with the current settings.
+//
+// Note - this method assumes the begin() method has been called and the device is initialized.
+//
 void flxDevBMV080::startSensor(void)
 {
     if (SparkFunBMV080::init() == false)
@@ -120,11 +127,11 @@ void flxDevBMV080::startSensor(void)
         flxLog_W(F("BMV080: Failed to set obstruction detection state: %d"), _obstructedEnabled);
 
     if (!SparkFunBMV080::setDoVibrationFiltering(_vibrationFilterEnabled))
-        flxLog_E(F("BMV080: Failed to set vibration filtering: %d"), _vibrationFilterEnabled);
+        flxLog_W(F("BMV080: Failed to set vibration filtering: %d"), _vibrationFilterEnabled);
 
     // Set the integration time
     if (!SparkFunBMV080::setIntegrationTime((float)_integrationTime))
-        flxLog_E(F("BMV080: Failed to set integration time: %d seconds"), _integrationTime);
+        flxLog_W(F("BMV080: Failed to set integration time: %d seconds"), _integrationTime);
 
     // set a duty cycle - do before setting the MODE.
     if (_operatingMode == SF_BMV080_MODE_DUTY_CYCLE)
@@ -138,25 +145,40 @@ void flxDevBMV080::startSensor(void)
 
     _isRunning = true; // Set the running flag to true
 }
-
+//----------------------------------------------------------------------------------------------------------
+// restoreComplete()
+//
+// Since the sensor requires parameters to be set before taking observations, we leverage the restoreComplete method.
+// This method is called after all parameters have been restored, allowing us to start the sensor.
+//
 void flxDevBMV080::restoreComplete(void)
 {
-    // Finalize the setup
+    // Start the sensor with the current settings
     startSensor();
 }
 //----------------------------------------------------------------------------------------------------------
 // execute()
+//
+// The system calls this method before reading sensor values - so let's have the sensor read the values
+// and update the internal state of the sensor.
 //
 bool flxDevBMV080::execute(void)
 {
     return SparkFunBMV080::readSensor();
 }
 
-// used to manage updates -- if a parameter to the device changes, we need to re-init
+//----------------------------------------------------------------------------------------------------------
+// used to manage updates -- if a parameter to the device changes, we need to re-init/restart the sensor.
+//
+// Using a "begin/end" update bracket to manage when changing one setting, requires other settings to be updated.
+// A simple increment counter is used (so odiously not thread safe). In the end call, when the counter transitions to 0,
+// and the device is running, we restart the sensor to take into account the new settings.
+//
 void flxDevBMV080::beginUpdate(void)
 {
     _updateCnt++;
 }
+
 void flxDevBMV080::endUpdate(void)
 {
     if (_updateCnt == 1)
@@ -196,6 +218,7 @@ void flxDevBMV080::set_enable_obstructed(bool enable)
     endUpdate();
 }
 
+//-----------------------------------------------------------------------------------------------------------
 // Operating Mode - continuous or duty cycle
 uint8_t flxDevBMV080::get_operating_mode(void)
 {
@@ -211,6 +234,7 @@ void flxDevBMV080::set_operating_mode(uint8_t mode)
     endUpdate();
 }
 
+//-----------------------------------------------------------------------------------------------------------
 // duty cycle
 uint16_t flxDevBMV080::get_duty_cycle(void)
 {
@@ -241,6 +265,7 @@ void flxDevBMV080::set_duty_cycle(uint16_t dutyCycle)
     endUpdate();
 }
 
+//-----------------------------------------------------------------------------------------------------------
 // vibration filtering
 void flxDevBMV080::set_enable_vibration_filter(bool enable)
 {
@@ -258,7 +283,10 @@ bool flxDevBMV080::get_enable_vibration_filter(void)
     return _vibrationFilterEnabled;
 }
 
-// vibration filtering
+//-----------------------------------------------------------------------------------------------------------
+// Integration Time (s)
+//
+// Returns the current integration time in seconds.
 void flxDevBMV080::set_integration_time(uint16_t integrationTime)
 {
 
@@ -285,12 +313,16 @@ uint16_t flxDevBMV080::get_integration_time(void)
     return _integrationTime;
 }
 
-uint8_t flxDevBMV080::get_measurment_algo(void)
+//-----------------------------------------------------------------------------------------------------------
+// Measurement Algorithm
+//
+// Returns the current measurement algorithm.
+uint8_t flxDevBMV080::get_measurement_algo(void)
 {
     return _measurementAlgorithm;
 }
 
-void flxDevBMV080::set_measurment_algo(uint8_t algo)
+void flxDevBMV080::set_measurement_algo(uint8_t algo)
 {
     if (algo == _measurementAlgorithm || !isInitialized())
         return;
