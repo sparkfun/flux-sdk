@@ -18,6 +18,7 @@
 #include "flxFlux.h"
 #include "flxUtils.h"
 #include <string.h>
+#include <sys/time.h>
 #include <time.h>
 
 //----------------------------------------------------------------------------
@@ -387,6 +388,10 @@ void flxLogger::updateTimeParameterName(void)
         timeTitle = "Time (millis)";
         break;
 
+    case TimeStampEpochMillis:
+        timeTitle = "Time ms (Epoch)";
+        break;
+
     case TimeStampEpoch:
         timeTitle = "Time (Epoch)";
         break;
@@ -454,6 +459,12 @@ std::string flxLogger::get_timestamp(void)
         snprintf(szBuffer, sizeof(szBuffer), "%lu", (unsigned long)time(NULL));
         break;
 
+    case TimeStampEpochMillis: {
+        struct timeval tv;
+        gettimeofday(&tv, nullptr);
+        snprintf(szBuffer, sizeof(szBuffer), "%ld%03d", tv.tv_sec, tv.tv_usec / 1000);
+        break;
+    }
     case TimeStampDateTimeUSA:
         // June 2025 - Year was originally %G - The ISO 8601 week-based year as a decimal number.
         strftime(szBuffer, sizeof(szBuffer), "%m-%d-%Y %T", tmLocal);
