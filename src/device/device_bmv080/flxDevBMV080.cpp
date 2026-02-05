@@ -171,8 +171,8 @@ bool flxDevBMV080::execute(void)
 // used to manage updates -- if a parameter to the device changes, we need to re-init/restart the sensor.
 //
 // Using a "begin/end" update bracket to manage when changing one setting, requires other settings to be updated.
-// A simple increment counter is used (so odiously not thread safe). In the end call, when the counter transitions to 0,
-// and the device is running, we restart the sensor to take into account the new settings.
+// A simple increment counter is used (so obviously not thread safe). In the end call, when the counter transitions to
+// 0, and the device is running, we restart the sensor to take into account the new settings.
 //
 void flxDevBMV080::beginUpdate(void)
 {
