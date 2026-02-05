@@ -403,9 +403,10 @@ bool flxSysFirmware::getOTAFirmwareManifest(JsonDocument &jsonDoc)
 
     http.begin(_otaURL);
 
-    if (http.GET() != HTTP_CODE_OK)
+    int ret = http.GET();
+    if (ret != HTTP_CODE_OK)
     {
-        flxLog_E(F("Unable to access update manifest from server"));
+        flxLog_E(F("Unable to access update manifest from server. Error %s"), http.errorToString(ret).c_str());
         http.end();
         return false;
     }
