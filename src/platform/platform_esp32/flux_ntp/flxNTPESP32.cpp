@@ -87,7 +87,7 @@ bool flxNTPESP32::start(void)
 
     if (!sys_thread_tcpip(LWIP_CORE_LOCK_QUERY_HOLDER))
     {
-        sys_mutex_lock(&lock_tcpip_core);
+        // sys_mutex_lock(&lock_tcpip_core);
         sys_thread_tcpip(LWIP_CORE_LOCK_MARK_HOLDER);
         // LOCK_TCPIP_CORE();
     }
@@ -104,7 +104,7 @@ bool flxNTPESP32::start(void)
     if (sys_thread_tcpip(LWIP_CORE_LOCK_QUERY_HOLDER))
     {
         sys_thread_tcpip(LWIP_CORE_LOCK_UNMARK_HOLDER);
-        sys_mutex_unlock(&lock_tcpip_core);
+        // sys_mutex_unlock(&lock_tcpip_core);
 
         // UNLOCK_TCPIP_CORE();
     }
