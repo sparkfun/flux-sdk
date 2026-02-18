@@ -272,17 +272,19 @@ class _flxEventHub
 
     //----------------------------------------------------------------------------------------------------
     // add an alias for an event ID
-
     void addEventAlias(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias)
     {
         // add the alias
-        _eventAlias[id()].push_back(std::make_unique<_flxEventAlias>(alias));
+        // _eventAlias[id()].push_back(std::make_unique<_flxEventAlias>(alias));
+        _eventAlias[id()].push_back(std::unique_ptr<_flxEventAlias>(new _flxEventAlias(alias)));
     }
     // now an alias that includes a value that is always sent.
     template <typename T> void addEventAliasWithValue(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias, T value)
     {
         // add the alias with a default value
-        _eventAlias[id()].push_back(std::make_unique<_flxEventAliasWithValue<T>>(alias, value));
+        // _eventAlias[id()].push_back(std::make_unique<_flxEventAliasWithValue<T>>(alias, value));
+        _eventAlias[id()].push_back(
+            std::unique_ptr<_flxEventAliasWithValue<T>>(new _flxEventAliasWithValue<T>(alias, value)));
     }
 
   private:
