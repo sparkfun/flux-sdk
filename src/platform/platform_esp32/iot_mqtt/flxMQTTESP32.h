@@ -201,7 +201,10 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         {
             flxLog_V_(F("%s disconnected - reconnecting..."), this->name());
             if (!connect())
+            {
+                flxLog_W(F("%s failed to reconnect - write failed"), this->name());
                 return;
+            }
 
             flxLog_V(F("reconnected"));
         }
