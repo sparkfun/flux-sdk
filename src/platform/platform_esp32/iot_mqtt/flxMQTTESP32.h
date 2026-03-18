@@ -199,11 +199,11 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         // If we lost the connection to the broker, try to reconnect...
         if (!_mqttClient.connected() || !_wifiClient.connected())
         {
-            flxLog_W_(F("%s disconnected - reconnecting..."), this->name());
+            flxLog_V_(F("%s disconnected - reconnecting..."), this->name());
             if (!connect())
                 return;
 
-            flxLog_N(F("reconnected"));
+            flxLog_V(F("reconnected"));
         }
 
         // do we have a topic?
