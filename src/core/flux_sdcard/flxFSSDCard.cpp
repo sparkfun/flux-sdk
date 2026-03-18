@@ -64,7 +64,7 @@ bool _flxFSSDCard::initialize()
 
     if (!SD.begin(_pinCS))
     {
-        flxLogM_E(kMsgErrDeviceInit, "SD Card", "start");
+        flxLogM_D(kMsgErrDeviceInit, "SD Card", "start");
         return false;
     }
 
