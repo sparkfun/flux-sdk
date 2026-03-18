@@ -95,8 +95,10 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
 
     void write(JsonDocument &jsonDoc)
     {
-
-        if (connected() == false)
+        // kdb - March 2026 - This was checking if the system was connected, but
+        // the thingspeak mqtt connection was disconnecting. So - check if this is
+        // enabled. If so, make the write -- the mqtt logic will reconnect.
+        if (enabled() == false)
             return;
 
         // loop over our channels and see if they are in the document
