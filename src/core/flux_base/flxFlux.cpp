@@ -97,12 +97,14 @@ bool flxFlux::start()
     if (_theApplication)
         _theApplication->onDeviceLoad();
 
-    // initialize actions
-    for (auto pAction : Actions)
-    {
-        if (!pAction->initialize())
-            flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
-    }
+    // initialize actions - just call initialize on the container
+    if (!Actions.initialize())
+        flxLog_D(F("Error initializing actions"));
+    // for (auto pAction : Actions)
+    // {
+    //     if (!pAction->initialize())
+    //         flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
+    // }
     // Everything should be loaded -- restore settings from storage
     if (_loadSettings && flxSettings.isAvailable())
     {
@@ -159,12 +161,31 @@ bool flxFlux::loop(void)
     // Just Call loop on the job queue system
     //
     bool rc = flxJobQueue.loop();
-
     // and the application loop handler if we have an app
     if (_theApplication)
         rc = rc || _theApplication->loop();
 
     return rc;
+}
+void flxFlux::add(flxAction *theAction)
+{
+    // make sure the action isn't already in the list
+    if (Actions.contains(theAction))
+    {
+        flxLog_D(F("Not adding action %s - already in the list"), theAction->name());
+        return;
+    }
+    Actions.push_back(theAction);
+}
+
+bool flxFlux::contains(flxAction *theAction)
+{
+    return Actions.contains(theAction);
+}
+
+bool flxFlux::insert_after(flxAction *value, flxAction *prev)
+{
+    return Actions.insert_after(value, prev);
 }
 //------------------------------------------------------------------------------
 // add()  -- a device pointer
@@ -178,6 +199,13 @@ bool flxFlux::loop(void)
 //
 void flxFlux::add(flxDevice *theDevice)
 {
+    // make sure the device isn't already in the list
+    if (Devices.contains(theDevice))
+    {
+        flxLog_D(F("Not adding device %s - already in the list"), theDevice->name());
+        return;
+    }
+
     if (!theDevice->autoload())
         flxDeviceFactory::get().pruneAutoload(theDevice, Devices);
 
@@ -205,6 +233,9 @@ void flxFlux::add(flxDevice *theDevice)
         theDevice->addAddressToName();
 
     Devices.push_back(theDevice);
+
+    // send the device add event
+    flxSendEvent(flxEvent::kOnFluxAddDevice, (uint32_t)theDevice);
 }
 
 //---------------------------------------------------------------------------------
@@ -212,11 +243,18 @@ void flxFlux::add(flxDevice *theDevice)
 void flxFlux::remove(flxDevice *theDevice)
 {
     Devices.remove(theDevice);
+
+    // send the device remove event
+    flxSendEvent(flxEvent::kOnFluxRemoveDevice, (uint32_t)theDevice);
 }
 
 bool flxFlux::contains(flxDevice *theDevice)
 {
     return Devices.contains(theDevice);
+}
+bool flxFlux::insert_after(flxDevice *value, flxDevice *prev)
+{
+    return Devices.insert_after(value, prev);
 }
 
 #define kApplicationHashIDSize 24

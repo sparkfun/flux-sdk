@@ -57,6 +57,18 @@ macro (flux_sdk_add_module)
     endforeach ()
 endmacro ()
 
+# ##################################################################################################
+# flux_sdk_skip_module()
+#
+# macro to add "modules" to ignore list - helpful will setting 'add all', but wanting to skip a few
+# modules.
+macro (flux_sdk_skip_module)
+    set(list_var "${ARGN}")
+    foreach (arg IN LISTS list_var)
+        list(APPEND FLUX_MODULES_TO_SKIP ${arg})
+    endforeach ()
+endmacro ()
+
 function (flux_sdk_get_directory_name result_name)
     get_filename_component(THIS_MODULE ${CMAKE_CURRENT_SOURCE_DIR} NAME)
     set(${result_name}
@@ -138,6 +150,11 @@ function (flux_sdk_process_subdirectories)
         if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child}
             AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt)
 
+            # in the exclude list?
+            if (${child} IN_LIST FLUX_MODULES_TO_SKIP)
+                message(STATUS "Skipping: ${child}")
+                continue ()
+            endif ()
             # add this module - in list, or all devices flag set
             if (load_all_modules OR ${child} IN_LIST FLUX_MODULES_TO_ADD)
                 message(STATUS "Adding: ${child}")

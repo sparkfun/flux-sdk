@@ -25,6 +25,7 @@
 #include <initializer_list>
 #include <vector>
 
+#include "flxCoreEvent.h"
 #include "flxFlux.h"
 #include "flxOutput.h"
 
@@ -33,6 +34,9 @@
 class _flxLoggerMetrics;
 
 // KDB Testing end
+
+// Define an event for triggering an event for logging
+flxDefineEventID(kOnLogObservationWithSource);
 
 // Define the Logging class
 class flxLogger : public flxActionType<flxLogger>
@@ -61,6 +65,11 @@ class flxLogger : public flxActionType<flxLogger>
     uint32_t get_sample_number(void);
 
     void reset_sample_number(const uint32_t &number = 0);
+
+    // for event source
+    bool get_source_enable(void);
+    void set_source_enable(bool);
+    std::string get_source(void);
 
   public:
     flxLogger();
@@ -107,6 +116,9 @@ class flxLogger : public flxActionType<flxLogger>
     //----------------------------------------------------------------------------
     void logObservation(void);
 
+    // with a source name - what is causing / triggering the log op
+    void logObservationWithSource(const char *source);
+
     // Used to register the event we want to listen to, which will trigger this
     // activity.
     void listen(flxSignalVoid &theEvent)
@@ -115,6 +127,14 @@ class flxLogger : public flxActionType<flxLogger>
         // register the logObservation() method on this instance. When an event
         // is triggered, the logObservation method is called
         theEvent.call(this, &flxLogger::logObservation);
+    }
+    // Used to register the event we want to listen to that has a source, which will trigger
+    // this activity.
+    void listen(flxSignalString &theEvent)
+    {
+        // register the logObservation() method on this instance. When an event
+        // is triggered, the logObservation method is called
+        theEvent.call(this, &flxLogger::logObservationWithSource);
     }
 
     // Used some template magic to support all event types.
@@ -248,6 +268,7 @@ class flxLogger : public flxActionType<flxLogger>
         return _pMetrics != nullptr;
     }
     float getLogRate(void);
+
     //------------------------------------------------------------
 
     // Enum for timestamp types.
@@ -256,23 +277,31 @@ class flxLogger : public flxActionType<flxLogger>
         TimeStampNone,
         TimeStampMillis,
         TimeStampEpoch,
+        TimeStampEpochMillis,
         TimeStampDateTimeUSA,
         TimeStampDateTime,
         TimeStampISO8601,
         TimeStampISO8601TZ,
+        TimeStampISO8601WD,
+        TimeStampISO8601WDTZ,
     } Timestamp_t;
 
     // Timestamp property
 
     flxPropertyRWUInt32<flxLogger, &flxLogger::get_ts_type, &flxLogger::set_ts_type> timestampMode = {
         TimeStampNone,
-        {{"No Timestamp", TimeStampNone},
-         {"Milliseconds since program start", TimeStampMillis},
-         {"Seconds since Epoch", TimeStampEpoch},
-         {"Date Time - USA Date format", TimeStampDateTimeUSA},
-         {"Date Time", TimeStampDateTime},
-         {"ISO8601 Timestamp", TimeStampISO8601},
-         {"ISO8601 Timestamp with Time Zone", TimeStampISO8601TZ}}};
+        {
+            {"No Timestamp", TimeStampNone},
+            {"Milliseconds since program start", TimeStampMillis},
+            {"Seconds since Epoch", TimeStampEpoch},
+            {"Milliseconds since Epoch", TimeStampEpochMillis},
+            {"Date Time - USA Date format", TimeStampDateTimeUSA},
+            {"Date Time", TimeStampDateTime},
+            {"ISO8601 Timestamp", TimeStampISO8601},
+            {"ISO8601 Timestamp with Time Zone", TimeStampISO8601TZ},
+            {"ISO8601 Timestamp - Week Date", TimeStampISO8601WD},
+            {"ISO8601 Timestamp - Week Date with Time Zone", TimeStampISO8601WDTZ},
+        }};
 
     // output parameter for the timestamp
     flxParameterOutString<flxLogger, &flxLogger::get_timestamp> timestamp;
@@ -287,7 +316,6 @@ class flxLogger : public flxActionType<flxLogger>
 
     // Sample number - this increments and outputs a number for each sample taken.
     flxPropertyRWBool<flxLogger, &flxLogger::get_num_mode, &flxLogger::set_num_mode> numberMode = {false};
-
     flxParameterOutUInt32<flxLogger, &flxLogger::get_sample_number> sampleNumber;
 
     flxPropertyUInt32<flxLogger> numberIncrement = {1, 1, 10000};
@@ -296,6 +324,12 @@ class flxLogger : public flxActionType<flxLogger>
 
     // Logger run rate metric collection?
     flxPropertyRWBool<flxLogger, &flxLogger::enabledLogRate, &flxLogger::setEnableLogRate> logRateMetric = {false};
+
+    // Flat to enable/disable the source of the logger trigger event.
+    // output Local name to the log
+    flxPropertyRWBool<flxLogger, &flxLogger::get_source_enable, &flxLogger::set_source_enable> enableSourceNameOutput =
+        {false};
+    flxParameterOutString<flxLogger, &flxLogger::get_source> logEventSourceName;
 
   private:
     void updateTimeParameterName(void);
@@ -322,6 +356,9 @@ class flxLogger : public flxActionType<flxLogger>
     uint32_t _currentSampleNumber;
 
     _flxLoggerMetrics *_pMetrics;
+
+    bool _sourceNameEnabled;
+    std::string _eventSourceName;
 
     // Templates used to manage array logging based on type.
     //

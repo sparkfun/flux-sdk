@@ -18,7 +18,7 @@
 #include "flxWiFi.h"
 
 // ESP wifi header
-#include "WiFi.h"
+#include <WiFi.h>
 
 const uint8_t kWiFiLevelPoor = 0;
 const uint8_t kWiFiLevelFair = 1;

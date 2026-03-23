@@ -125,8 +125,8 @@ bool flxWiFiESP32::connect(void)
     // This is fixed in the IDF https://github.com/espressif/esp-idf/issues/9283
     //
     // TODO - revisit this
-    esp_log_level_t level = esp_log_level_get("wifi");
-    esp_log_level_set("wifi", ESP_LOG_NONE);
+    // esp_log_level_t level = esp_log_level_get("wifi");
+    // esp_log_level_set("wifi", ESP_LOG_NONE);
 
     int i = 0;
     while (wifiMulti.run() != WL_CONNECTED)
@@ -140,7 +140,7 @@ bool flxWiFiESP32::connect(void)
 
             // TODO: Revisit
             // back to normal esp logging
-            esp_log_level_set("wifi", level);
+            // esp_log_level_set("wifi", level);
 
             WiFi.disconnect(true);
             return false;
@@ -148,7 +148,7 @@ bool flxWiFiESP32::connect(void)
     }
     // TODO: Revisit
     // back to normal esp logging
-    esp_log_level_set("wifi", level);
+    // esp_log_level_set("wifi", level);
 
     flxSerial.textToWhite();
     flxLog_N(F("Connected to %s"), WiFi.SSID().c_str());

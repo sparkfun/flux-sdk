@@ -432,22 +432,22 @@ bool flxSettingsSerial::drawPageParamInVoid(flxOperation *pCurrent, flxParameter
 // Container typed wrappers that use the container template for all the work
 bool flxSettingsSerial::drawPage(flxObjectContainer *pCurrent)
 {
-    return drawPage<flxObject *>(pCurrent);
+    return drawPage<flxObject>(pCurrent);
 }
 //-----------------------------------------------------------------------------
 bool flxSettingsSerial::drawPage(flxOperationContainer *pCurrent)
 {
-    return drawPage<flxOperation *>(pCurrent);
+    return drawPage<flxOperation>(pCurrent);
 }
 //-----------------------------------------------------------------------------
 bool flxSettingsSerial::drawPage(flxDeviceContainer *pCurrent)
 {
-    return drawPage<flxDevice *>(pCurrent);
+    return drawPage<flxDevice>(pCurrent);
 }
 //-----------------------------------------------------------------------------
 bool flxSettingsSerial::drawPage(flxActionContainer *pCurrent)
 {
-    return drawPage<flxAction *>(pCurrent);
+    return drawPage<flxAction>(pCurrent);
 }
 //-----------------------------------------------------------------------------
 // drawPaeHeader()
@@ -508,20 +508,20 @@ void flxSettingsSerial::drawPageFooter(flxObject *pCurrent)
 //
 // Draw the entry in the menu for the give item
 //
-void flxSettingsSerial::drawMenuEntry(uint item, flxDescriptor *pDesc)
+void flxSettingsSerial::drawMenuEntry(uint item, flxObject *pObj)
 {
 
-    if (!pDesc)
+    if (!pObj)
         return;
 
-    if (pDesc->title())
+    if (pObj->title())
     {
         flxSerial.textToWhite();
-        Serial.printf("\n\r    %s\n\r", pDesc->title());
+        Serial.printf("\n\r    %s\n\r", pObj->title());
         flxSerial.textToNormal();
     }
 
-    Serial.printf("\t%2d)  %s - %s\n\r", item, pDesc->name(), pDesc->description());
+    Serial.printf("\t%2d)  %s - %s\n\r", item, pObj->name(), pObj->description());
 }
 
 //-----------------------------------------------------------------------------
@@ -822,25 +822,25 @@ int flxSettingsSerial::drawMenu(flxOperation *pCurrent, uint level)
 int flxSettingsSerial::drawMenu(flxObjectContainer *pCurrent, uint level)
 {
 
-    return drawMenu<flxObject *>(pCurrent, level);
+    return drawMenu<flxObject>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 int flxSettingsSerial::drawMenu(flxOperationContainer *pCurrent, uint level)
 {
 
-    return drawMenu<flxOperation *>(pCurrent, level);
+    return drawMenu<flxOperation>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 int flxSettingsSerial::drawMenu(flxDeviceContainer *pCurrent, uint level)
 {
 
-    return drawMenu<flxDevice *>(pCurrent, level);
+    return drawMenu<flxDevice>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 int flxSettingsSerial::drawMenu(flxActionContainer *pCurrent, uint level)
 {
 
-    return drawMenu<flxAction *>(pCurrent, level);
+    return drawMenu<flxAction>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 // Select Menus
@@ -849,25 +849,25 @@ int flxSettingsSerial::drawMenu(flxActionContainer *pCurrent, uint level)
 int flxSettingsSerial::selectMenu(flxObjectContainer *pCurrent, uint level)
 {
 
-    return selectMenu<flxObject *>(pCurrent, level);
+    return selectMenu<flxObject>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 int flxSettingsSerial::selectMenu(flxOperationContainer *pCurrent, uint level)
 {
 
-    return selectMenu<flxOperation *>(pCurrent, level);
+    return selectMenu<flxOperation>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 int flxSettingsSerial::selectMenu(flxDeviceContainer *pCurrent, uint level)
 {
 
-    return selectMenu<flxDevice *>(pCurrent, level);
+    return selectMenu<flxDevice>(pCurrent, level);
 }
 //-----------------------------------------------------------------------------
 int flxSettingsSerial::selectMenu(flxActionContainer *pCurrent, uint level)
 {
 
-    return selectMenu<flxAction *>(pCurrent, level);
+    return selectMenu<flxAction>(pCurrent, level);
 }
 
 //-----------------------------------------------------------------------------

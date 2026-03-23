@@ -13,6 +13,8 @@
 #include "flxCoreTypes.h"
 
 #include <functional>
+#include <map>
+#include <memory>
 #include <vector>
 // spEvent.h
 //
@@ -101,7 +103,8 @@ typedef flxSignal<double, double> flxSignalDouble;
 typedef flxSignal<const char *, const char *> flxSignalString;
 typedef flxSignal<void> flxSignalVoid;
 
-///////////////////////////////////////////////////////////////////////////////////////
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
 //
 // Event Hub work
 //
@@ -126,6 +129,8 @@ typedef flxSignal<void> flxSignalVoid;
 //    Type matching of the event callback parameters might cause an issue. But since everything is tightly controlled
 //    at this point in the implementation, this is not a major concern.
 //
+
+//----------------------------------------------------------------------------------------------------
 class _flxEventHub
 {
   public:
@@ -203,39 +208,145 @@ class _flxEventHub
     //
     template <typename T> void sendEvent(flxEvent::flxEventID_t id, T value)
     {
-        // does this event exist/registered?
-        auto mpSig = _eventSignals.find(id());
-
-        if (mpSig == _eventSignals.end())
-        {
-            // no event, no need to continue - just eat this
-            return;
-        }
-
-        reinterpret_cast<flxSignal<T, T> *>(mpSig->second)->emit(value);
+        // do the version that uses id numbers
+        sendEvent(id(), value);
     }
     //----------------------------------------------------------------------------------------------------
     // Send a void event
     //
     void sendEvent(flxEvent::flxEventID_t id)
     {
+        // do the version that uses id numbers
+        sendEvent(id());
+    }
+
+    // send using the event number
+    //----------------------------------------------------------------------------------------------------
+    // Send and event with the given value.
+    //
+    template <typename T> void sendEvent(flxEvent::flxEventIDNum_t num, T value)
+    {
         // does this event exist/registered?
-        auto mpSig = _eventSignals.find(id());
+        auto mpSig = _eventSignals.find(num);
 
-        if (mpSig == _eventSignals.end())
-        {
-            // no event, no need to continue - just eat this
+        // send it
+        if (mpSig != _eventSignals.end())
+            reinterpret_cast<flxSignal<T, T> *>(mpSig->second)->emit(value);
+
+        // now check if there are any aliases for this event
+        // does this event exist/registered?
+        auto mpAlias = _eventAlias.find(num);
+
+        // None?
+        if (mpAlias == _eventAlias.end())
             return;
-        }
 
-        reinterpret_cast<flxSignal<void> *>(mpSig->second)->emit();
+        // send the alias events
+        for (auto &alias : mpAlias->second)
+            alias->dispatch(value);
+    }
+    //----------------------------------------------------------------------------------------------------
+    // Send a void event
+    //
+    void sendEvent(flxEvent::flxEventIDNum_t num)
+    {
+        // first process this event.
+        auto mpSig = _eventSignals.find(num);
+
+        // send it if it exists
+        if (mpSig != _eventSignals.end())
+            reinterpret_cast<flxSignal<void> *>(mpSig->second)->emit();
+
+        // now check if there are any aliases for this event
+        // does this event exist/registered?
+        auto mpAlias = _eventAlias.find(num);
+
+        // None?
+        if (mpAlias == _eventAlias.end())
+            return;
+
+        // send the alias events
+        for (auto &alias : mpAlias->second)
+            alias->dispatch();
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    // add an alias for an event ID
+    void addEventAlias(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias)
+    {
+        // add the alias
+        // _eventAlias[id()].push_back(std::make_unique<_flxEventAlias>(alias));
+        _eventAlias[id()].push_back(std::unique_ptr<_flxEventAlias>(new _flxEventAlias(alias)));
+    }
+    // now an alias that includes a value that is always sent.
+    template <typename T> void addEventAliasWithValue(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias, T value)
+    {
+        // add the alias with a default value
+        // _eventAlias[id()].push_back(std::make_unique<_flxEventAliasWithValue<T>>(alias, value));
+        _eventAlias[id()].push_back(
+            std::unique_ptr<_flxEventAliasWithValue<T>>(new _flxEventAliasWithValue<T>(alias, value)));
     }
 
   private:
+    //----------------------------------------------------------------------------------------------------
+    // Alias work
+    //
+    // Purpose:
+    //    Map one event ID to another - easy. But also include a default payload to send if desired.
+
+    class _flxEventAlias
+    {
+      public:
+        _flxEventAlias(flxEvent::flxEventID_t id) : _id{id()}
+        {
+        }
+        _flxEventAlias(flxEvent::flxEventIDNum_t num) : _id{num}
+        {
+        }
+
+        // Dispatch an event
+        template <typename T> void dispatch(T value)
+        {
+            _flxEventHub::get().sendEvent(_id, value);
+        }
+        // Dispatch a void event
+        virtual void dispatch(void)
+        {
+            _flxEventHub::get().sendEvent(_id);
+        }
+
+      protected:
+        flxEvent::flxEventIDNum_t _id; // the event ID number
+    };
+
+    // now a alias that includes a default value to send
+    template <typename T> class _flxEventAliasWithValue : public _flxEventAlias
+    {
+      public:
+        _flxEventAliasWithValue(flxEvent::flxEventID_t id, T value) : _flxEventAlias(id), _value(value)
+        {
+        }
+        _flxEventAliasWithValue(flxEvent::flxEventIDNum_t num, T value) : _flxEventAlias(num), _value(value)
+        {
+        }
+        // Dispatch a void event
+        virtual void dispatch(void)
+        {
+            _flxEventHub::get().sendEvent(_id, _value);
+        }
+
+      private:
+        T _value; // default value to send
+    };
+
     _flxEventHub() {};
 
     // map event ID to event signal
-    std::map<uint32_t, flxSignalBase *> _eventSignals;
+    std::map<flxEvent::flxEventIDNum_t, flxSignalBase *> _eventSignals;
+
+    // map to store event alias - one event ID can have multiple aliases
+    // If a event is called, the alias list is also checked.
+    std::map<flxEvent::flxEventIDNum_t, std::vector<std::unique_ptr<_flxEventAlias>>> _eventAlias;
 };
 //
 extern _flxEventHub &flxEventHub;
@@ -260,9 +371,33 @@ template <typename T> void flxRegisterEventCB(flxEvent::flxEventID_t id, T *inst
 void flxSendEvent(flxEvent::flxEventID_t id);
 
 //----------------------------------------------------------------------------------------------------
+// User exposed convenience function to send a void /empty event
+//
+void flxSendEvent(flxEvent::flxEventIDNum_t id);
+
+//----------------------------------------------------------------------------------------------------
 // User exposed convenience function to sent an event that takes a value
 //
 template <typename T> void flxSendEvent(flxEvent::flxEventID_t id, T value)
 {
     flxEventHub.sendEvent(id, value);
+}
+
+//----------------------------------------------------------------------------------------------------
+// User exposed convenience function to sent an event that takes a value
+//
+template <typename T> void flxSendEvent(flxEvent::flxEventIDNum_t num, T value)
+{
+    flxEventHub.sendEvent(num, value);
+}
+
+//----------------------------------------------------------------------------------------------------
+// simple alias
+void flxAddEventAlias(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias);
+
+//----------------------------------------------------------------------------------------------------
+// Alias with a value that is always sent with the event
+template <typename T> void flxAddEventAliasWithValue(flxEvent::flxEventID_t id, flxEvent::flxEventID_t alias, T value)
+{
+    flxEventHub.addEventAliasWithValue(id, alias, value);
 }

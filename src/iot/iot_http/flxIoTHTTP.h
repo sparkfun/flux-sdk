@@ -316,7 +316,7 @@ class flxIoTHTTP : public flxIoTHTTPBase<flxIoTHTTP>, public flxWriter
     {
         setName("HTTP IoT", "An HTTP IoT data connector");
 
-        flux.add(this);
+        // flux.add(this);
     }
     // for the Writer interface
     void write(int32_t data)

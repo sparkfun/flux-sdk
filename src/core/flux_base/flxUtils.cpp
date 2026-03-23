@@ -392,14 +392,24 @@ void flx_utils::uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint3
     minutes %= 60;
     hours %= 24;
 }
+
 //---------------------------------------------------------------------------------------------------
 // Return a ISO8601 timestamp
-void flx_utils::timestampISO8601(time_t &t_time, char *buffer, size_t length, bool bTZ)
+void flx_utils::timestampISO8601(time_t &t_time, char *buffer, size_t length, bool bTZ, bool bWeekDates)
 {
 
     struct tm *tmLocal = localtime(&t_time);
-    strftime(buffer, length, "%G-%m-%dT%T", tmLocal);
 
+    // Time format,
+    //      standard ISO8601 format: YYYY-MM-DDTHH:MM:SS
+    //      or week date format: YYYY-Www-DTHH:MM:SS
+    // See: https://en.wikipedia.org/wiki/ISO_8601
+    if (!bWeekDates)
+        strftime(buffer, length, "%Y-%m-%dT%T", tmLocal);
+    else
+        strftime(buffer, length, "%G-W%V-%uT%T", tmLocal);
+
+    // Timezone requested?
     if (!bTZ)
         return;
 

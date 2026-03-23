@@ -380,7 +380,7 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
         flxRegister(deviceID, "Device ID", "The Arduino IoT Device ID");
 
-        flux.add(this);
+        // flux.add(this);
 
         _theJob.setup("ArduinoIOT", kArduinoIoTUpdateDelta, this, &flxIoTArduino::jobUpdateCB);
     }

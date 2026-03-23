@@ -1368,7 +1368,7 @@ class flxOperation : public flxObject, public _flxParameterContainer
     }
 };
 
-using flxOperationContainer = flxContainer<flxOperation *>;
+using flxOperationContainer = flxContainer<flxOperation>;
 //-----------------------------------------
 // Spark Actions
 //
@@ -1382,8 +1382,20 @@ class flxAction : public flxOperation
     }
 };
 // Container for actions
-using flxActionContainer = flxContainer<flxAction *>;
-
+class flxActionContainer : public flxContainer<flxAction>
+{
+  public:
+    bool initialize(void)
+    {
+        // Initialize all actions in the container
+        for (auto &action : *this)
+        {
+            if (!action->initialize())
+                flxLog_W(F("Failed to initialize action: %s"), action->name());
+        }
+        return true;
+    }
+};
 // For subclasses
 template <typename T> class flxActionType : public flxAction
 {

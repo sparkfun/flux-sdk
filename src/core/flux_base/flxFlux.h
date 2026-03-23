@@ -20,9 +20,9 @@
 
 class flxApplication;
 
-// happy functions for happy users.
-// bool spark_start(bool bAutoLoad = true);
-// bool spark_loop();
+// Define an event for serial data available
+flxDefineEventID(kOnFluxAddDevice);
+flxDefineEventID(kOnFluxRemoveDevice);
 
 // Define a default app class name
 #define kDefaultAppClassName "SFE-FLUX-APPLICATION"
@@ -50,10 +50,14 @@ class flxFlux : public flxObjectContainer
     {
         add(&theAction);
     }
-    void add(flxAction *theAction)
+    void add(flxAction *theAction);
+
+    bool contains(flxAction &theAction)
     {
-        Actions.push_back(theAction);
+        return contains(&theAction);
     }
+    bool contains(flxAction *theAction);
+    bool insert_after(flxAction *theAction, flxAction *prevAction);
 
     void add(flxDevice &theDevice)
     {
@@ -74,6 +78,8 @@ class flxFlux : public flxObjectContainer
     }
 
     bool contains(flxDevice *theDevice);
+
+    bool insert_after(flxDevice *theDevice, flxDevice *prevDevice);
 
     // This is a singleton class - so delete copy & assignment constructors
     flxFlux(flxFlux const &) = delete;
@@ -102,7 +108,7 @@ class flxFlux : public flxObjectContainer
     // example - getting all the buttons :
     // -------------------------------
     //
-    //  auto buttons = flux.getAll<flxDevButton>();
+    //  auto buttons = flux.get<flxDevButton>();
     //
     //  Serial.printf("Number of buttons: %d \n\r", buttons->size());
     //  for( auto b : *buttons)
@@ -113,16 +119,13 @@ class flxFlux : public flxObjectContainer
     //  }
     //
 
-    template <class T> std::shared_ptr<flxContainer<T *>> get()
+    // template <class T> std::shared_ptr<flxContainer<T>> get()
+    template <class T> std::shared_ptr<std::vector<T *>> get()
     {
-        flxContainer<T *> results;
+        // Create a vector to hold the results
+        std::vector<T *> results;
 
         flxTypeID type = T::type();
-
-        // name the result container
-        char szBuffer[64];
-        snprintf(szBuffer, sizeof(szBuffer), "Get Type: 0x%X", type);
-        results.setName(szBuffer);
 
         T *theItem;
         for (int i = 0; i < Devices.size(); i++)
@@ -134,19 +137,14 @@ class flxFlux : public flxObjectContainer
             }
         }
         // make a smart pointer
-        return std::make_shared<flxContainer<T *>>(std::move(results));
+        return std::make_shared<std::vector<T *>>(std::move(results));
     }
 
     //--------------------------------------------------------
     // Get all that are of the provided type ID
-    std::shared_ptr<flxOperationContainer> get(flxTypeID type)
+    std::shared_ptr<std::vector<flxOperation *>> get(flxTypeID type)
     {
-        flxOperationContainer results;
-
-        // name the result container
-        char szBuffer[64];
-        snprintf(szBuffer, sizeof(szBuffer), "Get Type: 0x%X", type);
-        results.setName(szBuffer);
+        std::vector<flxOperation *> results;
 
         flxOperation *theItem;
         for (int i = 0; i < Devices.size(); i++)
@@ -158,7 +156,7 @@ class flxFlux : public flxObjectContainer
             }
         }
         // make a smart pointer
-        return std::make_shared<flxOperationContainer>(std::move(results));
+        return std::make_shared<std::vector<flxOperation *>>(std::move(results));
     }
 
     //--------------------------------------------------------
@@ -309,6 +307,7 @@ class flxFlux : public flxObjectContainer
     {
         flxDeviceFactory::get().dumpDeviceTable();
     }
+    bool initialized();
 
   private:
     flxBusI2C _i2cDriver;
@@ -355,7 +354,6 @@ class flxFlux : public flxObjectContainer
         this->push_back(pTmp);
     }
 
-    bool initialized();
     void setInitialized(bool bInit);
 
     flxOperation *_getByType(flxTypeID type)

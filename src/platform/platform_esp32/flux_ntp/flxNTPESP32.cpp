@@ -14,8 +14,8 @@
 
 #include "esp_netif.h"
 #include "lwip/apps/sntp.h"
+#include "lwip/priv/tcpip_priv.h"
 #include "time.h"
-
 //----------------------------------------------------------------
 // Enabled Property setter/getters
 void flxNTPESP32::set_isEnabled(bool bEnabled)
@@ -80,6 +80,18 @@ bool flxNTPESP32::start(void)
     // The following are from the implementation of configTzTime() - minus the TZ setup.
 
     esp_netif_init();
+
+    // August 2025 - the following locks are needed b/c of changes in the IDF
+    // Note: Macros (LOCK_TCPIP_CORE() and UNLOCK_TCPIP_CORE()) are in Arduino/IDF code,
+    // but they were not set correctly, so I unwound them here. This will break in the futures for sure.
+
+    if (!sys_thread_tcpip(LWIP_CORE_LOCK_QUERY_HOLDER))
+    {
+        // sys_mutex_lock(&lock_tcpip_core);
+        sys_thread_tcpip(LWIP_CORE_LOCK_MARK_HOLDER);
+        // LOCK_TCPIP_CORE();
+    }
+
     if (sntp_enabled())
     {
         sntp_stop();
@@ -88,6 +100,14 @@ bool flxNTPESP32::start(void)
     sntp_setservername(0, (char *)ntpServerOne().c_str());
     sntp_setservername(1, (char *)ntpServerTwo().c_str());
     sntp_init();
+
+    if (sys_thread_tcpip(LWIP_CORE_LOCK_QUERY_HOLDER))
+    {
+        sys_thread_tcpip(LWIP_CORE_LOCK_UNMARK_HOLDER);
+        // sys_mutex_unlock(&lock_tcpip_core);
+
+        // UNLOCK_TCPIP_CORE();
+    }
 
     // end configTZtime() inline
 
@@ -142,7 +162,7 @@ void flxNTPESP32::stop(void)
 //----------------------------------------------------------
 // Clock interface things
 //----------------------------------------------------------
-uint flxNTPESP32::get_epoch(void)
+uint32_t flxNTPESP32::get_epoch(void)
 {
 
     time_t now;

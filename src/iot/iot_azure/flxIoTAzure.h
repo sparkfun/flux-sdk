@@ -67,7 +67,7 @@ class flxIoTAzure : public flxMQTTESP32SecureCore<flxIoTAzure>, public flxWriter
         flxRegister(deviceID, "Device ID", "The device id for the Azure IoT device");
         flxRegister(deviceKey, "Device Key", "The device key for the Azure IoT device");
 
-        flux.add(this);
+        // flux.add(this);
         _theJob.setup("AzureIOT", kAzureIoTDriverJobUpdate, this, &flxIoTAzure::jobHandlerCB);
     }
 
