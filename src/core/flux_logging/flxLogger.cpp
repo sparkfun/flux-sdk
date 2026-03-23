@@ -20,6 +20,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#include <sys/time.h>
 
 //----------------------------------------------------------------------------
 // Our time rate/metrics class
@@ -449,6 +450,8 @@ std::string flxLogger::get_timestamp(void)
     time_t t_now;
     time(&t_now);
     struct tm *tmLocal = localtime(&t_now);
+    struct timeval tv;
+    gettimeofday(&tv, nullptr);
     switch (_timestampType)
     {
     case TimeStampMillis:
@@ -465,6 +468,7 @@ std::string flxLogger::get_timestamp(void)
         snprintf(szBuffer, sizeof(szBuffer), "%ld%03d", tv.tv_sec, tv.tv_usec / 1000);
         break;
     }
+
     case TimeStampDateTimeUSA:
         // June 2025 - Year was originally %G - The ISO 8601 week-based year as a decimal number.
         strftime(szBuffer, sizeof(szBuffer), "%m-%d-%Y %T", tmLocal);
