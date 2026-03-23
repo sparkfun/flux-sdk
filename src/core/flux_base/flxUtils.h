@@ -54,7 +54,7 @@ bool decode_data_aes(uint8_t *key, unsigned char iv[16], char *source, char *out
 
 void uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint32_t &secs, uint32_t &mills);
 
-void timestampISO8601(time_t &theTime, char *buffer, size_t length, bool bTZ = false);
+void timestampISO8601(time_t &theTime, char *buffer, size_t length, bool bTZ = false, bool bWeekDates = false);
 
 void formatByteString(uint64_t nBytes, uint prec, char *szBuffer, size_t len);
 
@@ -62,5 +62,12 @@ bool createVariableName(const char *szInVariable, char *szOutVariable);
 
 // CRC32 Calculation
 uint32_t calc_crc32(uint32_t crc, const uint8_t *buf, uint32_t size);
+
+bool base64_decode(const char *data_in, size_t len, char *output);
+
+bool is_little_endian();
+
+uint16_t swap_uint16(uint16_t val);
+uint32_t swap_uint32(uint32_t val);
 
 } // namespace flx_utils

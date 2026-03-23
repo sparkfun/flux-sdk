@@ -249,6 +249,9 @@ class flxFormatCSV : public flxOutputFormat
     //-----------------------------------------------------------------
     virtual void writeObservation()
     {
+        // Is the buffer empty?
+        if (_data_buffer.length() == 0)
+            return;
 
         // First run? output mime type
         if (_isFirstRun)

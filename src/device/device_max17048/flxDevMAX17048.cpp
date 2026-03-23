@@ -20,6 +20,7 @@
 #include "Arduino.h"
 
 #include "flxDevMAX17048.h"
+#include "flxDeviceValueTypes.h"
 
 uint8_t flxDevMAX17048::defaultDeviceAddress[] = {MAX1704x_ADDRESS, kSparkDeviceAddressNull};
 
@@ -33,9 +34,9 @@ flxDevMAX17048::flxDevMAX17048()
     setDescription("MAX17048 LiPo Battery Fuel Gauge");
 
     // Register output params
-    flxRegister(voltageV, "Voltage (V)", "Battery voltage (Volts)");
-    flxRegister(stateOfCharge, "State Of Charge (%)", "Battery state of charge (%)");
-    flxRegister(changeRate, "Change Rate (%/hr)", "Battery charge change rate (%/hr)");
+    flxRegister(voltageV, "Voltage (V)", "Battery voltage (Volts)", kParamValueBatteryVoltage);
+    flxRegister(stateOfCharge, "State Of Charge (%)", "Battery state of charge (%)", kParamValueBatteryCharge);
+    flxRegister(changeRate, "Change Rate (%/hr)", "Battery charge change rate (%/hr)", kParamValueBatteryChargeRate);
 }
 
 // Function to encapsulate the ops needed to get values from the sensor.

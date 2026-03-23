@@ -19,12 +19,20 @@ macro (flux_sdk_set_platform platform)
     message("Platform:\t${FLUX_SDK_PLATFORM}")
 endmacro ()
 
+# our default library name set(FLUX_SDK_LIBRARY_NAME SparkFun_Flux)
+# ##################################################################################################
+# Allow the user to set the library name
+macro (flux_sdk_set_library_name library_name)
+    set(FLUX_SDK_LIBRARY_NAME ${library_name})
+    message("Library Name:\t${FLUX_SDK_LIBRARY_NAME}")
+endmacro ()
 # ##################################################################################################
 # flux_sdk_set_project_directory()
 #
 macro (flux_sdk_set_project_directory project_directory)
 
-    set(PROJECT_FLUX_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${project_directory}/SparkFun_Flux)
+    set(PROJECT_FLUX_DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}/${project_directory}/${FLUX_SDK_LIBRARY_NAME})
 
     if (NOT EXISTS ${PROJECT_FLUX_DIRECTORY})
         message(STATUS "Creating directory: ${PROJECT_FLUX_DIRECTORY}")
@@ -46,6 +54,18 @@ macro (flux_sdk_add_module)
     set(list_var "${ARGN}")
     foreach (arg IN LISTS list_var)
         list(APPEND FLUX_MODULES_TO_ADD ${arg})
+    endforeach ()
+endmacro ()
+
+# ##################################################################################################
+# flux_sdk_skip_module()
+#
+# macro to add "modules" to ignore list - helpful will setting 'add all', but wanting to skip a few
+# modules.
+macro (flux_sdk_skip_module)
+    set(list_var "${ARGN}")
+    foreach (arg IN LISTS list_var)
+        list(APPEND FLUX_MODULES_TO_SKIP ${arg})
     endforeach ()
 endmacro ()
 
@@ -130,6 +150,11 @@ function (flux_sdk_process_subdirectories)
         if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child}
             AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${child}/CMakeLists.txt)
 
+            # in the exclude list?
+            if (${child} IN_LIST FLUX_MODULES_TO_SKIP)
+                message(STATUS "Skipping: ${child}")
+                continue ()
+            endif ()
             # add this module - in list, or all devices flag set
             if (load_all_modules OR ${child} IN_LIST FLUX_MODULES_TO_ADD)
                 message(STATUS "Adding: ${child}")

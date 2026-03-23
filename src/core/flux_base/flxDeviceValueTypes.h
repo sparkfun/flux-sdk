@@ -153,3 +153,27 @@ const flxParamValueType_t kParamValueWhiteLight = 45;
 
 // Distance - Distance in meters - uint32_t value
 const flxParamValueType_t kParamValueDistance = 46;
+
+// Battery Charge - Battery charge % - float value
+const flxParamValueType_t kParamValueBatteryCharge = 47;
+
+// Battery Voltage - Battery voltage in volts - float value
+const flxParamValueType_t kParamValueBatteryVoltage = 48;
+
+// Battery Charge Rate %/hr - Battery charge rate %/hr - float value
+const flxParamValueType_t kParamValueBatteryChargeRate = 49;
+
+// Temperature (C)  - Double value
+const flxParamValueType_t kParamValueTempC_D = 50;
+
+// Pressure - double value
+const flxParamValueType_t kParamValuePressure_D = 51;
+
+// Soil Moisture Reading Raw   - uint16
+const flxParamValueType_t kParamValueSoilMoistureRaw = 52;
+
+// Soil Moisture - percent
+const flxParamValueType_t kParamValueSoilMoisturePercent_F = 53;
+
+// Location - float array[2] - Lat, Lon
+const flxParamValueType_t kParamValueLocation = 54;

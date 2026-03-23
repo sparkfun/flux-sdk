@@ -40,7 +40,7 @@ class flxSerial_ : public flxWriter
         Serial.println(value);
     }
 
-    void write(int value)
+    void write(int32_t value)
     {
         Serial.println(value);
     }
@@ -50,6 +50,10 @@ class flxSerial_ : public flxWriter
     }
     void write(const char *value, bool newline, flxLineType_t type);
 
+    void flush(void)
+    {
+        Serial.flush();
+    }
     // Overload listen, so we can type the events, and use the template-based
     // write() method above.
 

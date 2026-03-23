@@ -38,7 +38,7 @@ bool flxStorageBlock::saveSecureString(const char *tag, const char *data)
     uint8_t token[32];
     if (!flux.getAppToken(token))
     {
-        flxLogM_E(kMsgErrValueNotProvided, "Secure Storage", "App Toke");
+        flxLogM_E(kMsgErrValueNotProvided, "Secure Storage", "App Token");
         return false;
     }
     unsigned char IV[16];

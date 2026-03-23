@@ -1,7 +1,7 @@
 /*
  *---------------------------------------------------------------------------------
  *
- * * Copyright (c) 2022-2024, SparkFun Electronics Inc.
+ * Copyright (c) 2022-2024, SparkFun Electronics Inc.
  *
  * SPDX-License-Identifier: MIT
  *
@@ -55,9 +55,9 @@ class flxWriter
   public:
     virtual void write(bool value)
     {
-        write((int)value);
+        write((int32_t)value);
     };
-    virtual void write(int) = 0;
+    virtual void write(int32_t) = 0;
     virtual void write(float) = 0;
     virtual void write(const char *value, bool newline, flxLineType_t type) = 0;
     virtual void write(const char *value, bool newline)
@@ -76,4 +76,17 @@ class flxWriter
     {
         write(value.c_str(), true);
     };
+    // Color testing
+    virtual bool colorEnabled(void)
+    {
+        return false;
+    }
+    virtual void textToRed(void) {};
+    virtual void textToGreen(void) {};
+    virtual void textToYellow(void) {};
+    virtual void textToBlue(void) {};
+    virtual void textToWhite(void) {};
+    virtual void textToNormal(void) {};
+    virtual void textToCyan(void) {};
+    virtual void textToMagenta(void) {};
 };

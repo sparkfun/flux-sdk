@@ -56,7 +56,9 @@ void flxDevice::addAddressToName()
         return;
 
     char szBuffer[64];
-    snprintf(szBuffer, sizeof(szBuffer), getKind() == flxDeviceKindSPI ? "%s [p%d]" : "%s [x%x]", name(), address());
+    snprintf(szBuffer, sizeof(szBuffer),
+             getKind() == flxDeviceKindSPI || getKind() == flxDeviceKindGPIO ? "%s [p%d]" : "%s [x%x]", name(),
+             address());
 
     setName(szBuffer);
 }

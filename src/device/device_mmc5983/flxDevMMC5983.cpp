@@ -203,7 +203,7 @@ bool flxDevMMC5983_SPI::onInitialize(SPIClass &spiPort)
     // The solution is to do a softReset and then repeat the begin.
     if (!result)
     {
-        flxLog_W("MMC5983_SPI onInitialize: device did not begin (1st try). Attempting a softReset");
+        flxLog_D("MMC5983_SPI onInitialize: device did not begin (1st try). Attempting a softReset");
         SFE_MMC5983MA::softReset();
         result = SFE_MMC5983MA::begin(chipSelect(), spiPort);
     }
@@ -211,7 +211,7 @@ bool flxDevMMC5983_SPI::onInitialize(SPIClass &spiPort)
     if (result)
         result = flxDevMMC5983Base::onInitialize();
     else
-        flxLog_E("MMC5983_SPI onInitialize: device did not begin (2nd try)");
+        flxLog_D("MMC5983_SPI onInitialize: device did not begin (2nd try)");
 
     return result;
 }

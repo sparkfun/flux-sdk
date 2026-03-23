@@ -34,6 +34,10 @@ class flxDevTwist : public flxDeviceI2CType<flxDevTwist>, public TWIST
 
   public:
     flxDevTwist();
+    ~flxDevTwist()
+    {
+        flxRemoveJobFromQueue(_theJob);
+    }
 
     //-----------------------------------------------------------------
     // Static Interface - used by the system to determine if this device is

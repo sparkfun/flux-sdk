@@ -34,6 +34,10 @@ class flxDevButton : public flxDeviceI2CType<flxDevButton>, public QwiicButton
 
   public:
     flxDevButton();
+    ~flxDevButton()
+    {
+        flxRemoveJobFromQueue(_theJob);
+    }
 
     // Static Interface - used by the system to determine if this device is
     // connected before the object is instantiated.

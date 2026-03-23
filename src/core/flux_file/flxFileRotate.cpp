@@ -41,6 +41,9 @@ bool flxFileRotate::getNextFilename(std::string &strFile)
 // called to open the current log file
 bool flxFileRotate::openLogFile(bool bAppend)
 {
+    if (flxIsLoggingVerbose())
+        flxLog_V(F("Opening File: %s, Append Mode: %u"), _currentFilename.c_str(), bAppend);
+
     _currentFile = _theFS->open(_currentFilename.c_str(),
                                 bAppend ? flxIFileSystem::kFileAppend : flxIFileSystem::kFileWrite, true);
 
@@ -111,7 +114,7 @@ bool flxFileRotate::openNextLogFile()
 }
 
 //------------------------------------------------------------------------------------------------
-void flxFileRotate::write(int value)
+void flxFileRotate::write(int32_t value)
 {
     write(flx_utils::to_string(value).c_str(), true, flxLineTypeData);
 }
@@ -150,6 +153,8 @@ void flxFileRotate::write(const char *value, bool newline, flxLineType_t type)
             return;
     }
 
+    if (flxIsLoggingVerbose())
+        flxLog_V(F("Writing to file: %s, value:\"%s\""), _currentFilename.c_str(), value);
     // Data line? write it
     if (type == flxLineTypeData)
     {

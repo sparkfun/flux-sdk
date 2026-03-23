@@ -15,13 +15,13 @@
 // Global object - for quick log access
 flxLogging &flxLog = flxLogging::get();
 
-#define kOutputBufferSize 64
+#define kOutputBufferSize 96
 
-#define kOutputPrefixFMT "[%c] "
-#define kOutputPrefixLen 4
+#define kOutputBracketOpen "["
+#define kOutputBracketClose "] "
 
-// prefix codes - index by log level value
-const char OutputPrefixCodes[] = "EWNIDV"; // Error , Warning, NONE, Info, Debug, Verbose
+// Error , Warning, NONE, Info, Debug, Verbose
+const char *OutputPrefixCodes[] = {"E", "W", "N", "I", "D", "V"};
 
 //-------------------------------------------------------------------------
 // Implement the output for the default driver
@@ -54,25 +54,45 @@ int flxLoggingDrvDefault::logPrintf(const flxLogLevel_t level, bool newline, con
     // Note: We prefix the message with a level type [E] , which needs 4 chars
 
     // Do we need to increase the buffer size.
-    if (len >= sizeof(szBuffer) - kOutputPrefixLen)
+    if (len >= sizeof(szBuffer))
     {
-        pBuffer = new char[len + 1 + kOutputPrefixLen];
+        pBuffer = new char[len + 1];
         // success?
         if (pBuffer == NULL)
             return 0;
 
-        lenBuffer = len + 1 + kOutputPrefixLen;
+        lenBuffer = len + 1;
     }
-    uint8_t offset = 0;
     // set our prefix if we have a level
     if (level != flxLogNone)
     {
-        snprintf(pBuffer, lenBuffer, kOutputPrefixFMT, OutputPrefixCodes[level]);
-        offset = kOutputPrefixLen;
+        _wrOutput->write(kOutputBracketOpen, false);
+
+        // colored output?
+        if (_wrOutput->colorEnabled())
+        {
+            if (level == flxLogError)
+                _wrOutput->textToRed();
+            else if (level == flxLogWarning)
+                _wrOutput->textToYellow();
+            else if (level == flxLogInfo)
+                _wrOutput->textToWhite();
+            else if (level == flxLogDebug)
+                _wrOutput->textToMagenta();
+            else if (level == flxLogVerbose)
+                _wrOutput->textToCyan();
+        }
+        _wrOutput->write(OutputPrefixCodes[level], false);
+
+        // back to normal if in color mode
+        if (_wrOutput->colorEnabled())
+            _wrOutput->textToNormal();
+
+        _wrOutput->write(kOutputBracketClose, false);
     }
 
     // Okay,print, staring past prefix
-    vsnprintf(pBuffer + offset, len + 1, fmt, args);
+    vsnprintf(pBuffer, len + 1, fmt, args);
 
     // send to our output device
     _wrOutput->write(pBuffer, newline);
@@ -223,3 +243,30 @@ int flxLoggingDrvESP32::logPrintf(const flxLogLevel_t level, bool newline, const
     return 1;
 }
 #endif
+
+// Helper function impl
+
+void flxSetLoggingVerbose(void)
+{
+    flxLog.setLogLevel(flxLogVerbose);
+}
+bool flxIsLoggingVerbose(void)
+{
+    return (flxLog.logLevel() == flxLogVerbose);
+}
+void flxSetLoggingInfo(void)
+{
+    flxLog.setLogLevel(flxLogInfo);
+}
+bool flxIsLoggingInfo(void)
+{
+    return (flxLog.logLevel() >= flxLogInfo);
+}
+void flxSetLoggingDebug(void)
+{
+    flxLog.setLogLevel(flxLogDebug);
+}
+bool flxIsLoggingDebug(void)
+{
+    return (flxLog.logLevel() >= flxLogDebug);
+}

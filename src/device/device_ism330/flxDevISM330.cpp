@@ -348,7 +348,7 @@ bool flxDevISM330_SPI::onInitialize(SPIClass &spiPort)
     if (result)
         result = flxDevISM330Base::onInitialize();
     else
-        flxLog_E("ISM330 SPI onInitialize: device did not begin");
+        flxLog_D("ISM330 SPI onInitialize: device did not begin");
 
     return result;
 }

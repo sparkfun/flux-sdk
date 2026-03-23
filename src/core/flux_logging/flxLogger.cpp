@@ -18,6 +18,7 @@
 #include "flxFlux.h"
 #include "flxUtils.h"
 #include <string.h>
+#include <sys/time.h>
 #include <time.h>
 #include <sys/time.h>
 
@@ -98,7 +99,7 @@ class _flxLoggerMetrics
 
 flxLogger::flxLogger()
     : _timestampType{TimeStampNone}, _outputDeviceID{false}, _outputLocalName{false}, _sampleNumberEnabled{false},
-      _currentSampleNumber{0}, _pMetrics{nullptr}
+      _currentSampleNumber{0}, _pMetrics{nullptr}, _sourceNameEnabled{false}, _eventSourceName{""}
 {
     setName("Logger", "Data logging action");
 
@@ -138,7 +139,18 @@ flxLogger::flxLogger()
 
     flxRegister(logRateMetric, "Rate Metric", "Enabled to record the logging rate data");
 
+    // Enable/Disable prop for soure name output
+    flxRegister(enableSourceNameOutput, "Output Source Name", "Include the log event source name in the log output");
+
+    // add param to reg with obj, then remove it
+    flxRegister(logEventSourceName, "Trigger");
+    removeParameter(logEventSourceName); // added on enable of prop
+
     flux_add(this);
+
+    // setup a callback for the log event
+    // wire in the event to the logger
+    flxRegisterEventCB(flxEvent::kOnLogObservationWithSource, this, &flxLogger::logObservationWithSource);
 }
 //----------------------------------------------------------------------------
 // logScalar()
@@ -292,6 +304,13 @@ void flxLogger::logSection(const char *section_name, flxParameterOutList &paramL
 //----------------------------------------------------------------------------
 void flxLogger::logObservation(void)
 {
+    logObservationWithSource("");
+}
+void flxLogger::logObservationWithSource(const char *sourceName)
+{
+    // set the event source name - so this can be used if logging it.
+    _eventSourceName = sourceName == nullptr ? "" : sourceName;
+
     // Begin the observation with all our formatters
     for (auto theFormatter : _Formatters)
         theFormatter->beginObservation();
@@ -326,6 +345,8 @@ void flxLogger::logObservation(void)
 
     // send an activity event
     flxSendEvent(flxEvent::kOnSystemActivityLow);
+
+    _eventSourceName = ""; // clear the event source name after logging
 }
 //----------------------------------------------------------------------------
 // log message
@@ -438,24 +459,38 @@ std::string flxLogger::get_timestamp(void)
         break;
 
     case TimeStampEpoch:
-        snprintf(szBuffer, sizeof(szBuffer), "%ld", t_now);
+        snprintf(szBuffer, sizeof(szBuffer), "%lu", (unsigned long)time(NULL));
         break;
 
-    case TimeStampEpochMillis:
-        snprintf(szBuffer, sizeof(szBuffer), "%ld%03d", tv.tv_sec, tv.tv_usec/1000);
+    case TimeStampEpochMillis: {
+        struct timeval tv;
+        gettimeofday(&tv, nullptr);
+        snprintf(szBuffer, sizeof(szBuffer), "%ld%03d", tv.tv_sec, tv.tv_usec / 1000);
         break;
+    }
 
     case TimeStampDateTimeUSA:
-        strftime(szBuffer, sizeof(szBuffer), "%m-%d-%G %T", tmLocal);
+        // June 2025 - Year was originally %G - The ISO 8601 week-based year as a decimal number.
+        strftime(szBuffer, sizeof(szBuffer), "%m-%d-%Y %T", tmLocal);
         break;
 
     case TimeStampDateTime:
-        strftime(szBuffer, sizeof(szBuffer), "%d-%m-%G %T", tmLocal);
+        // June 2025 - Year was originally %G - The ISO 8601 week-based year as a decimal number.
+        // This would cause to year to increment, but the date still being on the older year (12/29/2025 -> 12/30/2025).
+        // Note - first week with this format is the week that contains the first Thursday of the year.
+        strftime(szBuffer, sizeof(szBuffer), "%d-%m-%Y %T", tmLocal);
         break;
 
+    // Standard ISO 8601 format
     case TimeStampISO8601:
     case TimeStampISO8601TZ:
         flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), _timestampType == TimeStampISO8601TZ);
+        break;
+
+    // Week date format?
+    case TimeStampISO8601WD:
+    case TimeStampISO8601WDTZ:
+        flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), _timestampType == TimeStampISO8601WDTZ, true);
         break;
 
     case TimeStampNone:
@@ -637,4 +672,40 @@ void flxLogger::setEnableLogRate(bool enable)
 float flxLogger::getLogRate(void)
 {
     return _pMetrics ? _pMetrics->getMetricRate() : 0;
+}
+
+//----------------------------------------------------------------------------
+// Log sample number property get/set
+//----------------------------------------------------------------------------
+bool flxLogger::get_source_enable(void)
+{
+    return _sourceNameEnabled;
+}
+//----------------------------------------------------------------------------
+void flxLogger::set_source_enable(bool newMode)
+{
+    if (newMode == _sourceNameEnabled)
+        return;
+
+    // Are we going from having a number to not having a number?
+    if (!newMode)
+    {
+        // Remove the event source parameter from our internal parameter list
+        auto iter = std::find(_paramsToLog.begin(), _paramsToLog.end(), &logEventSourceName);
+
+        if (iter != _paramsToLog.end())
+            _paramsToLog.erase(iter);
+    }
+    else
+    {
+        // Add the source name parameter to our output list. It should be position the end
+        _paramsToLog.push_back(&logEventSourceName);
+    }
+    _sourceNameEnabled = newMode;
+}
+// for event source
+std::string flxLogger::get_source(void)
+{
+    // return the event source name
+    return _eventSourceName;
 }

@@ -190,6 +190,13 @@ class flxLogging
 // Our one logging class - easily accessible
 extern flxLogging &flxLog;
 
+void flxSetLoggingVerbose(void);
+bool flxIsLoggingVerbose(void);
+void flxSetLoggingInfo(void);
+bool flxIsLoggingInfo(void);
+void flxSetLoggingDebug(void);
+bool flxIsLoggingDebug(void);
+
 // Define log macros used throughout the system for logging
 #ifdef SP_LOGGING_ENABLED
 
@@ -205,6 +212,7 @@ extern flxLogging &flxLog;
 #define flxLog_W_(format, ...) flxLog.logPrintf(flxLogWarning, false, format, ##__VA_ARGS__)
 #define flxLog_E_(format, ...) flxLog.logPrintf(flxLogError, false, format, ##__VA_ARGS__)
 #define flxLog_N_(format, ...) flxLog.logPrintf(flxLogNone, false, format, ##__VA_ARGS__)
+#define flxLog___(type, format, ...) flxLog.logPrintf(type, false, format, ##__VA_ARGS__)
 
 // versions for message block codes
 
@@ -261,9 +269,14 @@ extern flxLogging &flxLog;
     do                                                                                                                 \
     {                                                                                                                  \
     } while (0)
+#define flxLog___(format, ...)                                                                                         \
+    do                                                                                                                 \
+    {                                                                                                                  \
+    } while (0)
 #endif
 
 // Define DEBUG log macros used throughout the system for logging
+#define SP_DEBUG_LOGGING_ENABLED
 #ifdef SP_DEBUG_LOGGING_ENABLED
 
 #define flxLog_V(format, ...) flxLog.logPrintf(flxLogVerbose, true, format, ##__VA_ARGS__)

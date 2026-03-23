@@ -97,7 +97,7 @@ class flxStorageJSONPref : public flxStorage
 {
 
   public:
-    flxStorageJSONPref() : _pDocument{nullptr}, _readOnly{false}, _jsonDocSize{kDefaultJsonDocumentSize}
+    flxStorageJSONPref() : _spDocument{nullptr}, _readOnly{false}, _jsonDocSize{kDefaultJsonDocumentSize}
     {
     }
     flxStorageJSONPref(size_t buffer_size) : flxStorageJSONPref()
@@ -138,7 +138,10 @@ class flxStorageJSONPref : public flxStorage
     flxStorageJSONBlock _theBlock;
 
     // Pointer to the json document
-    DynamicJsonDocument *_pDocument;
+    // Shared pointer to the JSON document
+    std::shared_ptr<JsonDocument> _spDocument;
+
+    // DynamicJsonDocument *_pDocument;
 
     bool _readOnly;
 

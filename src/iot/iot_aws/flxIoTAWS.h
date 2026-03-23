@@ -23,11 +23,11 @@ class flxIoTAWS : public flxMQTTESP32SecureCore<flxIoTAWS>, public flxWriter
     flxIoTAWS()
     {
         setName("AWS IoT", "Connection to AWS IoT");
-        flux.add(this);
+        // flux.add(this);
     }
 
     // for the Writer interface
-    void write(int data)
+    void write(int32_t data)
     {
         // noop
     }

@@ -34,7 +34,8 @@ flux_sdk_add_source_files(
     flxTimer.h
     flxUtils.cpp
     flxUtils.h
-    spSpark.cpp)
+    flxFlux.cpp
+    flxPlatform.h)
 
 # the flux include file is special - its our hook for the Arduino "library" being created
 configure_file(Flux.h ${PROJECT_FLUX_DIRECTORY}/src COPYONLY)

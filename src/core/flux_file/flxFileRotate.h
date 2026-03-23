@@ -16,7 +16,7 @@
 #include "flxFlux.h"
 
 // TODO - refactor this out
-#include "flxFSSDMMCard.h"
+// #include "flxFSSDMMCard.h"
 #include <string>
 
 // Define the "new file" event
@@ -56,10 +56,10 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
         // at startup, current file count == startNumber-1
         _currentFileNumber = startNumber.get() - 1;
 
-        flux.add(this);
+        flux_add(this);
     };
 
-    void write(int);
+    void write(int32_t);
     void write(float);
     void write(const char *, bool newline, flxLineType_t type);
 
@@ -86,7 +86,7 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
 
     flxPropertyString<flxFileRotate> filePrefix = {"sfe"};
 
-    static constexpr char *kLogFileSuffix = "txt";
+    static constexpr const char *kLogFileSuffix = "txt";
 
   private:
     // Hidden property - epoch when file was opened...
@@ -94,7 +94,7 @@ class flxFileRotate : public flxActionType<flxFileRotate>, public flxWriter
     flxPropertyHiddenUInt32<flxFileRotate> _currentFileNumber = {0};
 
     static constexpr uint kSecsPerHour = 3600;
-    static constexpr char *kFileNameTemplate = "%s%04d.%s";
+    static constexpr const char *kFileNameTemplate = "%s%04d.%s";
 
     bool getNextFilename(std::string &strFile);
     bool openNextLogFile();

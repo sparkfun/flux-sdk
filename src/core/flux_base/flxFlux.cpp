@@ -10,14 +10,12 @@
 
 #include <Arduino.h>
 
+#include "flxCoreJobs.h"
 #include "flxFlux.h"
+#include "flxPlatform.h"
 #include "flxSerial.h"
 #include "flxSettings.h"
 #include "flxStorage.h"
-
-#include "flxCoreJobs.h"
-
-#include "mbedtls/base64.h"
 
 // for logging - define output driver on the stack
 
@@ -99,12 +97,14 @@ bool flxFlux::start()
     if (_theApplication)
         _theApplication->onDeviceLoad();
 
-    // initialize actions
-    for (auto pAction : Actions)
-    {
-        if (!pAction->initialize())
-            flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
-    }
+    // initialize actions - just call initialize on the container
+    if (!Actions.initialize())
+        flxLog_D(F("Error initializing actions"));
+    // for (auto pAction : Actions)
+    // {
+    //     if (!pAction->initialize())
+    //         flxLog_W(F("[Startup] %s failed to initialize."), pAction->name());
+    // }
     // Everything should be loaded -- restore settings from storage
     if (_loadSettings && flxSettings.isAvailable())
     {
@@ -161,12 +161,31 @@ bool flxFlux::loop(void)
     // Just Call loop on the job queue system
     //
     bool rc = flxJobQueue.loop();
-
     // and the application loop handler if we have an app
     if (_theApplication)
         rc = rc || _theApplication->loop();
 
     return rc;
+}
+void flxFlux::add(flxAction *theAction)
+{
+    // make sure the action isn't already in the list
+    if (Actions.contains(theAction))
+    {
+        flxLog_D(F("Not adding action %s - already in the list"), theAction->name());
+        return;
+    }
+    Actions.push_back(theAction);
+}
+
+bool flxFlux::contains(flxAction *theAction)
+{
+    return Actions.contains(theAction);
+}
+
+bool flxFlux::insert_after(flxAction *value, flxAction *prev)
+{
+    return Actions.insert_after(value, prev);
 }
 //------------------------------------------------------------------------------
 // add()  -- a device pointer
@@ -180,6 +199,13 @@ bool flxFlux::loop(void)
 //
 void flxFlux::add(flxDevice *theDevice)
 {
+    // make sure the device isn't already in the list
+    if (Devices.contains(theDevice))
+    {
+        flxLog_D(F("Not adding device %s - already in the list"), theDevice->name());
+        return;
+    }
+
     if (!theDevice->autoload())
         flxDeviceFactory::get().pruneAutoload(theDevice, Devices);
 
@@ -207,6 +233,28 @@ void flxFlux::add(flxDevice *theDevice)
         theDevice->addAddressToName();
 
     Devices.push_back(theDevice);
+
+    // send the device add event
+    flxSendEvent(flxEvent::kOnFluxAddDevice, (uint32_t)theDevice);
+}
+
+//---------------------------------------------------------------------------------
+// Remove a device
+void flxFlux::remove(flxDevice *theDevice)
+{
+    Devices.remove(theDevice);
+
+    // send the device remove event
+    flxSendEvent(flxEvent::kOnFluxRemoveDevice, (uint32_t)theDevice);
+}
+
+bool flxFlux::contains(flxDevice *theDevice)
+{
+    return Devices.contains(theDevice);
+}
+bool flxFlux::insert_after(flxDevice *value, flxDevice *prev)
+{
+    return Devices.insert_after(value, prev);
 }
 
 #define kApplicationHashIDSize 24
@@ -363,15 +411,16 @@ const char *flxFlux::deviceId(void)
     // ID is 16 in length, use a  C string
     static char szDeviceID[17] = {0};
     static bool bInitialized = false;
-#ifdef ESP32
 
     if (!bInitialized)
     {
+        const char *devID = flxPlatform::unique_id();
+
         memset(szDeviceID, '\0', sizeof(szDeviceID));
-        snprintf(szDeviceID, sizeof(szDeviceID), "%4s%012llX", _v_idprefix, ESP.getEfuseMac());
+        snprintf(szDeviceID, sizeof(szDeviceID), "%4s%12s", _v_idprefix, devID);
         bInitialized = true;
     }
-#endif
+
     return (const char *)szDeviceID;
 }
 
@@ -389,14 +438,22 @@ void flxFlux::setAppToken(const uint8_t *data, size_t len)
     if (!data || len == 0)
         return;
 
-    unsigned char szBuffer[len + 1];
-    memcpy(szBuffer, data, len);
+    char szBuffer[len];
+    memset(_token, 0, sizeof(_token));
 
     // convert the token to something we can use.
     size_t outlen;
-    mbedtls_base64_decode(_token, sizeof(_token), &outlen, szBuffer, len);
+    if (!flx_utils::base64_decode((const char *)data, len, szBuffer))
+    {
+        flxLog_E(F("Invalid application token data"));
+        return;
+    }
+
+    memcpy(_token, szBuffer, sizeof(_token) <= len ? sizeof(_token) : len);
+
     _hasToken = true;
 }
+
 //---------------------------------------------------------------------------------
 bool flxFlux::getAppToken(uint8_t outtok[32])
 {

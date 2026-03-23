@@ -90,11 +90,17 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
         // user.
         hideProperty(topic);
 
-        flux.add(this);
+        // flux.add(this);
     }
 
     void write(JsonDocument &jsonDoc)
     {
+        // kdb - March 2026 - This was checking if the system was connected, but
+        // the thingspeak mqtt connection was disconnecting. So - check if this is
+        // enabled. If so, make the write -- the mqtt logic will reconnect.
+        if (enabled() == false)
+            return;
+
         // loop over our channels and see if they are in the document
         JsonObject jObj;
         std::string buffer;
@@ -107,7 +113,7 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
             jObj = jsonDoc[it->first];
             if (jObj.isNull())
             {
-                flxLog_W(F("ThingSpeak - no channel id found for device: %s. Check the Channel setting"), it->first);
+                flxLog_V(F("ThingSpeak - no channel id found for device: %s. Check the Channel setting"), it->first);
                 continue;
             }
 
@@ -123,11 +129,11 @@ class flxIoTThingSpeak : public flxMQTTESP32SecureCore<flxIoTThingSpeak>, public
                 else if (kv.value().is<const char *>())
                     value = kv.value().as<const char *>();
                 else if (kv.value().is<signed int>())
-                    value = flx_utils::to_string(kv.value().as<signed int>());
+                    value = flx_utils::to_string((int32_t)kv.value().as<signed int>());
                 else if (kv.value().is<unsigned int>())
-                    value = flx_utils::to_string(kv.value().as<unsigned int>());
+                    value = flx_utils::to_string((uint32_t)kv.value().as<unsigned int>());
                 else if (kv.value().is<unsigned int>())
-                    value = flx_utils::to_string(kv.value().as<unsigned int>());
+                    value = flx_utils::to_string((uint32_t)kv.value().as<unsigned int>());
                 else
                 {
                     flxLogM_W(kMsgErrValueError, name(), "Unknown type");

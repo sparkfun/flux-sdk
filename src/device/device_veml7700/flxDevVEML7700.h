@@ -29,7 +29,7 @@
 #define kVEML7700DeviceName "VEML7700"
 //----------------------------------------------------------------------------------------------------------
 // Define our class - note we are sub-classing from the Qwiic Library
-class flxDevVEML7700 : public flxDeviceI2CType<flxDevVEML7700>, public VEML7700
+class flxDevVEML7700 : public flxDeviceI2CType<flxDevVEML7700>, public SparkFunVEML7700
 {
 
   public:

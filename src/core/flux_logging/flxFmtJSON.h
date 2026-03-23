@@ -211,6 +211,10 @@ template <std::size_t BUFFER_SIZE> class flxFormatJSON : public flxOutputFormat
             return;
         }
 
+        // If the JSON document is NULL, just skip
+        if (_spDoc->isNull())
+            return;
+
         char szBuffer[_buffer_size + 1];
         size_t n = serializeJson(*_spDoc, szBuffer, _buffer_size);
 

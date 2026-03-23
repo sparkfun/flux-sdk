@@ -13,17 +13,9 @@ static const struct
     flxDataType_t type;
     const char *name;
 } typeNames[] = {
-    {flxTypeNone, "none"},
-    {flxTypeBool, "bool"},
-    {flxTypeInt8, "int8"},
-    {flxTypeInt16, "int16"},
-    {flxTypeInt32, "int32"},
-    {flxTypeUInt8, "unsigned int8"},
-    {flxTypeUInt16, "unsigned int16"},
-    {flxTypeUInt32, "unsigned int32"},
-    {flxTypeFloat, "float"},
-    {flxTypeDouble, "double"},
-    {flxTypeString, "string"},
+    {flxTypeNone, "none"},   {flxTypeBool, "bool"},     {flxTypeInt8, "int8"},     {flxTypeInt16, "int16"},
+    {flxTypeInt32, "int32"}, {flxTypeUInt8, "uint8"},   {flxTypeUInt16, "uint16"}, {flxTypeUInt32, "uint32"},
+    {flxTypeFloat, "float"}, {flxTypeDouble, "double"}, {flxTypeString, "string"},
 };
 
 //-------------------------------------------------------------------------

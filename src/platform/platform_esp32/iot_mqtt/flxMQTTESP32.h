@@ -18,6 +18,7 @@
 #include "flxNetwork.h"
 
 #include <ArduinoMqttClient.h>
+#include <WiFiClient.h>
 #include <WiFiClientSecure.h>
 
 // A General MQTT client for the framework - for use on the ESP32
@@ -198,11 +199,14 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         // If we lost the connection to the broker, try to reconnect...
         if (!_mqttClient.connected() || !_wifiClient.connected())
         {
-            flxLog_W_(F("%s disconnected - reconnecting..."), this->name());
+            flxLog_V_(F("%s disconnected - reconnecting..."), this->name());
             if (!connect())
+            {
+                flxLog_W(F("%s failed to reconnect - write failed"), this->name());
                 return;
+            }
 
-            flxLog_N(F("reconnected"));
+            flxLog_V(F("reconnected"));
         }
 
         // do we have a topic?
@@ -268,10 +272,10 @@ class flxMQTTESP32 : public flxMQTTESP32Base<flxMQTTESP32, WiFiClient>, public f
     {
         this->setName("MQTT Client", "A generic MQTT Client");
 
-        flux.add(this);
+        // flux.add(this);
     }
     // for the Writer interface
-    void write(int data)
+    void write(int32_t data)
     {
         // noop
     }
@@ -575,10 +579,10 @@ class flxMQTTESP32Secure : public flxMQTTESP32SecureCore<flxMQTTESP32Secure>, pu
     {
         this->setName("MQTT Secure Client", "A secure MQTT client");
 
-        flux.add(this);
+        // flux.add(this);
     }
     // for the Writer interface
-    void write(int data)
+    void write(int32_t data)
     {
         // noop
     }

@@ -34,9 +34,11 @@ _flxClock::_flxClock()
     // Set name and description
     setName("Time Setup", "Manage time configuration and reference sources");
 
-    flux.add(this);
-
-    // Timezone
+    // flux.add(this);
+    flux_add(this);
+}
+bool _flxClock::initialize(void)
+{
     flxRegister(timeZone, "The Time Zone", "Time zone setting string for the device");
 
     flxRegister(referenceClock, "Reference Clock", "The current reference clock source");
@@ -66,8 +68,27 @@ _flxClock::_flxClock()
     _jobConnCheck.setup("clock conchk", _connCheck * kClockMinutesToMS, this, &_flxClock::checkConnClock);
     if (_connCheck > 0)
         flxAddJobToQueue(_jobConnCheck);
-}
 
+    // setup time zone for the system....
+    if (!_tzStorage.empty() && _systemClock)
+        _systemClock->set_timezone(_tzStorage.c_str());
+
+    _bInitialized = true;
+    updateClock();
+
+    // if the system time wasn't set at initialize - reset the update timer to one
+    // minute.
+    //
+    // Only do this if we are updating our clock from reference
+
+    if (!_bSysTimeSet && _refCheck > 0)
+    {
+        // Set the check to 1 minute - the value of our min to ms conversion constant
+        _jobRefCheck.setPeriod(kClockMinutesToMS);
+        flxUpdateJobInQueue(_jobRefCheck);
+    }
+    return true;
+}
 //----------------------------------------------------------------
 flxIClock *_flxClock::findRefClockByName(const char *name)
 {
@@ -320,29 +341,6 @@ void _flxClock::updateClock()
                 updateConnectedClocks();
         }
     }
-}
-//----------------------------------------------------------------
-bool _flxClock::initialize(void)
-{
-    // setup time zone for the system....
-    if (!_tzStorage.empty() && _systemClock)
-        _systemClock->set_timezone(_tzStorage.c_str());
-
-    _bInitialized = true;
-    updateClock();
-
-    // if the system time wasn't set at initialize - reset the update timer to one
-    // minute.
-    //
-    // Only do this if we are updating our clock from reference
-
-    if (!_bSysTimeSet && _refCheck > 0)
-    {
-        // Set the check to 1 minute - the value of our min to ms conversion constant
-        _jobRefCheck.setPeriod(kClockMinutesToMS);
-        flxUpdateJobInQueue(_jobRefCheck);
-    }
-    return true;
 }
 
 //----------------------------------------------------------------

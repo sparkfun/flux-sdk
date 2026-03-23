@@ -40,6 +40,8 @@ namespace flxEvent
 //    - These can be created in different files, but still have a unique value
 //    - inline const declaration makes sure only one copy is created,
 //
+
+typedef uint32_t flxEventIDNum_t;
 class flxEventIDTypeDef
 {
   public:
@@ -52,9 +54,9 @@ class flxEventIDTypeDef
     void operator=(flxEventIDTypeDef const &) = delete;
 
     // handy way to get an ID - the "()" operator
-    uint32_t operator()(void) const
+    flxEventIDNum_t operator()(void) const
     {
-        return (uint32_t)this;
+        return (flxEventIDNum_t)this;
     }
 };
 
@@ -70,8 +72,13 @@ using flxEventID_t = const flxEventIDTypeDef &;
     inline flxEventIDTypeDef const __event__;                                                                          \
     }
 
+flxDefineEventID(kNoEvent); // No event defined - used to indicate no event
+
 // just one event here -- system activity. Other events defined across the framework
 flxDefineEventID(kOnSystemActivity);
 
 // Low notice system activity;
 flxDefineEventID(kOnSystemActivityLow);
+
+// System needs a restart/reboot
+flxDefineEventID(kSystemNeedsRestart);

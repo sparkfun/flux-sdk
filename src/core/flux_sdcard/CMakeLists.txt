@@ -4,4 +4,4 @@
 # SPDX-License-Identifier: MIT
 #
 # Add the source files for this directory
-flux_sdk_add_source_files(flxFSSDMMCard.h flxFSSDMMCard.cpp)
+flux_sdk_add_source_files(flxFSSDCard.h flxFSSDCard.cpp)

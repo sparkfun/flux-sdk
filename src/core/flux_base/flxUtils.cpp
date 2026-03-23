@@ -18,8 +18,18 @@
 
 #include "flxCoreLog.h"
 
-#include "mbedtls/aes.h"
+// Fall 2024  - Arduino Pico port
+//
+// The port doesn't include mbedtls, using "bearssl" instead. So check this by using the
+// ARDUINO_PICO_MAJOR define to key off of
 
+#if defined(ARDUINO_PICO_MAJOR)
+#include <bearssl/bearssl_block.h>
+#include <libb64/cdecode.h>
+#else
+#include "mbedtls/aes.h"
+#include "mbedtls/base64.h"
+#endif
 //-------------------------------------------------------------------------
 // dtostr()
 //
@@ -296,6 +306,19 @@ bool flx_utils::encode_data_aes(uint8_t key[32], unsigned char iv[16], char *sou
         return false;
     }
 
+#if defined(ARDUINO_PICO_MAJOR)
+    // Use bearssl for the Pico
+
+    // encryption context
+    br_aes_big_cbcenc_keys encCtx;
+
+    // reset the encryption context and encrypt the data
+    br_aes_big_cbcenc_init(&encCtx, key, 32);
+
+    // bear uses the  same buffer for input and output
+    memcpy(output, source, len);
+    br_aes_big_cbcenc_run(&encCtx, iv, output, len);
+#else
     mbedtls_aes_context ctxAES;
     int rc = mbedtls_aes_setkey_enc(&ctxAES, key, 256);
     if (rc != 0)
@@ -312,7 +335,7 @@ bool flx_utils::encode_data_aes(uint8_t key[32], unsigned char iv[16], char *sou
     }
 
     mbedtls_aes_free(&ctxAES);
-
+#endif
     return true;
 }
 bool flx_utils::decode_data_aes(uint8_t *key, unsigned char iv[16], char *source, char *output, size_t len)
@@ -327,6 +350,15 @@ bool flx_utils::decode_data_aes(uint8_t *key, unsigned char iv[16], char *source
         return false;
     }
 
+#if defined(ARDUINO_PICO_MAJOR)
+    // Use bearssl for the Pico
+    br_aes_big_cbcdec_keys decCtx;
+
+    br_aes_big_cbcdec_init(&decCtx, key, 32);
+    // bear uses the  same buffer for input and output
+    memcpy(output, source, len);
+    br_aes_big_cbcdec_run(&decCtx, iv, output, len);
+#else
     mbedtls_aes_context ctxAES;
     int rc = mbedtls_aes_setkey_dec(&ctxAES, key, 256);
     if (rc != 0)
@@ -343,7 +375,7 @@ bool flx_utils::decode_data_aes(uint8_t *key, unsigned char iv[16], char *source
     }
 
     mbedtls_aes_free(&ctxAES);
-
+#endif
     return true;
 }
 //---------------------------------------------------------------------------------------------------
@@ -360,14 +392,24 @@ void flx_utils::uptime(uint32_t &days, uint32_t &hours, uint32_t &minutes, uint3
     minutes %= 60;
     hours %= 24;
 }
+
 //---------------------------------------------------------------------------------------------------
 // Return a ISO8601 timestamp
-void flx_utils::timestampISO8601(time_t &t_time, char *buffer, size_t length, bool bTZ)
+void flx_utils::timestampISO8601(time_t &t_time, char *buffer, size_t length, bool bTZ, bool bWeekDates)
 {
 
     struct tm *tmLocal = localtime(&t_time);
-    strftime(buffer, length, "%G-%m-%dT%T", tmLocal);
 
+    // Time format,
+    //      standard ISO8601 format: YYYY-MM-DDTHH:MM:SS
+    //      or week date format: YYYY-Www-DTHH:MM:SS
+    // See: https://en.wikipedia.org/wiki/ISO_8601
+    if (!bWeekDates)
+        strftime(buffer, length, "%Y-%m-%dT%T", tmLocal);
+    else
+        strftime(buffer, length, "%G-W%V-%uT%T", tmLocal);
+
+    // Timezone requested?
     if (!bTZ)
         return;
 
@@ -506,4 +548,45 @@ uint32_t flx_utils::calc_crc32(uint32_t crc, const uint8_t *buf, uint32_t size)
     while (size--)
         crc = crc32_tab[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
     return ~crc;
+}
+//---------------------------------------------------------------------------------------
+/// base64_decode()
+///
+/// @brief     Decode a base64 string
+/// @param[in] data_in The value in base64 to decode
+/// @param[in] len length of the input buffer and output buffer
+/// @param[in, out] output The decoded value
+///
+/// @return false on error, true on success
+///
+bool flx_utils::base64_decode(const char *data_in, size_t len, char *output)
+{
+    // decode the base64 value passed in
+    if (!data_in || !output || len == 0)
+        return false;
+
+    bool rc = false;
+#if defined(ARDUINO_PICO_MAJOR)
+    rc = base64_decode_chars(data_in, len, output) != 0;
+#else
+
+    // convert the input value
+    size_t outlen;
+    rc = mbedtls_base64_decode((unsigned char *)output, len, &outlen, (unsigned char *)data_in, len) == 0;
+#endif
+    return rc;
+}
+
+bool flx_utils::is_little_endian()
+{
+    uint32_t i = 1;
+    return *((uint8_t *)&i) == 1;
+}
+uint16_t flx_utils::swap_uint16(uint16_t val)
+{
+    return __bswap16(val);
+}
+uint32_t flx_utils::swap_uint32(uint32_t val)
+{
+    return __bswap32(val);
 }
