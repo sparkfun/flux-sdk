@@ -13,6 +13,10 @@
 
 #pragma once
 
+// include the config file that is generated during the config phase of the build (CMake)
+#include "flux_config.h"
+
+// now the core includes for the system
 #include "Flux/flxCore.h"
 #include "Flux/flxDevice.h"
 #include "Flux/flxFlux.h"
