@@ -1,0 +1,97 @@
+/*
+ *
+ * Copyright (c) 2022-2026, SparkFun Electronics Inc.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ *
+ * flux_config.h
+ *
+ * This config file is created during cmake setup an defines 
+ * symbols for the flux sdk modules included in the application/build library
+ *
+ */
+#pragma once
+
+// Config include file build timestamp: @FLUX_CONFIG_BUILD_TIMESTAMP@
+
+// define config options -- these match up with the modules added to the project
+
+#cmakedefine 	CONFIG_FLUX_BASE
+#cmakedefine 	CONFIG_FLUX_CLOCK
+#cmakedefine 	CONFIG_FLUX_FILE
+#cmakedefine 	CONFIG_FLUX_LOGGING
+#cmakedefine 	CONFIG_FLUX_PREFS
+#cmakedefine 	CONFIG_FLUX_PREFS_JSON
+#cmakedefine 	CONFIG_FLUX_PREFS_SERIAL
+#cmakedefine 	CONFIG_FLUX_SDCARD
+#cmakedefine 	CONFIG_FLUX_SDMMCARD
+#cmakedefine 	CONFIG_FLUX_SYSTEM
+#cmakedefine 	CONFIG_DEVICE_ACS37800
+#cmakedefine 	CONFIG_DEVICE_ADS1015
+#cmakedefine 	CONFIG_DEVICE_ADS122C04
+#cmakedefine 	CONFIG_DEVICE_AHT20
+#cmakedefine 	CONFIG_DEVICE_AMG8833
+#cmakedefine 	CONFIG_DEVICE_ANALOG_PIN
+#cmakedefine 	CONFIG_DEVICE_AS7265X
+#cmakedefine 	CONFIG_DEVICE_AS7343
+#cmakedefine 	CONFIG_DEVICE_BIOHUB
+#cmakedefine 	CONFIG_DEVICE_BME280
+#cmakedefine 	CONFIG_DEVICE_BME68X
+#cmakedefine 	CONFIG_DEVICE_BMP384
+#cmakedefine 	CONFIG_DEVICE_BMP581
+#cmakedefine 	CONFIG_DEVICE_BMV080
+#cmakedefine 	CONFIG_DEVICE_BUTTON
+#cmakedefine 	CONFIG_DEVICE_CCS811
+#cmakedefine 	CONFIG_DEVICE_ENS160
+#cmakedefine 	CONFIG_DEVICE_FS3000
+#cmakedefine 	CONFIG_DEVICE_GNSS
+#cmakedefine 	CONFIG_DEVICE_ISM330
+#cmakedefine 	CONFIG_DEVICE_LPS25HB
+#cmakedefine 	CONFIG_DEVICE_MAX17048
+#cmakedefine 	CONFIG_DEVICE_MCP9600
+#cmakedefine 	CONFIG_DEVICE_MICROPRESSURE
+#cmakedefine 	CONFIG_DEVICE_MMC5983
+#cmakedefine 	CONFIG_DEVICE_MS5637
+#cmakedefine 	CONFIG_DEVICE_MS8607
+#cmakedefine 	CONFIG_DEVICE_NAU7802
+#cmakedefine 	CONFIG_DEVICE_OPT4048
+#cmakedefine 	CONFIG_DEVICE_PASCO2V01
+#cmakedefine 	CONFIG_DEVICE_RV8803
+#cmakedefine 	CONFIG_DEVICE_SCD30
+#cmakedefine 	CONFIG_DEVICE_SCD40
+#cmakedefine 	CONFIG_DEVICE_SDP3X
+#cmakedefine 	CONFIG_DEVICE_SEN54
+#cmakedefine 	CONFIG_DEVICE_SGP30
+#cmakedefine 	CONFIG_DEVICE_SGP40
+#cmakedefine 	CONFIG_DEVICE_SHTC3
+#cmakedefine 	CONFIG_DEVICE_SOILMOISTURE
+#cmakedefine 	CONFIG_DEVICE_ST25DV
+#cmakedefine 	CONFIG_DEVICE_STC31
+#cmakedefine 	CONFIG_DEVICE_STHS34PF80
+#cmakedefine 	CONFIG_DEVICE_TMF882X
+#cmakedefine 	CONFIG_DEVICE_TMP117
+#cmakedefine 	CONFIG_DEVICE_TWIST
+#cmakedefine 	CONFIG_DEVICE_VCNL4040
+#cmakedefine 	CONFIG_DEVICE_VEML6075
+#cmakedefine 	CONFIG_DEVICE_VEML7700
+#cmakedefine 	CONFIG_DEVICE_VL53L1X
+#cmakedefine 	CONFIG_DEVICE_VL53L5
+#cmakedefine 	CONFIG_IOT_ARDUINO
+#cmakedefine 	CONFIG_IOT_AWS
+#cmakedefine 	CONFIG_IOT_AZURE
+#cmakedefine 	CONFIG_IOT_HTTP
+#cmakedefine 	CONFIG_IOT_MACHINECHAT
+#cmakedefine 	CONFIG_IOT_MQTT
+#cmakedefine 	CONFIG_IOT_THINGSPEAK
+#cmakedefine 	CONFIG_FLUX_NETWORK
+#cmakedefine 	CONFIG_FLUX_WIFI
+#cmakedefine 	CONFIG_FLUX_BASE
+#cmakedefine 	CONFIG_FLUX_FIRMWARE
+#cmakedefine 	CONFIG_FLUX_NTP
+#cmakedefine 	CONFIG_FLUX_PREFS
+#cmakedefine 	CONFIG_FLUX_WIFI
+#cmakedefine 	CONFIG_IOT_MQTT
+#cmakedefine 	CONFIG_OPT_ENABLE_DEVICE
+#cmakedefine 	CONFIG_OPT_EXTINTERRUPT
+#cmakedefine 	CONFIG_OPT_EXTSERIAL
