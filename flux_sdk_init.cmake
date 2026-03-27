@@ -159,6 +159,11 @@ function (flux_sdk_process_subdirectories)
             if (load_all_modules OR ${child} IN_LIST FLUX_MODULES_TO_ADD)
                 message(STATUS "Adding: ${child}")
                 add_subdirectory(${child})
+                # testing options
+                string(TOUPPER ${child} child_uppercase)
+                set(option_name "CONFIG_${child_uppercase}")
+                message(STATUS "Option name:\t${option_name}")
+                option(${option_name} "Enable ${child} module" ON)
             endif ()
         endif ()
     endforeach ()
@@ -202,5 +207,10 @@ macro (flux_sdk_init)
 
     # load the root directory of the SDK
     add_subdirectory(${FLUX_SDK_PATH} flux-sdk)
+
+    ## Testing -- build and copy in a config file for the system.
+    string(TIMESTAMP FLUX_CONFIG_BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S UTC" UTC)
+    
+    configure_file(${FLUX_SDK_PATH}/config/flux_config.h.in ${PROJECT_FLUX_DIRECTORY}/src/flux_config.h)
 
 endmacro ()
