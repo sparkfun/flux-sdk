@@ -59,7 +59,7 @@ bool flxFlux::start()
         if (Actions.size() == 0 || Actions.at(0) != (flxAction *)_theApplication)
             Actions.insert(Actions.begin(), (flxAction *)_theApplication);
 
-        _theApplication->onInit();
+        _theApplication->sysInit();
     }
     // setup our logging system.
     _logDriver.setOutput(flxSerial);
@@ -69,7 +69,7 @@ bool flxFlux::start()
     // Loop in the application
     if (_theApplication)
     {
-        if (!_theApplication->onSetup())
+        if (!_theApplication->sysSetup())
         {
             flxLog_E(F("Error during application setup"));
             return false;
@@ -96,7 +96,7 @@ bool flxFlux::start()
         flxDeviceFactory::get().buildDevices(thei2cBus);
 
     if (_theApplication)
-        _theApplication->onDeviceLoad();
+        _theApplication->sysDeviceLoad();
 
     // initialize actions - just call initialize on the container
     if (!Actions.initialize())
@@ -111,7 +111,7 @@ bool flxFlux::start()
     {
         // Let the device know we're starting up
         if (_theApplication)
-            _theApplication->onRestore();
+            _theApplication->sysRestore();
 
         flxLog_I_(F("Restoring System Settings ..."));
         if (!flxSettings.restoreSystem())
@@ -124,7 +124,7 @@ bool flxFlux::start()
     // Loop in the application
     if (_theApplication)
     {
-        if (!_theApplication->onStart())
+        if (!_theApplication->sysStart())
         {
             flxLog_E(F("Error during application start"));
             return false;

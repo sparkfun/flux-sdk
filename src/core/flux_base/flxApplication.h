@@ -59,6 +59,63 @@ class flxApplication : public flxActionType<flxApplication>
         return appDesc.description();
     }
 
+    //-------------------------------------------------------------------------------
+    // Lifecycle routines/methods
+    //
+    // The following methods are called during system startup to allow the app / user
+    // to setup the desired system.
+    //
+    // March 2026 -
+    //
+    // Now two levels of lifecycle methods are defined an "internal method", which
+    // is callled by the system. This allows internal setup of the application or application
+    // template, and the second method is the "on<event>" virtual methods intended for framework
+    // users to implement if needed for there specific application.
+    //
+    // Initially the system just had the user level methods, with everything done in the on<event>
+    // methods. But given that every application as a lot of foundational items which are
+    // easily abstracted out, this two phase lifecycle pattern was introduced.
+    //
+    // The intent is the following:
+    //      - A "template" implements the internal methods, and sets them to be final. No subclassing
+    //      - The template implements what is needed in this internal method
+    //      - The template calls the superclass method flxApplication::<lifecycle>(), which
+    //        dispatches to the user event methods.
+    //------------------------------------------------------------------------------
+    // Internal Lifecycle methods
+    //------------------------------------------------------------------------------
+    virtual void sysInit(void)
+    {
+        // Call the user event method
+        this->onInit();
+    }
+
+    virtual bool sysSetup(void)
+    {
+        // Call the user event method
+        return this->onSetup();
+    }
+
+    virtual bool sysStart(void)
+    {
+        // Call the user event method
+        return this->onStart();
+    }
+
+    virtual void sysDeviceLoad(void)
+    {
+        // Call the user event method
+        this->onDeviceLoad();
+    }
+
+    virtual void sysRestore(void)
+    {
+        // Call the user event method
+        this->onRestore();
+    }
+    //------------------------------------------------------------------------------
+    // User lifecycle methods stubs
+    //------------------------------------------------------------------------------
     // Method is called before anything - allows pre system setup - for example I/O init.
     virtual void onInit(void)
     {
