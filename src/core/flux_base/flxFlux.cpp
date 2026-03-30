@@ -17,6 +17,7 @@
 #include "flxSettings.h"
 #include "flxStorage.h"
 
+#include "flxApplication.h"
 // for logging - define output driver on the stack
 
 static flxLoggingDrvDefault _logDriver;
