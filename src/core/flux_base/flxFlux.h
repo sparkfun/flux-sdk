@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-class flxApplication;
+class flxApplicationBase;
 
 // Define an event for serial data available
 flxDefineEventID(kOnFluxAddDevice);
@@ -263,12 +263,12 @@ class flxFlux : public flxObjectContainer
         return _localName;
     }
 
-    void setApplication(flxApplication &theApp)
+    void setApplication(flxApplicationBase &theApp)
     {
         setApplication(&theApp);
     }
 
-    void setApplication(flxApplication *theApp)
+    void setApplication(flxApplicationBase *theApp)
     {
         if (theApp)
         {
@@ -280,7 +280,7 @@ class flxFlux : public flxObjectContainer
         }
     }
 
-    flxApplication *application(void)
+    flxApplicationBase *application(void)
     {
         return _theApplication;
     }
@@ -322,7 +322,7 @@ class flxFlux : public flxObjectContainer
 
     const char *_appClassID;
 
-    flxApplication *_theApplication;
+    flxApplicationBase *_theApplication;
 
     uint8_t _token[32];
     bool _hasToken;
@@ -384,5 +384,5 @@ void flux_add(flxAction &theAction);
 void flux_add(flxAction *theAction);
 void flux_add(flxDevice &theDevice);
 void flux_add(flxDevice *theDevice);
-void flux_add(flxApplication &theApp);
-void flux_add(flxApplication *theApp);
+void flux_add(flxApplicationBase &theApp);
+void flux_add(flxApplicationBase *theApp);

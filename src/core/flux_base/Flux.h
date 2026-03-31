@@ -21,4 +21,4 @@
 #include "Flux/flxDevice.h"
 #include "Flux/flxFlux.h"
 
-#include "Flux/flxApplication.h"
+#include "Flux/flxCoreApp.h"

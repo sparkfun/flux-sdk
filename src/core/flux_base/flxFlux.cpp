@@ -17,7 +17,7 @@
 #include "flxSettings.h"
 #include "flxStorage.h"
 
-#include "flxApplication.h"
+#include "flxCoreApp.h"
 // for logging - define output driver on the stack
 
 static flxLoggingDrvDefault _logDriver;
@@ -505,11 +505,11 @@ void flux_add(flxDevice *theDevice)
 {
     flxFlux::get().add(theDevice);
 }
-void flux_add(flxApplication &theApp)
+void flux_add(flxApplicationBase &theApp)
 {
     flxFlux::get().setApplication(&theApp);
 }
-void flux_add(flxApplication *theApp)
+void flux_add(flxApplicationBase *theApp)
 {
     flxFlux::get().setApplication(theApp);
 }
