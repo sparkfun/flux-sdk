@@ -14,11 +14,11 @@
 #include "flxFLux.h"
 
 // Define our application class interface.
-class flxApplication : public flxActionType<flxApplication>
+class flxApplicationBase : public flxActionType<flxApplicationBase>
 {
 
   public:
-    flxApplication()
+    flxApplicationBase()
     {
         flux.setApplication(this);
 
