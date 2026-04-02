@@ -10,4 +10,5 @@ add_subdirectory(iot)
 add_subdirectory(net)
 add_subdirectory(platform)
 add_subdirectory(opt)
+add_subdirectory(app)
 

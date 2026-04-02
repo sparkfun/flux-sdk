@@ -114,6 +114,14 @@ endfunction ()
 # processed
 
 function (flux_sdk_process_subdirectories)
+    cmake_parse_arguments(ARG "DISABLE_ALL" "" "" ${ARGN})
+
+    # Disable the use of the all flags?
+    if(ARG_DISABLE_ALL)
+        message("Verbose mode on")
+    else()
+        message("Verbose mode off")
+    endif()
 
     # get our place in the SDK - print a value
     file(RELATIVE_PATH local_path ${FLUX_SDK_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
@@ -132,9 +140,17 @@ function (flux_sdk_process_subdirectories)
 
     message("Module flag:\t${all_modules_flag} = ${process_all_submodules}")
 
-    # are we loading all submodules?
-    if (process_all_submodules OR process_all_modules)
+    if(ARG_DISABLE_ALL)
+        set(load_all_modules FALSE)
+    elseif (process_all_submodules OR process_all_modules)
         set(load_all_modules TRUE)
+    endif ()
+
+
+    if ( load_all_modules)
+        message("LOAD ALL MODS = TRUE")
+    else()
+        message("LOAD ALL MODS = FALSE")
     endif ()
 
     # Get all the children of this directory

@@ -95,3 +95,7 @@
 #cmakedefine 	CONFIG_OPT_ENABLE_DEVICE
 #cmakedefine 	CONFIG_OPT_EXTINTERRUPT
 #cmakedefine 	CONFIG_OPT_EXTSERIAL
+#cmakedefine    CONFIG_FLUX_APPLICATION
+#cmakedefine    CONFIG_FLUX_APP_BUTTON
+#cmakedefine    CONFIG_FLUX_APP_LED
+#cmakedefine    CONFIG_FLUX_APP_LEDRGB
