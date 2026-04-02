@@ -9,8 +9,8 @@
  */
 #pragma once
 
-#include "<Flux/flxApplication.h>"
 #include <ArduinoJson.h>
+#include <Flux/flxApplication.h>
 
 #include <Flux/flxCoreLog.h>
 #include <Flux/flxSerialField.h>
