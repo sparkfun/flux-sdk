@@ -873,7 +873,7 @@ bool flxApplication::loop()
             flxSerial.textToNormal();
             Serial.write('!');
             Serial.flush();
-            sfeDLCommands cmdProcessor;
+            flxAppCommands cmdProcessor;
             bool status = cmdProcessor.processCommand(this);
         }
         else // edit settings
