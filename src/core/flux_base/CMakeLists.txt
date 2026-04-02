@@ -6,6 +6,7 @@
 # Add the source files for this directory
 flux_sdk_add_source_files(
     flxCoreApp.h
+    flxColor.h
     flxBusI2C.cpp
     flxBusI2C.h
     flxBusSPI.cpp
