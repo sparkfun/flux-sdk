@@ -108,17 +108,17 @@
 
 // LED?
 #if defined(CONFIG_FLUX_APP_LED)
-#include "<Flux/flxAppLED.h>"
+#include <Flux/flxAppLED.h>
 #endif
 #if defined(CONFIG_FLUX_APP_LEDRGB)
-#include "<Flux/flxAppLEDRGB.h>"
+#include <Flux/flxAppLEDRGB.h>
 #endif
 
 // the board definitions
-#include "flux_board_config.h"
+#include <flux_board_config.h>
 
 #if defined(CONFIG_FLUX_APP_BUTTON)
-#include "<Flux/flxAppButton.h>"
+#include <Flux/flxAppButton.h>
 #endif
 
 #include <utility>
@@ -207,7 +207,9 @@ class flxApplication : public flxApplicationBase
     void resetDevice(void);
 
   private:
-    friend class sfeDLCommands;
+#if defined(CONFIG_FLUX_APP_COMMANDS)
+    friend class flxAppCommands;
+#endif
     friend class flxAppSystemInfo;
 
     //------------------------------------------

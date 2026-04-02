@@ -15,8 +15,6 @@
  */
 #include "flxApplication.h"
 
-#include <Flux/flxDevSerial.h>
-
 //---------------------------------------------------------------------
 // Setup the IOT clients
 bool flxApplication::setupIoTClients()

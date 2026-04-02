@@ -15,7 +15,10 @@
 
 #include "flxApplication.h"
 #include "flxAppSystemInfo.h"
-#include "sfeDLCommands.h"
+
+#if defined(CONFIG_FLUX_APP_COMMANDS)
+#include "flxAppCommands.h"
+#endif
 
 #include "esp_sleep.h"
 
@@ -698,12 +701,12 @@ bool flxApplication::sysStart()
     // // setup NFC - it provides another means to load WiFi credentials
     // setupNFDevice();
 
-    // now lets rock on the external serilal device
-    if (_extSerial.begin())
-        flxLog_I(F("External Serial Device started: RX %u, TX %u, Baud: %u"), _extSerial.rxPin(), _extSerial.txPin(),
-                 _extSerial.serialBaudRate());
-    else
-        flxLog_I(F("External Serial Device not started"));
+    // now lets rock on the external serial device
+    // if (_extSerial.begin())
+    //     flxLog_I(F("External Serial Device started: RX %u, TX %u, Baud: %u"), _extSerial.rxPin(), _extSerial.txPin(),
+    //              _extSerial.serialBaudRate());
+    // else
+    //     flxLog_I(F("External Serial Device not started"));
 
     flxLog_N("");
 
@@ -860,6 +863,7 @@ bool flxApplication::loop()
     // key press at Serial Console? What to do??
     if (Serial.available())
     {
+#if defined(CONFIG_FLUX_APP_COMMANDS)
         // Bang command?
         uint8_t chIn = Serial.read();
         if (chIn == '!')
@@ -874,6 +878,7 @@ bool flxApplication::loop()
         }
         else // edit settings
         {
+#endif
             // start an editing session
             flxColor::color color;
             int status = _serialSettings.editSettings();
@@ -884,7 +889,9 @@ bool flxApplication::loop()
             else
                 color = flxColor::Yellow;
             theLED.flash(color);
+#if defined(CONFIG_FLUX_APP_COMMANDS)
         }
+#endif
     }
     return false;
 }
