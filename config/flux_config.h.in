@@ -99,3 +99,4 @@
 #cmakedefine    CONFIG_FLUX_APP_BUTTON
 #cmakedefine    CONFIG_FLUX_APP_LED
 #cmakedefine    CONFIG_FLUX_APP_LEDRGB
+#cmakedefine    CONFIG_FLUX_APP_COMMANDS
