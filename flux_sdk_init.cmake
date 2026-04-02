@@ -140,6 +140,7 @@ function (flux_sdk_process_subdirectories)
 
     message("Module flag:\t${all_modules_flag} = ${process_all_submodules}")
 
+    # This could be more efficient .. but this works 
     if(ARG_DISABLE_ALL)
         set(load_all_modules FALSE)
     elseif (process_all_submodules OR process_all_modules)
