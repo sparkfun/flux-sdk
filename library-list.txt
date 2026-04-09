@@ -60,3 +60,4 @@ SdFat
 "SparkFun Color Sensor OPT4048@1.2.1"
 "SparkFun Spectral Triad AS7265X@1.0.5"
 "SparkFun AS7343 Arduino Library@1.0.0"
+"SparkFun AS7331 Arduino Library@2.2.0"
