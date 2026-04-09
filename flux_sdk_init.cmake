@@ -230,4 +230,7 @@ macro (flux_sdk_init)
     
     configure_file(${FLUX_SDK_PATH}/config/flux_config.h.in ${PROJECT_FLUX_DIRECTORY}/src/flux_config.h)
 
+    ## Now the board define config
+    configure_file(${FLUX_SDK_PATH}/config/flux_board_config.h.in ${PROJECT_FLUX_DIRECTORY}/src/flux_board_config.h)
+
 endmacro ()

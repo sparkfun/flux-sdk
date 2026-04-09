@@ -1,0 +1,44 @@
+/*
+ *
+ * Copyright (c) 2022-2026, SparkFun Electronics Inc.
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ *
+ * flux_board_config.h
+ *
+ * This config file is created during cmake setup and defines
+ * board specific symbols for the flux sdk modules included in the application/build library
+ *
+ */
+#pragma once
+
+// Simple board definitions - used by the application framework
+
+// The on board user button/ boot button
+#define FLUX_BOARD_APP_BUTTON @FLUX_BOARD_APP_BUTTON@
+
+// LED Built in
+#define FLUX_BOARD_APP_LED @FLUX_BOARD_APP_LED@
+
+// RGB LED
+#define FLUX_BOARD_APP_LED_RGB @FLUX_BOARD_APP_LED_RGB@
+
+// Version information - from CMake file
+
+// Major version number
+#define FLUX_APP_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+
+// Minor version number
+#define FLUX_APP_VERSION_MINOR @PROJECT_VERSION_MINOR@
+
+// Point version number
+#define FLUX_APP_VERSION_POINT @PROJECT_VERSION_PATCH@
+
+// Version string description
+#define FLUX_APP_VERSION_DESCRIPTOR "Version @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+
+#define FLUX_APP_DESCRIPTOR "@PROJECT_DESCRIPTION@"
+
+// app name/class ID string
+#define FLUX_APP_CLASS_NAME_ID "@FLUX_APP_CLASS_NAME_ID@"
