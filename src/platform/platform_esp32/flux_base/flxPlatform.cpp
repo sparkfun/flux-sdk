@@ -9,7 +9,7 @@
  */
 
 #include "flxPlatform.h"
-
+#include "flxCoreLog.h"
 #include <Esp.h>
 
 // esp version of our platform class
@@ -40,11 +40,13 @@ void flxPlatform::restart_device(void)
 // memory things
 uint32_t flxPlatform::heap_size(void)
 {
-    return ESP.getHeapSize();
+    // take into account PSRAM
+    return ESP.getHeapSize() + ESP.getPsramSize();
 }
 
 // free heap
 uint32_t flxPlatform::heap_free(void)
 {
-    return ESP.getFreeHeap();
+    // take into account PSRAM
+    return ESP.getFreeHeap() + ESP.getFreePsram();
 }
