@@ -57,11 +57,12 @@ bool flxDevTMP102::isConnected(flxBusI2C &i2cDriver, uint8_t address)
     if (!i2cDriver.ping(address))
         return false;
 
-    uint16_t deviceID;
-    if (!i2cDriver.readRegister16(address, TMP102_DEVICE_ID, &deviceID, false)) // Big Endian
-        return false;
+    // uint16_t deviceID;
+    // if (!i2cDriver.readRegister16(address, TMP102_DEVICE_ID, &deviceID, false)) // Big Endian
+    //     return false;
 
-    return ((deviceID & 0xFFF) == DEVICE_ID_VALUE);
+    // return ((deviceID & 0xFFF) == DEVICE_ID_VALUE);
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------------
