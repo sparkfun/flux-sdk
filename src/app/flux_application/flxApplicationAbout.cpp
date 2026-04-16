@@ -14,6 +14,7 @@
  */
 
 #include "flxApplication.h"
+#include "flxPlatform.h"
 #include <Flux/flxSerial.h>
 
 void flxApplication::_displayAboutObjHelper(char pre_ch, const char *szName, bool enabled)
@@ -94,8 +95,10 @@ void flxApplication::displayAppStatus(bool useInfo)
     }
 
     // show heap level
-    flxLog__(logLevel, "%cSystem Heap - Total: %dB Free: %dB (%.1f%%)", pre_ch, ESP.getHeapSize(), ESP.getFreeHeap(),
-             (float)ESP.getFreeHeap() / (float)ESP.getHeapSize() * 100.);
+    uint32_t totalHeap = flxPlatform::heap_size();
+    uint32_t freeHeap = flxPlatform::heap_free();
+    flxLog__(logLevel, "%cSystem Heap - Total: %dB Free: %dB (%.1f%%)", pre_ch, totalHeap, freeHeap,
+             (float)freeHeap / (float)totalHeap * 100.);
 
 #if defined(CONFIG_FLUX_WIFI)
     if (_wifiConnection.enabled())
