@@ -16,13 +16,26 @@
 // Simple board definitions - used by the application framework
 
 // The on board user button/ boot button
-#cmakedefine FLUX_BOARD_APP_BUTTON @FLUX_BOARD_APP_BUTTON@
+// Need to take into account values of zero
+#cmakedefine FLUX_HAS_BOARD_APP_BUTTON 
+
+#ifdef FLUX_HAS_BOARD_APP_BUTTON
+#define FLUX_BOARD_APP_BUTTON @FLUX_BOARD_APP_BUTTON@
+#endif
 
 // LED Built in
-#cmakedefine FLUX_BOARD_APP_LED @FLUX_BOARD_APP_LED@
+#cmakedefine FLUX_HAS_BOARD_APP_LED 
+
+#ifdef FLUX_HAS_BOARD_APP_LED
+#define FLUX_BOARD_APP_LED @FLUX_BOARD_APP_LED@
+#endif
 
 // RGB LED
-#cmakedefine FLUX_BOARD_APP_LED_RGB @FLUX_BOARD_APP_LED_RGB@
+#cmakedefine FLUX_HAS_BOARD_APP_LED_RGB 
+
+#ifdef FLUX_HAS_BOARD_APP_LED_RGB
+#define FLUX_BOARD_APP_LED_RGB @FLUX_BOARD_APP_LED_RGB@
+#endif
 
 // Version information - from CMake file
 

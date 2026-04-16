@@ -107,7 +107,7 @@ endfunction ()
 # ##################################################################################################
 # flux_sdk_process_subdirectories()
 #
-# Define a function that will cacade down subdirectories if that directory is a module desired, and
+# Define a function that will cascade down subdirectories if that directory is a module desired, and
 # has a CMakeLists.txt file.
 #
 # Note: If the <directory>_all_modules flag is set, then all submodules of that directory will be
@@ -188,6 +188,40 @@ function (flux_sdk_process_subdirectories)
 endfunction ()
 
 # ##################################################################################################
+# flux_setup_config_files()
+#
+# Setup the system build config files
+#
+
+macro(flux_setup_config_files)
+    ##  -- build and copy in a config file for the system.
+    string(TIMESTAMP FLUX_CONFIG_BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S UTC" UTC)
+    
+    message("Config File Generation:")
+    configure_file(${FLUX_SDK_PATH}/config/flux_config.h.in ${PROJECT_FLUX_DIRECTORY}/src/flux_config.h)
+    message("\tConfig File:: ${PROJECT_FLUX_DIRECTORY}/src/flux_config.h")
+    ## Now the board define config
+    ## check if board pins are set and set config defines (needed to handle values of zero)
+    ## button
+    if(DEFINED FLUX_BOARD_APP_BUTTON)
+        set(FLUX_HAS_BOARD_APP_BUTTON TRUE)
+    endif()
+
+    ## LED
+    if(DEFINED FLUX_BOARD_APP_LED)
+        set(FLUX_HAS_BOARD_APP_LED TRUE)
+    endif()
+
+    ## RGB LED
+    if(DEFINED FLUX_BOARD_APP_LED_RGB)
+        set(FLUX_HAS_BOARD_APP_LED_RGB TRUE)
+    endif()
+
+    configure_file(${FLUX_SDK_PATH}/config/flux_board_config.h.in ${PROJECT_FLUX_DIRECTORY}/src/flux_board_config.h)
+    message("\tBoard Config File: ${PROJECT_FLUX_DIRECTORY}/src/flux_board_config.h")
+    message("")
+endmacro()
+# ##################################################################################################
 # flux_sdk_init()
 #
 # Called to start the SDK build process. This should be called after the flux_sdk import cmake file
@@ -225,12 +259,6 @@ macro (flux_sdk_init)
     # load the root directory of the SDK
     add_subdirectory(${FLUX_SDK_PATH} flux-sdk)
 
-    ## Testing -- build and copy in a config file for the system.
-    string(TIMESTAMP FLUX_CONFIG_BUILD_TIMESTAMP "%Y-%m-%d %H:%M:%S UTC" UTC)
-    
-    configure_file(${FLUX_SDK_PATH}/config/flux_config.h.in ${PROJECT_FLUX_DIRECTORY}/src/flux_config.h)
-
-    ## Now the board define config
-    configure_file(${FLUX_SDK_PATH}/config/flux_board_config.h.in ${PROJECT_FLUX_DIRECTORY}/src/flux_board_config.h)
+    flux_setup_config_files()
 
 endmacro ()
