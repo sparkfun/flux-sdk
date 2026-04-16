@@ -15,6 +15,7 @@
 #include <Flux/flxCoreLog.h>
 #include <Flux/flxSerialField.h>
 #include <Flux/flxUtils.h>
+#include "flxPlatform.h"
 #include <time.h>
 
 class flxAppCommands
@@ -186,10 +187,12 @@ class flxAppCommands
     ///
     bool heapStatus(flxApplication *theApp)
     {
-        // TODO - MOve to platform object
+        uint32_t totalHeap = flxPlatform::heap_size();
+        uint32_t freeHeap = flxPlatform::heap_free();
+
         // just dump out the current heap
-        flxLog_I(F("System Heap - Total: %dB Free: %dB (%.1f%%)"), ESP.getHeapSize(), ESP.getFreeHeap(),
-                 (float)ESP.getFreeHeap() / (float)ESP.getHeapSize() * 100.);
+        flxLog_I(F("System Heap - Total: %dB Free: %dB (%.1f%%)"), totalHeap, freeHeap,
+                 (float)freeHeap / (float)totalHeap * 100.);
         return true;
     }
     //---------------------------------------------------------------------
