@@ -61,9 +61,11 @@ class flxDevTMP102 : public flxDeviceI2CType<flxDevTMP102>, public TMP102
 
   private:
     // methods used to get values for our output parameters
-    double read_temperature_C();
+    float read_temperature_C();
+    float read_temperature_F();
 
   public:
     // Define our output parameters - specify the get functions to call.
-    flxParameterOutDouble<flxDevTMP102, &flxDevTMP102::read_temperature_C> temperatureC;
+    flxParameterOutFloat<flxDevTMP102, &flxDevTMP102::read_temperature_C> temperatureC;
+    flxParameterOutFloat<flxDevTMP102, &flxDevTMP102::read_temperature_F> temperatureF;
 };

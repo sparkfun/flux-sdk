@@ -42,10 +42,11 @@ flxDevTMP102::flxDevTMP102()
 
     // Setup unique identifiers for this device and basic device object systems
     setName(getDeviceName());
-    setDescription("TMP102 Precision Temperature Sensor");
+    setDescription("TMP102 Temperature Sensor");
 
     // Register parameters
     flxRegister(temperatureC, "Temperature (C)", "The temperature in degrees C", kParamValueTempC);
+    flxRegister(temperatureF, "Temperature (F)", "The temperature in degrees F", kParamValueTempF);
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -74,17 +75,16 @@ bool flxDevTMP102::onInitialize(TwoWire &wirePort)
 {
 
     bool result = TMP102::begin(address(), wirePort);
-    if (result)
-    {
-        TMP102::setConversionAverageMode(0);
-        TMP102::setConversionCycleBit(0);
-        TMP102::setContinuousConversionMode();
-    }
     return result;
 }
 
 // GETTER methods for output params
-double flxDevTMP102::read_temperature_C()
+float flxDevTMP102::read_temperature_C()
 {
     return (TMP102::readTempC());
+}
+
+float flxDevTMP102::read_temperature_F()
+{
+    return (TMP102::readTempF());
 }

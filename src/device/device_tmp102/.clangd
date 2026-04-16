@@ -1,0 +1,18 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -I/home/amo/.arduino15/packages/esp32/hardware/esp32/3.2.0/cores/esp32
+    - -I/home/amo/.arduino15/packages/esp32/hardware/esp32/3.2.0/variants/esp32
+    - -I/home/amo/Arduino/libraries/ESP32_BleSerial/src
+    - -I/home/amo/Arduino/libraries/HX711_ADC/src
+    - -I/home/amo/Arduino/libraries/HX711_Arduino_Library/src
+    - -I/home/amo/Arduino/libraries/NativeEthernet/src
+    - -I/home/amo/Arduino/libraries/OneWire/src
+    - -I/home/amo/Arduino/libraries/SparkFun_TMP102_Breakout/src
+    - -I/home/amo/Arduino/libraries/SparkFun_Toolkit/src
+    - -I/home/amo/SparkFun/flux-sdk/
+    - -DARDUINO=10819
+    - -DARDUINO_ARCH_ESP32
+    - -isystem /usr/include/c++/15.2.1/
+
+
