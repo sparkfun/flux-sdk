@@ -361,7 +361,7 @@ class flxApplication : public flxApplicationBase
     void onSystemActivity(void);
     void onSystemActivityLow(void);
 
-  private:
+  protected:
     void enterSleepMode(void);
 
     void _displayAboutObjHelper(char, const char *, bool);
@@ -494,7 +494,7 @@ class flxApplication : public flxApplicationBase
     // for our button events of the board
     flxAppButton _boardButton;
 #endif
-
+  private:
     // For the sleep timer
     unsigned long _startTime = 0;
 
