@@ -241,6 +241,17 @@ void flxApplication::onSettingsEdit(bool bLoading)
     }
 }
 #endif
+
+//---------------------------------------------------------------------------
+// event callback when a restart request is sent
+void flxApplication::onSystemRestartRequest(void)
+{
+    // are we editing prefs? Stash the request
+    if (inOpMode(kFlxApplicationOpEditing))
+        setOpMode(kFlxApplicationOpPendingRestart);
+    else
+        _sysUpdate.restartDevice();
+}
 //---------------------------------------------------------------------------
 void flxApplication::onSystemActivity(void)
 {
@@ -432,8 +443,11 @@ bool flxApplication::sysSetup()
         flux.dumpDeviceAutoLoadTable();
 
     // setup our event callbacks for system/framework events;
-    // flxRegisterEventCB(flxEvent::kOnSystemActivity, this, &flxApplication::onSystemActivity);
-    // flxRegisterEventCB(flxEvent::kOnSystemActivityLow, this, &flxApplication::onSystemActivityLow);
+    flxRegisterEventCB(flxEvent::kOnSystemActivity, this, &flxApplication::onSystemActivity);
+    flxRegisterEventCB(flxEvent::kOnSystemActivityLow, this, &flxApplication::onSystemActivityLow);
+
+    // now for the request restart event
+    flxRegisterEventCB(flxEvent::kSystemNeedsRestart, this, &flxApplication::onSystemRestartRequest);
 
     return flxApplicationBase::sysSetup();
 }

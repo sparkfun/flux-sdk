@@ -75,10 +75,10 @@ class flxAppSystemInfo : public flxOperation
 
     flxAppSystemInfo(flxApplication *dlApp) : flxAppSystemInfo()
     {
-        setDataLogger(dlApp);
+        setApplication(dlApp);
     }
 
-    void setDataLogger(flxApplication *dlApp)
+    void setApplication(flxApplication *dlApp)
     {
         _pApplication = dlApp;
     }

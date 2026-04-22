@@ -375,7 +375,7 @@ class flxApplication : public flxApplicationBase
 #if defined(CONFIG_FLUX_PREFS_SERIAL)
     void onSettingsEdit(bool bLoading);
 #endif
-
+    void onSystemRestartRequest(void);
     void onErrorMessage(uint8_t);
 
     void getStartupProperties(uint32_t &baudRate, uint32_t &startupDelay);
