@@ -221,6 +221,35 @@ macro(flux_setup_config_files)
     message("\tBoard Config File: ${PROJECT_FLUX_DIRECTORY}/src/flux_board_config.h")
     message("")
 endmacro()
+
+# ##################################################################################################
+# parse the values in the project config file if they exist and define them
+# and values in cmake. 
+#
+macro (flux_process_project_config)
+
+    set(CONFIG_FILE "${CMAKE_CURRENT_SOURCE_DIR}/config.txt")
+
+    if(NOT EXISTS "${CONFIG_FILE}")
+        message("Project Config: None")
+    else()
+    
+        message("Project Config:\t${CONFIG_FILE}")
+        file(STRINGS ${CONFIG_FILE} CONFIG_LINES)
+
+        foreach(LINE ${CONFIG_LINES})
+            # Skip comments and empty lines
+            if(LINE MATCHES "^#" OR LINE STREQUAL "")
+                continue()
+            endif()
+        
+            if(LINE MATCHES "^([A-Za-z_][A-Za-z0-9_]*)[ \t]+(.*)")
+                set(${CMAKE_MATCH_1} "${CMAKE_MATCH_2}")
+                # message(STATUS "Set ${CMAKE_MATCH_1} = ${CMAKE_MATCH_2}")
+            endif()
+        endforeach()
+    endif()
+endmacro()
 # ##################################################################################################
 # flux_sdk_init()
 #
@@ -251,6 +280,9 @@ macro (flux_sdk_init)
         )
     endif ()
     message("Platform:\t${FLUX_SDK_PLATFORM}")
+
+    # config file for the project
+    flux_process_project_config()
 
     string(TIMESTAMP COMPILE_TIME "%Y-%m-%d %H:%M:%S")
     message("Build Time:\t${COMPILE_TIME}")
