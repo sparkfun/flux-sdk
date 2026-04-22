@@ -229,7 +229,7 @@ void flxApplication::displayAppStatus(bool useInfo)
 }
 
 //---------------------------------------------------------------------------
-void flxApplication::displayAppAbout()
+void flxApplication::sysAbout()
 {
 
     char szBuffer[128];
@@ -242,4 +242,7 @@ void flxApplication::displayAppAbout()
     flxSerial.textToNormal();
 
     displayAppStatus(false);
+
+    // hook into the user app 'onAbout'
+    flxApplicationBase::sysAbout();
 }

@@ -82,7 +82,7 @@ class flxApplicationBase : public flxActionType<flxApplicationBase>
     //      - The template calls the superclass method flxApplication::<lifecycle>(), which
     //        dispatches to the user event methods.
     //------------------------------------------------------------------------------
-    // Internal Lifecycle methods
+    // Internal Lifecycle methods and hooks to user code
     //------------------------------------------------------------------------------
     virtual void sysInit(void)
     {
@@ -113,6 +113,11 @@ class flxApplicationBase : public flxActionType<flxApplicationBase>
         // Call the user event method
         this->onRestore();
     }
+
+    virtual void sysAbout(void)
+    {
+        this->onAbout();
+    }
     //------------------------------------------------------------------------------
     // User lifecycle methods stubs
     //------------------------------------------------------------------------------
@@ -142,6 +147,11 @@ class flxApplicationBase : public flxActionType<flxApplicationBase>
 
     // called just prior to system restore on startup
     virtual void onRestore(void)
+    {
+        return;
+    }
+
+    virtual void onAbout(void)
     {
         return;
     }

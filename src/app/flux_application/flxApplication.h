@@ -234,7 +234,7 @@ class flxApplication : public flxApplicationBase
 
     void about_app_status(void)
     {
-        displayAppAbout();
+        sysAbout();
     }
     uint8_t _logTypeSer;
 
@@ -292,6 +292,9 @@ class flxApplication : public flxApplicationBase
     //
     // Called after the system is loaded, restored and initialized
     bool sysStart() final;
+
+    // about page output
+    void sysAbout() final;
 
     bool loop();
 
@@ -365,7 +368,6 @@ class flxApplication : public flxApplicationBase
     void enterSleepMode(void);
 
     void _displayAboutObjHelper(char, const char *, bool);
-    void displayAppAbout(void);
     void displayAppStatus(bool useInfo = false);
 
     // event things

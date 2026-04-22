@@ -12,10 +12,10 @@
 #include <ArduinoJson.h>
 #include <Flux/flxApplication.h>
 
+#include "flxPlatform.h"
 #include <Flux/flxCoreLog.h>
 #include <Flux/flxSerialField.h>
 #include <Flux/flxUtils.h>
-#include "flxPlatform.h"
 #include <time.h>
 
 class flxAppCommands
@@ -116,7 +116,7 @@ class flxAppCommands
     bool aboutDevice(flxApplication *theApp)
     {
         if (theApp)
-            theApp->displayAppAbout();
+            theApp->sysAbout();
         return true;
     }
     //---------------------------------------------------------------------
