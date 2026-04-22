@@ -771,13 +771,15 @@ bool flxApplication::sysStart()
 #if defined(CONFIG_FLUX_APP_LED)
     theLED.off();
 #endif
+    // call the app base -- which will call out to the user onStart method
+    bool rc = flxApplicationBase::sysStart();
     // we are done with startup - reset output mode
     if (startupOutputMode() != kAppStartupMsgNormal)
         flxLog.setLogLevel(flxLogInfo);
 
     // log now!
     _timer.trigger();
-    return flxApplicationBase::sysStart();
+    return rc;
 }
 
 //---------------------------------------------------------------------------
