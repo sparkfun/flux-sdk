@@ -4,5 +4,4 @@
 # SPDX-License-Identifier: MIT
 #
 # Add the source files for this directory
-flux_sdk_add_source_files( flxAppCommands.h)
-
+flux_sdk_add_source_files(flxAppCommands.h flxAppCommands.cpp)

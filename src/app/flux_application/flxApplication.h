@@ -121,6 +121,10 @@
 #include <Flux/flxAppButton.h>
 #endif
 
+#if defined(CONFIG_FLUX_APP_COMMANDS)
+#include "flxAppCommands.h"
+#endif
+
 #include <utility>
 
 //------------------------------------------
@@ -496,6 +500,11 @@ class flxApplication : public flxApplicationBase
     // for our button events of the board
     flxAppButton _boardButton;
 #endif
+
+#if defined(CONFIG_FLUX_APP_COMMANDS)
+    flxAppCommands _cmdProcessor;
+#endif
+
   private:
     // For the sleep timer
     unsigned long _startTime = 0;

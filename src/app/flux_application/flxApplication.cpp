@@ -16,10 +16,6 @@
 #include "flxApplication.h"
 #include "flxAppSystemInfo.h"
 
-#if defined(CONFIG_FLUX_APP_COMMANDS)
-#include "flxAppCommands.h"
-#endif
-
 #include "esp_sleep.h"
 
 #if defined(CONFIG_FLUX_CLOCK)
@@ -889,8 +885,8 @@ bool flxApplication::loop()
             flxSerial.textToNormal();
             Serial.write('!');
             Serial.flush();
-            flxAppCommands cmdProcessor;
-            bool status = cmdProcessor.processCommand(this);
+
+            bool status = _cmdProcessor.processCommand(this);
         }
         else // edit settings
         {

@@ -18,116 +18,99 @@
 #include <Flux/flxUtils.h>
 #include <time.h>
 
-class flxAppCommands
+// Create a command to function call registry class. Basically a method registry
+// class.
+
+using flxCmdRegFn = std::function<void(void *)>;
+using flxCmdRegMap = std::map<std::string, flxCmdRegFn>;
+
+class flxCmdRegistry
 {
-    typedef bool (flxAppCommands::*commandCB_t)(flxApplication *);
-    typedef std::map<std::string, commandCB_t> commandMap_t;
+  public:
+    // --- Registration --------------------------------------------------------
+
+    // lambda, std::function, or instance method wrapper
+    void registerCommand(const std::string &id, flxCmdRegFn fn)
+    {
+        if (_commandMap.count(id))
+            flxLog_W(F("Overwriting command: %s"), id.c_str());
+        _commandMap[id] = std::move(fn);
+    }
+
+    // static method or free C function
+    void registerCommand(const std::string &id, void (*ptr)(void *))
+    {
+        if (_commandMap.count(id))
+            flxLog_W(F("Overwriting command: %s"), id.c_str());
+        _commandMap[id] = ptr;
+    }
+
+    // --- Removal -------------------------------------------------------------
+
+    void unregisterCommand(const std::string &id)
+    {
+        auto it = _commandMap.find(id);
+        if (it != _commandMap.end())
+            _commandMap.erase(it);
+    }
+
+    // --- Invocation ----------------------------------------------------------
+    bool callCommand(const std::string &id, void *args)
+    {
+
+        auto it = _commandMap.find(id);
+        bool status = (it == _commandMap.end());
+        if (status)
+            flxLog_E("Unknown command: !%s", id);
+        else
+            it->second(args);
+
+        return status;
+    }
+
+    // --- Introspection -------------------------------------------------------
+
+    bool hasCommand(const std::string &id) const
+    {
+        return _commandMap.count(id) > 0;
+    }
+
+    size_t size() const
+    {
+        return _commandMap.size();
+    }
+
+    void listAllCommands() const
+    {
+        for (auto it : _commandMap)
+            flxLog_N(F("   !%s"), it.first.c_str());
+    }
+
+  private:
+    flxCmdRegMap _commandMap;
+};
+
+class flxAppCommands : public flxCmdRegistry
+{
 
     //---------------------------------------------------------------------
     // Command Callbacks
     //---------------------------------------------------------------------
-    bool factoryResetDevice(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
+    static void factoryResetDevice(void *arg);
 
-        return theApp->_sysUpdate.factoryResetDevice();
-    }
+    static void resetDevice(void *arg);
 
-    //---------------------------------------------------------------------
-    bool resetDevice(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
+    static void resetDeviceForced(void *arg);
+    static void clearDeviceSettings(void *arg);
 
-        // Need to prompt for an a-okay ...
-        Serial.printf("\n\rClear and Restart Device? [Y/n]? ");
-        uint8_t selected = theApp->_serialSettings.getMenuSelectionYN();
-        flxLog_N("");
+    static void clearDeviceSettingsForced(void *arg);
 
-        if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
-        {
-            flxLog_I(F("Aborting..."));
-            return false;
-        }
+    static void restartDevice(void *arg);
 
-        return resetDeviceForced(theApp);
-    }
-    //---------------------------------------------------------------------
-    bool resetDeviceForced(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
+    static void restartDeviceForced(void *arg);
 
-        theApp->_sysStorage.resetStorage();
-        flxLog_I(F("Settings Cleared"));
+    static void aboutDevice(void *arg);
 
-        theApp->_sysUpdate.restartDevice();
-
-        return true;
-    }
-    //---------------------------------------------------------------------
-    bool clearDeviceSettings(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        // Need to prompt for an a-okay ...
-        Serial.printf("\n\rClear Device Saved Settings? [Y/n]? ");
-        uint8_t selected = theApp->_serialSettings.getMenuSelectionYN();
-        flxLog_N("");
-
-        if (selected != 'y' || selected == kReadBufferTimeoutExpired || selected == kReadBufferExit)
-        {
-            flxLog_I(F("Aborting..."));
-            return false;
-        }
-        return clearDeviceSettingsForced(theApp);
-    }
-
-    //---------------------------------------------------------------------
-    bool clearDeviceSettingsForced(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        theApp->_sysStorage.resetStorage();
-        flxLog_I(F("Settings Cleared"));
-
-        return true;
-    }
-    //---------------------------------------------------------------------
-    bool restartDevice(flxApplication *theApp)
-    {
-        if (theApp)
-            theApp->_sysUpdate.restartDevicePrompt();
-
-        return true;
-    }
-    //---------------------------------------------------------------------
-    bool restartDeviceForced(flxApplication *theApp)
-    {
-        if (theApp)
-            theApp->_sysUpdate.restartDevice();
-
-        return true;
-    }
-    //---------------------------------------------------------------------
-    bool aboutDevice(flxApplication *theApp)
-    {
-        if (theApp)
-            theApp->sysAbout();
-        return true;
-    }
-    //---------------------------------------------------------------------
-    bool helpDevice(flxApplication *theApp)
-    {
-        flxLog_N(F("Available Commands:"));
-        for (auto it : _commandMap)
-            flxLog_N(F("   !%s"), it.first.c_str());
-
-        return true;
-    }
     //---------------------------------------------------------------------
     ///
     /// @brief Reads JSON from the serial console - uses as input into the settings system
@@ -135,28 +118,8 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    // bool loadJSONSettings(flxApplication *theApp)
-    // {
-    //     if (!theApp)
-    //         return false;
+    // static bool loadJSONSettings(void *arg);
 
-    //     // Create a JSON prefs serial object and read in the settings
-    //     flxStorageJSONPrefSerial prefsSerial(flxSettings.fallbackBuffer() > 0 ? flxSettings.fallbackBuffer() : 2000);
-
-    //     // restore the settings from serial
-    //     bool status = flxSettings.restoreObjectFromStorage(&flux, &prefsSerial);
-    //     if (!status)
-    //         return false;
-
-    //     flxLog_I_(F("Settings restored from serial..."));
-
-    //     // now save the new settings in primary storage
-    //     status = flxSettings.save(&flux, true);
-    //     if (status)
-    //         flxLog_N(F("saved locally"));
-
-    //     return status;
-    // }
     //---------------------------------------------------------------------
     ///
     /// @brief Saves the current system to preferences/Settings
@@ -164,20 +127,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool saveSettings(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        // Just call save
-        bool status = flxSettings.save(&flux);
-        if (status)
-            flxLog_I(F("Saving System Settings."));
-        else
-            flxLog_E(F("Error saving settings"));
-
-        return status;
-    }
+    static void saveSettings(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief Dumps out the current heap size/stats
@@ -185,16 +135,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool heapStatus(flxApplication *theApp)
-    {
-        uint32_t totalHeap = flxPlatform::heap_size();
-        uint32_t freeHeap = flxPlatform::heap_free();
-
-        // just dump out the current heap
-        flxLog_I(F("System Heap - Total: %dB Free: %dB (%.1f%%)"), totalHeap, freeHeap,
-                 (float)freeHeap / (float)totalHeap * 100.);
-        return true;
-    }
+    static void heapStatus(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief Enables verbose log level output
@@ -202,12 +143,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool logLevelVerbose(flxApplication *theApp)
-    {
-        flxLog.setLogLevel(flxLogVerbose);
-        flxLog_V(F("Output level set to Verbose"));
-        return true;
-    }
+    static void logLevelVerbose(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief Toggle verbose output
@@ -215,15 +151,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool toggleVerboseOutput(flxApplication *theApp)
-    {
-
-        if (theApp)
-            theApp->set_verbose(!theApp->get_verbose());
-        flxLog_I("Verbose Output %s", theApp->get_verbose() ? "Enabled" : "Disabled");
-
-        return true;
-    }
+    static void toggleVerboseOutput(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief Dumps out the current logging rate metric
@@ -231,20 +159,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool logRateStats(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        // Run rate metric
-        flxLog_N_(F("Logging Rate - Set Interval: %u (ms)  Measured: "), theApp->_timer.interval());
-        if (!theApp->_logger.enabledLogRate())
-            flxLog_N("%s", "<disabled>");
-        else
-            flxLog_N("%.2f (ms)", theApp->_logger.getLogRate());
-
-        return true;
-    }
+    static void logRateStats(void *arg);
 
     //---------------------------------------------------------------------
     ///
@@ -253,17 +168,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool logRateToggle(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        theApp->_logger.logRateMetric = !theApp->_logger.logRateMetric();
-        // Run rate metric
-        flxLog_N(F("Logging Rate Metric %s"), theApp->_logger.enabledLogRate() ? "Enabled" : "Disabled");
-
-        return true;
-    }
+    static void logRateToggle(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief Dumps out the current wifi stats
@@ -271,27 +176,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool wifiStats(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        if (theApp->_wifiConnection.enabled() && theApp->_wifiConnection.isConnected())
-        {
-            IPAddress addr = theApp->_wifiConnection.localIP();
-            uint rating = theApp->_wifiConnection.rating();
-            const char *szRSSI = rating == kWiFiLevelExcellent ? "Excellent"
-                                 : rating == kWiFiLevelGood    ? "Good"
-                                 : rating == kWiFiLevelFair    ? "Fair"
-                                                               : "Weak";
-            flxLog_I(F("WiFi - Connected  SSID: %s  IP Address: %d.%d.%d.%d  Signal: %s"),
-                     theApp->_wifiConnection.connectedSSID().c_str(), addr[0], addr[1], addr[2], addr[3], szRSSI);
-        }
-        else
-            flxLog_I(F("WiFi - Not Connected/Enabled"));
-
-        return true;
-    }
+    static void wifiStats(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief Dumps out the current sd card stats
@@ -299,32 +184,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    // bool sdCardStats(flxApplication *theApp)
-    // {
-    //     if (!theApp)
-    //         return false;
-
-    //     if (theApp->_theSDCard.enabled())
-    //     {
-
-    //         char szSize[32];
-    //         char szCap[32];
-    //         char szAvail[32];
-
-    //         flx_utils::formatByteString(theApp->_theSDCard.size(), 2, szSize, sizeof(szSize));
-    //         flx_utils::formatByteString(theApp->_theSDCard.total(), 2, szCap, sizeof(szCap));
-    //         flx_utils::formatByteString(theApp->_theSDCard.total() - theApp->_theSDCard.used(), 2, szAvail,
-    //                                     sizeof(szAvail));
-
-    //         flxLog_I(F("SD Card - Type: %s Size: %s Capacity: %s Free: %s (%.1f%%)"), theApp->_theSDCard.type(),
-    //         szSize,
-    //                  szCap, szAvail, 100. - (theApp->_theSDCard.used() / (float)theApp->_theSDCard.total() * 100.));
-    //     }
-    //     else
-    //         flxLog_I(F("SD card not available"));
-
-    //     return true;
-    // }
+    // static void sdCardStats(void *arg);
 
     //---------------------------------------------------------------------
     ///
@@ -333,27 +193,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool listLoadedDevices(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        // connected devices...
-        flxDeviceContainer myDevices = flux.connectedDevices();
-        flxLog_I(F("Connected Devices [%d]:"), myDevices.size());
-
-        // Loop over the device list - note that it is iterable.
-        for (auto device : myDevices)
-        {
-            flxLog_N_(F("    %-20s  - %s  {"), device->name(), device->description());
-            if (device->getKind() == flxDeviceKindI2C)
-                flxLog_N("%s x%x}", "qwiic", device->address());
-            else
-                flxLog_N("%s p%u}", "SPI", device->address());
-        }
-
-        return true;
-    }
+    static void listLoadedDevices(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief outputs current time
@@ -361,23 +201,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool outputSystemTime(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        char szBuffer[64];
-        memset(szBuffer, '\0', sizeof(szBuffer));
-        time_t t_now;
-        time(&t_now);
-
-        flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), true);
-
-        flxLog_I("%s", szBuffer);
-
-        return true;
-    }
-
+    static void outputSystemTime(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief outputs uptime
@@ -385,20 +209,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool outputUpTime(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        // uptime
-        uint32_t days, hours, minutes, secs, mills;
-
-        flx_utils::uptime(days, hours, minutes, secs, mills);
-
-        flxLog_I("Uptime: %u days, %02u:%02u:%02u.%u", days, hours, minutes, secs, mills);
-
-        return true;
-    }
+    static void outputUpTime(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief log an observation now!
@@ -406,15 +217,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool logObservationNow(flxApplication *theApp)
-    {
-        if (!theApp)
-            return false;
-
-        flxSendEvent(flxEvent::kOnLogObservationWithSource, "CLI");
-
-        return true;
-    }
+    static void logObservationNow(void *arg);
 
     //---------------------------------------------------------------------
     ///
@@ -423,17 +226,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool printVersion(flxApplication *theApp)
-    {
-
-        char szBuffer[128];
-        flux.versionString(szBuffer, sizeof(szBuffer), true);
-
-        flxLog_I("%s   %s", flux.name(), flux.description());
-        flxLog_I("Version: %s\n\r", szBuffer);
-
-        return true;
-    }
+    static void printVersion(void *arg);
 
     //---------------------------------------------------------------------
     ///
@@ -442,13 +235,7 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool printDeviceID(flxApplication *theApp)
-    {
-
-        flxLog_I("Device ID: %s", flux.deviceId());
-
-        return true;
-    }
+    static void printDeviceID(void *arg);
     //---------------------------------------------------------------------
     ///
     /// @brief output the build date of the firmware
@@ -456,67 +243,34 @@ class flxAppCommands
     /// @param theApp Pointer to the DataLogger App
     /// @retval bool indicates success (true) or failure (!true)
     ///
-    bool printBuildDate(flxApplication *theApp)
-    {
-
-        flxLog_I("Build Date: %s", theApp->getBuildDate());
-
-        return true;
-    }
-    //---------------------------------------------------------------------
-    // our command map - command name to callback method
-    commandMap_t _commandMap = {
-        {"factory-reset", &flxAppCommands::factoryResetDevice},
-        {"reset-device", &flxAppCommands::resetDevice},
-        {"reset-device-forced", &flxAppCommands::resetDeviceForced},
-        {"clear-settings", &flxAppCommands::clearDeviceSettings},
-        {"clear-settings-forced", &flxAppCommands::clearDeviceSettingsForced},
-        {"restart", &flxAppCommands::restartDevice},
-        {"restart-forced", &flxAppCommands::restartDeviceForced},
-        // {"json-settings", &flxAppCommands::loadJSONSettings},
-        {"log-rate", &flxAppCommands::logRateStats},
-        {"log-rate-toggle", &flxAppCommands::logRateToggle},
-        {"log-now", &flxAppCommands::logObservationNow},
-        {"wifi", &flxAppCommands::wifiStats},
-        // {"sdcard", &flxAppCommands::sdCardStats},
-        {"devices", &flxAppCommands::listLoadedDevices},
-        {"save-settings", &flxAppCommands::saveSettings},
-        {"heap", &flxAppCommands::heapStatus},
-        {"verbose", &flxAppCommands::toggleVerboseOutput},
-        {"systime", &flxAppCommands::outputSystemTime},
-        {"uptime", &flxAppCommands::outputUpTime},
-        {"device-id", &flxAppCommands::printDeviceID},
-        {"version", &flxAppCommands::printVersion},
-        {"build-date", &flxAppCommands::printBuildDate},
-        {"about", &flxAppCommands::aboutDevice},
-        {"help", &flxAppCommands::helpDevice},
-    };
+    static void printBuildDate(void *arg);
 
   public:
-    bool processCommand(flxApplication *theApp)
+    flxAppCommands()
     {
-        // The data editor we're using - serial field
-        flxSerialField theDataEditor;
-        std::string sBuffer;
-        bool status = theDataEditor.editFieldString(sBuffer);
-
-        flxLog_N(""); // need to output a CR
-
-        if (!status)
-            return false;
-
-        // cleanup string
-        sBuffer = flx_utils::strtrim(sBuffer);
-
-        // Find our command
-        commandMap_t::iterator it = _commandMap.find(sBuffer);
-        if (it != _commandMap.end())
-            status = (this->*(it->second))(theApp);
-        else
-        {
-            flxLog_N(F("Unknown Command: `%s`"), sBuffer.c_str());
-            status = false;
-        }
-        return status;
+        registerCommand("factory-reset", &flxAppCommands::factoryResetDevice);
+        registerCommand("reset-device", &flxAppCommands::resetDevice);
+        registerCommand("reset-device-forced", &flxAppCommands::resetDeviceForced);
+        registerCommand("clear-settings", &flxAppCommands::clearDeviceSettings);
+        registerCommand("clear-settings-forced", &flxAppCommands::clearDeviceSettingsForced);
+        registerCommand("restart", &flxAppCommands::restartDevice);
+        registerCommand("restart-forced", &flxAppCommands::restartDeviceForced);
+        // registerCommand("json-settings", &flxAppCommands::loadJSONSettings);
+        registerCommand("log-rate", &flxAppCommands::logRateStats);
+        registerCommand("log-rate-toggle", &flxAppCommands::logRateToggle);
+        registerCommand("log-now", &flxAppCommands::logObservationNow);
+        registerCommand("wifi", &flxAppCommands::wifiStats);
+        // registerCommand("sdcard", &flxAppCommands::sdCardStats);
+        registerCommand("devices", &flxAppCommands::listLoadedDevices);
+        registerCommand("save-settings", &flxAppCommands::saveSettings);
+        registerCommand("heap", &flxAppCommands::heapStatus);
+        registerCommand("verbose", &flxAppCommands::toggleVerboseOutput);
+        registerCommand("systime", &flxAppCommands::outputSystemTime);
+        registerCommand("uptime", &flxAppCommands::outputUpTime);
+        registerCommand("device-id", &flxAppCommands::printDeviceID);
+        registerCommand("version", &flxAppCommands::printVersion);
+        registerCommand("build-date", &flxAppCommands::printBuildDate);
+        registerCommand("about", &flxAppCommands::aboutDevice);
     }
+    bool processCommand(void *arg);
 };
