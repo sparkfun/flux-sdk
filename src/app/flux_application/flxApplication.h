@@ -454,6 +454,7 @@ class flxApplication : public flxApplicationBase
 #if defined(CONFIG_IOT_MQTT) || defined(CONFIG_IOT_ARDUINO) || defined(CONFIG_IOT_AWS) ||                              \
     defined(CONFIG_IOT_THINGSPEAK) || defined(CONFIG_IOT_AZURE) || defined(CONFIG_IOT_HTTP) ||                         \
     defined(CONFIG_IOT_MACHINECHAT)
+#define CONFIG_HAS_IOT_ENDPOINT
     // Container for IoT endpoint drivers
     flxActionContainer _iotEndpoints;
 #endif

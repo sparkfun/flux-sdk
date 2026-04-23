@@ -376,9 +376,12 @@ bool flxApplication::sysSetup()
     flxClock.referenceClock = _ntpClient.name();
 #endif
 #endif
+
+#if defined(CONFIG_HAS_IOT_ENDPOINT)
     // Setup the IoT clients
-    // if (!setupIoTClients())
-    //     flxLog_W(F("Error initializing IoT Clients"));
+    if (!setupIoTClients())
+        flxLog_W(F("Error initializing IoT Clients"));
+#endif
 
     //----------
     // setup firmware update/reset system
@@ -642,6 +645,9 @@ void flxApplication::sysInit(void)
     _boardButton.setButtonPin(FLUX_BOARD_APP_BUTTON);
 #endif
 
+#if defined(CONFIG_HAS_IOT_ENDPOINT)
+    flux_add(_iotEndpoints);
+#endif
     flxApplicationBase::sysInit();
 }
 

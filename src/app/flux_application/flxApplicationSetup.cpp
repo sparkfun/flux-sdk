@@ -19,10 +19,7 @@
 // Setup the IOT clients
 bool flxApplication::setupIoTClients()
 {
-#if defined(CONFIG_IOT_MQTT) || defined(CONFIG_IOT_ARDUINO) || defined(CONFIG_IOT_AWS) ||                              \
-    defined(CONFIG_IOT_THINGSPEAK) || defined(CONFIG_IOT_AZURE) || defined(CONFIG_IOT_HTTP) ||                         \
-    defined(CONFIG_IOT_MACHINECHAT)
-
+#if defined(CONFIG_HAS_IOT_ENDPOINT)
     _iotEndpoints.setTitle("Services");
     _iotEndpoints.setName("IoT Services", "IoT Service Connection Drivers");
 
@@ -98,6 +95,7 @@ bool flxApplication::setupIoTClients()
     // Add the HTTP driver to the flux system
     _iotEndpoints.push_back(_iotHTTP);
 #endif
+
 #endif
 
     return true;
