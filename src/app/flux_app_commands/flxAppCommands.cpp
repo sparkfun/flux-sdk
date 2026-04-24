@@ -20,6 +20,8 @@
 
 #include "flxAppCommands.h"
 
+static const char *kSeparator = "---------------------------------------------------------------------";
+
 void flxAppCommands::factoryResetDevice(void *arg)
 {
     flxApplication *theApp = static_cast<flxApplication *>(arg);
@@ -429,6 +431,38 @@ void flxAppCommands::printBuildDate(void *arg)
     flxApplication *theApp = static_cast<flxApplication *>(arg);
     flxLog_I("Build Date: %s", theApp->getBuildDate());
 }
+
+void flxAppCommands::_printTimeStamp(void)
+{
+    char szBuffer[64] = {'\0'};
+
+    time_t t_now;
+    time(&t_now);
+    flx_utils::timestampISO8601(t_now, szBuffer, sizeof(szBuffer), false);
+    flxLog_N_("%s", szBuffer);
+}
+void flxAppCommands::printTimeStamp(void *arg)
+{
+    _printTimeStamp();
+    flxLog_N("");
+
+    char szBuffer[64] = {'\0'};
+}
+void flxAppCommands::printTimeStampBreak(void *arg)
+{
+    _printTimeStamp();
+    printBreakLine(arg);
+}
+void flxAppCommands::printBreakLine(void *arg)
+{
+    flxLog_N(kSeparator);
+}
+
+void flxAppCommands::clearConsole(void *arg)
+{
+    flxLog_N_("\033[2J\033[H"); // ANSI escape codes to clear the console
+}
+
 bool flxAppCommands::processCommand(void *arg)
 {
     // The data editor we're using - serial field

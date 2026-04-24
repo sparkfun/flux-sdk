@@ -245,6 +245,14 @@ class flxAppCommands : public flxCmdRegistry
     ///
     static void printBuildDate(void *arg);
 
+    static void _printTimeStamp(void);
+    static void printTimeStamp(void *arg);
+    static void printTimeStampBreak(void *arg);
+
+    static void printBreakLine(void *arg);
+
+    static void clearConsole(void *arg);
+
   public:
     flxAppCommands()
     {
@@ -259,17 +267,28 @@ class flxAppCommands : public flxCmdRegistry
         registerCommand("log-rate", &flxAppCommands::logRateStats);
         registerCommand("log-rate-toggle", &flxAppCommands::logRateToggle);
         registerCommand("log-now", &flxAppCommands::logObservationNow);
+        registerCommand("l", &flxAppCommands::logObservationNow);
         registerCommand("wifi", &flxAppCommands::wifiStats);
         // registerCommand("sdcard", &flxAppCommands::sdCardStats);
         registerCommand("devices", &flxAppCommands::listLoadedDevices);
         registerCommand("save-settings", &flxAppCommands::saveSettings);
         registerCommand("heap", &flxAppCommands::heapStatus);
+        registerCommand("h", &flxAppCommands::heapStatus);
         registerCommand("verbose", &flxAppCommands::toggleVerboseOutput);
         registerCommand("systime", &flxAppCommands::outputSystemTime);
         registerCommand("uptime", &flxAppCommands::outputUpTime);
         registerCommand("device-id", &flxAppCommands::printDeviceID);
         registerCommand("version", &flxAppCommands::printVersion);
         registerCommand("build-date", &flxAppCommands::printBuildDate);
+        registerCommand("time", &flxAppCommands::printTimeStamp);
+        registerCommand("t", &flxAppCommands::printTimeStamp);
+        registerCommand("break", &flxAppCommands::printBreakLine);
+        registerCommand("b", &flxAppCommands::printBreakLine);
+        registerCommand("timebreak", &flxAppCommands::printTimeStampBreak);
+        registerCommand("tb", &flxAppCommands::printTimeStampBreak);
+        registerCommand("clear-console", &flxAppCommands::clearConsole);
+        registerCommand("c", &flxAppCommands::clearConsole);
+
         registerCommand("about", &flxAppCommands::aboutDevice);
     }
     bool processCommand(void *arg);
