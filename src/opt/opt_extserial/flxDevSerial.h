@@ -32,10 +32,9 @@ flxDefineEventID(kOnSerialDataAvailable);
 
 /**
  * @class flxDevSerial
- * @brief A class to interface with the SparkFun Soil Moisture sensor.
- *
- * This class provides methods to initialize the sensor, read moisture values, and calibrate the sensor for dry and wet
- * states. It also includes properties to enable the sensor, set the GPIO pins, and retrieve the moisture values.
+ * @brief A class to interface with a Input serial device
+ * This class provides methods to initialize the serial device, read serial values, and manage the device's state.
+ * It also includes properties to enable the device and retrieve the serial values.
  */
 class flxDevSerial : public flxDeviceGPIOType<flxDevSerial>
 {
