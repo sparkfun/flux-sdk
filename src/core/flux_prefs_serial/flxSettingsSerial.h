@@ -307,10 +307,17 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
                 flxSerial.textToYellow();
                 Serial.printf("%s", pEntity->name());
                 flxSerial.textToNormal();
+                // if we have verbose output set, output the numeric value
+                flxDataVariable var = pEntity->getValue();
+                std::string sTmp = propLimit->getName(var);
                 Serial.printf(" =  ");
                 flxSerial.textToWhite();
-                Serial.printf("%s\n\r\n\r", pEntity->to_string().c_str());
+                Serial.printf("%s", sTmp.c_str());
                 flxSerial.textToNormal();
+                if (flxIsLoggingDebug())
+                    Serial.printf("  (%s)", pEntity->to_string().c_str());
+
+                Serial.printf("\n\r\n\r");
             }
             Serial.printf("Select from the following values:\n\r\n\r");
 
@@ -320,7 +327,12 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             {
                 nMenuItems++;
                 if (item.name.length() > 0)
-                    drawMenuEntry(nMenuItems, (item.name + " (" + item.data.to_string() + ")").c_str());
+                {
+                    if (flxIsLoggingDebug())
+                        drawMenuEntry(nMenuItems, (item.name + " (" + item.data.to_string() + ")").c_str());
+                    else
+                        drawMenuEntry(nMenuItems, item.name.c_str());
+                }
                 else
                     drawMenuEntry(nMenuItems, item.data.to_string().c_str());
             }
@@ -363,9 +375,15 @@ class flxSettingsSerial : public flxActionType<flxSettingsSerial>
             bool result = pEntity->setValue(limitTags.at(selected - 1).data);
 
             if (result)
-                Serial.printf("\t[The value of %s was updated to %s = %s ]\n\r", pEntity->name(),
-                              limitTags.at(selected - 1).name.c_str(),
-                              limitTags.at(selected - 1).data.to_string().c_str());
+            {
+                if (flxIsLoggingDebug())
+                    Serial.printf("\t[The value of %s was updated to %s = %s ]\n\r", pEntity->name(),
+                                  limitTags.at(selected - 1).name.c_str(),
+                                  limitTags.at(selected - 1).data.to_string().c_str());
+                else
+                    Serial.printf("\t[The value of %s was updated to %s]\n\r", pEntity->name(),
+                                  limitTags.at(selected - 1).name.c_str());
+            }
             else
                 Serial.printf("\t[%s is unchanged]\n\r", pEntity->name());
 
