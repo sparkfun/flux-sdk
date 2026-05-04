@@ -80,6 +80,14 @@ class flxParameterIn : public flxParameter
     {
         return std::string(name());
     }; // for consistancy
+
+    flxDataVariable getValue(void)
+    {
+        flxDataVariable value;
+        value.type = type();
+
+        return value;
+    };
 };
 
 #define kParameterOutFlagArray 0x01
