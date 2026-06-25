@@ -9,7 +9,8 @@
  *
  * flxCoreDevice.h
  *
- * Class that defines the interface between the system and the underlying device driver
+ * Class that defines the interface between the system and the underlying device
+ * driver
  *
  * Provides the following capabilities
  *
@@ -75,34 +76,41 @@ typedef enum
 // Implementation:
 //    This system is implemented using the following:
 //
-//      * Each device driver implements a confidence method - connectedConfidence(),
+//      * Each device driver implements a confidence method -
+//      connectedConfidence(),
 //        which returns a confidence value
-//      * When drivers register, the driver is added to a multimap, which maintains
+//      * When drivers register, the driver is added to a multimap, which
+//      maintains
 //        a sorted list of available drivers.
 //          - The map key is created using an I2C address and confidence value.
 //               key =  address * 10 + confidence_value
-//          - The confidence value ranges from 0 - 9, with 0 being high confidence, 9 low
+//          - The confidence value ranges from 0 - 9, with 0 being high
+//          confidence, 9 low
 //          - This key ensures higher confidence drivers are sorted before lower
 //            confidence drivers.
 //      * For each address a device driver supports, an entry for that driver is
 //        added to the driver multi-map.
-//      * When autoload occurs, the system traverses the sorted multimap, calling
-//        the the "isConnected()" methods for the drivers at each address, starting
-//        the high-confidence drivers.
-//      * If a device is found at an address, a driver instance is created for that device
+//      * When autoload occurs, the system traverses the sorted multimap,
+//      calling
+//        the the "isConnected()" methods for the drivers at each address,
+//        starting the high-confidence drivers.
+//      * If a device is found at an address, a driver instance is created for
+//      that device
 //        and any remaining drivers for that address skipped.
 //
 //  Potential Future Additions?
 //      * User prioritization of a driver in the auto-load list
 //      * User added addresses for a device
 //      * User defined locked address-to-device/driver
-//      * Device load prioritization based on previous use - <last loaded tested first>
+//      * Device load prioritization based on previous use - <last loaded tested
+//      first>
 //      * User defined load/device limits ....
 //
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 //
-// Define a type that is used for qualifying the type of isConnected Algorithm results.
+// Define a type that is used for qualifying the type of isConnected Algorithm
+// results.
 //
 // This is used to define the *confidence* of isConnected() method employed.
 // Some devices are definitive in being identified, others are not. A
@@ -116,10 +124,17 @@ typedef enum
 // of devices to test at an address, with those having a high-confidence
 // level tested (isConnected()) first.
 //
-// These values need to range from 0-9, with Exact =0, Ping (worse) = 0
+// These values need to range from 0-9, with Exact =1, Ping (worse) = 9
+//
+// Update: 6/2026 - Found that some devices - mcp9600 - needs to be the first
+// device searched for when looking at an address. So - added a "ExactPriority"
+// value that is used to force a device to be searched first at an address.
+// //
+// // In practice, there should only be one ExactPriority used per address
 typedef enum
 {
-    flxDevConfidenceExact = 0,
+    flxDevConfidenceExactPriority = 0,
+    flxDevConfidenceExact = 1,
     flxDevConfidenceFuzzy = 5,
     flxDevConfidencePing = 9
 } flxDeviceConfidence_t;
@@ -239,34 +254,40 @@ using flxDeviceContainer = flxContainer<flxDevice>;
 // Factory/Builder pattern to dynamically register devices at runtime.
 //----------------------------------------------------------------------------------
 //
-// A factory pattern is used to allow new device objects to be easily added to the system.
+// A factory pattern is used to allow new device objects to be easily added to
+// the system.
 //
 // This implementation includes the following:
 //
-//    - Factory singleton object - manages object *builders*, which implement the logic to
+//    - Factory singleton object - manages object *builders*, which implement
+//    the logic to
 //                                 discover and create a device object.
 //
-//    - Builder objects - Classes that implement methods to detect an underlying device and
+//    - Builder objects - Classes that implement methods to detect an underlying
+//    device and
 //                        create an instance of that class.
 //
 //
 // How this works:
 //
-//    Builder classes are defined for each new device driver (of type flxDevice) using a
-//    template. In the implementation of a device driver, a global builder object for that
-//    class is defined.
+//    Builder classes are defined for each new device driver (of type flxDevice)
+//    using a template. In the implementation of a device driver, a global
+//    builder object for that class is defined.
 //
-//    Builder objects include a registration call to the overall Factory class (which is a
-//    singleton) in their constructor. At system startup, global objects are instantiated,
-//    which causes the builder object to register itself with the device factory class. Later,
-//    the factory is used to discover and instantiate device classes using the registered
-//    builder classes.
+//    Builder objects include a registration call to the overall Factory class
+//    (which is a singleton) in their constructor. At system startup, global
+//    objects are instantiated, which causes the builder object to register
+//    itself with the device factory class. Later, the factory is used to
+//    discover and instantiate device classes using the registered builder
+//    classes.
 //
-//    Key Point: Using this pattern, just adding the implementation files of a new device driver
-//               enables this device for the system. No system updates or code modifications
-//               required.
+//    Key Point: Using this pattern, just adding the implementation files of a
+//    new device driver
+//               enables this device for the system. No system updates or code
+//               modifications required.
 //
-//    Note: This pattern does leave stale *global* builder objects in the system - but they are
+//    Note: This pattern does leave stale *global* builder objects in the system
+//    - but they are
 //          small (10's of B).
 //
 
@@ -294,7 +315,8 @@ class flxDeviceFactory
         return _buildersByAddress != nullptr ? _buildersByAddress->size() : 0;
     };
 
-    // Called to build a list of device objects for the devices connected to the system.
+    // Called to build a list of device objects for the devices connected to the
+    // system.
     int buildDevices(flxBusI2C &);
 
     void pruneAutoload(flxDevice *, flxDeviceContainer &);
@@ -313,7 +335,8 @@ class flxDeviceFactory
         _buildersByAddress = new _BuilderMMap_t;
     };
 
-    // 11/2023 -- the multi map use to store registered device drivers. Key [addr & confidence level] -> *builder]
+    // 11/2023 -- the multi map use to store registered device drivers. Key [addr
+    // & confidence level] -> *builder]
 
     typedef std::multimap<uint16_t, flxDeviceBuilderI2C *> _BuilderMMap_t;
 
@@ -335,9 +358,10 @@ class flxDeviceBuilderI2C
         if (oldDev)
             delete oldDev;
     }
-    virtual bool isConnected(flxBusI2C &i2cDriver, uint8_t address) = 0; // used to determine if a device is connected
-    virtual flxDeviceConfidence_t connectedConfidence(void) = 0;         // 11/2023 update add
-    virtual const char *getDeviceName(void);                             // To report connected devices.
+    virtual bool isConnected(flxBusI2C &i2cDriver,
+                             uint8_t address) = 0;               // used to determine if a device is connected
+    virtual flxDeviceConfidence_t connectedConfidence(void) = 0; // 11/2023 update add
+    virtual const char *getDeviceName(void);                     // To report connected devices.
     virtual const uint8_t *getDefaultAddresses(void) = 0;
     virtual flxDeviceKind_t getDeviceKind(void) = 0;
 };
@@ -346,8 +370,9 @@ class flxDeviceBuilderI2C
 // have a device create a builder for it's specific device class.
 //
 // The trick is the macro flxRegisterDevice, which sets up a static object
-// of the builder class. This object is created at startup (when *globals* are inst),
-// and the constructor of the class registers the builder in the factory class.
+// of the builder class. This object is created at startup (when *globals* are
+// inst), and the constructor of the class registers the builder in the factory
+// class.
 //
 
 template <class DeviceType> class DeviceBuilder : public flxDeviceBuilderI2C
