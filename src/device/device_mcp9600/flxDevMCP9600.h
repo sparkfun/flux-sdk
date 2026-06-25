@@ -40,7 +40,7 @@ class flxDevMCP9600 : public flxDeviceI2CType<flxDevMCP9600>, public MCP9600
 
     static flxDeviceConfidence_t connectedConfidence(void)
     {
-        return flxDevConfidenceExact;
+        return flxDevConfidenceExactPriority;
     }
 
     static const char *getDeviceName()
