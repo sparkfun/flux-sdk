@@ -72,15 +72,15 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
     // network connection.
     int ping(IPAddress ip, uint8_t ttl = 128, uint8_t count = 1)
     {
-        return _is_connected;
+        return _isConnected;
     }
     int ping(const String &hostname, uint8_t ttl = 128, uint8_t count = 1)
     {
-        return _is_connected;
+        return _isConnected;
     }
     int ping(const char *host, uint8_t ttl = 128, uint8_t count = 1)
     {
-        return _is_connected;
+        return _isConnected;
     }
 
   protected:
