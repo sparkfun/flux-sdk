@@ -21,8 +21,8 @@
 
 #include <ArduinoIoTCloud.h>
 
-// ArduinoIoTCloud header defines an addProperty() macro, which of course conflicts with the
-// framework - so undef it here ... VERY annoying
+// ArduinoIoTCloud header defines an addProperty() macro, which of course
+// conflicts with the framework - so undef it here ... VERY annoying
 #undef addProperty(v, ...)
 
 #include <map>
@@ -35,11 +35,12 @@
 // The ArduinoIoT Cloud system uses something called a Connection Handler. This
 // encapsulates the network management.
 //
-// For WiFi, this assumes it's controlling the connection. But this isn't the case,
-// Flux is. So, create our own Connection handler and pass that into the system.
-//
-// This works, but would need updating if another type of connection was created for this
+// For WiFi, this assumes it's controlling the connection. But this isn't the
+// case, Flux is. So, create our own Connection handler and pass that into the
 // system.
+//
+// This works, but would need updating if another type of connection was created
+// for this system.
 
 #include <WiFi.h>
 #include <WiFiUdp.h>
@@ -64,6 +65,22 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
     virtual UDP &getUDP() override
     {
         return _wifi_udp;
+    }
+
+    // with v1.3 of the connection handler interface  - arduino added ping
+    // methods. we just stub them out here - since the DataLogger is managing the
+    // network connection.
+    int ping(IPAddress ip, uint8_t ttl = 128, uint8_t count = 1)
+    {
+        return _is_connected;
+    }
+    int ping(const String &hostname, uint8_t ttl = 128, uint8_t count = 1)
+    {
+        return _is_connected;
+    }
+    int ping(const char *host, uint8_t ttl = 128, uint8_t count = 1)
+    {
+        return _is_connected;
     }
 
   protected:
@@ -91,7 +108,8 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
     }
 
   public:
-    // use this method to communicate if WiFi is up or not to this class/interface from the below class
+    // use this method to communicate if WiFi is up or not to this class/interface
+    // from the below class
     void setConnected(bool isConnected)
     {
         _isConnected = isConnected;
@@ -110,63 +128,80 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
 //
 // Arduino IoT Cloud
 //
-//   The Arduino IoT Cloud is based around the concept of a "Device", which has a "Thing" associated
-//   with it. The Thing is a logical container that contains "Variables" (in the GUI) aka "Properties"
-//   in the Web Services API or the ArduinoCloud library.
+//   The Arduino IoT Cloud is based around the concept of a "Device", which has
+//   a "Thing" associated with it. The Thing is a logical container that
+//   contains "Variables" (in the GUI) aka "Properties" in the Web Services API
+//   or the ArduinoCloud library.
 //
-//   The intent of this structure is to enable changing behavior of a device by just changing its Thing.
+//   The intent of this structure is to enable changing behavior of a device by
+//   just changing its Thing.
 //
 // The Flux Driver for Arduino IoT Cloud
 //
 //   Overall this driver does the following:
 //
 //      - Connects to a Thing - potentially creating the thing if needed
-//      - Maps Data Parameters from the DataLogger observation to Variables in the Arduino Thing
+//      - Maps Data Parameters from the DataLogger observation to Variables in
+//      the Arduino Thing
 //      - For each write() iteration - the variable values are updated.
 //
 // Technical Details
 //
-//   There are two methods used to communicate with the Arduino IoT Cloud: Web Service API and a
-//   mqtt based system that is obscured via the Arduino library - ArduinoIoTCloud.
+//   There are two methods used to communicate with the Arduino IoT Cloud: Web
+//   Service API and a mqtt based system that is obscured via the Arduino
+//   library - ArduinoIoTCloud.
 //
-//   Examples were provided by Arduino on how to use both these systems to implement this driver.
+//   Examples were provided by Arduino on how to use both these systems to
+//   implement this driver.
 //
 //   Web Service API
-//      - Used to get a bearer (oauth) token, which is needed for the API. The user provides API credentials
+//      - Used to get a bearer (oauth) token, which is needed for the API. The
+//      user provides API credentials
 //        to support this
 //      - Connect to, or create a Thing for a user provided device (device ID)
-//      - Create Variables/Parameters in the Thing - that will represent values from the datalogger.
+//      - Create Variables/Parameters in the Thing - that will represent values
+//      from the datalogger.
 //
 //   ArduinoIoTCloud Library (mqtt)
-//      This library is used to send value updates to the Cloud Device/Thing parameters. To do this,
-//      the following is done:
-//          - A local "Cloud Variable" object is created and connected to the variable in the
-//            actual cloud. This driver maps this variable object to a hash id for the DataLogger
-//            parameter.
-//          - When values are updated, the value of the local Cloud Variable object is updated.
-//          - Updates are sent to the cloud via a mqtt session - via the ArduinoCloud library.
+//      This library is used to send value updates to the Cloud Device/Thing
+//      parameters. To do this, the following is done:
+//          - A local "Cloud Variable" object is created and connected to the
+//          variable in the
+//            actual cloud. This driver maps this variable object to a hash id
+//            for the DataLogger parameter.
+//          - When values are updated, the value of the local Cloud Variable
+//          object is updated.
+//          - Updates are sent to the cloud via a mqtt session - via the
+//          ArduinoCloud library.
 //
 //   Notes:
-//      - To make this work, it's found that the Web API calls should occur before the mqtt
-//        system in the ArduinoIoTCloud library is up and running. The web api calls often
-//        fail once the mqtt system is running.
+//      - To make this work, it's found that the Web API calls should occur
+//      before the mqtt
+//        system in the ArduinoIoTCloud library is up and running. The web api
+//        calls often fail once the mqtt system is running.
 //
-//        It appears that is is caused by the way the ArduinoIotCloud library was implemented.
-//        The library is setup to manage all network connectivity ...etc, but the DataLogger is doing
-//        this. It was worked around, but it's possible some aspect of this was missed.
+//        It appears that is is caused by the way the ArduinoIotCloud library
+//        was implemented. The library is setup to manage all network
+//        connectivity ...etc, but the DataLogger is doing this. It was worked
+//        around, but it's possible some aspect of this was missed.
 //
-//      - On startup/first use of this driver, the web API is used to get a oauth token, create/validate
-//        a Thing and then create or validate Parameters in the Thing that map to datalogger data values
+//      - On startup/first use of this driver, the web API is used to get a
+//      oauth token, create/validate
+//        a Thing and then create or validate Parameters in the Thing that map
+//        to datalogger data values
 //
-//      - Parameters from the datalogger have a hash created from their name, and this has is used to
+//      - Parameters from the datalogger have a hash created from their name,
+//      and this has is used to
 //        map the datalogger data value to a cloud variable.
 //
-//      - Once up and running, the system just uses the ArduinoIoTCloud library (mqtt) to update the values
+//      - Once up and running, the system just uses the ArduinoIoTCloud library
+//      (mqtt) to update the values
 //        in the cloud.
 //
-//      - Once the mqtt / ArduinoIoTCloud system is up and running, and a new variable needs to be created,
-//        this driver will try to create it - but will more often fail for unknow reasons. ** It appears
-//        that the network connection cycles.
+//      - Once the mqtt / ArduinoIoTCloud system is up and running, and a new
+//      variable needs to be created,
+//        this driver will try to create it - but will more often fail for
+//        unknow reasons. ** It appears that the network connection cycles.
 //
 //  User requirements
 //
@@ -181,24 +216,30 @@ class DataLoggerAIOTConnectionHandler : public ConnectionHandler
 //          - Thing ID
 //
 //      Note
-//          If a thing exists, but only it's name is provided, the driver needs to get the ThingID
-//          using the ArduinoIoTCloud library. In this case, the creation of any additional variables
-//          in the cloud (via the Web SDK) fails. It's annoying and sloppy. Best solution is to have
-//          the use provide everything for the Thing (ID and Name), or just reboot the device (which
-//          saves the ID) which will then have the ID at startup.
+//          If a thing exists, but only it's name is provided, the driver needs
+//          to get the ThingID using the ArduinoIoTCloud library. In this case,
+//          the creation of any additional variables in the cloud (via the Web
+//          SDK) fails. It's annoying and sloppy. Best solution is to have the
+//          use provide everything for the Thing (ID and Name), or just reboot
+//          the device (which saves the ID) which will then have the ID at
+//          startup.
 //
 //  Variable/Output Parameter Map
 //
-//      The variable / output parameter name is mapped to a local ArduinoIot Cloud variable
-//      These variables have a limited type set, and are actually objects to dynamically detect
-//      when values are changed. This enables value updates to the cloud from the device/thing.
+//      The variable / output parameter name is mapped to a local ArduinoIot
+//      Cloud variable These variables have a limited type set, and are actually
+//      objects to dynamically detect when values are changed. This enables
+//      value updates to the cloud from the device/thing.
 //
 //      To map this the following is done:
 //          - Flux Output parameter names are <device name>_<parameter name>
-//          - The names are truncated to 64, left justified if needed when creating cloud vars
+//          - The names are truncated to 64, left justified if needed when
+//          creating cloud vars
 //          - The name used in our map object is the hash of the full name
-//          - When a variable is created in the cloud, the local var is allocated and added to the map
-//          - The map value is a struct that contains a type code (flxDataType_t) and a void * pointer
+//          - When a variable is created in the cloud, the local var is
+//          allocated and added to the map
+//          - The map value is a struct that contains a type code
+//          (flxDataType_t) and a void * pointer
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -221,9 +262,11 @@ typedef struct
 ///
 /// @class flxIoTArduino
 ///
-/// @brief  A framework action that encapsulates the connection to the Arduino IoT Cloud
+/// @brief  A framework action that encapsulates the connection to the Arduino
+/// IoT Cloud
 ///
-/// @note   Also implements the `flxIWriterJSON` interface, so it receives update data as a JSON doc.
+/// @note   Also implements the `flxIWriterJSON` interface, so it receives
+/// update data as a JSON doc.
 ///
 class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 {
@@ -232,7 +275,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     ///
     /// @brief  Called when the network status changes.
     ///
-    /// @param bConnected   Connection status - true connected, false not connected.
+    /// @param bConnected   Connection status - true connected, false not
+    /// connected.
     ///
     void onConnectionChange(bool bConnected)
     {
@@ -326,7 +370,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     ///---------------------------------------------------------------------------------------
     ///
-    /// @brief  Property callback for setting the thing name. Will also reset error flag
+    /// @brief  Property callback for setting the thing name. Will also reset
+    /// error flag
     ///
     void set_thingName(std::string name)
     {
@@ -348,7 +393,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     ///---------------------------------------------------------------------------------------
     ///
-    /// @brief  Property callback for setting the thing ID. Will also reset error flag
+    /// @brief  Property callback for setting the thing ID. Will also reset error
+    /// flag
     ///
     void set_thingID(std::string theID)
     {
@@ -430,7 +476,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
         return (_isEnabled && _canConnect);
     }
 
-    // Name of this thing in Arduino IOT - use this if we need to create a thing ...
+    // Name of this thing in Arduino IOT - use this if we need to create a thing
+    // ...
     flxPropertyRWString<flxIoTArduino, &flxIoTArduino::get_thingName, &flxIoTArduino::set_thingName> thingName;
 
     // ArduinoIoT Thing ID.
@@ -466,7 +513,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
     void jobUpdateCB(void);
     ///---------------------------------------------------------------------------------------
     ///
-    /// @brief  Template to create and register a local cloud variable with a cloud variable on Arduino IoT
+    /// @brief  Template to create and register a local cloud variable with a
+    /// cloud variable on Arduino IoT
     ///
     /// @param szName   Name of the IoT Cloud variable
     /// @param pValue   The struct that contains the local Cloud Variable
@@ -501,7 +549,8 @@ class flxIoTArduino : public flxActionType<flxIoTArduino>, public flxIWriterJSON
 
     uint32_t _tokenTicks;
 
-    // Our variable map - [hash of full parameter name, pointer to a flxIoTArduinoVar_t struct]
+    // Our variable map - [hash of full parameter name, pointer to a
+    // flxIoTArduinoVar_t struct]
     std::map<uint32_t, flxIoTArduinoVar_t *> _parameterToVar;
 
     bool _bInitialized;
