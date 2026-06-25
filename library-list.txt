@@ -1,5 +1,6 @@
 ArduinoJson@7.4.1
 ArduinoMqttClient@0.1.8
+Arduino_ConnectionHandler@1.2.0
 "Azure SDK for C@1.1.8"
 "BlueRobotics MS5837 Library@1.1.1"
 BME680@1.0.10                                                   
