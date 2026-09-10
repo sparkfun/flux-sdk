@@ -71,12 +71,12 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         if (!_isEnabled)
             return;
 
-        // Anything change?
-        if (bConnected == connected())
-            return;
-
         if (bConnected)
         {
+            // Already up? Nothing to do.
+            if (connected())
+                return;
+
             flxLog_I_(F("%s: connecting to MQTT endpoint %s:%u ..."), this->name(), server().c_str(), port());
             if (connect())
                 flxLog_N(F("connected"));
@@ -84,6 +84,14 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
         }
         else
         {
+            // Always tear down when the network goes away.
+            //
+            // This deliberately is not gated on connected(). When the network
+            // drops, the underlying socket dies with it, so connected() already
+            // reports false - and the previous "did anything change?" test
+            // short-circuited here, leaving the client's socket descriptor and
+            // (for the secure client) its mbedTLS context allocated on every
+            // single outage.
             flxLog_I(F("Disconnecting from MQTT endpoint %s"), clientName().c_str());
             disconnect();
         }
@@ -126,11 +134,13 @@ template <class Object, typename CLIENT> class flxMQTTESP32Base : public flxActi
     //----------------------------------------------------------------------------
     virtual void disconnect(void)
     {
-        if (_mqttClient.connected() != 0)
-            _mqttClient.stop();
-
-        if (_wifiClient.connected() != 0)
-            _wifiClient.stop();
+        // stop() is called unconditionally rather than gated on connected().
+        // A connection that died with the network still holds an open socket
+        // descriptor - and, for WiFiClientSecure, an allocated mbedTLS context
+        // - while reporting connected() == false. A guarded stop() leaks both.
+        // Both stop() implementations are safe to call when already stopped.
+        _mqttClient.stop();
+        _wifiClient.stop();
     }
     //----------------------------------------------------------------------------
     virtual bool connect(void)

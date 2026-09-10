@@ -26,6 +26,19 @@ const uint8_t kWiFiLevelGood = 2;
 const uint8_t kWiFiLevelExcellent = 3;
 
 const uint16_t kWiFiUpdateHandlerTimeMS = 1500;
+
+// Reconnect backoff bounds.
+//
+// The ESP32 core will not always recover a dropped connection on its own:
+//   - It skips auto-reconnect entirely for WIFI_REASON_ASSOC_LEAVE and
+//     WIFI_REASON_AUTH_FAIL (see _isReconnectableReason() in WiFiGeneric.cpp).
+//   - The STA_LOST_IP handler only clears the IP status bit - it never
+//     re-begins - so a failed DHCP renewal leaves the station associated but
+//     permanently without an address.
+//
+// Nothing else in the framework retries, so this class drives reconnection.
+const uint32_t kWiFiReconnectDelayMinMS = 10000;
+const uint32_t kWiFiReconnectDelayMaxMS = 300000;
 // WiFi client for EsP32 boards
 
 class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, public flxIWiFiDevice
@@ -35,7 +48,9 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
     bool get_isEnabled(void);
 
   public:
-    flxWiFiESP32() : _wasConnected{false}, _isEnabled{true}, _delayedStartup{false}
+    flxWiFiESP32()
+        : _wasConnected{false}, _isEnabled{true}, _delayedStartup{false}, _lastReconnectMS{0},
+          _reconnectDelayMS{kWiFiReconnectDelayMinMS}, _reconnectIndex{0}
     {
 
         flxRegister(enabled, "Enabled", "Enable or Disable the WiFi Network connection");
@@ -114,10 +129,20 @@ class flxWiFiESP32 : public flxActionType<flxWiFiESP32>, public flxNetwork, publ
   private:
     void jobHandlerCB(void);
 
+    // Reconnection support - see kWiFiReconnectDelayMinMS above.
+    bool beginReconnect(void);
+    uint nCredentials(void);
+    bool credentialsAt(uint index, std::string &theSSID, std::string &thePassword);
+
     // flag used to help with connection changes.
     bool _wasConnected;
     bool _isEnabled;
     bool _delayedStartup;
+
+    // Reconnect bookkeeping
+    uint32_t _lastReconnectMS;
+    uint32_t _reconnectDelayMS;
+    uint _reconnectIndex;
 
     flxJob _theJob;
 };

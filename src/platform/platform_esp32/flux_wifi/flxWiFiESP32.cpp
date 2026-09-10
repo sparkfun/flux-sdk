@@ -143,6 +143,12 @@ bool flxWiFiESP32::connect(void)
             // esp_log_level_set("wifi", level);
 
             WiFi.disconnect(true);
+
+            // The initial connect failed - but that must not be terminal. A
+            // remote device commonly powers up before its access point does.
+            // Queue the update job anyway so the reconnect logic in
+            // jobHandlerCB() keeps trying. (addJob() is idempotent.)
+            flxAddJobToQueue(_theJob);
             return false;
         }
     }
@@ -156,6 +162,12 @@ bool flxWiFiESP32::connect(void)
 
     // okay, we're connected.
     _wasConnected = true;
+
+    // Healthy connection - start the reconnect backoff over.
+    _lastReconnectMS = 0;
+    _reconnectDelayMS = kWiFiReconnectDelayMinMS;
+    _reconnectIndex = 0;
+
     flxSendEvent(flxEvent::kOnConnectionChange, true);
 
     flxAddJobToQueue(_theJob);
@@ -177,6 +189,11 @@ void flxWiFiESP32::disconnect(void)
         flxSendEvent(flxEvent::kOnConnectionChange, false);
 
     _wasConnected = false;
+
+    _lastReconnectMS = 0;
+    _reconnectDelayMS = kWiFiReconnectDelayMinMS;
+    _reconnectIndex = 0;
+
     flxRemoveJobFromQueue(_theJob);
 }
 
@@ -204,18 +221,137 @@ String flxWiFiESP32::connectedSSID(void)
 }
 
 //----------------------------------------------------------------
+// How many networks has the user given us credentials for?
+uint flxWiFiESP32::nCredentials(void)
+{
+    uint nCreds = 0;
+
+    if (SSID().length() != 0)
+        nCreds++;
+    if (alt1_SSID().length() != 0)
+        nCreds++;
+    if (alt2_SSID().length() != 0)
+        nCreds++;
+    if (alt3_SSID().length() != 0)
+        nCreds++;
+
+    return nCreds;
+}
+
+//----------------------------------------------------------------
+// Return the nth configured credential pair, skipping any empty slots.
+bool flxWiFiESP32::credentialsAt(uint index, std::string &theSSID, std::string &thePassword)
+{
+    std::string theSSIDs[4] = {SSID(), alt1_SSID(), alt2_SSID(), alt3_SSID()};
+    std::string thePasswords[4] = {password(), alt1_password(), alt2_password(), alt3_password()};
+
+    uint nFound = 0;
+
+    for (uint i = 0; i < 4; i++)
+    {
+        if (theSSIDs[i].length() == 0)
+            continue;
+
+        if (nFound == index)
+        {
+            theSSID = theSSIDs[i];
+            thePassword = thePasswords[i];
+            return true;
+        }
+        nFound++;
+    }
+
+    return false;
+}
+
+//----------------------------------------------------------------
+// beginReconnect()
+//
+// Start - but do not wait on - a reconnection attempt.
+//
+// This deliberately does not use WiFiMulti. WiFiMulti::run() calls
+// WiFi.begin(ssid, pass, channel, bssid), which sets bssid_set in the stored
+// station config, pinning this device to one AP radio on one channel for the
+// life of the boot. Every later auto-reconnect reuses that config, so if the
+// BSSID or channel changes - AP reboot, auto-channel move, randomized BSSID -
+// the core retries a target that no longer exists. Calling begin() with only
+// the SSID clears that pin and lets the supplicant use what is on the air now.
+//
+// Returns true if an attempt was started. The result is picked up by a later
+// pass of the job handler, so the main loop is never blocked here.
+bool flxWiFiESP32::beginReconnect(void)
+{
+    uint nCreds = nCredentials();
+
+    if (nCreds == 0)
+        return false;
+
+    std::string theSSID;
+    std::string thePassword;
+
+    // Rotate through the configured networks so an unavailable primary does
+    // not lock out the alternates.
+    if (!credentialsAt(_reconnectIndex % nCreds, theSSID, thePassword))
+        return false;
+
+    _reconnectIndex++;
+
+    flxLog_I(F("%s: connection lost - reconnecting to %s"), name(), theSSID.c_str());
+
+    // Note: WiFi.begin() returns the station's *current* status, not the outcome
+    // of dispatching this attempt. After a preceding failure that can still read
+    // WL_CONNECT_FAILED while the new attempt is under way perfectly happily, so
+    // it cannot be used as a success signal. Having credentials and having called
+    // begin() is what "started" means here - the job handler observes the real
+    // result on a later pass.
+    WiFi.begin(theSSID.c_str(), thePassword.c_str());
+
+    return true;
+}
+
+//----------------------------------------------------------------
 void flxWiFiESP32::jobHandlerCB(void)
 {
+    if (!_isEnabled)
+        return;
+
+    bool wifiConn = WiFi.isConnected();
+
     // Connection change???
-    if (_isEnabled)
+    if (wifiConn != _wasConnected)
     {
-        bool wifiConn = WiFi.isConnected();
-        if (wifiConn != _wasConnected)
-        {
-            _wasConnected = wifiConn;
-            flxSendEvent(flxEvent::kOnConnectionChange, _wasConnected);
-        }
+        _wasConnected = wifiConn;
+        flxSendEvent(flxEvent::kOnConnectionChange, _wasConnected);
     }
+
+    if (wifiConn)
+    {
+        // Healthy - start the backoff over so the next outage retries promptly.
+        _lastReconnectMS = 0;
+        _reconnectDelayMS = kWiFiReconnectDelayMinMS;
+        _reconnectIndex = 0;
+        return;
+    }
+
+    // Not connected. The ESP32 core may have abandoned auto-reconnect for good
+    // (see the note in flxWiFiESP32.h), and nothing else retries - so we do.
+    uint32_t ticks = millis();
+
+    if (_lastReconnectMS != 0 && (ticks - _lastReconnectMS) < _reconnectDelayMS)
+        return;
+
+    _lastReconnectMS = ticks;
+
+    if (!beginReconnect())
+        flxLogM_E(kMsgErrValueNotProvided, name(), "Connection Credentials");
+
+    // Grow the backoff on every attempt - a successful connection resets it
+    // above. This keeps a device that is out of range from hammering the radio
+    // every few seconds indefinitely.
+    _reconnectDelayMS *= 2;
+
+    if (_reconnectDelayMS > kWiFiReconnectDelayMaxMS)
+        _reconnectDelayMS = kWiFiReconnectDelayMaxMS;
 }
 //----------------------------------------------------------------
 // return an abstract rating of the WiFi
