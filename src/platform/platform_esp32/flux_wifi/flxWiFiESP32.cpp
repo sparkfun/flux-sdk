@@ -298,7 +298,15 @@ bool flxWiFiESP32::beginReconnect(void)
 
     flxLog_I(F("%s: connection lost - reconnecting to %s"), name(), theSSID.c_str());
 
-    return WiFi.begin(theSSID.c_str(), thePassword.c_str()) != WL_CONNECT_FAILED;
+    // Note: WiFi.begin() returns the station's *current* status, not the outcome
+    // of dispatching this attempt. After a preceding failure that can still read
+    // WL_CONNECT_FAILED while the new attempt is under way perfectly happily, so
+    // it cannot be used as a success signal. Having credentials and having called
+    // begin() is what "started" means here - the job handler observes the real
+    // result on a later pass.
+    WiFi.begin(theSSID.c_str(), thePassword.c_str());
+
+    return true;
 }
 
 //----------------------------------------------------------------
